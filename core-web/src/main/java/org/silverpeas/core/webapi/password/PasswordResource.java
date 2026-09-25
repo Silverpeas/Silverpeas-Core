@@ -84,10 +84,12 @@ public class PasswordResource extends AbstractPasswordResource {
 
   /**
    * Gets the JSON representation of a list of errors caught by a password checking. The returned
-   * list contains names of rules which are not verified. If it doesn't exist, a 404 HTTP code is
-   * returned. If a problem occurs when processing the request, a 503 HTTP code is returned.
+   * list contains names of rules which are not verified. If the entity carries no password to
+   * check, a 400 HTTP code is returned.
    *
-   * @return the response to the HTTP GET request with the JSON representation of the asked photo.
+   * @param password the entity carrying the password to check.
+   * @return the response to the HTTP POST request with the JSON representation of the result of
+   * the password checking.
    */
   @POST
   @Path(
@@ -95,6 +97,9 @@ public class PasswordResource extends AbstractPasswordResource {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   public PasswordCheckEntity checking(final PasswordEntity password) {
+    if (password == null || password.getValue() == null) {
+      throw new BadRequestException("No password to check");
+    }
     return asWebEntity(service.check(password.getValue()));
   }
 }
