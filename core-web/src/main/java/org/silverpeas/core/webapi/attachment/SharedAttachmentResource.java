@@ -23,6 +23,11 @@
  */
 package org.silverpeas.core.webapi.attachment;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.silverpeas.core.annotation.WebService;
@@ -65,6 +70,8 @@ public class SharedAttachmentResource extends AbstractAttachmentResource {
     return PATH;
   }
 
+  @Operation(summary = "Downloads the content of an attachment shared through the given link.")
+  @ApiResponse(responseCode = "200", description = "The content of the shared attachment.")
   @GET
   @Path("{id}/{name}")
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
@@ -72,6 +79,9 @@ public class SharedAttachmentResource extends AbstractAttachmentResource {
     return getAttachmentContent(attachmentId);
   }
 
+  @Operation(summary = "Gathers into a ZIP archive the attachments shared through the given link.")
+  @ApiResponse(responseCode = "200", description = "The archive gathering the shared attachments.",
+      content = @Content(schema = @Schema(implementation = ZipEntity.class)))
   @GET
   @Path("{ids}/zip")
   @Produces(MediaType.APPLICATION_JSON)
@@ -110,6 +120,9 @@ public class SharedAttachmentResource extends AbstractAttachmentResource {
     }
   }
 
+  @Operation(summary = "Downloads the ZIP archive of the attachments shared through the given " +
+      "link.")
+  @ApiResponse(responseCode = "200", description = "The content of the archive.")
   @GET
   @Path("zipcontent/{name}")
   @Produces(MediaType.APPLICATION_OCTET_STREAM)

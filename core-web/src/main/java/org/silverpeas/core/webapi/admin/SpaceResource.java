@@ -23,6 +23,12 @@
  */
 package org.silverpeas.core.webapi.admin;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.admin.component.model.PersonalComponent;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
@@ -34,6 +40,7 @@ import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.web.rs.annotation.Authenticated;
+import org.silverpeas.core.rs.doc.NotFound;
 import org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
@@ -66,15 +73,19 @@ public class SpaceResource extends AbstractAdminResource {
   }
 
   /**
-   * Gets the JSON representation of root spaces.
+   * Gets the JSON representation of the spaces at the root of the spaces tree.
    * If it doesn't exist, a 404 HTTP code is returned.
    * If the user isn't authenticated, a 401 HTTP code is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
    * @param forceGettingFavorite forcing the user favorite space search even if the favorite
    * feature is disabled.
-   * @return the response to the HTTP GET request with the JSON representation of the asked
-   *         space.
+   * @return the response to the HTTP GET request with the JSON representation of the spaces at
+   *         the root of the spaces tree.
    */
+  @Operation(summary = "Gets root organizational spaces in Silverpeas.")
+  @ApiResponse(responseCode = "200", description = "The spaces at the root of the tree.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = SpaceEntity.class))))
+  @NotFound
   @GET
   @Produces(APPLICATION_JSON)
   public Collection<SpaceEntity> getAll(
@@ -101,6 +112,10 @@ public class SpaceResource extends AbstractAdminResource {
    * @return the response to the HTTP GET request with the JSON representation of the asked
    *         space.
    */
+  @Operation(summary = "Gets the given existing space.")
+  @ApiResponse(responseCode = "200", description = "The asked space.",
+      content = @Content(schema = @Schema(implementation = SpaceEntity.class)))
+  @NotFound
   @GET
   @Path("{spaceId}")
   @Produces(APPLICATION_JSON)
@@ -124,8 +139,15 @@ public class SpaceResource extends AbstractAdminResource {
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
    * @param spaceId the id of space to process.
    * @param roles aimed roles (each one separated by comma). If empty, all roles are returned.
-   * @return the JSON response to the HTTP GET request.
+   * @return the response to the HTTP GET request with the JSON representation of the users and
+   *         of the groups of users, indexed by the role they play in the space.
    */
+  @Operation(summary = "Gets users and groups roles, indexed by role names, defined for the " +
+      "space specified in the path.")
+  @ApiResponse(responseCode = "200",
+      description = "The users and the groups of users, indexed by the role they play in the " +
+      "space.")
+  @NotFound
   @GET
   @Path("{spaceId}/" + USERS_AND_GROUPS_ROLES_URI_PART)
   @Produces(APPLICATION_JSON)
@@ -205,6 +227,10 @@ public class SpaceResource extends AbstractAdminResource {
    * @return the response to the HTTP PUT request with the JSON representation of the updated
    *         space.
    */
+  @Operation(summary = "Updates the space data and returns it once updated.")
+  @ApiResponse(responseCode = "200", description = "The updated space.",
+      content = @Content(schema = @Schema(implementation = SpaceEntity.class)))
+  @NotFound
   @PUT
   @Path("{spaceId}")
   @Produces(APPLICATION_JSON)
@@ -237,16 +263,21 @@ public class SpaceResource extends AbstractAdminResource {
   }
 
   /**
-   * Gets the JSON representation of spaces of the given existing space.
+   * Gets the JSON representation of the subspaces of the given existing space.
    * If it doesn't exist, a 404 HTTP code is returned.
    * If the user isn't authenticated, a 401 HTTP code is returned.
    * If the user isn't authorized to access the space, a 403 HTTP code is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
    * @param spaceId the id of space to process.
    * @param forceGettingFavorite forcing the user favorite space search even if the favorite
-   * @return the response to the HTTP GET request with the JSON representation of the asked
-   *         space.
+   * feature is disabled.
+   * @return the response to the HTTP GET request with the JSON representation of the subspaces
+   *         of the asked space.
    */
+  @Operation(summary = "Gets subspaces of the given existing organizational space.")
+  @ApiResponse(responseCode = "200", description = "The subspaces of the asked space.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = SpaceEntity.class))))
+  @NotFound
   @GET
   @Path("{spaceId}/" + SPACES_SPACES_URI_PART)
   @Produces(APPLICATION_JSON)
@@ -264,15 +295,20 @@ public class SpaceResource extends AbstractAdminResource {
   }
 
   /**
-   * Gets the JSON representation of components of the given existing space.
+   * Gets the JSON representation of the applications the given existing space contains.
    * If it doesn't exist, a 404 HTTP code is returned.
    * If the user isn't authenticated, a 401 HTTP code is returned.
    * If the user isn't authorized to access the space, a 403 HTTP code is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
    * @param spaceId the id of space to process.
-   * @return the response to the HTTP GET request with the JSON representation of the asked
-   *         space.
+   * @return the response to the HTTP GET request with the JSON representation of the
+   *         applications the asked space contains.
    */
+  @Operation(summary = "Gets the applications instantiated in the given organizational existing " +
+      "space.")
+  @ApiResponse(responseCode = "200", description = "The applications the space contains.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = ComponentEntity.class))))
+  @NotFound
   @GET
   @Path("{spaceId}/" + SPACES_COMPONENTS_URI_PART)
   @Produces(APPLICATION_JSON)
@@ -288,15 +324,21 @@ public class SpaceResource extends AbstractAdminResource {
   }
 
   /**
-   * Gets the JSON representation of content of the given existing space.
+   * Gets the JSON representation of the content, that is the subspaces and the applications, of
+   * the given existing space.
    * If it doesn't exist, a 404 HTTP code is returned.
    * If the user isn't authenticated, a 401 HTTP code is returned.
    * If the user isn't authorized to access the space, a 403 HTTP code is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
    * @param spaceId the id of space to process.
-   * @return the response to the HTTP GET request with the JSON representation of the asked
-   *         space.
+   * @return the response to the HTTP GET request with the JSON representation of the subspaces
+   *         and of the applications the asked space contains.
    */
+  @Operation(summary = "Gets both the subspaces and the applications in the given existing " +
+      "organization space.")
+  @ApiResponse(responseCode = "200",
+      description = "The subspaces and the applications the space contains.")
+  @NotFound
   @GET
   @Path("{spaceId}/" + SPACES_CONTENT_URI_PART)
   @Produces(APPLICATION_JSON)
@@ -316,15 +358,19 @@ public class SpaceResource extends AbstractAdminResource {
   }
 
   /**
-   * Gets the JSON representation of the given existing space.
+   * Gets the JSON representation of the appearance of the given existing space.
    * If it doesn't exist, a 404 HTTP code is returned.
    * If the user isn't authenticated, a 401 HTTP code is returned.
    * If the user isn't authorized to access the space, a 403 HTTP code is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
    * @param spaceId the id of space to process.
-   * @return the response to the HTTP GET request with the JSON representation of the asked
-   *         space.
+   * @return the response to the HTTP GET request with the JSON representation of the appearance
+   *         of the asked space.
    */
+  @Operation(summary = "Gets the home page look of the given existing space.")
+  @ApiResponse(responseCode = "200", description = "The appearance of the asked space.",
+      content = @Content(schema = @Schema(implementation = SpaceAppearanceEntity.class)))
+  @NotFound
   @GET
   @Path("{spaceId}/" + SPACES_APPEARANCE_URI_PART)
   @Produces(APPLICATION_JSON)
@@ -351,8 +397,15 @@ public class SpaceResource extends AbstractAdminResource {
    * @param getNotUsedComponents boolean indicating if the not used components are concerned
    * @param getUsedComponents boolean indicating if the used components are concerned
    * @param getUsedTools a boolean indicating if the used tools are concerned
-   * @return the response to the HTTP GET request with the JSON representation of the asked space
+   * @return the response to the HTTP GET request with the JSON representation of the content of
+   *         the personal space of the user
    */
+  @Operation(summary = "Gets the content of the personal space of the user.",
+      description = "When all query parameters are set at false then the service understands " +
+      "that it has to return all personal entities.")
+  @ApiResponse(responseCode = "200",
+      description = "The applications of the personal space of the user.")
+  @NotFound
   @GET
   @Path(SPACES_PERSONAL_URI_PART)
   @Produces(APPLICATION_JSON)
@@ -392,15 +445,22 @@ public class SpaceResource extends AbstractAdminResource {
   }
 
   /**
-   * Instantiates the requested component in the user's personal space. It returns the JSON
-   * representation of the instantiated component.
+  /**
+   * Instantiates in the personal space of the user the application of the requested type. It
+   * returns the JSON representation of the instantiated application.
    * If it doesn't exist, a 404 HTTP code is returned.
    * If the user isn't authenticated, a 401 HTTP code is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
-   * @param componentName the name of component to add in the user's personal space
-   * @return the response to the HTTP GET request with the JSON representation of the asked
-   *         space.
+   * @param componentName the name of the application to instantiate in the personal space of the
+   * user
+   * @return the response to the HTTP PUT request with the JSON representation of the instantiated
+   *         application.
    */
+  @Operation(summary = "Instantiates an application in the personal space of the user.")
+  @ApiResponse(responseCode = "200",
+      description = "The application instantiated in the personal space of the user.",
+      content = @Content(schema = @Schema(implementation = PersonalComponentEntity.class)))
+  @NotFound
   @PUT
   @Path(SPACES_PERSONAL_URI_PART + "/{componentName}")
   @Produces(APPLICATION_JSON)
@@ -420,16 +480,22 @@ public class SpaceResource extends AbstractAdminResource {
   }
 
   /**
-   * Removes from the user's personal space the instantiation of the requested component. It
-   * returns
-   * the JSON representation of WAComponent.
+  /**
+   * Removes from the personal space of the user the application of the requested type. It returns
+   * the JSON representation of the removed application.
    * If it doesn't exist, a 404 HTTP code is returned.
    * If the user isn't authenticated, a 401 HTTP code is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
-   * @param componentName the name of component to add in the user's personal space
-   * @return the response to the HTTP GET request with the JSON representation of the asked
-   *         space.
+   * @param componentName the name of the application to remove from the personal space of the
+   * user
+   * @return the response to the HTTP DELETE request with the JSON representation of the removed
+   *         application.
    */
+  @Operation(summary = "Removes an application from the personal space of the user.")
+  @ApiResponse(responseCode = "200",
+      description = "The application removed from the personal space of the user.",
+      content = @Content(schema = @Schema(implementation = PersonalComponentEntity.class)))
+  @NotFound
   @DELETE
   @Path(SPACES_PERSONAL_URI_PART + "/{componentName}")
   @Produces(APPLICATION_JSON)

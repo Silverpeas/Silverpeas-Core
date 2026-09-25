@@ -23,11 +23,17 @@
  */
 package org.silverpeas.core.webapi.viewer;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.viewer.model.Preview;
 import org.silverpeas.core.viewer.service.PreviewService;
 import org.silverpeas.core.viewer.service.ViewerException;
 import org.silverpeas.core.web.rs.annotation.Authenticated;
+import org.silverpeas.core.rs.doc.NotFound;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
@@ -63,6 +69,10 @@ public class PreviewResource extends AbstractViewResource {
    * @return the response to the HTTP GET request with the JSON representation of preview
    * information.
    */
+  @Operation(summary = "Gets preview information.")
+  @ApiResponse(responseCode = "200", description = "Preview information.",
+      content = @Content(schema = @Schema(implementation = PreviewEntity.class)))
+  @NotFound
   @GET
   @Path("{type}/{id}")
   @Produces(APPLICATION_JSON)

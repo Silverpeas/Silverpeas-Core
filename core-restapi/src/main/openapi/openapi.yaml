@@ -1,0 +1,16 @@
+# The static part of the OpenAPI document: what the scan of the web resources cannot figure out
+# by itself. The version is filled in by Maven at build time.
+openapi: 3.1.0
+info:
+  title: Silverpeas Core REST API
+  version: ${project.version}
+  description: |-
+    The REST API of the Silverpeas Core: the transverse services of the collaborative portal —
+    users and user groups, spaces and applications, contributions and their attachments,
+    calendars, comments, notifications, and so on.
+
+    Unless stated otherwise, an endpoint requires the requester to be authenticated. The ways to
+    authenticate are described in the security schemes below.
+  license:
+    name: GNU Affero General Public License v3.0
+    url: https://www.gnu.org/licenses/agpl-3.0.html

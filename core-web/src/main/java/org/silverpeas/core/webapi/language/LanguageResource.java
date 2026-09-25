@@ -23,6 +23,12 @@
  */
 package org.silverpeas.core.webapi.language;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
@@ -60,6 +66,9 @@ public class LanguageResource extends RESTWebService {
    * Gets all the languages that are available in this running Silverpeas.
    * @return a list of languages supported by the platform.
    */
+  @Operation(summary = "Gets all the languages that are available in this running Silverpeas.")
+  @ApiResponse(responseCode = "200", description = "A list of languages supported by the platform.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = LanguageEntity.class))))
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public List<LanguageEntity> getAvailableLanguages() {

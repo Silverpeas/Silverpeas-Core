@@ -23,12 +23,18 @@
  */
 package org.silverpeas.core.webapi.notification.user;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILMessage;
 import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authenticated;
+import org.silverpeas.core.rs.doc.NotFound;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.DELETE;
@@ -81,6 +87,10 @@ public class InboxUserNotificationResource extends RESTWebService {
    * @return the response to the HTTP GET request with the JSON representation of the asked
    * data.
    */
+  @Operation(summary = "Gets notification.")
+  @ApiResponse(responseCode = "200", description = "The asked data.",
+      content = @Content(schema = @Schema(implementation = InboxUserNotificationEntity.class)))
+  @NotFound
   @GET
   @Path("{id}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -93,6 +103,8 @@ public class InboxUserNotificationResource extends RESTWebService {
   /**
    * Deletes the aimed notification.
    */
+  @Operation(summary = "Deletes the aimed notification.")
+  @ApiResponse(responseCode = "200", description = "The notifications have been deleted.")
   @DELETE
   @Path("{id}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -112,6 +124,10 @@ public class InboxUserNotificationResource extends RESTWebService {
    * @return the response to the HTTP GET request with the JSON representation of the asked
    * data.
    */
+  @Operation(summary = "Gets notification.")
+  @ApiResponse(responseCode = "200", description = "The asked data.",
+      content = @Content(schema = @Schema(implementation = InboxUserNotificationEntity.class)))
+  @NotFound
   @GET
   @Path("{id}/read")
   @Produces(MediaType.APPLICATION_JSON)
@@ -128,6 +144,9 @@ public class InboxUserNotificationResource extends RESTWebService {
    * @return the response to the HTTP GET request with the JSON representation of the asked
    * data.
    */
+  @Operation(summary = "Gets notification list.")
+  @ApiResponse(responseCode = "200", description = "The asked data.")
+  @NotFound
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public Response getAllPaginated(@QueryParam("page") String page) {
@@ -148,6 +167,8 @@ public class InboxUserNotificationResource extends RESTWebService {
   /**
    * Deletes aime notifications.
    */
+  @Operation(summary = "Deletes aime notifications.")
+  @ApiResponse(responseCode = "200", description = "The notifications have been marked as read.")
   @PUT
   @Produces(MediaType.APPLICATION_JSON)
   public Response markAsRead(final List<InboxUserNotificationEntity> entities) {
@@ -164,6 +185,8 @@ public class InboxUserNotificationResource extends RESTWebService {
   /**
    * Deletes aime notifications.
    */
+  @Operation(summary = "Deletes aime notifications.")
+  @ApiResponse(responseCode = "200", description = "The notifications have been deleted.")
   @DELETE
   @Produces(MediaType.APPLICATION_JSON)
   public Response delete(final List<InboxUserNotificationEntity> entities) {

@@ -23,6 +23,12 @@
  */
 package org.silverpeas.core.webapi.subscribe;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.WebService;
@@ -38,6 +44,7 @@ import org.silverpeas.core.subscription.util.SubscriptionList;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.rs.annotation.Authorized;
+import org.silverpeas.core.rs.doc.NotFound;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -75,6 +82,10 @@ public class SubscriptionResource extends AbstractSubscriptionResource {
    * @return the response to the HTTP GET request with the JSON representation of the asked
    *         component subscriptions.
    */
+  @Operation(summary = "Gets application subscriptions in relation with the user.")
+  @ApiResponse(responseCode = "200", description = "The asked application subscriptions.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = SubscriptionEntity.class))))
+  @NotFound
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public Collection<SubscriptionEntity> getComponentSubscriptions(
@@ -93,6 +104,10 @@ public class SubscriptionResource extends AbstractSubscriptionResource {
    * @return the response to the HTTP GET request with the JSON representation of the asked
    *         component subscriptions.
    */
+  @Operation(summary = "Gets application/node subscriptions of a resource.")
+  @ApiResponse(responseCode = "200", description = "The asked application subscriptions.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = SubscriptionEntity.class))))
+  @NotFound
   @GET
   @Path("{subscriptionType}/{id}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -131,6 +146,10 @@ public class SubscriptionResource extends AbstractSubscriptionResource {
    * @return the response to the HTTP GET request with the JSON representation of the asked
    *         component subscriptions.
    */
+  @Operation(summary = "Gets application subscription subscribers.")
+  @ApiResponse(responseCode = "200", description = "The asked application subscriptions.",
+      content = @Content(array = @ArraySchema(schema = @Schema(implementation = SubscriberEntity.class))))
+  @NotFound
   @GET
   @Path(SubscriptionResourceURIs.SUBSCRIPTION_SUBSCRIBER_URI_PART)
   @Produces(MediaType.APPLICATION_JSON)
@@ -148,6 +167,9 @@ public class SubscriptionResource extends AbstractSubscriptionResource {
    * @return the response to the HTTP GET request with the JSON representation of the asked
    *         component subscriptions.
    */
+  @Operation(summary = "Gets application/node subscription subscribers.")
+  @ApiResponse(responseCode = "200", description = "The asked application subscriptions.")
+  @NotFound
   @GET
   @Path("{subscriptionType}/" + SubscriptionResourceURIs.SUBSCRIPTION_SUBSCRIBER_URI_PART + "/{id}")
   public Response getSubscribers(@PathParam("subscriptionType") String subscriptionType,
@@ -182,6 +204,10 @@ public class SubscriptionResource extends AbstractSubscriptionResource {
    * @return the response to the HTTP GET request with the JSON representation of the asked
    * component subscriptions.
    */
+  @Operation(summary = "Gets resource subscription subscribers with inheritance.",
+      description = "For example, it returns subscribers af a node and those of its parents too.")
+  @ApiResponse(responseCode = "200", description = "The asked application subscriptions.")
+  @NotFound
   @GET
   @Path("{subscriptionType}/" + SubscriptionResourceURIs.SUBSCRIPTION_SUBSCRIBER_URI_PART + "/inheritance")
   public Response getComponentSubscribersWithInheritance(
@@ -205,6 +231,10 @@ public class SubscriptionResource extends AbstractSubscriptionResource {
    * @return the response to the HTTP GET request with the JSON representation of the asked
    *         component subscriptions.
    */
+  @Operation(summary = "Gets resource subscription subscribers with inheritance.",
+      description = "For example, it returns subscribers af a node and those of its parents too.")
+  @ApiResponse(responseCode = "200", description = "The asked application subscriptions.")
+  @NotFound
   @GET
   @Path("{subscriptionType}/" + SubscriptionResourceURIs.SUBSCRIPTION_SUBSCRIBER_URI_PART + "/inheritance/{id}")
   public Response getSubscribersWithInheritance(

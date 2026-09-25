@@ -43,14 +43,17 @@ import static jakarta.interceptor.Interceptor.Priority.APPLICATION;
 @Priority(APPLICATION)
 public class AuthorizedAnnotationProcessor {
 
+  private final UserPrivilegeValidation validation;
+
   @Inject
-  private UserPrivilegeValidation validation;
+  public AuthorizedAnnotationProcessor(UserPrivilegeValidation validation) {
+    this.validation = validation;
+  }
 
   @AroundInvoke
   public Object processAuthorization(InvocationContext context) throws Exception {
     Object target = context.getTarget();
-    if (target instanceof ProtectedWebResource) {
-      ProtectedWebResource resource = (ProtectedWebResource) target;
+    if (target instanceof ProtectedWebResource resource) {
       resource.validateUserAuthentication(validation);
       resource.validateUserAuthorization(validation);
     }

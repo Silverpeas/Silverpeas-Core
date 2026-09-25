@@ -23,6 +23,12 @@
  */
 package org.silverpeas.core.webapi.subscribe;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.comment.CommentRuntimeException;
 import org.silverpeas.core.subscription.Subscription;
@@ -54,12 +60,18 @@ public class UnsubscribeResource extends AbstractSubscriptionResource {
 
   static final String PATH = "unsubscribe";
 
+  @Operation(summary = "Unsubscribes a user from the changes in the given application.")
+  @ApiResponse(responseCode = "200", description = "The subscription has been cancelled.",
+      content = @Content(array = @ArraySchema(schema = @Schema(type = "string"))))
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   public Response unsubscribeUserFromComponent() {
     return unsubscribeUserFromComponent(getUser().getId());
   }
 
+  @Operation(summary = "Unsubscribes a user from the changes in the given application.")
+  @ApiResponse(responseCode = "200", description = "The subscription has been cancelled.",
+      content = @Content(array = @ArraySchema(schema = @Schema(type = "string"))))
   @POST
   @Path("user/{userId}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -67,6 +79,9 @@ public class UnsubscribeResource extends AbstractSubscriptionResource {
     return unsubscribeSubscriberFromResource(COMPONENT, UserSubscriptionSubscriber.from(userId), null);
   }
 
+  @Operation(summary = "Unsubscribes a group of users from the changes in the given application.")
+  @ApiResponse(responseCode = "200", description = "The subscription has been cancelled.",
+      content = @Content(array = @ArraySchema(schema = @Schema(type = "string"))))
   @POST
   @Path("group/{groupId}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -74,6 +89,10 @@ public class UnsubscribeResource extends AbstractSubscriptionResource {
     return unsubscribeSubscriberFromResource(COMPONENT, GroupSubscriptionSubscriber.from(groupId), null);
   }
 
+  @Operation(summary = "Unsubscribes a user from the changes on the given resource of the " +
+      "application.")
+  @ApiResponse(responseCode = "200", description = "The subscription has been cancelled.",
+      content = @Content(array = @ArraySchema(schema = @Schema(type = "string"))))
   @POST
   @Path("{subscriptionType}/{id}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -81,6 +100,10 @@ public class UnsubscribeResource extends AbstractSubscriptionResource {
     return unsubscribeUserFromResource(subscriptionType, id, getUser().getId());
   }
 
+  @Operation(summary = "Unsubscribes a user from the changes on the given resource of the " +
+      "application.")
+  @ApiResponse(responseCode = "200", description = "The subscription has been cancelled.",
+      content = @Content(array = @ArraySchema(schema = @Schema(type = "string"))))
   @POST
   @Path("{subscriptionType}/{id}/user/{userId}")
   @Produces(MediaType.APPLICATION_JSON)
@@ -91,6 +114,10 @@ public class UnsubscribeResource extends AbstractSubscriptionResource {
         UserSubscriptionSubscriber.from(userId), id);
   }
 
+  @Operation(summary = "Unsubscribes a group of users from the changes on the given resource of " +
+      "the application.")
+  @ApiResponse(responseCode = "200", description = "The subscription has been cancelled.",
+      content = @Content(array = @ArraySchema(schema = @Schema(type = "string"))))
   @POST
   @Path("{subscriptionType}/{id}/group/{groupId}")
   @Produces(MediaType.APPLICATION_JSON)

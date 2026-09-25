@@ -23,6 +23,11 @@
  */
 package org.silverpeas.core.webapi.pdc;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
@@ -31,6 +36,8 @@ import org.silverpeas.core.pdc.thesaurus.model.ThesaurusException;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authorized;
+import org.silverpeas.core.rs.doc.BadRequest;
+import org.silverpeas.core.rs.doc.Conflict;
 
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
@@ -129,6 +136,19 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
    * classification is defined along the path of the nodes up to the component instance, then an
    * empty classification is sent back.
    */
+  @Operation(summary = "Gets the predefined classification on the PdC that is set for the " +
+      "contents in the node identified by the query part of the request URI.",
+      description = "If no node identifier is provided in the URI, the predefined classification " +
+      "set for the whole application is sought. A node in a application is a generic way in " +
+      "Silverpeas to categorize hierarchically the contents of the application. If no predefined " +
+      "classification on the PdC is defined for the requested node, a predefined one is then " +
+      "looked backward among the parent nodes up to the application itself. The PdC " +
+      "classification is sent back in JSON.")
+  @ApiResponse(responseCode = "200",
+      description = "A web entity representing the requested predefined PdC classification. If " +
+      "no predefined classification is defined along the path of the nodes up to the " +
+      "application, then an empty classification is sent back.",
+      content = @Content(schema = @Schema(implementation = PdcClassificationEntity.class)))
   @GET
   @Produces({MediaType.APPLICATION_JSON})
   public PdcClassificationEntity getPredefinedPdCClassificationForContentsInNode(
@@ -158,6 +178,12 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
    * @return the response with the status of the classification creation and, in the case of a
    * successful operation, the new created PdC classification.
    */
+  @Operation(summary = "Creates a new predefined classification for the specified node.")
+  @ApiResponse(responseCode = "200",
+      description = "The response with the status of the classification creation and, in the " +
+      "case of a successful operation, the new created PdC classification.")
+  @BadRequest
+  @Conflict
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
@@ -203,6 +229,18 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
    * @return the response with the status of the position update and, in the case of a successful
    * operation, the new PdC classification of the resource resulting of the position update.
    */
+  @Operation(summary = "Updates the predefined classification for the specified node.",
+      description = "If no predefined classification is associated with the specified node, it " +
+      "inherits of the predefined classification of its closest parent node. So, as the updated " +
+      "predefined position on the PdC concerns only the specified node (and not the parent " +
+      "node), it is actually updated in the new predefined classification that is created for " +
+      "the specified node from of the one of the parent node.")
+  @ApiResponse(responseCode = "200",
+      description = "The response with the status of the position update and, in the case of a " +
+      "successful operation, the new PdC classification of the resource resulting of the " +
+      "position update.",
+      content = @Content(schema = @Schema(implementation = PdcClassificationEntity.class)))
+  @BadRequest
   @PUT
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)

@@ -24,6 +24,9 @@
 
 package org.silverpeas.core.webapi.session;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.util.JSONCodec;
@@ -65,6 +68,9 @@ public class SilverpeasUserSessionTokenResource extends RESTWebService {
    * Gets a {@link WebToken} value linked to the current user session.
    * @return a JSON object containing the token into 'token' attribute.
    */
+  @Operation(summary = "Gets a WebToken value linked to the current user session.")
+  @ApiResponse(responseCode = "200",
+      description = "A JSON object containing the token into 'token' attribute.")
   @GET
   public Response getToken() {
     final String sessionId = ofNullable(getHttpServletRequest().getSession(false))
