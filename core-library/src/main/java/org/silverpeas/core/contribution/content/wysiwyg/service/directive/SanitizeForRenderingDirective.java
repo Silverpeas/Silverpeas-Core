@@ -31,6 +31,7 @@ import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTr
 import org.silverpeas.core.security.html.EmbeddedSourceValidator;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.security.SecuritySettings;
+import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.Arrays;
@@ -65,6 +66,12 @@ import java.util.regex.Pattern;
  */
 public class SanitizeForRenderingDirective implements WysiwygContentTransformerDirective {
 
+  private static final String IFRAME = "iframe";
+  private static final String SRC = "src";
+  private static final String POSTER = "poster";
+  private static final String SRCDOC = "srcdoc";
+  private static final String EVENT_CALLBACK_PREFIX = "on";
+
   /**
    * The elements having no content and hence no closing tag to expect.
    */
@@ -82,13 +89,8 @@ public class SanitizeForRenderingDirective implements WysiwygContentTransformerD
       "video");
 
   private static final Set<String> URL_ATTRIBUTES = setOf("action", "background", "cite", "data",
-      "formaction", "href", "longdesc", "poster", "src");
+      "formaction", "href", "longdesc", POSTER, "src");
 
-  private static final String IFRAME = "iframe";
-  private static final String SRC = "src";
-  private static final String POSTER = "poster";
-  private static final String SRCDOC = "srcdoc";
-  private static final String EVENT_CALLBACK_PREFIX = "on";
 
   private static final Pattern SCRIPTING_SCHEME =
       Pattern.compile("(?i)^\\s*(javascript|vbscript|livescript|mocha|about)\\s*:");
@@ -112,15 +114,7 @@ public class SanitizeForRenderingDirective implements WysiwygContentTransformerD
     return new HashSet<>(Arrays.asList(values));
   }
 
-  private static EmbeddedSourceValidator iframeSources() {
-    return new EmbeddedSourceValidator(SecuritySettings.getAllowedHostsForIFrame(),
-        URLUtil.getApplicationURL());
-  }
 
-  private static EmbeddedSourceValidator mediaSources() {
-    return new EmbeddedSourceValidator(SecuritySettings.getAllowedHostsForMedia(),
-        URLUtil.getApplicationURL());
-  }
 
   /**
    * Passes the parsing events through, but for the ones that have to be dropped. When an element
@@ -151,7 +145,7 @@ public class SanitizeForRenderingDirective implements WysiwygContentTransformerD
     }
 
     @Override
-    public void openTag(final String elementName, final List<String> attributes) {
+    public void openTag(final String elementName, @NonNull final List<String> attributes) {
       final String element = elementName.toLowerCase(Locale.ROOT);
       if (skippedElement != null) {
         if (skippedElement.equals(element)) {
@@ -180,7 +174,7 @@ public class SanitizeForRenderingDirective implements WysiwygContentTransformerD
     }
 
     @Override
-    public void text(final String textChunk) {
+    public void text(@NonNull final String textChunk) {
       if (skippedElement == null) {
         output.text(textChunk);
       }
@@ -195,17 +189,27 @@ public class SanitizeForRenderingDirective implements WysiwygContentTransformerD
 
     private boolean isEmbeddingANonAllowedSource(final String element,
         final List<String> attributes) {
-      final String src = valueOf(attributes, SRC);
+      final String src = valueOf(attributes);
       if (IFRAME.equals(element)) {
         // an iframe without any source has nothing to embed
         return !iframeSources.isAllowed(src);
       }
       // a media can carry its source by a child source element instead of by its own attribute
-      return MEDIA_ELEMENTS.contains(element) && src != null && !isAllowedMedia(src);
+      return MEDIA_ELEMENTS.contains(element) && src != null && isNotAllowedMedia(src);
     }
 
-    private boolean isAllowedMedia(final String src) {
-      return INLINED_IMAGE.matcher(src).find() || mediaSources.isAllowed(src);
+    private static EmbeddedSourceValidator iframeSources() {
+      return new EmbeddedSourceValidator(SecuritySettings.getAllowedHostsForIFrame(),
+          URLUtil.getApplicationURL());
+    }
+
+    private static EmbeddedSourceValidator mediaSources() {
+      return new EmbeddedSourceValidator(SecuritySettings.getAllowedHostsForMedia(),
+          URLUtil.getApplicationURL());
+    }
+
+    private boolean isNotAllowedMedia(final String src) {
+      return !INLINED_IMAGE.matcher(src).find() && !mediaSources.isAllowed(src);
     }
 
     private List<String> keepHarmlessAttributes(final List<String> attributes) {
@@ -234,12 +238,12 @@ public class SanitizeForRenderingDirective implements WysiwygContentTransformerD
         return true;
       }
       // the poster of a video is an image, it obeys the very rule applied to the media
-      return POSTER.equals(name) && !isAllowedMedia(value);
+      return POSTER.equals(name) && isNotAllowedMedia(value);
     }
 
-    private static String valueOf(final List<String> attributes, final String name) {
+    private static String valueOf(final List<String> attributes) {
       for (int i = 0; i < attributes.size() - 1; i += 2) {
-        if (name.equalsIgnoreCase(attributes.get(i))) {
+        if (SRC.equalsIgnoreCase(attributes.get(i))) {
           return attributes.get(i + 1);
         }
       }
