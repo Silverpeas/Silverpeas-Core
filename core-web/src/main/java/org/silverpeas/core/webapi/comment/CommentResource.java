@@ -46,7 +46,6 @@ import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static jakarta.ws.rs.core.Response.Status.FORBIDDEN;
 
@@ -203,7 +202,7 @@ public class CommentResource extends RESTWebService {
       } else {
         commentService().updateComment(comment);
       }
-      URI commentURI = getUri().getRequestUriBuilder().path(comment.getId()).build();
+      URI commentURI = getUri().getRequestUri();
       return asWebEntity(comment, identifiedBy(commentURI));
     } catch (CommentRuntimeException | SilverpeasRuntimeException ex) {
       SilverLogger.getLogger(this).error(ex);
@@ -294,7 +293,7 @@ public class CommentResource extends RESTWebService {
           URI commentURI = getUri().getRequestUriBuilder().path(c.getId()).build();
           return asWebEntity(c, identifiedBy(commentURI));
         })
-        .collect(Collectors.toList());
+        .toList();
   }
 
   /**

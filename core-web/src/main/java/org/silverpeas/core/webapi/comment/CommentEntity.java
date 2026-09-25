@@ -38,6 +38,7 @@ import org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs;
 import org.silverpeas.core.webapi.profile.UserProfileEntity;
 import org.silverpeas.kernel.logging.SilverLogger;
 
+import java.io.Serial;
 import java.net.URI;
 import java.text.ParseException;
 import java.util.Date;
@@ -54,7 +55,8 @@ import static org.silverpeas.kernel.util.StringUtil.isDefined;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CommentEntity implements WebEntity {
 
-  private static final long serialVersionUID = 8023645204584179638L;
+  @Serial
+  private static final long serialVersionUID = 8023645204584179640L;
   private final transient String language;
   @XmlElement(defaultValue = "")
   private URI uri;

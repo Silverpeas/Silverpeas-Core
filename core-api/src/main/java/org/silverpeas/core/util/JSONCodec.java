@@ -27,9 +27,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationIntrospector;
 import org.silverpeas.core.exception.DecodingException;
 import org.silverpeas.core.exception.EncodingException;
@@ -47,11 +47,45 @@ import java.util.function.UnaryOperator;
  * <p>
  * In order to perform the marshalling and the unmarshalling, the fields of the bean must be
  * annotated with the JAXB annotations. All null fields are by default ignored.
+ * <p>
+ * The mapper with which the marshalling and the unmarshalling are done is the one built by
+ * {@link #newObjectMapper()}. It is also the mapper used by the REST API of Silverpeas, so that
+ * a JSON representation of a bean is the same whatever the way it is produced or consumed.
+ * </p>
  * @author mmoquillon
  */
 public class JSONCodec {
 
+  private static final ObjectMapper MAPPER = newObjectMapper();
+
   private JSONCodec() {
+  }
+
+  /**
+   * Creates a new Jackson mapper configured the way Silverpeas expects the JSON representation of
+   * its beans to be read and written:
+   * <ul>
+   *   <li>the beans are introspected through both the Jackson and the Jakarta XML Binding
+   *   (JAXB) annotations, the former taking precedence over the latter;</li>
+   *   <li>the null properties of a bean are omitted from its JSON representation;</li>
+   *   <li>the properties of a JSON representation that are unknown to the bean are ignored. So,
+   *   a client can send back a JSON representation it got from Silverpeas, even if it carries
+   *   read-only properties, in order to modify some of the bean's attributes;</li>
+   *   <li>the Jackson modules available in the classpath (support of the {@code java.time} types,
+   *   for example) are registered.</li>
+   * </ul>
+   * @return a new configured {@link ObjectMapper} instance. The returned mapper is thread-safe as
+   * long as its configuration isn't modified afterward.
+   */
+  public static ObjectMapper newObjectMapper() {
+    ObjectMapper mapper = new ObjectMapper().findAndRegisterModules();
+    AnnotationIntrospector introspector = AnnotationIntrospector.pair(
+        new JacksonAnnotationIntrospector(),
+        new JakartaXmlBindAnnotationIntrospector(mapper.getTypeFactory()));
+    mapper.setAnnotationIntrospector(introspector);
+    mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    return mapper;
   }
 
   /**
@@ -157,13 +191,7 @@ public class JSONCodec {
   }
 
   private static ObjectMapper getObjectMapper() {
-    ObjectMapper mapper = new ObjectMapper();
-    AnnotationIntrospector introspector = new JakartaXmlBindAnnotationIntrospector(
-        TypeFactory.defaultInstance());
-    mapper.setAnnotationIntrospector(introspector);
-    mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    return mapper;
+    return MAPPER;
   }
 
   public static class JSONObject {
