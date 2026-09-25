@@ -949,12 +949,18 @@ public class NodeDAO extends AbstractDAO {
 
   @SuppressWarnings("SqlResolve")
   public void sortNodes(Connection con, List<NodePK> nodePKs) throws SQLException {
-    final String query = "UPDATE SB_Node_Node SET orderNumber = ? WHERE nodeId = ? ";
+    // the identifier of a node isn't unique by itself: the root node of every component instance
+    // is numbered 0 for example. So the instance has to be part of the criteria, otherwise sorting
+    // the nodes of an instance would renumber the nodes of the other ones bearing the same
+    // identifiers.
+    final String query =
+        "UPDATE SB_Node_Node SET orderNumber = ? WHERE nodeId = ? AND instanceId = ?";
     try (final PreparedStatement prepStmt = con.prepareStatement(query)) {
       int i = 0;
       for (NodePK nodePK : nodePKs) {
         prepStmt.setInt(1, i);
         prepStmt.setInt(2, Integer.parseInt(nodePK.getId()));
+        prepStmt.setString(3, nodePK.getInstanceId());
         prepStmt.executeUpdate();
         i++;
       }
