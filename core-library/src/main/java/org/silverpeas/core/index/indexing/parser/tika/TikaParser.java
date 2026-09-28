@@ -40,6 +40,7 @@ import java.util.Optional;
 
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
+import static org.apache.tika.metadata.HttpHeaders.*;
 import static org.silverpeas.core.index.indexing.IndexingLogger.indexingLogger;
 
 @Technical
@@ -56,8 +57,11 @@ public class TikaParser implements Parser {
   }
 
   @Override
-  public Context getContext(String path, String encoding) {
+  public Context getContext(String path, String encoding, String mimeType) {
     final org.apache.tika.metadata.Metadata metadata = new org.apache.tika.metadata.Metadata();
+    if (StringUtil.isDefined(mimeType)) {
+      metadata.set(CONTENT_TYPE, mimeType);
+    }
     try {
       // open a reader that can be passed into the parsing context for further treatment(s)
       Reader reader = tika.parse(new File(path), metadata);

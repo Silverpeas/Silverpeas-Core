@@ -290,7 +290,7 @@ public class IndexManager {
     return ofNullable(file.getFormat())
         .map(f -> hasMimetypeToBeIgnored(filePath, f) ? null : f)
         .flatMap(parserManager::getParser)
-        .map(p -> p.getContext(filePath, file.getEncoding()))
+        .map(p -> p.getContext(filePath, file.getEncoding(), file.getFormat()))
         .filter(c -> c.getMetadata().getValue("Content-Type")
             .map(t -> hasMimetypeToBeIgnored(filePath, t))
             .filter(Boolean.TRUE::equals)
