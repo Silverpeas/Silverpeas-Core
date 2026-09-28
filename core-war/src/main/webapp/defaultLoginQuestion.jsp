@@ -97,8 +97,9 @@
 
           <div class="clear"></div>
         </div>
-        <p><label><span><c:out value="${requestScope.userDetail.loginQuestion}"/></span>
-          <input type="password" autocomplete="new-password" name="answer" id="answer"/></label></p>
+        <p><label for="answer"><span><c:out value="${requestScope.userDetail.loginQuestion}"/></span>
+          <input type="password" autocomplete="new-password" name="answer"
+                 id="answer"/></label></p>
 
         <div class="submit">
           <p>
