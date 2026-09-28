@@ -24,6 +24,7 @@
 package org.silverpeas.core.index.indexing.parser.tika;
 
 import org.apache.tika.Tika;
+import org.apache.tika.metadata.HttpHeaders;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.index.indexing.parser.DefaultParser;
@@ -56,8 +57,11 @@ public class TikaParser implements Parser {
   }
 
   @Override
-  public Context getContext(String path, String encoding) {
+  public Context getContext(String path, String encoding, String mimeType) {
     final org.apache.tika.metadata.Metadata metadata = new org.apache.tika.metadata.Metadata();
+    if (StringUtil.isDefined(mimeType)) {
+      metadata.set(HttpHeaders.CONTENT_TYPE, mimeType);
+    }
     try {
       // open a reader that can be passed into the parsing context for further treatment(s)
       Reader reader = tika.parse(new File(path), metadata);
