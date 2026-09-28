@@ -60,5 +60,5 @@ public interface Parser {
    * @return a {@link Context} instance providing a {@link Reader} and {@link Metadata} about the
    * file.
    */
-  Context getContext(String path, String encoding);
+  Context getContext(String path, String encoding, String mimeType);
 }
