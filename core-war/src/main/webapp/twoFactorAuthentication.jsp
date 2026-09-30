@@ -117,29 +117,31 @@
       var useTotpCode = document.getElementById('useTotpCode');
       var introduction = document.getElementById('introduction')
 
-      useRecoveryCode.addEventListener('click', function (event) {
-        event.preventDefault();
-        introduction.style.display = 'none';
-        totpMode.style.display = 'none';
-        recoveryMode.style.display = '';
-        useRecoveryCode.style.display = 'none';
-        useTotpCode.style.display = '';
-        totpCode.removeAttribute('name');
-        recoveryCode.setAttribute('name', 'TwoFactorCode');
-        recoveryCode.focus();
-      });
+      if (useRecoveryCode && useTotpCode) {
+        useRecoveryCode.addEventListener('click', function (event) {
+          event.preventDefault();
+          introduction.style.display = 'none';
+          totpMode.style.display = 'none';
+          recoveryMode.style.display = '';
+          useRecoveryCode.style.display = 'none';
+          useTotpCode.style.display = '';
+          totpCode.removeAttribute('name');
+          recoveryCode.setAttribute('name', 'TwoFactorCode');
+          recoveryCode.focus();
+        });
 
-      useTotpCode.addEventListener('click', function (event) {
-        event.preventDefault();
-        introduction.style.display = '';
-        recoveryMode.style.display = 'none';
-        totpMode.style.display = '';
-        useTotpCode.style.display = 'none';
-        useRecoveryCode.style.display = '';
-        recoveryCode.removeAttribute('name');
-        totpCode.setAttribute('name', 'TwoFactorCode');
-        totpCode.focus();
-      });
+        useTotpCode.addEventListener('click', function (event) {
+          event.preventDefault();
+          introduction.style.display = '';
+          recoveryMode.style.display = 'none';
+          totpMode.style.display = '';
+          useTotpCode.style.display = 'none';
+          useRecoveryCode.style.display = '';
+          recoveryCode.removeAttribute('name');
+          totpCode.setAttribute('name', 'TwoFactorCode');
+          totpCode.focus();
+        });
+      }
     });
   </script>
 </view:sp-body-part>
