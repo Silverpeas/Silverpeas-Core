@@ -276,6 +276,10 @@ public class TwoFactorAuthenticationServiceImpl implements TwoFactorAuthenticati
     @Transactional(Transactional.TxType.REQUIRED)
     public void disable(final int userId) {
         validateUserId(userId);
+        if (AUTHENTICATION_SETTINGS.getBoolean("twoFactorTotpMandatory", false)) {
+            throw new IllegalStateException(
+                    "Two-factor authentication cannot be disabled while it is mandatory");
+        }
         try (Connection connection = openConnection()) {
             recoveryCodeRepository.deleteAll(connection, userId);
             repository.delete(connection, userId);
