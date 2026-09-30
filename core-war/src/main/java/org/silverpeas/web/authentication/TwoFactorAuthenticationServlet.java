@@ -62,7 +62,7 @@ public class TwoFactorAuthenticationServlet extends HttpServlet {
 
     request.setAttribute("twoFactorAuthentication", authentication);
     request.setAttribute("otpAuthUri",
-        totpService.buildOtpAuthUri(authentication.getSecret()));
+        totpService.buildOtpAuthUri(authentication.getSecret(), user.getLogin()));
     request.getRequestDispatcher("/twoFactorAuthenticationSetup.jsp").forward(request, response);
   }
 
@@ -91,7 +91,7 @@ public class TwoFactorAuthenticationServlet extends HttpServlet {
 
     request.setAttribute("twoFactorAuthentication", authentication);
     request.setAttribute("otpAuthUri",
-        totpService.buildOtpAuthUri(authentication.getSecret()));
+        totpService.buildOtpAuthUri(authentication.getSecret(), user.getLogin()));
     request.setAttribute("twoFactorError", true);
     request.getRequestDispatcher("/twoFactorAuthenticationSetup.jsp").forward(request, response);
   }
