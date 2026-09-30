@@ -406,6 +406,63 @@ public class AuthenticationService implements Authentication {
     }
   }
 
+  /**
+   * Indicates whether the user must enroll a TOTP factor before completing authentication.
+   */
+  public boolean isTwoFactorEnrollmentRequired(final String login, final String domainId) {
+    if (!AUTHENTICATION_SETTINGS.getBoolean("twoFactorTotpEnabled", false) ||
+        !AUTHENTICATION_SETTINGS.getBoolean("twoFactorTotpMandatory", false)) {
+      return false;
+    }
+    try {
+      final AuthenticationCredential credential =
+          AuthenticationCredential.newWithAsLogin(login).withAsDomainId(domainId);
+      final int userId = getUserId(credential);
+      return twoFactorAuthenticationService.getAuthentication(userId)
+          .map(authentication -> !authentication.isEnabled())
+          .orElse(true);
+    } catch (AuthenticationException e) {
+      SilverLogger.getLogger(this).warn(e);
+      return false;
+    }
+  }
+
+  /**
+   * Starts a TOTP enrollment for a user whose password has already been authenticated.
+   */
+  public org.silverpeas.core.security.authentication.twofactor.model.TwoFactorAuthentication
+      startTwoFactorEnrollment(final String login, final String domainId)
+      throws AuthenticationException {
+    final AuthenticationCredential credential =
+        AuthenticationCredential.newWithAsLogin(login).withAsDomainId(domainId);
+    final int userId = getUserId(credential);
+    return twoFactorAuthenticationService.startEnrollment(userId);
+  }
+
+  /**
+   * Confirms a mandatory TOTP enrollment and creates the final authentication token.
+   */
+  public AuthenticationResponse authenticateTwoFactorEnrollment(
+      final String login, final String domainId, final String code) {
+    try {
+      if (!AUTHENTICATION_SETTINGS.getBoolean("twoFactorTotpEnabled", false) ||
+          !AUTHENTICATION_SETTINGS.getBoolean("twoFactorTotpMandatory", false)) {
+        return AuthenticationResponse.error(Status.TWO_FACTOR_REQUIRED);
+      }
+      final AuthenticationCredential credential =
+          AuthenticationCredential.newWithAsLogin(login).withAsDomainId(domainId);
+      final int userId = getUserId(credential);
+      if (!twoFactorAuthenticationService.confirmEnrollment(userId, code)) {
+        return AuthenticationResponse.error(Status.TWO_FACTOR_REQUIRED);
+      }
+      AuthenticationUserVerifierFactory.getUserCanLoginVerifier(credential).verify();
+      return AuthenticationResponse.succeed(getAuthToken(credential));
+    } catch (AuthenticationException e) {
+      SilverLogger.getLogger(this).warn(e);
+      return AuthenticationResponse.error(Status.TWO_FACTOR_REQUIRED);
+    }
+  }
+
   private int getUserId(final Connection connection,
       final AuthenticationCredential credential) throws AuthenticationException {
     final String domainId = credential.getDomainId();
