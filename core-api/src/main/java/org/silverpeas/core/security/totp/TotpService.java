@@ -87,9 +87,17 @@ public interface TotpService {
     String buildOtpAuthUri(String secret, String issuer, String account);
 
     /**
+     * Builds an otpauth URI using the configured issuer and the given account.
+     *
+     * @param secret Base32 encoded secret.
+     * @param account account displayed by the authenticator application.
+     * @return an otpauth URI.
+     */
+    String buildOtpAuthUri(String secret, String account);
+
+    /**
      * Builds an otpauth URI using the configured Silverpeas application name
-     * as issuer. The account is intentionally omitted from the URI label so
-     * authenticator applications display only the application name.
+     * as issuer without an account label.
      *
      * @param secret Base32 encoded secret.
      * @return an otpauth URI.
