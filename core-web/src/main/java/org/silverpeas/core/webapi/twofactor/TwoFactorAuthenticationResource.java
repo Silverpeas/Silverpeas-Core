@@ -61,7 +61,7 @@ public class TwoFactorAuthenticationResource extends RESTWebService {
     if (!authentication.isPending()) {
       return Response.status(Response.Status.NOT_FOUND).build();
     }
-    final String uri = totpService.buildOtpAuthUri(authentication.getSecret());
+    final String uri = totpService.buildOtpAuthUri(authentication.getSecret(), getUser().getLogin());
     final byte[] png = qrCodeGenerator.generate(uri, 256);
     return Response.ok(png, "image/png")
         .header("Cache-Control", "no-store, no-cache, must-revalidate")
