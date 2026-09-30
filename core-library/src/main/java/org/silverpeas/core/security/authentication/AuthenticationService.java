@@ -291,6 +291,20 @@ public class AuthenticationService implements Authentication {
       // Verify that the user can log in
       AuthenticationUserVerifierFactory.getUserCanLoginVerifier(credential).verify();
 
+      // Do not create the Silverpeas authentication token before the second factor
+      // has been validated, including for remotely authenticated users.
+      if (AUTHENTICATION_SETTINGS.getBoolean("twoFactorTotpEnabled", false)) {
+        final int userId = getUserId(credential);
+        final boolean configured = twoFactorAuthenticationService.getAuthentication(userId)
+            .map(authentication -> authentication.isEnabled())
+            .orElse(false);
+        final boolean mandatory = AUTHENTICATION_SETTINGS.getBoolean(
+            "twoFactorTotpMandatory", false);
+        if (configured || mandatory) {
+          throw new AuthenticationTwoFactorRequiredException();
+        }
+      }
+
       // Generate a random key and store it in database
       try {
         return getAuthToken(credential);
