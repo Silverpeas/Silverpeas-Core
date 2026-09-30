@@ -168,11 +168,13 @@
             </div>
           </div>
         </c:if>
-        <fmt:message key="myProfile.twoFactor.disable" var="disableTwoFactorLabel"/>
-        <button type="submit" class="twoFA_button"
-                formaction="<%=MyProfileRoutes.DisableTwoFactor %>">
-          <c:out value="${disableTwoFactorLabel}"/>
-        </button>
+        <c:if test="${not requestScope['twoFactorMandatory']}">
+          <fmt:message key="myProfile.twoFactor.disable" var="disableTwoFactorLabel"/>
+          <button type="submit" class="twoFA_button"
+                  formaction="<%=MyProfileRoutes.DisableTwoFactor %>">
+            <c:out value="${disableTwoFactorLabel}"/>
+          </button>
+        </c:if>
       </c:when>
       <c:when test="${requestScope['twoFactorPending']}">
         <p class="twoFA_infos"><strong><fmt:message key="myProfile.twoFactor.secret"/></strong></p>
@@ -199,11 +201,13 @@
         </button>
       </c:when>
       <c:otherwise>
-        <fmt:message key="myProfile.twoFactor.enable" var="enableTwoFactorLabel"/>
-        <button type="submit" class="twoFA_button"
-                formaction="<%=MyProfileRoutes.StartTwoFactor %>">
-          <c:out value="${enableTwoFactorLabel}"/>
-        </button>
+        <c:if test="${not requestScope['twoFactorMandatory']}">
+          <fmt:message key="myProfile.twoFactor.enable" var="enableTwoFactorLabel"/>
+          <button type="submit" class="twoFA_button"
+                  formaction="<%=MyProfileRoutes.StartTwoFactor %>">
+            <c:out value="${enableTwoFactorLabel}"/>
+          </button>
+        </c:if>
       </c:otherwise>
     </c:choose>
   </c:if>
