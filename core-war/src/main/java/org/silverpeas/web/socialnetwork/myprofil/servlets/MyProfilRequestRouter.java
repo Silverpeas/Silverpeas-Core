@@ -323,10 +323,14 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
       request.setAttribute("MenuDisplay", false);
     }
     request.setAttribute("UserSelfDeletionAccountEnabled", isUserSelfDeletionAccountEnabled());
-    final boolean twoFactorAvailable = ResourceLocator.getSettingBundle(
-        "org.silverpeas.authentication.settings.authenticationSettings")
-        .getBoolean("twoFactorTotpEnabled", false);
+    final SettingBundle authenticationSettings = ResourceLocator.getSettingBundle(
+        "org.silverpeas.authentication.settings.authenticationSettings");
+    final boolean twoFactorAvailable =
+        authenticationSettings.getBoolean("twoFactorTotpEnabled", false);
+    final boolean twoFactorMandatory =
+        authenticationSettings.getBoolean("twoFactorTotpMandatory", false);
     request.setAttribute("twoFactorAvailable", twoFactorAvailable);
+    request.setAttribute("twoFactorMandatory", twoFactorMandatory);
     request.setAttribute("twoFactorAuthentication", null);
     request.setAttribute("twoFactorEnabled", false);
     request.setAttribute("twoFactorPending", false);
@@ -389,6 +393,12 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
     List<String> recoveryCodes = ServiceProvider.getService(TwoFactorAuthenticationService.class)
         .generateRecoveryCodes(Integer.parseInt(sc.getUserId()));
     request.setAttribute("twoFactorRecoveryCodes", recoveryCodes);
+  }
+
+  private boolean isTwoFactorMandatory() {
+    return ResourceLocator.getSettingBundle(
+        "org.silverpeas.authentication.settings.authenticationSettings")
+        .getBoolean("twoFactorTotpMandatory", false);
   }
 
   private boolean isTwoFactorAvailable() {
