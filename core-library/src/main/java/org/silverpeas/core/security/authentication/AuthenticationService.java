@@ -238,9 +238,12 @@ public class AuthenticationService implements Authentication {
       // token before the second factor has been validated.
       if (AUTHENTICATION_SETTINGS.getBoolean("twoFactorTotpEnabled", false)) {
         final int userId = getUserId(connection, credential);
-        if (twoFactorAuthenticationService.getAuthentication(userId)
+        final boolean configured = twoFactorAuthenticationService.getAuthentication(userId)
             .map(authentication -> authentication.isEnabled())
-            .orElse(false)) {
+            .orElse(false);
+        final boolean mandatory = AUTHENTICATION_SETTINGS.getBoolean(
+            "twoFactorTotpMandatory", false);
+        if (configured || mandatory) {
           throw new AuthenticationTwoFactorRequiredException();
         }
       }
