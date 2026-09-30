@@ -54,7 +54,21 @@
             <div class="clear"></div>
           </div>
           <div id="introduction" class="two-factor-introduction">
-            <p><fmt:message key="authentication.logon.twoFactor.instructions"/></p>
+            <c:choose>
+              <c:when test="${requestScope.twoFactorEnrollment}">
+                <p><fmt:message key="authentication.logon.twoFactor.enrollmentInstructions"/></p>
+                <p class="two-factor-qr-code">
+                  <img src="data:image/png;base64,${requestScope.twoFactorQrCode}"
+                       width="256" height="256" alt="QR Code"/>
+                </p>
+                <p><fmt:message key="authentication.logon.twoFactor.secret"/>:
+                  <code><c:out value="${requestScope.twoFactorSecret}"/></code>
+                </p>
+              </c:when>
+              <c:otherwise>
+                <p><fmt:message key="authentication.logon.twoFactor.instructions"/></p>
+              </c:otherwise>
+            </c:choose>
           </div>
           <c:if test="${requestScope.twoFactorError}">
             <p class="error"><fmt:message key="authentication.logon.twoFactor.invalidCode"/></p>
@@ -83,10 +97,12 @@
               </a>
             </p>
           </div>
-          <p class="two-factor-switch">
-            <a href="#" id="useRecoveryCode"><fmt:message key="authentication.logon.twoFactor.useRecoveryCode"/></a>
-            <a href="#" id="useTotpCode" style="display:none"><fmt:message key="authentication.logon.twoFactor.useTotpCode"/></a>
-          </p>
+          <c:if test="${not requestScope.twoFactorEnrollment}">
+            <p class="two-factor-switch">
+              <a href="#" id="useRecoveryCode"><fmt:message key="authentication.logon.twoFactor.useRecoveryCode"/></a>
+              <a href="#" id="useTotpCode" style="display:none"><fmt:message key="authentication.logon.twoFactor.useTotpCode"/></a>
+            </p>
+          </c:if>
         </div>
       </div>
     </div>
