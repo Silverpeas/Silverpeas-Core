@@ -150,6 +150,11 @@ public class TotpServiceImpl implements TotpService {
     }
 
     @Override
+    public String buildOtpAuthUri(final String secret, final String account) {
+        return buildOtpAuthUri(secret, issuer, account);
+    }
+
+    @Override
     public String buildOtpAuthUri(final String secret) {
         if (secret == null || secret.isBlank()) {
             throw new IllegalArgumentException("TOTP secret must not be empty");
