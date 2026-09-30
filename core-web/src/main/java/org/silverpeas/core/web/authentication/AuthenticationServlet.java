@@ -43,6 +43,10 @@ import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasHttpServlet;
+import org.silverpeas.core.webapi.twofactor.QrCodeGenerator;
+import org.silverpeas.core.security.authentication.twofactor.model.TwoFactorAuthentication;
+import org.silverpeas.core.security.totp.TotpService;
+import java.util.Base64;
 import org.silverpeas.kernel.util.StringUtil;
 
 import jakarta.inject.Inject;
@@ -79,6 +83,9 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
   private static final String TWO_FACTOR_DOMAIN = "Silverpeas_TwoFactor_Domain";
   private static final String TWO_FACTOR_EXPIRES_AT = "Silverpeas_TwoFactor_ExpiresAt";
   private static final String TWO_FACTOR_ATTEMPTS = "Silverpeas_TwoFactor_Attempts";
+  private static final String TWO_FACTOR_ENROLLMENT = "Silverpeas_TwoFactor_Enrollment";
+  private static final String TWO_FACTOR_OTP_URI = "Silverpeas_TwoFactor_OtpUri";
+  private static final String TWO_FACTOR_QR_CODE = "Silverpeas_TwoFactor_QrCode";
   private static final SettingBundle AUTHENTICATION_SETTINGS = ResourceLocator.getSettingBundle(
       "org.silverpeas.authentication.settings.authenticationSettings");
   private static final String TWO_FACTOR_CODE_PARAMETER = "TwoFactorCode";
@@ -92,6 +99,10 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
   private CredentialEncryption credentialEncryption;
   @Inject
   private MandatoryQuestionChecker mandatoryQuestionChecker;
+  @Inject
+  private TotpService totpService;
+  @Inject
+  private QrCodeGenerator qrCodeGenerator;
 
   private final transient SilverLogger logger = SilverLogger.getLogger(this);
 
@@ -185,6 +196,8 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
     }
 
     final HttpSession session = request.getSession(true);
+    final boolean enrollmentRequired = authService.isTwoFactorEnrollmentRequired(
+        authenticationParameters.getLogin(), authenticationParameters.getDomainId());
     session.setAttribute(TWO_FACTOR_LOGIN, authenticationParameters.getLogin());
     session.setAttribute(TWO_FACTOR_DOMAIN, authenticationParameters.getDomainId());
     final int challengeLifetime = AUTHENTICATION_SETTINGS.getInteger(
@@ -192,6 +205,20 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
     session.setAttribute(TWO_FACTOR_EXPIRES_AT,
         System.currentTimeMillis() + challengeLifetime * 1000L);
     session.setAttribute(TWO_FACTOR_ATTEMPTS, 0);
+    session.setAttribute(TWO_FACTOR_ENROLLMENT, enrollmentRequired);
+    if (enrollmentRequired) {
+      final TwoFactorAuthentication authentication = authService.startTwoFactorEnrollment(
+          authenticationParameters.getLogin(), authenticationParameters.getDomainId());
+      final String otpUri = totpService.buildOtpAuthUri(
+          authentication.getSecret(),
+          AUTHENTICATION_SETTINGS.getString("twoFactorTotpIssuer", "Silverpeas"),
+          authenticationParameters.getLogin());
+      request.setAttribute("twoFactorEnrollment", true);
+      request.setAttribute("twoFactorOtpAuthUri", otpUri);
+      request.setAttribute("twoFactorSecret", authentication.getSecret());
+      request.setAttribute("twoFactorQrCode",
+          Base64.getEncoder().encodeToString(qrCodeGenerator.generate(otpUri, 256)));
+    }
     forward(request, response, TWO_FACTOR_PAGE);
   }
 
@@ -214,8 +241,12 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
       return;
     }
 
-    final AuthenticationResponse result = authService.authenticateTwoFactor(
-        login, domainId, request.getParameter(TWO_FACTOR_CODE_PARAMETER));
+    final boolean enrollment = Boolean.TRUE.equals(session.getAttribute(TWO_FACTOR_ENROLLMENT));
+    final AuthenticationResponse result = enrollment
+        ? authService.authenticateTwoFactorEnrollment(
+            login, domainId, request.getParameter(TWO_FACTOR_CODE_PARAMETER))
+        : authService.authenticateTwoFactor(
+            login, domainId, request.getParameter(TWO_FACTOR_CODE_PARAMETER));
     if (!result.getStatus().succeeded()) {
       final int attempts = ((Integer) session.getAttribute(TWO_FACTOR_ATTEMPTS)) + 1;
       final int maxAttempts = AUTHENTICATION_SETTINGS.getInteger(
@@ -256,6 +287,9 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
     session.removeAttribute(TWO_FACTOR_DOMAIN);
     session.removeAttribute(TWO_FACTOR_EXPIRES_AT);
     session.removeAttribute(TWO_FACTOR_ATTEMPTS);
+    session.removeAttribute(TWO_FACTOR_ENROLLMENT);
+    session.removeAttribute(TWO_FACTOR_OTP_URI);
+    session.removeAttribute(TWO_FACTOR_QR_CODE);
   }
 
   private void redirectToLoginForTwoFactorFailure(final HttpServletRequest request,
