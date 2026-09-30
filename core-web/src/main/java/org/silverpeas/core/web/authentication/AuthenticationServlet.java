@@ -207,17 +207,24 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
     session.setAttribute(TWO_FACTOR_ATTEMPTS, 0);
     session.setAttribute(TWO_FACTOR_ENROLLMENT, enrollmentRequired);
     if (enrollmentRequired) {
-      final TwoFactorAuthentication authentication = authService.startTwoFactorEnrollment(
-          authenticationParameters.getLogin(), authenticationParameters.getDomainId());
-      final String otpUri = totpService.buildOtpAuthUri(
-          authentication.getSecret(),
-          AUTHENTICATION_SETTINGS.getString("twoFactorTotpIssuer", "Silverpeas"),
-          authenticationParameters.getLogin());
-      request.setAttribute("twoFactorEnrollment", true);
-      request.setAttribute("twoFactorOtpAuthUri", otpUri);
-      request.setAttribute("twoFactorSecret", authentication.getSecret());
-      request.setAttribute("twoFactorQrCode",
-          Base64.getEncoder().encodeToString(qrCodeGenerator.generate(otpUri, 256)));
+      try {
+        final TwoFactorAuthentication authentication = authService.startTwoFactorEnrollment(
+            authenticationParameters.getLogin(), authenticationParameters.getDomainId());
+        final String otpUri = totpService.buildOtpAuthUri(
+            authentication.getSecret(),
+            AUTHENTICATION_SETTINGS.getString("twoFactorTotpIssuer", "Silverpeas"),
+            authenticationParameters.getLogin());
+        request.setAttribute("twoFactorEnrollment", true);
+        request.setAttribute("twoFactorOtpAuthUri", otpUri);
+        request.setAttribute("twoFactorSecret", authentication.getSecret());
+        request.setAttribute("twoFactorQrCode",
+            Base64.getEncoder().encodeToString(qrCodeGenerator.generate(otpUri, 256)));
+      } catch (AuthenticationException e) {
+        logger.error(e.getMessage(), e);
+        clearTwoFactorChallenge(session);
+        redirectToLoginForTwoFactorFailure(request, response);
+        return;
+      }
     }
     forward(request, response, TWO_FACTOR_PAGE);
   }
