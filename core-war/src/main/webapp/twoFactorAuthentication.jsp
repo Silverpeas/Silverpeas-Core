@@ -57,7 +57,7 @@
             <c:choose>
               <c:when test="${requestScope.twoFactorEnrollment}">
                 <p><fmt:message key="authentication.logon.twoFactor.enrollmentInstructions"/></p>
-                <p class="two-factor-qr-code">
+                <p class="two-factor-qr-code" style="text-align: center;">
                   <img src="data:image/png;base64,${requestScope.twoFactorQrCode}"
                        width="256" height="256" alt="QR Code"/>
                 </p>
