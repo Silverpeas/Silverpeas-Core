@@ -274,6 +274,38 @@ public class TwoFactorAuthenticationServiceImpl implements TwoFactorAuthenticati
 
     @Override
     @Transactional(Transactional.TxType.REQUIRED)
+    public void resetEnrollment(final int userId) {
+        validateUserId(userId);
+        try (Connection connection = openConnection()) {
+            final Optional<TwoFactorAuthentication> authentication =
+                    repository.get(connection, userId);
+            if (authentication.isEmpty() || !authentication.get().isEnabled()) {
+                throw new IllegalStateException(
+                        "Two-factor authentication is not enabled for user " + userId);
+            }
+
+            recoveryCodeRepository.deleteAll(connection, userId);
+            final Instant now = Instant.now();
+            final TwoFactorAuthentication resetAuthentication =
+                    TwoFactorAuthentication.builder(userId)
+                            .secret(totpService.generateSecret())
+                            .status(TwoFactorAuthentication.Status.PENDING)
+                            .createdAt(authentication.get().getCreatedAt())
+                            .updatedAt(now)
+                            .lastUsedAt(null)
+                            .failedAttempts(0)
+                            .lockedUntil(null)
+                            .build();
+            repository.save(connection, resetAuthentication);
+        } catch (SQLException e) {
+            throw new IllegalStateException(
+                    "Unable to reset two-factor authentication enrollment for user " + userId,
+                    e);
+        }
+    }
+
+    @Override
+    @Transactional(Transactional.TxType.REQUIRED)
     public void disable(final int userId) {
         validateUserId(userId);
         if (AUTHENTICATION_SETTINGS.getBoolean("twoFactorTotpMandatory", false)) {
