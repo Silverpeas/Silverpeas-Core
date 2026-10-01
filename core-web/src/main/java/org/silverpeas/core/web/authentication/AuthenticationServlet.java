@@ -287,7 +287,7 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
 
     clearTwoFactorChallenge(session);
 
-    if (StringUtil.isDefined(request.getParameter(TRUST_DEVICE_PARAMETER))) {
+    if (isTrustedDeviceEnabled() && StringUtil.isDefined(request.getParameter(TRUST_DEVICE_PARAMETER))) {
       try {
         final String trustedDeviceToken = authService.createTrustedDevice(
             login, domainId, request.getHeader("User-Agent"));
@@ -588,7 +588,7 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
     return null;
   }
 
-  private void writeTrustedDeviceCookie(final HttpServletResponse response,
+  private boolean isTrustedDeviceEnabled() {\n    return AUTHENTICATION_SETTINGS.getBoolean("twoFactorTrustedDeviceEnabled", false);\n  }\n\n  private void writeTrustedDeviceCookie(final HttpServletResponse response,
       final String token, final boolean secure) {
     if (!StringUtil.isDefined(token)) {
       return;
