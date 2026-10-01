@@ -647,6 +647,9 @@ public class AuthenticationService implements Authentication {
     UserDetail user = UserDetail.getById(
         adminController.getUserIdByLoginAndDomain(credential.getLogin(), credential.getDomainId()));
 
+    // A password change invalidates previously trusted browsers.
+    trustedDeviceService.revokeAll(Integer.parseInt(user.getId()));
+
     // Notify that the user has changed his password.
     AuthenticationUserVerifierFactory.getUserMustChangePasswordVerifier(user)
         .notifyPasswordChange();
