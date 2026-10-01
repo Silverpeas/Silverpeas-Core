@@ -98,5 +98,21 @@ public interface TwoFactorAuthenticationService {
      *
      * @param userId the Silverpeas user identifier.
      */
+    /**
+     * Resets the two-factor authentication enrollment of an enabled user.
+     *
+     * <p>The current recovery codes are invalidated and a new authenticator
+     * configuration is created in {@link TwoFactorAuthentication.Status#PENDING}
+     * state.</p>
+     *
+     * @param userId the Silverpeas user identifier.
+     */
+    void resetEnrollment(int userId);
+
+    /**
+     * Disables two-factor authentication for a user.
+     *
+     * @param userId the Silverpeas user identifier.
+     */
     void disable(int userId);
 }
