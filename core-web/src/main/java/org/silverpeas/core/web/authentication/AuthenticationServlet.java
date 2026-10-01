@@ -588,7 +588,11 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
     return null;
   }
 
-  private boolean isTrustedDeviceEnabled() {\n    return AUTHENTICATION_SETTINGS.getBoolean("twoFactorTrustedDeviceEnabled", false);\n  }\n\n  private void writeTrustedDeviceCookie(final HttpServletResponse response,
+  private boolean isTrustedDeviceEnabled() {
+    return AUTHENTICATION_SETTINGS.getBoolean("twoFactorTrustedDeviceEnabled", false);
+  }
+
+  private void writeTrustedDeviceCookie(final HttpServletResponse response,
       final String token, final boolean secure) {
     if (!StringUtil.isDefined(token)) {
       return;
