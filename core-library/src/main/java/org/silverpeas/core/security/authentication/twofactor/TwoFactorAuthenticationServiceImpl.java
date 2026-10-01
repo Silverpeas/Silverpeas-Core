@@ -65,6 +65,9 @@ public class TwoFactorAuthenticationServiceImpl implements TwoFactorAuthenticati
     private RecoveryCodeRepository recoveryCodeRepository;
 
     @Inject
+    private TrustedDeviceService trustedDeviceService;
+
+    @Inject
     private TotpService totpService;
 
     protected TwoFactorAuthenticationServiceImpl() {
@@ -285,6 +288,7 @@ public class TwoFactorAuthenticationServiceImpl implements TwoFactorAuthenticati
             }
 
             recoveryCodeRepository.deleteAll(connection, userId);
+            trustedDeviceService.revokeAll(userId);
             final Instant now = Instant.now();
             final TwoFactorAuthentication resetAuthentication =
                     TwoFactorAuthentication.builder(userId)
@@ -314,6 +318,7 @@ public class TwoFactorAuthenticationServiceImpl implements TwoFactorAuthenticati
         }
         try (Connection connection = openConnection()) {
             recoveryCodeRepository.deleteAll(connection, userId);
+            trustedDeviceService.revokeAll(userId);
             repository.delete(connection, userId);
         } catch (SQLException e) {
             throw new IllegalStateException(
