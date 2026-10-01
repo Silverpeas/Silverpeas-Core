@@ -89,6 +89,14 @@
                      maxlength="12" pattern="[A-Za-z0-9-]{10,12}" placeholder="xxxx-xxxx-xx"/>
             </label>
           </p>
+          <c:if test="${not requestScope.twoFactorEnrollment}">
+            <p class="two-factor-trust-device">
+              <label>
+                <input type="checkbox" name="TrustDevice" value="true"/>
+                <fmt:message key="authentication.logon.twoFactor.trustDevice"/>
+              </label>
+            </p>
+          </c:if>
           <div class="submit">
             <p>
               <input type="submit" style="width:0; height:0; border:0; padding:0"/>
