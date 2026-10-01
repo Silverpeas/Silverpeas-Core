@@ -46,7 +46,12 @@ public class AuthenticationResponse {
    * @return the {@link AuthenticationResponse} instance for a successful authentication.
    */
   public static AuthenticationResponse succeed(final String authToken) {
-    return new AuthenticationResponse(authToken);
+    return new AuthenticationResponse(authToken, null);
+  }
+
+  public static AuthenticationResponse succeed(final String authToken,
+      final String trustedDeviceToken) {
+    return new AuthenticationResponse(authToken, trustedDeviceToken);
   }
 
   /**
@@ -63,15 +68,18 @@ public class AuthenticationResponse {
 
   private final Status status;
   private final String token;
+  private final String trustedDeviceToken;
 
-  AuthenticationResponse(final String token) {
+  AuthenticationResponse(final String token, final String trustedDeviceToken) {
     this.status = Status.SUCCESS;
     this.token = token;
+    this.trustedDeviceToken = trustedDeviceToken;
   }
 
   AuthenticationResponse(final Status error) {
     this.status = error;
     this.token = StringUtil.EMPTY;
+    this.trustedDeviceToken = null;
   }
 
   /**
@@ -90,6 +98,10 @@ public class AuthenticationResponse {
    */
   public String getToken() {
     return token;
+  }
+
+  public String getTrustedDeviceToken() {
+    return trustedDeviceToken;
   }
 
   /**
