@@ -95,3 +95,5 @@ ALTER TABLE ST_User_2FA
 
 ALTER TABLE ST_User_2FA_Recovery ADD CONSTRAINT FK_User_2FA_Recovery_User FOREIGN KEY (userId) REFERENCES ST_User(id);
 ALTER TABLE ST_User_2FA_Trusted_Device ADD CONSTRAINT FK_User_2FA_Trusted_Device_User FOREIGN KEY (userId) REFERENCES ST_User(id);
+
+ALTER TABLE ST_User_2FA_Trusted_Device ADD CONSTRAINT FK_User_2FA_Trusted_Device_User FOREIGN KEY (userId) REFERENCES ST_User(id);
