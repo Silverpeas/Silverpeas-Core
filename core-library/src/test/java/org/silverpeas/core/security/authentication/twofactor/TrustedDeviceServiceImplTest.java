@@ -74,7 +74,9 @@ class TrustedDeviceServiceImplTest {
     assertNotNull(newToken);
     assertFalse(newToken.equals("old-token"));
     verify(statement).setString(1, sha256(newToken));
-    verify(statement).setString(6, "Firefox");
+    verify(statement).setString(4, "Firefox");
+    verify(statement).setString(6, sha256("old-token"));
+    verify(statement).executeUpdate();
   }
 
   @Test
