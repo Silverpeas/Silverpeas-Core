@@ -162,7 +162,8 @@
       && twoFactorAuthenticationEnabled) {
     operationPane.addOperation(resource.getIcon("JDP.userUpdate"),
         resource.getString("JDP.userTwoFactorReset"),
-        "javascript:if(confirm('" + resource.getString("JDP.userTwoFactorResetConfirm")
+        "javascript:if(confirm('" + org.silverpeas.core.util.WebEncodeHelper.javaStringToJsString(
+            resource.getString("JDP.userTwoFactorResetConfirm"))
             + "')) { window.location='userResetTwoFactor?Iduser=" + thisUserId
             + "&X-ATKN=" + request.getAttribute("X-ATKN") + "'; }");
   }
