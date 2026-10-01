@@ -222,6 +222,8 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
         System.currentTimeMillis() + challengeLifetime * 1000L);
     session.setAttribute(TWO_FACTOR_ATTEMPTS, 0);
     session.setAttribute(TWO_FACTOR_ENROLLMENT, enrollmentRequired);
+    request.setAttribute("twoFactorTrustedDeviceEnabled",
+        AUTHENTICATION_SETTINGS.getBoolean("twoFactorTrustedDeviceEnabled", false));
     if (enrollmentRequired) {
       try {
         final TwoFactorAuthentication authentication = authService.startTwoFactorEnrollment(
