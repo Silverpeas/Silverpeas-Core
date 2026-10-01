@@ -89,6 +89,8 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
   private static final SettingBundle AUTHENTICATION_SETTINGS = ResourceLocator.getSettingBundle(
       "org.silverpeas.authentication.settings.authenticationSettings");
   private static final String TWO_FACTOR_CODE_PARAMETER = "TwoFactorCode";
+  private static final String TRUST_DEVICE_PARAMETER = "TrustDevice";
+  private static final String TRUSTED_DEVICE_COOKIE = "Silverpeas_TrustedDevice";
   private static final String TWO_FACTOR_PAGE = "/twoFactorAuthentication.jsp";
 
   @Inject
@@ -166,6 +168,20 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
       userCanTryAgainToLoginVerifier.clearSession(request);
 
       if (result != null && result.getStatus() == Status.TWO_FACTOR_REQUIRED) {
+        final Cookie trustedDeviceCookie = getCookie(servletRequest, TRUSTED_DEVICE_COOKIE);
+        if (trustedDeviceCookie != null) {
+          result = authService.authenticateTrustedDevice(
+              authenticationParameters.getLogin(), authenticationParameters.getDomainId(),
+              trustedDeviceCookie.getValue(), servletRequest.getHeader("User-Agent"));
+          if (result.getStatus().succeeded()) {
+            writeTrustedDeviceCookie(response, result.getTrustedDeviceToken(),
+                authenticationParameters.isSecuredAccess());
+            openNewSession(result.getToken(), request, response, authenticationParameters,
+                userCanTryAgainToLoginVerifier);
+            return;
+          }
+          deleteTrustedDeviceCookie(response, authenticationParameters.isSecuredAccess());
+        }
         startTwoFactorChallenge(request, response, authenticationParameters);
       } else if (result == null || result.getStatus().isInError()) {
         processError(result, request, response, authenticationParameters,
@@ -270,6 +286,17 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
     }
 
     clearTwoFactorChallenge(session);
+
+    if (StringUtil.isDefined(request.getParameter(TRUST_DEVICE_PARAMETER))) {
+      try {
+        final String trustedDeviceToken = authService.createTrustedDevice(
+            login, domainId, request.getHeader("User-Agent"));
+        writeTrustedDeviceCookie(response, trustedDeviceToken,
+            request.isSecure());
+      } catch (AuthenticationException e) {
+        logger.warn("Unable to create trusted device after successful two-factor authentication", e);
+      }
+    }
 
     final AuthenticationParameters authenticationParameters =
         new AuthenticationParameters(request);
@@ -546,6 +573,37 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws
       ServletException, IOException {
     doPost(request, response);
+  }
+
+
+  private Cookie getCookie(final HttpServletRequest request, final String name) {
+    if (request.getCookies() == null) {
+      return null;
+    }
+    for (Cookie cookie : request.getCookies()) {
+      if (name.equals(cookie.getName())) {
+        return cookie;
+      }
+    }
+    return null;
+  }
+
+  private void writeTrustedDeviceCookie(final HttpServletResponse response,
+      final String token, final boolean secure) {
+    if (!StringUtil.isDefined(token)) {
+      return;
+    }
+    final String cookieValue = URLEncoder.encode(token, Charsets.UTF_8);
+    response.addHeader("Set-Cookie", TRUSTED_DEVICE_COOKIE + "=" + cookieValue
+        + "; Max-Age=" + AUTHENTICATION_SETTINGS.getInteger(
+            "twoFactorTrustedDeviceLifetime", 2592000)
+        + "; Path=/; HttpOnly; SameSite=Lax" + (secure ? "; Secure" : ""));
+  }
+
+  private void deleteTrustedDeviceCookie(final HttpServletResponse response,
+      final boolean secure) {
+    response.addHeader("Set-Cookie", TRUSTED_DEVICE_COOKIE
+        + "=; Max-Age=0; Path=/; HttpOnly; SameSite=Lax" + (secure ? "; Secure" : ""));
   }
 
   private void writeCookie(HttpServletResponse response, String name, String value, int duration,
