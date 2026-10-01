@@ -89,7 +89,7 @@
                      maxlength="12" pattern="[A-Za-z0-9-]{10,12}" placeholder="xxxx-xxxx-xx"/>
             </label>
           </p>
-          <c:if test="${not requestScope.twoFactorEnrollment}">
+          <c:if test="${not requestScope.twoFactorEnrollment and requestScope.twoFactorTrustedDeviceEnabled}">
             <p class="two-factor-trust-device">
               <label>
                 <input type="checkbox" name="TrustDevice" value="true"/>
