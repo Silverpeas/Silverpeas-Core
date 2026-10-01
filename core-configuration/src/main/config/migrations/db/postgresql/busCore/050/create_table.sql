@@ -313,13 +313,4 @@ CREATE TABLE ST_User_2FA_Trusted_Device
 );
 
 
-CREATE TABLE ST_User_2FA_Trusted_Device
-(
-    id BIGSERIAL PRIMARY KEY,
-    userId INT NOT NULL,
-    tokenHash VARCHAR(64) NOT NULL,
-    createdAt TIMESTAMP NOT NULL,
-    expiresAt TIMESTAMP NOT NULL,
-    lastUsedAt TIMESTAMP,
-    userAgent VARCHAR(1024)
-);
+
