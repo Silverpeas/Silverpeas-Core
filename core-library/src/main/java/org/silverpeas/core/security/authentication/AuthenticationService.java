@@ -425,6 +425,56 @@ public class AuthenticationService implements Authentication {
   }
 
   /**
+   * Completes a pending authentication with a trusted device.
+   *
+   * @param login the user login.
+   * @param domainId the user domain identifier.
+   * @param trustedDeviceToken the trusted-device token received from the browser.
+   * @param userAgent the current browser user-agent.
+   * @return the authentication response, including a rotated trusted-device token on success.
+   */
+  public AuthenticationResponse authenticateTrustedDevice(final String login,
+      final String domainId, final String trustedDeviceToken, final String userAgent) {
+    try {
+      if (!AUTHENTICATION_SETTINGS.getBoolean("twoFactorTotpEnabled", false) ||
+          !StringUtil.isDefined(trustedDeviceToken)) {
+        return AuthenticationResponse.error(Status.TWO_FACTOR_REQUIRED);
+      }
+
+      final AuthenticationCredential credential =
+          AuthenticationCredential.newWithAsLogin(login).withAsDomainId(domainId);
+      final int userId = getUserId(credential);
+      final String rotatedToken = trustedDeviceService.validateAndRotate(
+          userId, trustedDeviceToken, userAgent);
+      if (!StringUtil.isDefined(rotatedToken)) {
+        return AuthenticationResponse.error(Status.TWO_FACTOR_REQUIRED);
+      }
+
+      AuthenticationUserVerifierFactory.getUserCanLoginVerifier(credential).verify();
+      return AuthenticationResponse.succeed(getAuthToken(credential), rotatedToken);
+    } catch (AuthenticationException e) {
+      SilverLogger.getLogger(this).warn(e);
+      return AuthenticationResponse.error(Status.TWO_FACTOR_REQUIRED);
+    }
+  }
+
+  /**
+   * Creates a trusted-device token for a user after a successful second-factor authentication.
+   *
+   * @param login the user login.
+   * @param domainId the user domain identifier.
+   * @param userAgent the browser user-agent.
+   * @return the clear-text trusted-device token.
+   */
+  public String createTrustedDevice(final String login, final String domainId,
+      final String userAgent) throws AuthenticationException {
+    final AuthenticationCredential credential =
+        AuthenticationCredential.newWithAsLogin(login).withAsDomainId(domainId);
+    final int userId = getUserId(credential);
+    return trustedDeviceService.create(userId, userAgent);
+  }
+
+  /**
    * Indicates whether the user must enroll a TOTP factor before completing authentication.
    */
   public boolean isTwoFactorEnrollmentRequired(final String login, final String domainId) {
