@@ -437,6 +437,7 @@ public class AuthenticationService implements Authentication {
       final String domainId, final String trustedDeviceToken, final String userAgent) {
     try {
       if (!AUTHENTICATION_SETTINGS.getBoolean("twoFactorTotpEnabled", false) ||
+          !AUTHENTICATION_SETTINGS.getBoolean("twoFactorTrustedDeviceEnabled", false) ||
           !StringUtil.isDefined(trustedDeviceToken)) {
         return AuthenticationResponse.error(Status.TWO_FACTOR_REQUIRED);
       }
