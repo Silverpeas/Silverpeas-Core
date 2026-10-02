@@ -130,7 +130,8 @@ public class AuthenticationResource extends RESTWebService {
         .openSession(user, getHttpServletRequest());
     getHttpServletResponse().setHeader(UserPrivilegeValidation.HTTP_SESSIONKEY, session.getSessionId());
     getHttpServletResponse().addHeader("Access-Control-Expose-Headers",
-        UserPrivilegeValidation.HTTP_SESSIONKEY);
+        UserPrivilegeValidation.HTTP_SESSIONKEY + ", " +
+            SynchronizerTokenService.SESSION_TOKEN_KEY);
     SynchronizerTokenService tokenService = SynchronizerTokenService.getInstance();
     tokenService.setUpSessionTokens(session);
     Token token = tokenService.getSessionToken(session);
