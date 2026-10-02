@@ -58,7 +58,12 @@ public class AuthenticationResource extends RESTWebService {
   public Response authenticate() {
     validateUserAuthentication(privilegeValidation);
 
-    if (Boolean.TRUE.equals(getHttpServletRequest().getAttribute(HTTPAuthentication.TWO_FACTOR_REQUIRED))) {
+    boolean twoFactorRequired = Boolean.TRUE.equals(
+        getHttpServletRequest().getAttribute(HTTPAuthentication.TWO_FACTOR_REQUIRED));
+    org.silverpeas.kernel.logging.SilverLogger.getLogger(this)
+        .info("REST authentication validation completed: twoFactorRequired={0}, user={1}",
+            twoFactorRequired, getUser());
+    if (twoFactorRequired) {
       return Response.status(Response.Status.UNAUTHORIZED)
           .header("X-Silverpeas-2FA-Required", "true")
           .header("Access-Control-Expose-Headers", "X-Silverpeas-2FA-Required")
