@@ -121,6 +121,10 @@ public class HTTPAuthentication {
           session.set(schemeHandlers.get(AuthenticationScheme.BEARER).apply(context));
         }
       }
+      if (Boolean.TRUE.equals(
+          context.getHttpServletRequest().getAttribute(TWO_FACTOR_REQUIRED))) {
+        return SessionInfo.NoneSession;
+      }
       return session.orElseThrow(() -> new WebApplicationException(Response.Status.UNAUTHORIZED));
     } catch (final AuthenticationInternalException ex) {
       throw new WebApplicationException(ex, Response.Status.SERVICE_UNAVAILABLE);
