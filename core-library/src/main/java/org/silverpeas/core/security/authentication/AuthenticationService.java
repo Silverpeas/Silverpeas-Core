@@ -184,6 +184,10 @@ public class AuthenticationService implements Authentication {
     } catch (AuthenticationUserAccountDeactivatedException e) {
       result = AuthenticationResponse.error(Status.USER_ACCOUNT_DEACTIVATED);
     } catch (AuthenticationException ae) {
+      // Keep the original exception in the logs so that authentication failures which occur
+      // before the second-factor decision can be diagnosed without exposing implementation
+      // details to the caller.
+      SilverLogger.getLogger(this).error("Authentication failed unexpectedly", ae);
       result = AuthenticationResponse.error(Status.UNKNOWN_FAILURE);
     }
 
