@@ -56,6 +56,8 @@ public class AuthenticationResource extends RESTWebService {
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   public Response authenticate() {
+    org.silverpeas.kernel.logging.SilverLogger.getLogger(this)
+        .info("REST AuthenticationResource.authenticate() entered");
     validateUserAuthentication(privilegeValidation);
 
     boolean twoFactorRequired = Boolean.TRUE.equals(
