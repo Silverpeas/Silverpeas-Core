@@ -121,8 +121,14 @@ public class HTTPAuthentication {
           session.set(schemeHandlers.get(AuthenticationScheme.BEARER).apply(context));
         }
       }
-      if (Boolean.TRUE.equals(
-          context.getHttpServletRequest().getAttribute(TWO_FACTOR_REQUIRED))) {
+      Object twoFactorRequired =
+          context.getHttpServletRequest().getAttribute(TWO_FACTOR_REQUIRED);
+      SilverLogger.getLogger(HTTPAuthentication.class)
+          .info("REST authentication 2FA state: required={0}, sessionPresent={1}",
+              twoFactorRequired, session.isPresent());
+      if (Boolean.TRUE.equals(twoFactorRequired)) {
+        SilverLogger.getLogger(HTTPAuthentication.class)
+            .info("REST authentication 2FA challenge detected, returning NoneSession");
         return SessionInfo.NoneSession;
       }
       return session.orElseThrow(() -> new WebApplicationException(Response.Status.UNAUTHORIZED));
