@@ -41,6 +41,8 @@ import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProvider;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProviderByInstance;
 
+import java.util.Optional;
+
 import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
@@ -192,6 +194,24 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
   @Override
   protected boolean isSendImmediately() {
     return getResource() instanceof SilverpeasToolContent;
+  }
+
+  /**
+   * By default, the contribution the subscribers are notified about is the resource behind this
+   * builder when it is a content taken in charge by the content manager of Silverpeas: only such
+   * contents can be classified on the PdC. For any other resource, nothing is returned: the
+   * identifier of a resource is unique only among the resources of the same type and, as the
+   * content manager ignores the type of the contents, it could be mistaken for a classified
+   * content.
+   * <p>
+   * This method has to be overridden when the classified content isn't the resource itself (the
+   * publication behind a news for example).
+   * </p>
+   */
+  @Override
+  protected Optional<ContributionIdentifier> getSubscribedContribution() {
+    return getResource() instanceof SilverpeasContent content ?
+        Optional.of(content.getIdentifier()) : Optional.empty();
   }
 
   /*

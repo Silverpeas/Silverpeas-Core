@@ -24,6 +24,7 @@
 package org.silverpeas.core.pdc.subscription.service;
 
 import org.silverpeas.core.contribution.contentcontainer.content.ManagedContribution;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationBehavior;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
@@ -32,6 +33,7 @@ import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import static org.silverpeas.core.util.URLUtil.getSearchResultURL;
 import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
@@ -57,6 +59,15 @@ public class PdcResourceClassificationUserNotification
      * it will be the case, don't forget to remove this overridden method
      */
     return true;
+  }
+
+  /**
+   * Only the subscribers to the position criteria the notification is about are notified, not
+   * all those concerned by the whole classification of the contribution.
+   */
+  @Override
+  protected Optional<ContributionIdentifier> getSubscribedContribution() {
+    return Optional.empty();
   }
 
   @Override
