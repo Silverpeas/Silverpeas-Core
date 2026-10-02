@@ -10,7 +10,7 @@
  * the GPL, you may redistribute this Program in connection with Free/Lib
  * Open Source Software ("FLOSS") applications as described in Silverpeas
  * FLOSS exception. You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
+ * Silverpeas FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
@@ -18,9 +18,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public Licence
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *
  */
 package org.silverpeas.core.web.rs;
 
@@ -44,6 +43,7 @@ import org.silverpeas.core.web.token.SynchronizerTokenService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import java.util.EnumMap;
@@ -57,45 +57,27 @@ import static org.silverpeas.core.web.rs.UserPrivilegeValidation.*;
 
 /**
  * An HTTP authentication mechanism for Silverpeas to allow users to consume the Silverpeas Web API.
- * It implements the authentication process for any incoming HTTPs requests targeting a web resource
- * in the Silverpeas Web API. This HTTP request can be as well an explicit
- * authentication ask as a Silverpeas API consume. The HTTP request is expected either to contain
- * the HTTP header {@code Authorization} valued with the authentication scheme and the user
- * credentials as expected by the IETF RFC 2617 or to target a web resource URI with the query
- * parameter {@code access_token} (see IETF RFC 6750).
- * <p>
- * Actually, Silverpeas supports for its web resources two HTTP authentication schemes: the
- * {@code Basic} one (covered by the IETF RFC 2617) and the Bearer one (covered by the IETF RFC
- * 6750). The API token of the users must be passed with the {@code Bearer} scheme to access the
- * REST API of Silverpeas. Any other authentication schemes throws a {@link WebApplicationException}
- * exception with the status {@link Response.Status#UNAUTHORIZED}.
- * </p>
- * <p>
- * The two ways to authenticate with Silverpeas are for different purposes:
- * </p>
- * <ul>
- *   <li>The authentication by credentials (carried by the {@code Basic} authentication scheme)
- *   is for opening a session in Silverpeas in order to perform one or several Web API invocations.
- *   The user behind will be then counted as a connected user.</li>
- *   <li>The authentication by the API token (carried either by the query parameter
- *   {@code access_token} or by the {@code Bearer} authentication scheme) is for a one-shot API
- *   call and for doing it doesn't require a session to be opened. It is usually used by external
- *   tools interacting with Silverpeas in the behalf of the user.</li>
- * </ul>
- * <p>
- * The failure of the authentication throws a {@link WebApplicationException} exception with the
- * status {@link Response.Status#UNAUTHORIZED}.
- * </p>
- * @author mmoquillon
  */
 @Service
 public class HTTPAuthentication {
 
   private static final Pattern AUTHORIZATION_PATTERN = Pattern.compile("(?i)^(Basic|Bearer) (.*)");
-
-  // the first ':' character is the separator according to the RFC 2617 in basic digest
   private static final Pattern AUTHENTICATION_PATTERN =
       Pattern.compile("(?i)^\\s*(\\S+)\\s*@domain([0-9]+):(.+)$");
+
+  public static final String TWO_FACTOR_REQUIRED =
+      "org.silverpeas.core.web.rs.HTTPAuthentication.twoFactorRequired";
+  public static final String TWO_FACTOR_LOGIN =
+      "org.silverpeas.core.web.rs.HTTPAuthentication.twoFactorLogin";
+  public static final String TWO_FACTOR_DOMAIN =
+      "org.silverpeas.core.web.rs.HTTPAuthentication.twoFactorDomain";
+  public static final String TWO_FACTOR_EXPIRES_AT =
+      "org.silverpeas.core.web.rs.HTTPAuthentication.twoFactorExpiresAt";
+  public static final String TWO_FACTOR_ATTEMPTS =
+      "org.silverpeas.core.web.rs.HTTPAuthentication.twoFactorAttempts";
+
+  private static final int DEFAULT_TWO_FACTOR_CHALLENGE_LIFETIME = 120;
+  private static final int DEFAULT_TWO_FACTOR_MAX_ATTEMPTS = 5;
 
   private static final Map<AuthenticationScheme, Function<AuthenticationContext, SessionInfo>>
       schemeHandlers = new EnumMap<>(AuthenticationScheme.class);
@@ -109,51 +91,6 @@ public class HTTPAuthentication {
   protected HTTPAuthentication() {
   }
 
-  /**
-   * Authenticates the user that sent the incoming HTTP request according to the specified
-   * authentication context.
-   * <p>
-   * The context is defined for the incoming HTTP request and for the HTTP response to send. The
-   * HTTP request contains the elements required to authenticate the user at the source of the
-   * request. The mandatory element is either the {@code Authorization} HTTP header that must be
-   * valued with an authentication scheme and with the credentials of the user, or the
-   * {@code access_token} URI query parameter, or the {@code access_token} form-encoded body
-   * parameter.
-   * </p>
-   * <p>
-   * A {@link WebApplicationException} is thrown with the status
-   * {@link Response.Status#UNAUTHORIZED} in the following cases:
-   * </p>
-   * <ul>
-   *   <li>No {@code Authentication} header and no {@code access_token} parameter;</li>
-   *   <li>The authentication scheme isn't supported;</li>
-   *   <li>The credentials passed in the {@code Authentication} header are invalid;</li>
-   *   <li>The user API token passed in the {@code access_token} parameter is invalid;</li>
-   *   <li>The user account in Silverpeas isn't in a valid state (blocked, deactivated, ...).</li>
-   * </ul>
-   * <p>
-   * If the authentication process succeeds, then a session is created and returned. For a basic
-   * authentication scheme, the session comes from a session opening in Silverpeas by the
-   * {@link org.silverpeas.core.security.session.SessionManagement} subsystem and its unique
-   * identifier is set in the {@link UserPrivilegeValidation#HTTP_SESSIONKEY} header of the
-   * HTTP response; the session life will span over several HTTP requests, and it will be closed
-   * either explicitly or by the default session timeout. For a bearer authentication scheme and for
-   * an authentication from the {@code access_token} parameter, the
-   * session is just created for the specific incoming request and will expire at the end of it;
-   * this is why the session identifier is not sent back to the user with the HTTP response.
-   * </p>
-   * <p>
-   * At the end of the authentication, the context is alimented with the user credentials and with
-   * the authentication scheme that were fetched from the HTTP request. They can then be retrieved
-   * for further operation by the invoker of this method. In the case of an authentication from
-   * the {@code access_token} parameter, the authentication scheme in the context is set as
-   * a bearer authentication scheme.
-   * </p>
-   * @param context the context of the authentication with the HTTP request and with the HTTP
-   * response.
-   * @return the created session for the request if the authentication succeeds or throws a
-   * {@link WebApplicationException} with as status {@link Response.Status#UNAUTHORIZED}.
-   */
   public SessionInfo authenticate(final AuthenticationContext context) {
     try {
       final Mutable<SessionInfo> session = Mutable.empty();
@@ -194,21 +131,27 @@ public class HTTPAuthentication {
     final String decodedCredentials =
         new String(StringUtil.fromBase64(context.getUserCredentials()), Charsets.UTF_8).trim();
 
-    // Getting expected parts of credentials
     Matcher matcher = AUTHENTICATION_PATTERN.matcher(decodedCredentials);
     final int credentialPartCount = 3;
     final int loginPart = 1;
     final int passwordPart = 3;
     final int domainIdPart = 2;
     if (matcher.matches() && matcher.groupCount() == credentialPartCount) {
-      // All expected parts detected, so getting an authentication key
       try {
+        final String login = matcher.group(loginPart);
+        final String password = matcher.group(passwordPart);
+        final String domainId = matcher.group(domainIdPart);
         AuthenticationCredential credential =
-            AuthenticationCredential.newWithAsLogin(matcher.group(loginPart))
-                .withAsPassword(matcher.group(passwordPart))
-                .withAsDomainId(matcher.group(domainIdPart));
+            AuthenticationCredential.newWithAsLogin(login)
+                .withAsPassword(password)
+                .withAsDomainId(domainId);
         Authentication authenticator = Authentication.get();
         AuthenticationResponse result = authenticator.authenticate(credential);
+        if (result.getStatus() == AuthenticationResponse.Status.TWO_FACTOR_REQUIRED) {
+          startTwoFactorChallenge(context.getHttpServletRequest(), login, domainId);
+          return SessionManagementProvider.getSessionManagement()
+              .openAnonymousSession(context.getHttpServletRequest());
+        }
         if (result.getStatus().succeeded()) {
           User user = authenticator.getUserByAuthToken(result.getToken());
           final SessionInfo session;
@@ -217,8 +160,7 @@ public class HTTPAuthentication {
                 .openSession(user, context.getHttpServletRequest());
             context.getHttpServletResponse().setHeader(HTTP_SESSIONKEY, session.getSessionId());
             context.getHttpServletResponse()
-                .addHeader("Access-Control-Expose-Headers",
-                    UserPrivilegeValidation.HTTP_SESSIONKEY);
+                .addHeader("Access-Control-Expose-Headers", UserPrivilegeValidation.HTTP_SESSIONKEY);
             SynchronizerTokenService tokenService = SynchronizerTokenService.getInstance();
             tokenService.setUpSessionTokens(session);
             Token token = tokenService.getSessionToken(session);
@@ -235,6 +177,44 @@ public class HTTPAuthentication {
       }
     }
     return null;
+  }
+
+  private static void startTwoFactorChallenge(final HttpServletRequest request,
+      final String login, final String domainId) {
+    HttpSession session = request.getSession(true);
+    session.setAttribute(TWO_FACTOR_LOGIN, login);
+    session.setAttribute(TWO_FACTOR_DOMAIN, domainId);
+    int lifetime = getTwoFactorChallengeLifetime();
+    session.setAttribute(TWO_FACTOR_EXPIRES_AT,
+        System.currentTimeMillis() + lifetime * 1000L);
+    session.setAttribute(TWO_FACTOR_ATTEMPTS, 0);
+    request.setAttribute(TWO_FACTOR_REQUIRED, Boolean.TRUE);
+  }
+
+  public static boolean isValidTwoFactorChallenge(final String login,
+      final String domainId, final Long expiresAt) {
+    return StringUtil.isDefined(login) && StringUtil.isDefined(domainId) &&
+        expiresAt != null && expiresAt >= System.currentTimeMillis();
+  }
+
+  public static void clearTwoFactorChallenge(final HttpSession session) {
+    session.removeAttribute(TWO_FACTOR_LOGIN);
+    session.removeAttribute(TWO_FACTOR_DOMAIN);
+    session.removeAttribute(TWO_FACTOR_EXPIRES_AT);
+    session.removeAttribute(TWO_FACTOR_ATTEMPTS);
+    session.removeAttribute(TWO_FACTOR_REQUIRED);
+  }
+
+  public static int getTwoFactorMaxAttempts() {
+    return org.silverpeas.kernel.bundle.ResourceLocator
+        .getSettingBundle("org.silverpeas.authentication.settings.authenticationSettings")
+        .getInteger("twoFactorTotpMaxAttempts", DEFAULT_TWO_FACTOR_MAX_ATTEMPTS);
+  }
+
+  private static int getTwoFactorChallengeLifetime() {
+    return org.silverpeas.kernel.bundle.ResourceLocator
+        .getSettingBundle("org.silverpeas.authentication.settings.authenticationSettings")
+        .getInteger("twoFactorTotpChallengeLifetime", DEFAULT_TWO_FACTOR_CHALLENGE_LIFETIME);
   }
 
   private static SessionInfo performTokenBasedAuthentication(final AuthenticationContext context) {
@@ -298,7 +278,6 @@ public class HTTPAuthentication {
   }
 
   private static class AuthenticationInternalException extends SilverpeasRuntimeException {
-
     public AuthenticationInternalException(final String message, final Throwable cause) {
       super(message, cause);
     }
