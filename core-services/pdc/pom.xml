@@ -41,4 +41,12 @@
     a Silverpeas component instance, to classify a content, etc.
   </description>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.silverpeas.core</groupId>
+      <artifactId>silverpeas-core-test</artifactId>
+      <version>${project.parent.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 </project>
