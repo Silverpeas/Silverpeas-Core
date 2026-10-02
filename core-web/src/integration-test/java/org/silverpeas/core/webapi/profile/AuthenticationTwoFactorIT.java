@@ -29,6 +29,8 @@ import org.silverpeas.web.test.RESTWebServiceTest;
 
 import jakarta.inject.Inject;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Base64;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -64,7 +66,8 @@ public class AuthenticationTwoFactorIT extends RESTWebServiceTest {
   }
 
   @Before
-  public void prepareUser() {
+  public void prepareUser() throws Exception {
+    Files.createDirectories(Paths.get(org.silverpeas.core.util.file.FileRepositoryManager.getSecurityDirPath()));
     user = getSilverpeasEnvironmentTest().createDefaultUser();
     int userId = Integer.parseInt(user.getId());
     TwoFactorAuthentication current =
