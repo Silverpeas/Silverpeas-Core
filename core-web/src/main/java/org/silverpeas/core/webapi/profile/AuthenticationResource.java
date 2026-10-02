@@ -56,14 +56,13 @@ public class AuthenticationResource extends RESTWebService {
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   public Response authenticate() {
-    validateUserAuthentication(privilegeValidation);
-
     if (Boolean.TRUE.equals(getHttpServletRequest().getAttribute(HTTPAuthentication.TWO_FACTOR_REQUIRED))) {
       return Response.status(Response.Status.UNAUTHORIZED)
           .entity(AuthenticationChallengeEntity.twoFactorRequired())
           .build();
     }
 
+    validateUserAuthentication(privilegeValidation);
     User user = getUser();
     return Response.ok(UserProfileEntity.fromUser(user)
         .withAsUri(ProfileResourceBaseURIs.uriOfUser(user.getId())))
