@@ -18,6 +18,7 @@ import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.security.authentication.AuthenticationResponse;
 import org.silverpeas.core.security.authentication.AuthenticationService;
 import org.silverpeas.core.security.authentication.AuthenticationServiceProvider;
+import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.security.token.Token;
@@ -76,7 +77,8 @@ public class AuthenticationResource extends RESTWebService {
   @POST
   @Path("two-factor")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response authenticateTwoFactor(@QueryParam("code") final String code) {
+  public Response authenticateTwoFactor(@QueryParam("code") final String code)
+      throws AuthenticationException {
     HttpSession session = getHttpServletRequest().getSession(false);
     if (session == null) {
       return Response.status(Response.Status.UNAUTHORIZED).build();
@@ -105,8 +107,8 @@ public class AuthenticationResource extends RESTWebService {
     }
 
     HTTPAuthentication.clearTwoFactorChallenge(session);
-    openAuthenticatedSession(result.getToken());
     User user = authenticationService.getUserByAuthToken(result.getToken());
+    openAuthenticatedSession(user);
     return Response.ok(UserProfileEntity.fromUser(user)
         .withAsUri(ProfileResourceBaseURIs.uriOfUser(user.getId())))
         .build();
@@ -117,9 +119,7 @@ public class AuthenticationResource extends RESTWebService {
     return attempts instanceof Integer ? (Integer) attempts : 0;
   }
 
-  private void openAuthenticatedSession(final String authToken) {
-    AuthenticationService authenticationService = AuthenticationServiceProvider.getService();
-    User user = authenticationService.getUserByAuthToken(authToken);
+  private void openAuthenticatedSession(final User user) {
     SessionInfo session = SessionManagementProvider.getSessionManagement()
         .openSession(user, getHttpServletRequest());
     getHttpServletResponse().setHeader(UserPrivilegeValidation.HTTP_SESSIONKEY, session.getSessionId());
