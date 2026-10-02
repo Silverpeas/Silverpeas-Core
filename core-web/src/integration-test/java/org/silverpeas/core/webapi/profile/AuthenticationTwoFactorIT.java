@@ -23,7 +23,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.security.authentication.twofactor.TwoFactorAuthenticationService;
 import org.silverpeas.core.security.authentication.twofactor.model.TwoFactorAuthentication;
 import org.silverpeas.core.security.totp.TotpService;
-import org.silverpeas.core.web.rs.SynchronizerTokenService;
+import org.silverpeas.core.web.token.SynchronizerTokenService;
 import org.silverpeas.core.web.test.WarBuilder4WebCore;
 import org.silverpeas.web.test.RESTWebServiceTest;
 
