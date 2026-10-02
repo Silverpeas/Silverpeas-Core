@@ -155,6 +155,11 @@ public class AuthenticationTwoFactorIT extends RESTWebServiceTest {
   }
 
   @Override
+  protected String getTableCreationScript() {
+    return "/org/silverpeas/core/webapi/profile/create-table-two-factor.sql";
+  }
+
+  @Override
   public String[] getExistingComponentInstances() {
     return new String[0];
   }
