@@ -3,23 +3,8 @@
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Lib
- * Open Source Software ("FLOSS") applications as described in Silverpeas
- * FLOSS exception.  You should have received a copy of the text describing
- * Silverpeas FLOSS exception, and it is also available here:
- * "https://www.silverpeas.org/legal/floss_exception.html"
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
  */
 package org.silverpeas.core.webapi.profile;
 
@@ -31,17 +16,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.security.authentication.AuthenticationResponse;
-import org.silverpeas.core.security.authentication.AuthenticationServiceProvider;
 import org.silverpeas.core.security.authentication.AuthenticationService;
-import org.silverpeas.core.security.authentication.AuthenticationResponse.Status;
-import org.silverpeas.core.security.authentication.exception.AuthenticationException;
-import org.silverpeas.core.security.session.SessionManagementProvider;
+import org.silverpeas.core.security.authentication.AuthenticationServiceProvider;
 import org.silverpeas.core.security.session.SessionInfo;
+import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.security.token.Token;
 import org.silverpeas.core.web.rs.HTTPAuthentication;
 import org.silverpeas.core.web.rs.RESTWebService;
-import org.silverpeas.core.web.rs.SynchronizerTokenService;
 import org.silverpeas.core.web.rs.UserPrivilegeValidation;
+import org.silverpeas.core.web.token.SynchronizerTokenService;
 
 import jakarta.inject.Inject;
 import jakarta.servlet.http.HttpSession;
@@ -73,7 +56,7 @@ public class AuthenticationResource extends RESTWebService {
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   public Response authenticate() {
-    if (isTwoFactorRequired()) {
+    if (Boolean.TRUE.equals(getHttpServletRequest().getAttribute(HTTPAuthentication.TWO_FACTOR_REQUIRED))) {
       return Response.status(Response.Status.UNAUTHORIZED)
           .entity(AuthenticationChallengeEntity.twoFactorRequired())
           .build();
@@ -86,16 +69,6 @@ public class AuthenticationResource extends RESTWebService {
         .build();
   }
 
-  /**
-   * Completes a REST authentication after the password has been validated and Silverpeas has
-   * requested a TOTP/recovery code.
-   *
-   * <p>The pending authentication is kept server-side in the HTTP session. The caller therefore
-   * cannot authenticate with a TOTP code alone.</p>
-   *
-   * @param code the TOTP or recovery code.
-   * @return the authenticated user's profile, or a 401 response when the code is invalid.
-   */
   @Operation(summary = "Completes a pending REST authentication with a TOTP or recovery code.")
   @ApiResponse(responseCode = "200", description = "The profile of the authenticated user.",
       content = @Content(schema = @Schema(implementation = UserProfileEntity.class)))
@@ -122,8 +95,8 @@ public class AuthenticationResource extends RESTWebService {
     if (!result.getStatus().succeeded()) {
       int attempts = getTwoFactorAttempts(session) + 1;
       session.setAttribute(HTTPAuthentication.TWO_FACTOR_ATTEMPTS, attempts);
-      int maxAttempts = HTTPAuthentication.getTwoFactorMaxAttempts();
-      if (attempts >= maxAttempts || authenticationService.isTwoFactorLocked(login, domainId)) {
+      if (attempts >= HTTPAuthentication.getTwoFactorMaxAttempts() ||
+          authenticationService.isTwoFactorLocked(login, domainId)) {
         HTTPAuthentication.clearTwoFactorChallenge(session);
       }
       return Response.status(Response.Status.UNAUTHORIZED)
@@ -137,11 +110,6 @@ public class AuthenticationResource extends RESTWebService {
     return Response.ok(UserProfileEntity.fromUser(user)
         .withAsUri(ProfileResourceBaseURIs.uriOfUser(user.getId())))
         .build();
-  }
-
-  private boolean isTwoFactorRequired() {
-    return Boolean.TRUE.equals(
-        getHttpServletRequest().getAttribute(HTTPAuthentication.TWO_FACTOR_REQUIRED));
   }
 
   private int getTwoFactorAttempts(final HttpSession session) {
@@ -179,7 +147,7 @@ public class AuthenticationResource extends RESTWebService {
 
     public static AuthenticationChallengeEntity twoFactorRequired() {
       AuthenticationChallengeEntity entity = new AuthenticationChallengeEntity();
-      entity.status = Status.TWO_FACTOR_REQUIRED.name();
+      entity.status = AuthenticationResponse.Status.TWO_FACTOR_REQUIRED.name();
       return entity;
     }
 
