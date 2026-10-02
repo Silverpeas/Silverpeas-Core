@@ -3601,15 +3601,20 @@ ul.attachmentList li.attachmentListItem .linkAllVersions {
 
 .commentaires div.avatar {
   position:absolute;
-  border:1px solid #CECECE;
-  padding:1px;
-  background-color:#FFF;
-  top:-50px;
+  top:calc( -1 *  var(--width-avatar-comment) );
   left:-1em;
+  border-radius:var(--radius-avatar-comment) ;
+  border:var(--border-width-avatar-comment) solid var(--border-color-avatar-comment);
+  padding:var(--border-width-avatar-comment);
+  background-color:var(--bg-color-avatar-comment);
+  box-shadow:var(--shadow-avatar-comment);
+  width:var(--width-avatar-comment)  ;
+  height: var(--height-avatar-comment) ;
+  overflow: hidden;
 }
 
 .commentaires div.avatar img {
-  width:50px;
+  width:var(--width-avatar-comment);
   height:auto;
 }
 
