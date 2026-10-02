@@ -58,6 +58,7 @@ public class AuthenticationTwoFactorIT extends RESTWebServiceTest {
         .testFocusedOn(warBuilder -> {
           warBuilder.addPackages(true, "org.silverpeas.core.webapi.profile");
           warBuilder.addPackages(true, "org.silverpeas.core.chat");
+          warBuilder.addAsResource("org/silverpeas/general.properties");
           warBuilder.addAsResource(
               "org/silverpeas/authentication/settings/authenticationSettings.properties");
         }).build();
