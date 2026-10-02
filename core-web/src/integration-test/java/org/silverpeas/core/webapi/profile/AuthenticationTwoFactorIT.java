@@ -76,19 +76,15 @@ public class AuthenticationTwoFactorIT extends RESTWebServiceTest {
 
   @Test
   public void authenticationRequiresTwoFactorAndCreatesSessionOnlyAfterValidCode() {
-    Invocation.Builder authentication = basicAuthenticationRequest();
-    Response challenge;
-    try (Response response = authentication.post(Entity.json("{}"))) {
-      challenge = response;
+    NewCookie cookie;
+    try (Response response = basicAuthenticationRequest().post(Entity.json("{}"))) {
       assertThat(response.getStatus(), is(Response.Status.UNAUTHORIZED.getStatusCode()));
       assertThat(response.readEntity(AuthenticationResource.AuthenticationChallengeEntity.class)
           .getStatus(), is("TWO_FACTOR_REQUIRED"));
       assertThat(response.getHeaderString("X-Silverpeas-Session"), is((String) null));
+      cookie = response.getCookies().get("JSESSIONID");
+      assertThat(cookie, notNullValue());
     }
-
-    NewCookie cookie = challenge.getCookies().get("JSESSIONID");
-    // The response is closed above; keep the cookie value for the second request.
-    assertThat(cookie, notNullValue());
 
     try (Response response = resource()
         .path("authentication/two-factor")
