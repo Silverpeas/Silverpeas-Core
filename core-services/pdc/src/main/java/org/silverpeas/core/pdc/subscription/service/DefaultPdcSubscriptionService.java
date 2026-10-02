@@ -47,6 +47,7 @@ import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -76,6 +77,14 @@ public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
     } catch (SQLException re) {
       throw new PdcSubscriptionRuntimeException(re);
     }
+  }
+
+  @Override
+  public List<PdcSubscriptionPositionCriteria> getPositionCriteriaMatching(
+      final Collection<? extends List<? extends Value>> classification) {
+    return getAllPositionCriteria().stream()
+        .filter(c -> classification.stream().anyMatch(p -> isCorrespondingSubscription(c, p)))
+        .toList();
   }
 
   @Override
@@ -144,13 +153,11 @@ public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
       if (!contentObjectIsVisible) {
         return;
       }
-      // load all the position criteria on the PdC into the memory to perform future check of them
-      for (final PdcSubscriptionPositionCriteria resource : getAllPositionCriteria()) {
-        // check if the current position criteria corresponds to the list of classify values
-        // provided into the method
-        if (isCorrespondingSubscription(resource, classifyValues)) {
-          notifySubscribers(resource, componentId, silverObjectid);
-        }
+      // notify the subscribers of each position criteria that corresponds to the list of classify
+      // values provided into the method
+      for (final PdcSubscriptionPositionCriteria resource : getPositionCriteriaMatching(
+          Collections.singletonList(classifyValues))) {
+        notifySubscribers(resource, componentId, silverObjectid);
       }
     } catch (ContentManagerException e) {
       throw new PdcSubscriptionRuntimeException(e);

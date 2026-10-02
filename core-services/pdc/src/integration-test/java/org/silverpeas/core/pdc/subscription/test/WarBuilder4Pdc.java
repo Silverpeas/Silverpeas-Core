@@ -26,7 +26,11 @@ package org.silverpeas.core.pdc.subscription.test;
 import org.silverpeas.core.pdc.classification.ClassifyEngine;
 import org.silverpeas.core.pdc.pdc.model.AxisHeaderI18N;
 import org.silverpeas.core.pdc.pdc.model.AxisValueCriterion;
+import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
+import org.silverpeas.core.pdc.pdc.model.ClassifyValue;
+import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.SearchCriteria;
+import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.test.BasicWarBuilder;
 
 /**
@@ -71,6 +75,12 @@ public class WarBuilder4Pdc extends BasicWarBuilder {
             .addPackages(false, "org.silverpeas.core.pdc.tree.model")
             .addClasses(SearchCriteria.class, AxisValueCriterion.class, AxisHeaderI18N.class,
                 org.silverpeas.core.pdc.pdc.model.Value.class)
+            // the classification of a contribution and the PdC manager giving it are in the
+            // signature of the provider of the subscribers on the PdC: without them, the provider
+            // isn't recognized as a managed bean. The PdC manager itself isn't deployed: it is
+            // lazily injected into the provider
+            .addClasses(ClassifyPosition.class, ClassifyValue.class, PdcException.class,
+                PdcManager.class)
             .addAsResource("create-database.sql"));
     return warBuilder;
   }

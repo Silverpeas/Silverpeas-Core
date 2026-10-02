@@ -33,7 +33,11 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
 
 /**
  * Unit tests of the business rules of the PdC that are specific to the subscriptions, and that
@@ -49,7 +53,22 @@ class DefaultPdcSubscriptionServiceTest {
   private final DefaultPdcSubscriptionService service = new DefaultPdcSubscriptionService();
 
   private static PdcSubscriptionPositionCriteria positions(final AxisValueCriterion... positions) {
-    return new PdcSubscriptionPositionCriteria("1", "position criteria", List.of(positions));
+    return positions("1", positions);
+  }
+
+  private static PdcSubscriptionPositionCriteria positions(final String id,
+      final AxisValueCriterion... positions) {
+    return new PdcSubscriptionPositionCriteria(id, "position criteria", List.of(positions));
+  }
+
+  /**
+   * Gets a service for which only the specified position criteria are defined in Silverpeas.
+   */
+  private static DefaultPdcSubscriptionService aServiceWith(
+      final PdcSubscriptionPositionCriteria... allCriteria) {
+    final DefaultPdcSubscriptionService service = spy(new DefaultPdcSubscriptionService());
+    doReturn(List.of(allCriteria)).when(service).getAllPositionCriteria();
+    return service;
   }
 
   @Test
@@ -107,6 +126,59 @@ class DefaultPdcSubscriptionServiceTest {
 
     assertThat(service.isCorrespondingSubscription(resource, List.of()), is(false));
     assertThat(service.isCorrespondingSubscription(resource, null), is(false));
+  }
+
+  @Test
+  void thePositionCriteriaSatisfiedByOneOfThePositionsOfAClassificationMatchIt() {
+    final PdcSubscriptionPositionCriteria satisfiedByTheFirstPosition =
+        positions("1", new AxisValueCriterion(AXIS, "/12/"));
+    final PdcSubscriptionPositionCriteria satisfiedByTheSecondPosition =
+        positions("2", new AxisValueCriterion(ANOTHER_AXIS, "/33/"));
+    final PdcSubscriptionPositionCriteria notSatisfied =
+        positions("3", new AxisValueCriterion(AXIS, "/99/"));
+    final DefaultPdcSubscriptionService serviceWithCriteria =
+        aServiceWith(satisfiedByTheFirstPosition, satisfiedByTheSecondPosition, notSatisfied);
+
+    final List<PdcSubscriptionPositionCriteria> matching =
+        serviceWithCriteria.getPositionCriteriaMatching(
+            List.of(List.of(new Value(AXIS, "/12/45/")), List.of(new Value(ANOTHER_AXIS, "/33/"))));
+
+    assertThat(matching, contains(satisfiedByTheFirstPosition, satisfiedByTheSecondPosition));
+  }
+
+  @Test
+  void thePositionCriteriaSatisfiedBySeveralPositionsOfAClassificationMatchItOnlyOnce() {
+    final PdcSubscriptionPositionCriteria criteria =
+        positions("1", new AxisValueCriterion(AXIS, "/12/"));
+    final DefaultPdcSubscriptionService serviceWithCriteria = aServiceWith(criteria);
+
+    final List<PdcSubscriptionPositionCriteria> matching =
+        serviceWithCriteria.getPositionCriteriaMatching(
+            List.of(List.of(new Value(AXIS, "/12/45/")), List.of(new Value(AXIS, "/12/78/"))));
+
+    assertThat(matching, contains(criteria));
+  }
+
+  @Test
+  void theCriteriaOfAPositionMustBeSatisfiedByASinglePositionOfAClassification() {
+    final PdcSubscriptionPositionCriteria criteria =
+        positions("1", new AxisValueCriterion(AXIS, "/12/"),
+            new AxisValueCriterion(ANOTHER_AXIS, "/33/"));
+    final DefaultPdcSubscriptionService serviceWithCriteria = aServiceWith(criteria);
+
+    final List<PdcSubscriptionPositionCriteria> matching =
+        serviceWithCriteria.getPositionCriteriaMatching(
+            List.of(List.of(new Value(AXIS, "/12/45/")), List.of(new Value(ANOTHER_AXIS, "/33/"))));
+
+    assertThat(matching, is(empty()));
+  }
+
+  @Test
+  void noPositionCriteriaMatchAnEmptyClassification() {
+    final DefaultPdcSubscriptionService serviceWithCriteria =
+        aServiceWith(positions("1", new AxisValueCriterion(AXIS, "/12/")));
+
+    assertThat(serviceWithCriteria.getPositionCriteriaMatching(List.of()), is(empty()));
   }
 
   @Test
