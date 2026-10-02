@@ -149,8 +149,7 @@ public class HTTPAuthentication {
         AuthenticationResponse result = authenticator.authenticate(credential);
         if (result.getStatus() == AuthenticationResponse.Status.TWO_FACTOR_REQUIRED) {
           startTwoFactorChallenge(context.getHttpServletRequest(), login, domainId);
-          return SessionManagementProvider.getSessionManagement()
-              .openAnonymousSession(context.getHttpServletRequest());
+          return SessionInfo.NoneSession;
         }
         if (result.getStatus().succeeded()) {
           User user = authenticator.getUserByAuthToken(result.getToken());
