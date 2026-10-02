@@ -25,16 +25,21 @@ package org.silverpeas.core.subscription.service;
 
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.subscription.ContributionSubscribersProvider;
 import org.silverpeas.core.subscription.ResourceSubscriptionService;
 import org.silverpeas.core.subscription.SubscriberDirective;
 import org.silverpeas.core.subscription.SubscriptionResource;
 import org.silverpeas.core.subscription.SubscriptionResourceType;
 import org.silverpeas.core.subscription.SubscriptionSubscriber;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.COMPONENT;
 import static org.silverpeas.core.subscription.service.DefaultResourceSubscriptionService.DEFAULT_IMPLEMENTATION_ID;
@@ -114,6 +119,26 @@ public class ResourceSubscriptionProvider {
       SubscriptionResource subscriptionResource, SubscriberDirective... directives) {
     return getService(subscriptionResource.getInstanceId())
         .getSubscribersOfSubscriptionResource(subscriptionResource, directives);
+  }
+
+  /**
+   * Gets all the subscribers concerned by the specified contribution in another way than by a
+   * subscription to the contribution itself or to one of the resources that contain it. For
+   * example, the subscribers to a position on the PdC on which the contribution is classified.<br>
+   * These subscribers are provided by all the {@link ContributionSubscribersProvider} available
+   * in Silverpeas. They complete those returned by the other methods of this provider, which are
+   * all about the subscriptions to the resources handled by a component instance.
+   * @param contribution the unique identifier of a contribution.
+   * @return an instance of {@link SubscriptionSubscriberList} that
+   * represents a collection of {@link SubscriptionSubscriber} decorated
+   * with useful tool methods. Each subscriber is present only once in the collection.
+   */
+  public static SubscriptionSubscriberList getSubscribersConcernedBy(
+      ContributionIdentifier contribution) {
+    final Set<SubscriptionSubscriber> subscribers = new HashSet<>();
+    ServiceProvider.getAllServices(ContributionSubscribersProvider.class)
+        .forEach(p -> subscribers.addAll(p.getSubscribersOf(contribution)));
+    return new SubscriptionSubscriberList(subscribers);
   }
 
   /**

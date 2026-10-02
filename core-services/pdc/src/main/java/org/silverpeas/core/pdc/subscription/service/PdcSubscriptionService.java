@@ -27,6 +27,7 @@ import org.silverpeas.core.pdc.classification.Value;
 import org.silverpeas.core.pdc.pdc.model.AxisValueCriterion;
 import org.silverpeas.core.pdc.subscription.model.PdcSubscriptionPositionCriteria;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,6 +58,18 @@ public interface PdcSubscriptionService {
    * @return a list of position criteria on the PdC.
    */
   List<PdcSubscriptionPositionCriteria> getAllPositionCriteria();
+
+  /**
+   * Gets all the position criteria on the PdC that are satisfied by the specified classification
+   * of a contribution. Position criteria are satisfied by a classification when at least one of
+   * the positions of the classification matches all of their criteria.
+   * @param classification the positions on the PdC of a contribution, each of them being
+   * expressed by its values on the axis of the PdC.
+   * @return the position criteria satisfied by the classification, whatever the users or the
+   * groups of users that are subscribed to them. Each of them is present only once in the list.
+   */
+  List<PdcSubscriptionPositionCriteria> getPositionCriteriaMatching(
+      Collection<? extends List<? extends Value>> classification);
 
   /**
    * Creates a new position criteria on the PdC. Once created, users or groups of users can
