@@ -67,11 +67,12 @@ public class AuthenticationTwoFactorIT extends RESTWebServiceTest {
   @Before
   public void prepareUser() {
     user = getSilverpeasEnvironmentTest().createDefaultUser();
+    int userId = Integer.parseInt(user.getId());
     TwoFactorAuthentication current =
-        twoFactorAuthenticationService.startEnrollment(user.getId());
+        twoFactorAuthenticationService.startEnrollment(userId);
     assertThat(current.isPending(), is(true));
     assertThat(twoFactorAuthenticationService.confirmEnrollment(
-        user.getId(), totpService.generateCode(current.getSecret())), is(true));
+        userId, totpService.generateCode(current.getSecret())), is(true));
   }
 
   @Test
@@ -98,7 +99,8 @@ public class AuthenticationTwoFactorIT extends RESTWebServiceTest {
     }
 
     String code = totpService.generateCode(
-        twoFactorAuthenticationService.getAuthentication(user.getId()).orElseThrow().getSecret());
+        twoFactorAuthenticationService.getAuthentication(Integer.parseInt(user.getId()))
+            .orElseThrow().getSecret());
 
     try (Response response = resource()
         .path("authentication/two-factor")
@@ -136,7 +138,8 @@ public class AuthenticationTwoFactorIT extends RESTWebServiceTest {
     try (Response response = resource()
         .path("authentication/two-factor")
         .queryParam("code", totpService.generateCode(
-            twoFactorAuthenticationService.getAuthentication(user.getId()).orElseThrow().getSecret()))
+            twoFactorAuthenticationService.getAuthentication(Integer.parseInt(user.getId()))
+                .orElseThrow().getSecret()))
         .request(MediaType.APPLICATION_JSON_TYPE)
         .cookie(cookie)
         .post(Entity.json("{}"))) {
