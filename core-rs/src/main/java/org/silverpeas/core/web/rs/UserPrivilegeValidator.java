@@ -123,8 +123,19 @@ public class UserPrivilegeValidator implements UserPrivilegeValidation {
       response.setHeader(HTTP_SESSIONKEY, userSession.getSessionId());
     }
     if(!userSession.isDefined()) {
-      userSession = authentication.authenticate(
-          new HTTPAuthentication.AuthenticationContext(request, response));
+      org.silverpeas.kernel.logging.SilverLogger.getLogger(this)
+          .info("REST authentication: no valid session, invoking HTTPAuthentication");
+      try {
+        userSession = authentication.authenticate(
+            new HTTPAuthentication.AuthenticationContext(request, response));
+        org.silverpeas.kernel.logging.SilverLogger.getLogger(this)
+            .info("REST authentication: HTTPAuthentication returned session defined={0}, anonymous={1}",
+                userSession.isDefined(), userSession.isAnonymous());
+      } catch (RuntimeException e) {
+        org.silverpeas.kernel.logging.SilverLogger.getLogger(this)
+            .error("REST authentication: HTTPAuthentication threw exception", e);
+        throw e;
+      }
     }
 
     // Returning the user session
