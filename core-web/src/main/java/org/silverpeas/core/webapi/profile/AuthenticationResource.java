@@ -58,7 +58,15 @@ public class AuthenticationResource extends RESTWebService {
   public Response authenticate() {
     org.silverpeas.kernel.logging.SilverLogger.getLogger(this)
         .info("REST AuthenticationResource.authenticate() entered");
-    validateUserAuthentication(privilegeValidation);
+    try {
+      validateUserAuthentication(privilegeValidation);
+      org.silverpeas.kernel.logging.SilverLogger.getLogger(this)
+          .info("REST authentication validation returned");
+    } catch (RuntimeException e) {
+      org.silverpeas.kernel.logging.SilverLogger.getLogger(this)
+          .error("REST authentication validation threw exception", e);
+      throw e;
+    }
 
     boolean twoFactorRequired = Boolean.TRUE.equals(
         getHttpServletRequest().getAttribute(HTTPAuthentication.TWO_FACTOR_REQUIRED));
