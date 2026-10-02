@@ -58,6 +58,8 @@ public class AuthenticationResource extends RESTWebService {
   public Response authenticate() {
     if (Boolean.TRUE.equals(getHttpServletRequest().getAttribute(HTTPAuthentication.TWO_FACTOR_REQUIRED))) {
       return Response.status(Response.Status.UNAUTHORIZED)
+          .header("X-Silverpeas-2FA-Required", "true")
+          .header("Access-Control-Expose-Headers", "X-Silverpeas-2FA-Required")
           .entity(AuthenticationChallengeEntity.twoFactorRequired())
           .build();
     }
