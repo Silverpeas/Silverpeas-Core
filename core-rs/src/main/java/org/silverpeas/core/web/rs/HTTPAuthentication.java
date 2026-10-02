@@ -182,12 +182,19 @@ public class HTTPAuthentication {
   private static void startTwoFactorChallenge(final HttpServletRequest request,
       final String login, final String domainId) {
     HttpSession session = request.getSession(true);
-    session.setAttribute(TWO_FACTOR_LOGIN, login);
-    session.setAttribute(TWO_FACTOR_DOMAIN, domainId);
-    int lifetime = getTwoFactorChallengeLifetime();
-    session.setAttribute(TWO_FACTOR_EXPIRES_AT,
-        System.currentTimeMillis() + lifetime * 1000L);
-    session.setAttribute(TWO_FACTOR_ATTEMPTS, 0);
+    String pendingLogin = (String) session.getAttribute(TWO_FACTOR_LOGIN);
+    String pendingDomain = (String) session.getAttribute(TWO_FACTOR_DOMAIN);
+    Long expiresAt = (Long) session.getAttribute(TWO_FACTOR_EXPIRES_AT);
+
+    if (!isValidTwoFactorChallenge(pendingLogin, pendingDomain, expiresAt) ||
+        !login.equals(pendingLogin) || !domainId.equals(pendingDomain)) {
+      session.setAttribute(TWO_FACTOR_LOGIN, login);
+      session.setAttribute(TWO_FACTOR_DOMAIN, domainId);
+      int lifetime = getTwoFactorChallengeLifetime();
+      session.setAttribute(TWO_FACTOR_EXPIRES_AT,
+          System.currentTimeMillis() + lifetime * 1000L);
+      session.setAttribute(TWO_FACTOR_ATTEMPTS, 0);
+    }
     request.setAttribute(TWO_FACTOR_REQUIRED, Boolean.TRUE);
   }
 
