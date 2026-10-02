@@ -239,6 +239,7 @@
             <includes>
               <include>maven.properties</include>
               <include>org/silverpeas/util/stringtemplate.properties</include>
+              <include>org/silverpeas/general.properties</include>
             </includes>
           </testResource>
           <testResource>
@@ -247,6 +248,7 @@
             <excludes>
               <exclude>maven.properties</exclude>
               <exclude>org/silverpeas/util/stringtemplate.properties</exclude>
+              <exclude>org/silverpeas/general.properties</exclude>
             </excludes>
           </testResource>
           <testResource>
