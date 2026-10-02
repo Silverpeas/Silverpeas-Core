@@ -44,15 +44,6 @@ import jakarta.ws.rs.core.Response;
 public class AuthenticationResource extends RESTWebService {
 
   static final String PATH = "authentication";
-  private static final String REST_TWO_FACTOR_LOGIN =
-      "org.silverpeas.core.webapi.profile.AuthenticationResource.twoFactorLogin";
-  private static final String REST_TWO_FACTOR_DOMAIN =
-      "org.silverpeas.core.webapi.profile.AuthenticationResource.twoFactorDomain";
-  private static final String REST_TWO_FACTOR_EXPIRES_AT =
-      "org.silverpeas.core.webapi.profile.AuthenticationResource.twoFactorExpiresAt";
-  private static final String REST_TWO_FACTOR_ATTEMPTS =
-      "org.silverpeas.core.webapi.profile.AuthenticationResource.twoFactorAttempts";
-
   @Inject
   private UserPrivilegeValidation privilegeValidation;
 
@@ -65,23 +56,14 @@ public class AuthenticationResource extends RESTWebService {
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   public Response authenticate() {
+    validateUserAuthentication(privilegeValidation);
+
     if (Boolean.TRUE.equals(getHttpServletRequest().getAttribute(HTTPAuthentication.TWO_FACTOR_REQUIRED))) {
-      HttpSession session = getHttpServletRequest().getSession(true);
-      if (session.getAttribute(REST_TWO_FACTOR_LOGIN) == null) {
-        session.setAttribute(REST_TWO_FACTOR_LOGIN,
-            session.getAttribute(HTTPAuthentication.TWO_FACTOR_LOGIN));
-        session.setAttribute(REST_TWO_FACTOR_DOMAIN,
-            session.getAttribute(HTTPAuthentication.TWO_FACTOR_DOMAIN));
-        session.setAttribute(REST_TWO_FACTOR_EXPIRES_AT,
-            session.getAttribute(HTTPAuthentication.TWO_FACTOR_EXPIRES_AT));
-        session.setAttribute(REST_TWO_FACTOR_ATTEMPTS, 0);
-      }
       return Response.status(Response.Status.UNAUTHORIZED)
           .entity(AuthenticationChallengeEntity.twoFactorRequired())
           .build();
     }
 
-    validateUserAuthentication(privilegeValidation);
     User user = getUser();
     return Response.ok(UserProfileEntity.fromUser(user)
         .withAsUri(ProfileResourceBaseURIs.uriOfUser(user.getId())))
@@ -102,9 +84,9 @@ public class AuthenticationResource extends RESTWebService {
       return Response.status(Response.Status.UNAUTHORIZED).build();
     }
 
-    String login = (String) session.getAttribute(REST_TWO_FACTOR_LOGIN);
-    String domainId = (String) session.getAttribute(REST_TWO_FACTOR_DOMAIN);
-    Long expiresAt = (Long) session.getAttribute(REST_TWO_FACTOR_EXPIRES_AT);
+    String login = (String) session.getAttribute(HTTPAuthentication.TWO_FACTOR_LOGIN);
+    String domainId = (String) session.getAttribute(HTTPAuthentication.TWO_FACTOR_DOMAIN);
+    Long expiresAt = (Long) session.getAttribute(HTTPAuthentication.TWO_FACTOR_EXPIRES_AT);
     if (!HTTPAuthentication.isValidTwoFactorChallenge(login, domainId, expiresAt)) {
       clearRestTwoFactorChallenge(session);
       return Response.status(Response.Status.UNAUTHORIZED).build();
@@ -114,7 +96,7 @@ public class AuthenticationResource extends RESTWebService {
     AuthenticationResponse result = authenticationService.authenticateTwoFactor(login, domainId, code);
     if (!result.getStatus().succeeded()) {
       int attempts = getTwoFactorAttempts(session) + 1;
-      session.setAttribute(REST_TWO_FACTOR_ATTEMPTS, attempts);
+      session.setAttribute(HTTPAuthentication.TWO_FACTOR_ATTEMPTS, attempts);
       if (attempts >= HTTPAuthentication.getTwoFactorMaxAttempts() ||
           authenticationService.isTwoFactorLocked(login, domainId)) {
         clearRestTwoFactorChallenge(session);
@@ -134,15 +116,11 @@ public class AuthenticationResource extends RESTWebService {
   }
 
   private int getTwoFactorAttempts(final HttpSession session) {
-    Object attempts = session.getAttribute(REST_TWO_FACTOR_ATTEMPTS);
+    Object attempts = session.getAttribute(HTTPAuthentication.TWO_FACTOR_ATTEMPTS);
     return attempts instanceof Integer ? (Integer) attempts : 0;
   }
 
   private void clearRestTwoFactorChallenge(final HttpSession session) {
-    session.removeAttribute(REST_TWO_FACTOR_LOGIN);
-    session.removeAttribute(REST_TWO_FACTOR_DOMAIN);
-    session.removeAttribute(REST_TWO_FACTOR_EXPIRES_AT);
-    session.removeAttribute(REST_TWO_FACTOR_ATTEMPTS);
     HTTPAuthentication.clearTwoFactorChallenge(session);
   }
 
