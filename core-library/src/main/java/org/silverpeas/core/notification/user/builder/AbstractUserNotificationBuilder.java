@@ -23,11 +23,13 @@
  */
 package org.silverpeas.core.notification.user.builder;
 
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.notification.user.*;
 import org.silverpeas.core.notification.user.client.*;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.client.constant.NotifMessageType;
+import org.silverpeas.core.subscription.service.ResourceSubscriptionProvider;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.kernel.annotation.NonNull;
@@ -38,6 +40,9 @@ import org.silverpeas.kernel.util.Mutable;
 import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
@@ -227,8 +232,38 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
     return emptyList();
   }
 
+  /**
+   * Gets the contribution the subscribers are notified about. It is asked only for the
+   * notifications to subscribers (those built by a builder qualified by the
+   * {@link UserSubscriptionNotificationBehavior} interface): the users concerned by this
+   * contribution in another way than by a subscription to a resource of a component instance
+   * (for example, by a subscription to a position on the PdC on which the contribution is
+   * classified) are then notified with the subscribers returned by {@link #getUserIdsToNotify()}
+   * and by {@link #getGroupIdsToNotify()}. They have to satisfy
+   * {@link #isUserCanBeNotified(String)} as any other recipient.
+   * <p>
+   * By default, no contribution is concerned by the notification. This method has to be
+   * overridden when the contribution is known, or to indicate nothing when the recipients must be
+   * strictly those given by the builder.
+   * </p>
+   * @return the unique identifier of the contribution or nothing if there is no contribution
+   * concerned by the notification.
+   * @see ResourceSubscriptionProvider#getSubscribersConcernedBy(ContributionIdentifier)
+   */
+  protected Optional<ContributionIdentifier> getSubscribedContribution() {
+    return Optional.empty();
+  }
+
   private void performUsersToBeNotified() {
-    final Collection<String> userIdsToNotify = getSafeCollection(getUserIdsToNotify()).stream()
+    final Set<String> userIds = new HashSet<>(getSafeCollection(getUserIdsToNotify()));
+    if (isUserSubscriptionNotification()) {
+      // the subscribers through a group are notified individually: whatever the access rights of
+      // their group, only those of each user matter
+      getSubscribedContribution()
+          .map(ResourceSubscriptionProvider::getSubscribersConcernedBy)
+          .ifPresent(s -> userIds.addAll(s.getAllUserIds()));
+    }
+    final Collection<String> userIdsToNotify = userIds.stream()
         .filter(this::isUserCanBeNotified)
         .collect(Collectors.toSet());
     final Collection<String> userIdsToExcludeFromNotifying = getUserIdsToExcludeFromNotifying();

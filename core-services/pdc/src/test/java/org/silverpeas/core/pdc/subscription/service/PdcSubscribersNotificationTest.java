@@ -190,6 +190,20 @@ class PdcSubscribersNotificationTest {
   }
 
   /**
+   * A subscriber to another position on the PdC also satisfied by the classification of the
+   * contribution is notified by the notification about that other position: he hasn't to be added
+   * to the recipients of each of the notifications.
+   */
+  @Test
+  void onlyTheSubscribersOfTheMatchingPositionAreTheRecipientsOfTheNotification() {
+    subscribe(aPosition("1", new AxisValueCriterion(AN_AXIS, "/12/")), A_SUBSCRIBER);
+
+    final List<PdcResourceClassificationUserNotification> notifications = classify();
+
+    assertThat(notifications.get(0).getSubscribedContribution().isPresent(), is(false));
+  }
+
+  /**
    * Behavior to be changed by the feature #15500: the notifications of the PdC should be delayed
    * as any other notification to subscribers.
    */

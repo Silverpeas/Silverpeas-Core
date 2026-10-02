@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.notification.user.DefaultUserNotification;
 import org.silverpeas.core.notification.user.NullUserNotification;
 import org.silverpeas.core.notification.user.UserNotification;
@@ -38,13 +39,19 @@ import org.silverpeas.core.notification.user.client.GroupRecipient;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
+import org.silverpeas.core.subscription.ContributionSubscribersProvider;
+import org.silverpeas.core.subscription.SubscriptionSubscriber;
+import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
+import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
 import org.silverpeas.core.test.unit.extention.JEETestContext;
 import org.silverpeas.kernel.test.annotations.TestManagedBean;
 import org.silverpeas.kernel.test.annotations.TestManagedMock;
 import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -62,6 +69,11 @@ import static org.mockito.Mockito.when;
  * way the subscribers are found. These rules are carried by the
  * {@link AbstractUserNotificationBuilder} for the builders qualified by the
  * {@link UserSubscriptionNotificationBehavior} interface.
+ * <p>
+ * The recipients of such a notification are both the subscribers given by the builder itself (the
+ * subscribers to a resource of a component instance) and the users concerned by the contribution
+ * the notification is about in another way (the subscribers to a position on the PdC for example).
+ * </p>
  * @author mmoquillon
  */
 @EnableSilverTestEnv(context = JEETestContext.class)
@@ -73,9 +85,15 @@ class SubscriptionUserNotificationBuilderTest {
   private static final String A_DEACTIVATED_SUBSCRIBER = "7";
   private static final String A_SUBSCRIBED_GROUP = "12";
   private static final String ANOTHER_SUBSCRIBED_GROUP = "14";
+  private static final String A_USER_CONCERNED_BY_THE_CONTRIBUTION = "21";
+  private static final String ANOTHER_USER_CONCERNED_BY_THE_CONTRIBUTION = "23";
+  private static final ContributionIdentifier A_CONTRIBUTION =
+      ContributionIdentifier.from("kmelia42", "23", "Publication");
 
   @TestManagedBean
   UserSubscriptionNotificationSendingHandler sendingHandler;
+  @TestManagedBean
+  SubscribersOfTheContributionProvider subscribersProvider;
 
   @BeforeEach
   void setUpUsers(@TestManagedMock UserProvider userProvider) {
@@ -213,7 +231,101 @@ class SubscriptionUserNotificationBuilderTest {
     assertThat(groupsIn(metaData.getGroupRecipients()), is(empty()));
   }
 
-  private static SubscriptionNotificationBuilder aNotificationAbout(final NotifAction action) {
+  @Test
+  void theUsersConcernedByTheContributionAreNotifiedWithTheSubscribers() {
+    subscribersProvider.concern(A_USER_CONCERNED_BY_THE_CONTRIBUTION,
+        ANOTHER_USER_CONCERNED_BY_THE_CONTRIBUTION);
+
+    final UserNotification notification = aNotificationAbout(NotifAction.CREATE)
+        .of(A_CONTRIBUTION)
+        .toUsers(A_SUBSCRIBER)
+        .toGroups(A_SUBSCRIBED_GROUP)
+        .build();
+
+    final NotificationMetaData metaData = notification.getNotificationMetaData();
+    assertThat(usersIn(metaData.getUserRecipients()),
+        containsInAnyOrder(A_SUBSCRIBER, A_USER_CONCERNED_BY_THE_CONTRIBUTION,
+            ANOTHER_USER_CONCERNED_BY_THE_CONTRIBUTION));
+    assertThat(groupsIn(metaData.getGroupRecipients()), contains(A_SUBSCRIBED_GROUP));
+  }
+
+  @Test
+  void theUsersConcernedByTheContributionAreNotifiedEvenIfThereIsNoSubscriber() {
+    subscribersProvider.concern(A_USER_CONCERNED_BY_THE_CONTRIBUTION);
+
+    final UserNotification notification = aNotificationAbout(NotifAction.CREATE)
+        .of(A_CONTRIBUTION)
+        .build();
+
+    assertThat(usersIn(notification.getNotificationMetaData().getUserRecipients()),
+        contains(A_USER_CONCERNED_BY_THE_CONTRIBUTION));
+  }
+
+  @Test
+  void aUserConcernedByTheContributionWithoutAccessRightIsNotNotified() {
+    subscribersProvider.concern(A_USER_CONCERNED_BY_THE_CONTRIBUTION,
+        ANOTHER_USER_CONCERNED_BY_THE_CONTRIBUTION);
+
+    final UserNotification notification = aNotificationAbout(NotifAction.CREATE)
+        .of(A_CONTRIBUTION)
+        .withoutAccessRightFor(ANOTHER_USER_CONCERNED_BY_THE_CONTRIBUTION)
+        .build();
+
+    assertThat(usersIn(notification.getNotificationMetaData().getUserRecipients()),
+        contains(A_USER_CONCERNED_BY_THE_CONTRIBUTION));
+  }
+
+  @Test
+  void nothingIsNotifiedWhenNoneOfTheUsersConcernedByTheContributionHasAccessRight() {
+    subscribersProvider.concern(A_USER_CONCERNED_BY_THE_CONTRIBUTION);
+
+    final UserNotification notification = aNotificationAbout(NotifAction.CREATE)
+        .of(A_CONTRIBUTION)
+        .withoutAccessRightFor(A_USER_CONCERNED_BY_THE_CONTRIBUTION)
+        .build();
+
+    assertThat(notification, instanceOf(NullUserNotification.class));
+  }
+
+  @Test
+  void aSubscriberAlsoConcernedByTheContributionIsNotifiedOnlyOnce() {
+    subscribersProvider.concern(A_SUBSCRIBER);
+
+    final UserNotification notification = aNotificationAbout(NotifAction.CREATE)
+        .of(A_CONTRIBUTION)
+        .toUsers(A_SUBSCRIBER)
+        .build();
+
+    assertThat(usersIn(notification.getNotificationMetaData().getUserRecipients()),
+        contains(A_SUBSCRIBER));
+  }
+
+  @Test
+  void onlyTheSubscribersAreNotifiedWhenTheNotificationIsNotAboutAContribution() {
+    subscribersProvider.concern(A_USER_CONCERNED_BY_THE_CONTRIBUTION);
+
+    final UserNotification notification = aNotificationAbout(NotifAction.CREATE)
+        .toUsers(A_SUBSCRIBER)
+        .build();
+
+    assertThat(usersIn(notification.getNotificationMetaData().getUserRecipients()),
+        contains(A_SUBSCRIBER));
+  }
+
+  @Test
+  void theUsersConcernedByTheContributionAreNotifiedOnlyByTheNotificationsToSubscribers() {
+    subscribersProvider.concern(A_USER_CONCERNED_BY_THE_CONTRIBUTION);
+
+    final UserNotification notification = new NotificationBuilder(NotifAction.CREATE)
+        .of(A_CONTRIBUTION)
+        .toUsers(A_SUBSCRIBER)
+        .build();
+
+    assertThat(usersIn(notification.getNotificationMetaData().getUserRecipients()),
+        contains(A_SUBSCRIBER));
+  }
+
+  private static NotificationBuilder aNotificationAbout(final NotifAction action) {
     return new SubscriptionNotificationBuilder(action);
   }
 
@@ -226,35 +338,76 @@ class SubscriptionUserNotificationBuilderTest {
   }
 
   /**
-   * A builder of notifications to subscribers as any Silverpeas application could define it: it
-   * only says who are the subscribers and who among them can access the resource.
+   * A provider of the users concerned by {@link #A_CONTRIBUTION} in another way than by a
+   * subscription to a resource of a component instance.
    */
-  private static class SubscriptionNotificationBuilder extends AbstractUserNotificationBuilder
+  static class SubscribersOfTheContributionProvider implements ContributionSubscribersProvider {
+
+    private final List<SubscriptionSubscriber> subscribers = new ArrayList<>();
+
+    void concern(final String... userIds) {
+      List.of(userIds).forEach(u -> subscribers.add(UserSubscriptionSubscriber.from(u)));
+    }
+
+    @Override
+    public SubscriptionSubscriberList getSubscribersOf(final ContributionIdentifier contribution) {
+      return A_CONTRIBUTION.equals(contribution) ? new SubscriptionSubscriberList(subscribers) :
+          new SubscriptionSubscriberList();
+    }
+  }
+
+  /**
+   * A builder of notifications to subscribers as any Silverpeas application could define it: it
+   * only says who are the subscribers, who among them can access the resource and, optionally,
+   * which contribution the notification is about.
+   */
+  private static class SubscriptionNotificationBuilder extends NotificationBuilder
       implements UserSubscriptionNotificationBehavior {
+
+    SubscriptionNotificationBuilder(final NotifAction action) {
+      super(action);
+    }
+  }
+
+  /**
+   * A builder of notifications that aren't sent to subscribers.
+   */
+  private static class NotificationBuilder extends AbstractUserNotificationBuilder {
 
     private final NotifAction action;
     private Collection<String> userIds = List.of();
     private Collection<String> groupIds = List.of();
     private Set<String> unauthorized = Set.of();
+    private ContributionIdentifier contribution;
 
-    SubscriptionNotificationBuilder(final NotifAction action) {
+    NotificationBuilder(final NotifAction action) {
       super("A title", "A content");
       this.action = action;
     }
 
-    SubscriptionNotificationBuilder toUsers(final String... userIds) {
+    NotificationBuilder of(final ContributionIdentifier contribution) {
+      this.contribution = contribution;
+      return this;
+    }
+
+    NotificationBuilder toUsers(final String... userIds) {
       this.userIds = List.of(userIds);
       return this;
     }
 
-    SubscriptionNotificationBuilder toGroups(final String... groupIds) {
+    NotificationBuilder toGroups(final String... groupIds) {
       this.groupIds = List.of(groupIds);
       return this;
     }
 
-    SubscriptionNotificationBuilder withoutAccessRightFor(final String... userOrGroupIds) {
+    NotificationBuilder withoutAccessRightFor(final String... userOrGroupIds) {
       this.unauthorized = Set.of(userOrGroupIds);
       return this;
+    }
+
+    @Override
+    protected Optional<ContributionIdentifier> getSubscribedContribution() {
+      return Optional.ofNullable(contribution);
     }
 
     @Override
