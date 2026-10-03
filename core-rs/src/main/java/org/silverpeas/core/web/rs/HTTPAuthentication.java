@@ -92,10 +92,6 @@ public class HTTPAuthentication {
   }
 
   public SessionInfo authenticate(final AuthenticationContext context) {
-    SilverLogger.getLogger(HTTPAuthentication.class)
-        .info("### NEW HTTPAuthentication CODE - source={0}, loader={1} ###",
-            HTTPAuthentication.class.getProtectionDomain().getCodeSource().getLocation(),
-            HTTPAuthentication.class.getClassLoader());
     try {
       final Mutable<SessionInfo> session = Mutable.empty();
       String authorizationValue = context.getHttpServletRequest().getHeader(HTTP_AUTHORIZATION);
@@ -127,18 +123,7 @@ public class HTTPAuthentication {
       }
       Object twoFactorRequired =
           context.getHttpServletRequest().getAttribute(TWO_FACTOR_REQUIRED);
-      SilverLogger.getLogger(HTTPAuthentication.class)
-          .info("### NEW HTTPAuthentication CODE - 2FA state: required={0}, sessionPresent={1}, source={2} ###",
-              twoFactorRequired, session.isPresent(),
-              HTTPAuthentication.class.getProtectionDomain().getCodeSource().getLocation());
-      SilverLogger.getLogger(HTTPAuthentication.class)
-          .info("REST authentication 2FA state: required={0}, sessionPresent={1}",
-              twoFactorRequired, session.isPresent());
       if (Boolean.TRUE.equals(twoFactorRequired)) {
-        SilverLogger.getLogger(HTTPAuthentication.class)
-            .info("### NEW HTTPAuthentication CODE - 2FA challenge detected ###");
-        SilverLogger.getLogger(HTTPAuthentication.class)
-            .info("REST authentication 2FA challenge detected, returning NoneSession");
         return SessionInfo.NoneSession;
       }
       return session.orElseThrow(() -> new WebApplicationException(Response.Status.UNAUTHORIZED));
