@@ -111,6 +111,8 @@
   boolean isGroupManager = (Boolean) request.getAttribute("isOnlyGroupManager");
   boolean onlySpaceManager = (Boolean) request.getAttribute("isOnlySpaceManager");
   boolean isRightCopyReplaceEnabled = (Boolean) request.getAttribute("IsRightCopyReplaceEnabled");
+  boolean twoFactorAuthenticationEnabled = Boolean.TRUE.equals(
+      request.getAttribute("twoFactorAuthenticationEnabled"));
 
   String thisUserId = userObject.getId();
   boolean updatableUser = false;
@@ -156,6 +158,16 @@
     operationPane.addOperation(resource.getIcon("JDP.userDel"), resource.getString("GML.remove"),
         "javascript:removeUser()");
   }
+  if ((isDomainRW || isDomainSync || isDomainListener) && !isGroupManager
+      && twoFactorAuthenticationEnabled) {
+    operationPane.addOperation(resource.getIcon("JDP.userUpdate"),
+        resource.getString("JDP.userTwoFactorReset"),
+        "javascript:if(confirm('" + org.silverpeas.core.util.WebEncodeHelper.javaStringToJsString(
+            resource.getString("JDP.userTwoFactorResetConfirm"))
+            + "')) { window.location='userResetTwoFactor?Iduser=" + thisUserId
+            + "&X-ATKN=" + request.getAttribute("X-ATKN") + "'; }");
+  }
+
   if ((isDomainSync || isDomainListener) && !isGroupManager) {
     if (isUserFull) {
       operationPane
