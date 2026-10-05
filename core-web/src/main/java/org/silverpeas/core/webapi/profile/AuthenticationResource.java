@@ -43,7 +43,7 @@ import jakarta.ws.rs.core.Response;
 @Path(AuthenticationResource.PATH)
 public class AuthenticationResource extends RESTWebService {
 
-  static final String PATH = "authentication";
+  static final String PATH = "authentication";\n  static final String TRUSTED_DEVICE_HEADER = "X-Silverpeas-Trusted-Device";
   @Inject
   private UserPrivilegeValidation privilegeValidation;
 
@@ -120,6 +120,65 @@ public class AuthenticationResource extends RESTWebService {
     openAuthenticatedSession(user);
     return Response.ok(UserProfileEntity.fromUser(user)
         .withAsUri(ProfileResourceBaseURIs.uriOfUser(user.getId())))
+        .build();
+  }
+
+  @Operation(summary = "Completes a pending REST authentication with a trusted device.")
+  @ApiResponse(responseCode = "200", description = "The profile of the authenticated user.",
+      content = @Content(schema = @Schema(implementation = UserProfileEntity.class)))
+  @ApiResponse(responseCode = "401", description = "No pending authentication or invalid trusted device.")
+  @POST
+  @Path("trusted-device")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response authenticateTrustedDevice() {
+    HttpSession session = getHttpServletRequest().getSession(false);
+    if (session == null) {
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
+
+    String login = (String) session.getAttribute(HTTPAuthentication.TWO_FACTOR_LOGIN);
+    String domainId = (String) session.getAttribute(HTTPAuthentication.TWO_FACTOR_DOMAIN);
+    Long expiresAt = (Long) session.getAttribute(HTTPAuthentication.TWO_FACTOR_EXPIRES_AT);
+    if (!HTTPAuthentication.isValidTwoFactorChallenge(login, domainId, expiresAt)) {
+      clearRestTwoFactorChallenge(session);
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
+
+    String trustedDeviceToken = getHttpServletRequest().getHeader(TRUSTED_DEVICE_HEADER);
+    AuthenticationService authenticationService = AuthenticationServiceProvider.getService();
+    AuthenticationResponse result = authenticationService.authenticateTrustedDevice(
+        login, domainId, trustedDeviceToken, getHttpServletRequest().getHeader("User-Agent"));
+    if (!result.getStatus().succeeded()) {
+      return Response.status(Response.Status.UNAUTHORIZED)
+          .entity(AuthenticationChallengeEntity.twoFactorRequired())
+          .build();
+    }
+
+    clearRestTwoFactorChallenge(session);
+    HTTPAuthentication.clearTwoFactorChallenge(session);
+    User user = authenticationService.getUserByAuthToken(result.getToken());
+    openAuthenticatedSession(user);
+    getHttpServletResponse().addHeader(TRUSTED_DEVICE_HEADER, result.getTrustedDeviceToken());
+    getHttpServletResponse().addHeader("Access-Control-Expose-Headers", TRUSTED_DEVICE_HEADER);
+    return Response.ok(UserProfileEntity.fromUser(user)
+        .withAsUri(ProfileResourceBaseURIs.uriOfUser(user.getId())))
+        .build();
+  }
+
+  @Operation(summary = "Creates a trusted device after the current user has authenticated with TOTP.")
+  @ApiResponse(responseCode = "200", description = "The trusted-device token has been created.")
+  @POST
+  @Path("trusted-device/create")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response createTrustedDevice() throws AuthenticationException {
+    validateUserAuthentication(privilegeValidation);
+    User user = getUser();
+    AuthenticationService authenticationService = AuthenticationServiceProvider.getService();
+    String trustedDeviceToken = authenticationService.createTrustedDevice(
+        user.getLogin(), user.getDomainId(), getHttpServletRequest().getHeader("User-Agent"));
+    return Response.ok()
+        .header(TRUSTED_DEVICE_HEADER, trustedDeviceToken)
+        .header("Access-Control-Expose-Headers", TRUSTED_DEVICE_HEADER)
         .build();
   }
 
