@@ -31,6 +31,7 @@ import org.mockito.MockedStatic;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngine;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentPeas;
 import org.silverpeas.core.contribution.contentcontainer.content.ManagedContribution;
@@ -46,7 +47,6 @@ import org.silverpeas.core.subscription.SubscriptionService;
 import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
 import org.silverpeas.core.test.unit.extention.JEETestContext;
-import org.silverpeas.kernel.test.annotations.TestManagedMock;
 import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
 import java.util.ArrayList;
@@ -70,12 +70,8 @@ import static org.mockito.Mockito.when;
 
 /**
  * Unit tests on the notification of the subscribers to positions on the PdC when a contribution is
- * classified on the PdC: who are notified and with which notification.
- * <p>
- * These tests characterize the behavior of the PdC before the unification of the mechanisms of
- * notification to subscribers (feature #15500). Those about a behavior this feature is expected
- * to change are explicitly indicated as such.
- * </p>
+ * classified on the PdC out of any event on the contribution itself: who are notified and with
+ * which notification.
  * @author mmoquillon
  */
 @EnableSilverTestEnv(context = JEETestContext.class)
@@ -85,7 +81,7 @@ class PdcSubscribersNotificationTest {
   private static final int SILVER_CONTENT_ID = 1024;
   private static final int AN_AXIS = 3;
   private static final int ANOTHER_AXIS = 8;
-  private static final String CONTENT_CREATOR = "1";
+  private static final String AUTHOR_OF_THE_CLASSIFICATION = "1";
   private static final String A_SUBSCRIBER = "3";
   private static final String ANOTHER_SUBSCRIBER = "5";
 
@@ -98,18 +94,29 @@ class PdcSubscribersNotificationTest {
   private OrganizationController organizationController;
   private SubscriptionService subscriptionService;
   private SilverpeasContentManager contentManager;
+  private UserProvider userProvider;
 
   @BeforeEach
-  void setUp(@TestManagedMock ContentManagementEngine contentManagementEngine,
-      @TestManagedMock SubscriptionService subscriptionService) throws Exception {
-    this.contentManagementEngine = contentManagementEngine;
-    this.subscriptionService = subscriptionService;
+  void setUp() throws Exception {
+    this.contentManagementEngine = mock(ContentManagementEngine.class);
+    this.subscriptionService = mock(SubscriptionService.class);
     this.organizationController = mock(OrganizationController.class);
     this.contentManager = mock(SilverpeasContentManager.class);
+    this.userProvider = mock(UserProvider.class);
 
+    // the position criteria are got directly from the data source: the service is spied to
+    // provide those of the tests
     service = spy(new DefaultPdcSubscriptionService());
     FieldUtils.writeField(service, "organizationController", organizationController, true);
+    FieldUtils.writeField(service, "contentManagementEngine", contentManagementEngine, true);
+    FieldUtils.writeField(service, "subscriptionService", subscriptionService, true);
+    FieldUtils.writeField(service, "userProvider", userProvider, true);
     doReturn(allCriteria).when(service).getAllPositionCriteria();
+
+    // by default the contribution is classified by a user
+    final User author = mock(User.class);
+    when(author.getId()).thenReturn(AUTHOR_OF_THE_CLASSIFICATION);
+    when(userProvider.getCurrentRequester()).thenReturn(author);
 
     // by default the classified contribution is visible and accessible to anyone
     theContributionIsVisible(true);
@@ -189,61 +196,63 @@ class PdcSubscribersNotificationTest {
     assertThat(notifications.get(0).getUserIdsToNotify(), contains(A_SUBSCRIBER));
   }
 
-  /**
-   * A subscriber to another position on the PdC also satisfied by the classification of the
-   * contribution is notified by the notification about that other position: he hasn't to be added
-   * to the recipients of each of the notifications.
-   */
   @Test
-  void onlyTheSubscribersOfTheMatchingPositionAreTheRecipientsOfTheNotification() {
+  void theSenderIsTheAuthorOfTheClassification() {
     subscribe(aPosition("1", new AxisValueCriterion(AN_AXIS, "/12/")), A_SUBSCRIBER);
 
     final List<PdcResourceClassificationUserNotification> notifications = classify();
 
-    assertThat(notifications.get(0).getSubscribedContribution().isPresent(), is(false));
+    assertThat(notifications.get(0).getSender(), is(AUTHOR_OF_THE_CLASSIFICATION));
   }
 
   /**
-   * Behavior to be changed by the feature #15500: the notifications of the PdC should be delayed
-   * as any other notification to subscribers.
+   * It is the case of a classification done by a batch process, like an import of contributions.
    */
   @Test
-  void currentlyTheNotificationIsAlwaysSentImmediately() {
+  void theSubscribersAreNotifiedOnBehalfOfNobodyWhenTheClassificationIsNotDoneByAUser() {
     subscribe(aPosition("1", new AxisValueCriterion(AN_AXIS, "/12/")), A_SUBSCRIBER);
+    when(userProvider.getCurrentRequester()).thenReturn(null);
 
     final List<PdcResourceClassificationUserNotification> notifications = classify();
 
-    assertThat(notifications.get(0).isSendImmediately(), is(true));
+    assertThat(notifications, hasSize(1));
+    assertThat(notifications.get(0).getSender(), is(""));
+    assertThat(notifications.get(0).getUserIdsToNotify(), contains(A_SUBSCRIBER));
   }
 
   /**
-   * Behavior to be changed by the feature #15500: the sender, and hence the user excluded from
-   * the recipients, should be the author of the classification.
+   * A notification is sent for each matching position, so that it tells the subscriber which of
+   * his centers of interest is concerned. But a subscriber is notified only once about a
+   * classification, whatever the number of his subscriptions matching it.
    */
   @Test
-  void currentlyTheSenderIsTheCreatorOfTheContribution() {
-    subscribe(aPosition("1", new AxisValueCriterion(AN_AXIS, "/12/")), A_SUBSCRIBER);
-
-    final List<PdcResourceClassificationUserNotification> notifications = classify();
-
-    assertThat(notifications.get(0).getSender(), is(CONTENT_CREATOR));
-  }
-
-  /**
-   * Behavior to be changed by the feature #15500: a subscriber should be notified only once about
-   * a classification, whatever the number of his subscriptions matching it.
-   */
-  @Test
-  void currentlyASubscriberIsNotifiedOncePerMatchingPosition() {
-    subscribe(aPosition("1", new AxisValueCriterion(AN_AXIS, "/12/")), A_SUBSCRIBER);
-    subscribe(aPosition("2", new AxisValueCriterion(ANOTHER_AXIS, "/33/")), A_SUBSCRIBER,
-        ANOTHER_SUBSCRIBER);
+  void aSubscriberOfSeveralMatchingPositionsIsNotifiedOnlyOnce() {
+    final PdcSubscriptionPositionCriteria aCriteria =
+        aPosition("1", new AxisValueCriterion(AN_AXIS, "/12/"));
+    final PdcSubscriptionPositionCriteria anotherCriteria =
+        aPosition("2", new AxisValueCriterion(ANOTHER_AXIS, "/33/"));
+    subscribe(aCriteria, A_SUBSCRIBER);
+    subscribe(anotherCriteria, A_SUBSCRIBER, ANOTHER_SUBSCRIBER);
 
     final List<PdcResourceClassificationUserNotification> notifications = classify();
 
     assertThat(notifications, hasSize(2));
+    assertThat(notifications.get(0).getPdcSubscriptionPositionCriteria(), is(aCriteria));
     assertThat(notifications.get(0).getUserIdsToNotify(), contains(A_SUBSCRIBER));
-    assertThat(notifications.get(1).getUserIdsToNotify(),
+    assertThat(notifications.get(1).getPdcSubscriptionPositionCriteria(), is(anotherCriteria));
+    assertThat(notifications.get(1).getUserIdsToNotify(), contains(ANOTHER_SUBSCRIBER));
+  }
+
+  @Test
+  void noNotificationIsSentAboutAPositionWhoseSubscribersAreAllAlreadyNotified() {
+    subscribe(aPosition("1", new AxisValueCriterion(AN_AXIS, "/12/")), A_SUBSCRIBER,
+        ANOTHER_SUBSCRIBER);
+    subscribe(aPosition("2", new AxisValueCriterion(ANOTHER_AXIS, "/33/")), A_SUBSCRIBER);
+
+    final List<PdcResourceClassificationUserNotification> notifications = classify();
+
+    assertThat(notifications, hasSize(1));
+    assertThat(notifications.get(0).getUserIdsToNotify(),
         containsInAnyOrder(A_SUBSCRIBER, ANOTHER_SUBSCRIBER));
   }
 
@@ -255,7 +264,7 @@ class PdcSubscribersNotificationTest {
     final ArgumentCaptor<UserNotificationBuilder> builders =
         ArgumentCaptor.forClass(UserNotificationBuilder.class);
     try (MockedStatic<UserNotificationHelper> helper = mockStatic(UserNotificationHelper.class)) {
-      service.checkSubscriptions(classification, COMPONENT_ID, SILVER_CONTENT_ID);
+      service.notifyClassification(classification, COMPONENT_ID, SILVER_CONTENT_ID);
       helper.verify(() -> UserNotificationHelper.buildAndSend(builders.capture()),
           org.mockito.Mockito.atLeast(0));
     }
@@ -284,11 +293,8 @@ class PdcSubscribersNotificationTest {
   }
 
   private static ManagedContribution aContribution() {
-    final User creator = mock(User.class);
-    when(creator.getId()).thenReturn(CONTENT_CREATOR);
     final ManagedContribution contribution = mock(ManagedContribution.class);
     when(contribution.getComponentInstanceId()).thenReturn(COMPONENT_ID);
-    when(contribution.getCreator()).thenReturn(creator);
     return contribution;
   }
 }

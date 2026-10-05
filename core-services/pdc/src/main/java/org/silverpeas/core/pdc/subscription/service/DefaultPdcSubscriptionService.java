@@ -31,6 +31,8 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.contentcontainer.content.*;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
@@ -41,7 +43,6 @@ import org.silverpeas.core.pdc.subscription.model.PdcSubscriptionPositionCriteri
 import org.silverpeas.core.pdc.subscription.model.PdcSubscriptionRuntimeException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.subscription.SubscriptionService;
-import org.silverpeas.core.subscription.SubscriptionServiceProvider;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
@@ -49,10 +50,12 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -60,6 +63,12 @@ public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
 
   @Inject
   private OrganizationController organizationController;
+  @Inject
+  private ContentManagementEngine contentManagementEngine;
+  @Inject
+  private SubscriptionService subscriptionService;
+  @Inject
+  private UserProvider userProvider;
 
   @Override
   public Optional<PdcSubscriptionPositionCriteria> getPositionCriteria(final String id) {
@@ -112,7 +121,7 @@ public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
   public void deletePositionCriteria(final String id) {
-    getSubscriptionService().unsubscribeByResource(PdcSubscriptionPositionCriteria.from(id));
+    subscriptionService.unsubscribeByResource(PdcSubscriptionPositionCriteria.from(id));
     try (Connection conn = DBUtil.openConnection()) {
       PdcSubscriptionDAO.deleteById(conn, id);
     } catch (SQLException re) {
@@ -142,22 +151,34 @@ public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
   }
 
   @Override
-  public void checkSubscriptions(List<? extends Value> classifyValues, String componentId,
-      int silverObjectid) {
+  public void notifyClassification(List<? extends Value> classifyValues, String componentId,
+      int silverObjectId) {
     try {
-      ContentManagementEngine contentMgtEngine =
-          ContentManagementEngineProvider.getContentManagementEngine();
-      SilverContentVisibility scv = contentMgtEngine.getSilverContentVisibility(silverObjectid);
-      boolean contentObjectIsVisible = (scv.isVisible() == 1);
-
-      if (!contentObjectIsVisible) {
+      SilverContentVisibility visibility =
+          contentManagementEngine.getSilverContentVisibility(silverObjectId);
+      if (visibility.isVisible() != 1) {
         return;
       }
-      // notify the subscribers of each position criteria that corresponds to the list of classify
-      // values provided into the method
-      for (final PdcSubscriptionPositionCriteria resource : getPositionCriteriaMatching(
+      final User author = userProvider.getCurrentRequester();
+      // a notification is sent for each matching position criteria, but a subscriber is notified
+      // only once whatever the number of his subscriptions matching the classification
+      final Set<String> notifiedUserIds = new HashSet<>();
+      for (final PdcSubscriptionPositionCriteria criteria : getPositionCriteriaMatching(
           Collections.singletonList(classifyValues))) {
-        notifySubscribers(resource, componentId, silverObjectid);
+        final List<String> subscriberIds = subscriptionService.getSubscribers(criteria)
+            .getAllUserIds()
+            .stream()
+            .filter(u -> !notifiedUserIds.contains(u))
+            .toList();
+        final Map<String, ManagedContribution> contentsBySubscriber =
+            getContentsBySubscriber(subscriberIds, componentId, silverObjectId);
+        if (!contentsBySubscriber.isEmpty()) {
+          UserNotificationHelper.buildAndSend(
+              new PdcResourceClassificationUserNotification(criteria,
+                  contentsBySubscriber.keySet(), contentsBySubscriber.values().iterator().next(),
+                  author));
+          notifiedUserIds.addAll(contentsBySubscriber.keySet());
+        }
       }
     } catch (ContentManagerException e) {
       throw new PdcSubscriptionRuntimeException(e);
@@ -165,15 +186,14 @@ public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
   }
 
   /**
-   * Notifies all the subscribers of the given position criteria that are allowed to access the
-   * classified contribution. The users subscribed through a group of users is taken into account.
+   * Gets the classified contribution as each of the specified subscribers is allowed to access
+   * it. The subscribers that cannot access the contribution are left out.
    */
-  private void notifySubscribers(final PdcSubscriptionPositionCriteria resource, final String componentId,
+  private Map<String, ManagedContribution> getContentsBySubscriber(
+      final Collection<String> subscriberIds, final String componentId,
       final int silverObjectId) {
-    // The position criteria matches the new classification. Now, we have to keep only the
-    // subscribers that are allowed to access the classified contribution.
     final Map<String, ManagedContribution> contentsBySubscriber = new LinkedHashMap<>();
-    for (final String userId : getSubscriptionService().getSubscribers(resource).getAllUserIds()) {
+    for (final String userId : subscriberIds) {
       if (organizationController.isComponentAvailableToUser(componentId, userId)) {
         // the user is able to see the component instance which contains the content
         final ManagedContribution silverContent =
@@ -186,11 +206,7 @@ public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
         }
       }
     }
-    if (!contentsBySubscriber.isEmpty()) {
-      UserNotificationHelper.buildAndSend(
-          new PdcResourceClassificationUserNotification(resource, contentsBySubscriber.keySet(),
-              contentsBySubscriber.values().iterator().next()));
-    }
+    return contentsBySubscriber;
   }
 
   /**
@@ -200,7 +216,7 @@ public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
   private void notifyThenDelete(final PdcSubscriptionPositionCriteria resource, final String axisName,
       final boolean valueDeleted) {
     final List<String> subscribers =
-        getSubscriptionService().getSubscribers(resource).getAllUserIds();
+        subscriptionService.getSubscribers(resource).getAllUserIds();
     if (!subscribers.isEmpty()) {
       UserNotificationHelper.buildAndSend(
           new PdcSubscriptionDeletionUserNotification(resource, subscribers, axisName,
@@ -217,10 +233,6 @@ public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
     }
   }
 
-  private SubscriptionService getSubscriptionService() {
-    return SubscriptionServiceProvider.getSubscribeService();
-  }
-
   /**
    * get the silverContent object according to the given silverObjectid
    *
@@ -233,14 +245,12 @@ public class DefaultPdcSubscriptionService implements PdcSubscriptionService {
 
     List<ManagedContribution> silverContents;
     try {
-      ContentManagementEngine contentMgtEngine =
-          ContentManagementEngineProvider.getContentManagementEngine();
-      ContentPeas contentPeas = contentMgtEngine.getContentPeas(componentId);
+      ContentPeas contentPeas = contentManagementEngine.getContentPeas(componentId);
       SilverpeasContentManager silverpeasContentManager = contentPeas.getContentManager();
 
       List<Integer> silverContentIds = Collections.singletonList(silverObjectId);
       List<ResourceReference> resourceReferences =
-          contentMgtEngine.getResourceReferencesByContentIds(silverContentIds);
+          contentManagementEngine.getResourceReferencesByContentIds(silverContentIds);
 
       silverContents = silverpeasContentManager.getSilverContentByReference(resourceReferences,
           userId);
