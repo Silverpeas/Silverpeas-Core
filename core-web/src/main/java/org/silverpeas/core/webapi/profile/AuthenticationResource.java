@@ -86,8 +86,8 @@ public class AuthenticationResource extends RESTWebService {
   @POST
   @Path("two-factor")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response authenticateTwoFactor(@QueryParam("code") final String code)
-      throws AuthenticationException {
+  public Response authenticateTwoFactor(@QueryParam("code") final String code,
+      @QueryParam("trustDevice") final boolean trustDevice) throws AuthenticationException {
     HttpSession session = getHttpServletRequest().getSession(false);
     if (session == null) {
       return Response.status(Response.Status.UNAUTHORIZED).build();
@@ -124,9 +124,15 @@ public class AuthenticationResource extends RESTWebService {
       return Response.status(Response.Status.UNAUTHORIZED).build();
     }
     openAuthenticatedSession(user);
-    return Response.ok(UserProfileEntity.fromUser(user)
-        .withAsUri(ProfileResourceBaseURIs.uriOfUser(user.getId())))
-        .build();
+    Response.ResponseBuilder response = Response.ok(UserProfileEntity.fromUser(user)
+        .withAsUri(ProfileResourceBaseURIs.uriOfUser(user.getId())));
+    if (trustDevice) {
+      String trustedDeviceToken = authenticationService.createTrustedDevice(
+          user.getLogin(), user.getDomainId(), getHttpServletRequest().getHeader("User-Agent"));
+      response.header(TRUSTED_DEVICE_HEADER, trustedDeviceToken)
+          .header("Access-Control-Expose-Headers", TRUSTED_DEVICE_HEADER);
+    }
+    return response.build();
   }
 
   @Operation(summary = "Completes a pending REST authentication with a trusted device.")
@@ -174,27 +180,6 @@ public class AuthenticationResource extends RESTWebService {
     return Response.ok(UserProfileEntity.fromUser(user)
         .withAsUri(ProfileResourceBaseURIs.uriOfUser(user.getId())))
         .build();
-  }
-
-  @Operation(summary = "Creates a trusted device after the current user has authenticated with TOTP.")
-  @ApiResponse(responseCode = "200", description = "The trusted-device token has been created.")
-  @POST
-  @Path("trusted-device/create")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Response createTrustedDevice() {
-    validateUserAuthentication(privilegeValidation);
-    User user = getUser();
-    AuthenticationService authenticationService = AuthenticationServiceProvider.getService();
-    try {
-      String trustedDeviceToken = authenticationService.createTrustedDevice(
-          user.getLogin(), user.getDomainId(), getHttpServletRequest().getHeader("User-Agent"));
-      return Response.ok()
-          .header(TRUSTED_DEVICE_HEADER, trustedDeviceToken)
-          .header("Access-Control-Expose-Headers", TRUSTED_DEVICE_HEADER)
-          .build();
-    } catch (AuthenticationException e) {
-      return Response.status(Response.Status.UNAUTHORIZED).build();
-    }
   }
 
   private int getTwoFactorAttempts(final HttpSession session) {
