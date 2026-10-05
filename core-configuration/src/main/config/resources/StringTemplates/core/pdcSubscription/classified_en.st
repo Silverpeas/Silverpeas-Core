@@ -1,0 +1,1 @@
+The contribution <b>$contributionName$</b> has just been classified in your center of interest <b>$centerOfInterest$</b>.

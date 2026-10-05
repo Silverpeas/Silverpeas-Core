@@ -95,15 +95,25 @@ public interface PdcSubscriptionService {
   void deletePositionCriteria(String id);
 
   /**
-   * Checks if any position criteria on the PdC matches the classification provided and, if so,
-   * notifies all the users that are subscribed to that set and that are allowed to access the
-   * classified contribution. The users subscribed through a group of users is taken into account.
-   * @param classifyValues the positions on which the contribution has been classified.
+   * Notifies the subscribers on the PdC about the classification of a contribution on a position,
+   * out of any event on the contribution itself. Are notified the users subscribed to position
+   * criteria satisfied by the specified position and that are allowed to access the classified
+   * contribution; those subscribed through a group of users are taken into account. A
+   * notification is sent for each of the satisfied position criteria, but a subscriber is
+   * notified only once whatever the number of his subscriptions. Nobody is notified about a
+   * contribution that isn't visible.
+   * <p>
+   * When a contribution is created, modified or published, its subscribers on the PdC are notified
+   * with the other subscribers by the application that manages the contribution: this method
+   * mustn't then be invoked.
+   * </p>
+   * @param classifyValues the values on the axis of the PdC of the position on which the
+   * contribution has been classified.
    * @param componentId the component instance into which the classification event occurred.
-   * @param silverObjectid the contribution that has been classified.
+   * @param silverObjectId the contribution that has been classified.
    */
-  void checkSubscriptions(List<? extends Value> classifyValues, String componentId,
-      int silverObjectid);
+  void notifyClassification(List<? extends Value> classifyValues, String componentId,
+      int silverObjectId);
 
   /**
    * Checks the deletion of a value of an axis of the PdC. All the position criteria referring the

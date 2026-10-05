@@ -1728,7 +1728,7 @@ public class GlobalPdcManager implements PdcManager {
       if (alertSubscribers) {
         // Alert subscribers to the position
         pdcSubscriptionManager
-            .checkSubscriptions(position.getValues(), sComponentId, silverObjectId);
+            .notifyClassification(position.getValues(), sComponentId, silverObjectId);
       }
     }
 
@@ -1771,7 +1771,7 @@ public class GlobalPdcManager implements PdcManager {
     }
 
     if (alertSubscribers) {
-      pdcSubscriptionManager.checkSubscriptions(position.getValues(), instanceId, silverObjectId);
+      pdcSubscriptionManager.notifyClassification(position.getValues(), instanceId, silverObjectId);
     }
 
     return 0;

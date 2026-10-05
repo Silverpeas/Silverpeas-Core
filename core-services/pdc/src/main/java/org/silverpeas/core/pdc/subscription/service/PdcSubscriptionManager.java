@@ -47,9 +47,9 @@ public class PdcSubscriptionManager {
 
   }
 
-  public void checkSubscriptions(List<? extends Value> classifyValues, String componentId,
+  public void notifyClassification(List<? extends Value> classifyValues, String componentId,
       int silverObjectId) {
-    pdcSubscriptionService.checkSubscriptions(classifyValues, componentId, silverObjectId);
+    pdcSubscriptionService.notifyClassification(classifyValues, componentId, silverObjectId);
   }
 
   public void checkAxisOnDelete(int axisId, String axisName) {

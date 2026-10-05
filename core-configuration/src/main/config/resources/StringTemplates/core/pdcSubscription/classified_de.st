@@ -1,0 +1,1 @@
+Der Beitrag <b>$contributionName$</b> wurde soeben in Ihrem Interessenschwerpunkt <b>$centerOfInterest$</b> klassifiziert.
