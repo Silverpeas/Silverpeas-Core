@@ -208,6 +208,25 @@ public class SecuritySettings {
     return getAllowedHosts("security.external.media.hosts.allowed", "*");
   }
 
+  /**
+   * Gets the hosts from which the scripts referred by the data sent to Silverpeas, and by the
+   * contents being rendered or exported, are allowed to be loaded. The Silverpeas server itself
+   * isn't among them as it is always allowed.
+   * @return a list of host names. Empty if only the Silverpeas server is allowed.
+   */
+  public static List<String> getAllowedHostsForScript() {
+    return getAllowedHosts("security.external.script.hosts.allowed", "");
+  }
+
+  /**
+   * Are the scripts allowed to load their code from the files attached to the contributions?
+   * Those files are uploaded by the users themselves, so their code is by default not trusted.
+   * @return true only if such scripts are explicitly allowed, false otherwise.
+   */
+  public static boolean areScriptsFromAttachedFilesAllowed() {
+    return settings.getBoolean("security.script.attachments.allowed", false);
+  }
+
   private static List<String> getAllowedHosts(final String property, final String defaultValue) {
     final String hosts = settings.getString(property, defaultValue);
     return Arrays.stream(hosts.split(","))

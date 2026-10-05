@@ -121,6 +121,7 @@ public class WysiwygContentTransformerTest {
     mailSettings.put("image.resize.min-width", "0");
     securitySettings.put("security.external.iframe.hosts.allowed", "www.youtube.com");
     securitySettings.put("security.external.media.hosts.allowed", "www.youtube.com");
+    securitySettings.put("security.external.script.hosts.allowed", "scripts.example.org");
     originalOdt = new File(Objects.requireNonNull(getClass().getResource("/" + ODT_NAME)).getPath());
     assertThat(originalOdt.exists(), is(true));
     originalImage = new File(Objects.requireNonNull(getClass().getResource("/" + IMAGE_NAME)).getPath());
@@ -309,6 +310,8 @@ public class WysiwygContentTransformerTest {
   void sanitizeForRenderingKeepsOnlyTheMediaReferringAnAllowedSource() {
     assertThat(sanitizedForRendering("<img src=\"/silverpeas/x.png\" />"),
         is("<img src=\"/silverpeas/x.png\" />"));
+    assertThat(sanitizedForRendering("<img src=\"/weblib/images/logo.png\" />"),
+        is("<img src=\"/weblib/images/logo.png\" />"));
     assertThat(sanitizedForRendering("<img src=\"https://www.unallowed.org/x.png\" />"), is(""));
     assertThat(sanitizedForRendering("<img src=\"https://www.youtube.com/x.png\" />"),
         is("<img src=\"https://www.youtube.com/x.png\" />"));
@@ -373,6 +376,86 @@ public class WysiwygContentTransformerTest {
     assertThat(
         sanitizedForRendering("<iframe srcdoc=\"&lt;script&gt;alert(1)&lt;/script&gt;\"></iframe>"),
         is(""));
+  }
+
+  /**
+   * The rendering keeps the scripts Silverpeas accepts at the very moment a content referring them
+   * is submitted: those loading their code from the platform itself or from an allowed host. Such
+   * a script has no code by itself to carry.
+   */
+  @Test
+  void sanitizeForRenderingKeepsOnlyTheScriptsReferringAnAllowedSource() {
+    assertThat(sanitizedForRendering("<p>text</p><script src=\"/weblib/custom.js\"></script>"),
+        is("<p>text</p><script src=\"/weblib/custom.js\"></script>"));
+    assertThat(sanitizedForRendering(
+            "<script type=\"text/javascript\" src=\"/silverpeas/js/custom.js\" defer></script>after"),
+        is("<script type=\"text/javascript\" src=\"/silverpeas/js/custom.js\" defer=\"defer\">" +
+            "</script>after"));
+    assertThat(
+        sanitizedForRendering("<script src=\"https://scripts.example.org/api.js\"></script>"),
+        is("<script src=\"https://scripts.example.org/api.js\"></script>"));
+    assertThat(sanitizedForRendering("<script src=\"/weblib/custom.js\">alert(1)</script>after"),
+        is("<script src=\"/weblib/custom.js\"></script>after"));
+    assertThat(
+        sanitizedForRendering("<script src=\"/weblib/custom.js\" onload=\"alert(1)\"></script>"),
+        is("<script src=\"/weblib/custom.js\"></script>"));
+    assertThat(sanitizedForRendering("<script>alert(1)</script>after"), is("after"));
+    assertThat(sanitizedForRendering("<script src=\"/other/evil.js\"></script>after"),
+        is("after"));
+    assertThat(sanitizedForRendering("<script src=\"/weblib/../other/evil.js\"></script>after"),
+        is("after"));
+    assertThat(
+        sanitizedForRendering("<script src=\"/weblib/&#46;&#46;/other/evil.js\"></script>after"),
+        is("after"));
+    assertThat(
+        sanitizedForRendering("<script src=\"https&colon;//www.evil.org/evil.js\"></script>after"),
+        is("after"));
+    assertThat(
+        sanitizedForRendering("<script src=\"http://scripts.example.org/api.js\"></script>after"),
+        is("after"));
+    // the hosts allowed for the iframes and the media aren't for the scripts
+    assertThat(
+        sanitizedForRendering("<script src=\"https://www.youtube.com/api.js\"></script>after"),
+        is("after"));
+  }
+
+  /**
+   * The files attached to the contributions are uploaded by the users: a script loading its code
+   * from one of them is kept only once it is explicitly allowed.
+   */
+  @Test
+  void sanitizeForRenderingKeepsTheScriptsLoadedFromAnAttachedFileOnlyOnceExplicitlyEnabled() {
+    final String attachedFile =
+        "/silverpeas/attached_file/componentId/kmelia1/attachmentId/7088b9d6/lang/fr/name/";
+    final String script = "<script src=\"" + attachedFile + "custom.js\"></script>";
+    assertThat(sanitizedForRendering(script + "after"), is("after"));
+    assertThat(sanitizedForRendering("<script src=\"/silverpeas/File/7088b9d6\"></script>after"),
+        is("after"));
+
+    securitySettings.put("security.script.attachments.allowed", "");
+    assertThat(sanitizedForRendering(script + "after"), is("after"));
+
+    securitySettings.put("security.script.attachments.allowed", "false");
+    assertThat(sanitizedForRendering(script + "after"), is("after"));
+
+    securitySettings.put("security.script.attachments.allowed", "true");
+    assertThat(sanitizedForRendering(script + "after"), is(script + "after"));
+  }
+
+  /**
+   * Whereas an attached file is always kept as the source of an image and of an iframe, by which
+   * the PDF documents are commonly embedded within the contents: the document an iframe embeds is
+   * served by Silverpeas along with a content security policy forbidding it any script.
+   */
+  @Test
+  void sanitizeForRenderingKeepsTheImagesAndTheIFramesReferringAnAttachedFile() {
+    final String attachedFile =
+        "/silverpeas/attached_file/componentId/kmelia1/attachmentId/7088b9d6/lang/fr/name/";
+    final String image = "<img src=\"" + attachedFile + "image.png\" />";
+    final String iframe = "<iframe src=\"" + attachedFile + "document.pdf\"></iframe>";
+    assertThat(sanitizedForRendering(image + iframe), is(image + iframe));
+    assertThat(sanitizedForRendering("<iframe src=\"/silverpeas/File/7088b9d6\"></iframe>"),
+        is("<iframe src=\"/silverpeas/File/7088b9d6\"></iframe>"));
   }
 
   private String sanitizedForRendering(final String content) {
