@@ -25,7 +25,9 @@ package org.silverpeas.core.security.html;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
@@ -33,17 +35,27 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
- * Validator of the source referred by a resource embedded within a content: an iframe, but also an
- * image, a video or an audio. A source is allowed only if it is either an HTTPS URL on one of the
- * allowed hosts or a relative URL within the Silverpeas application. A relative URL must not
- * attempt to go up in the paths (no ".." sequence) and, when it is an absolute path, it must start
- * with the application path. In other terms, the resources Silverpeas hosts itself are allowed,
- * whereas the external ones have to be explicitly declared.
+ * Validator of the source referred by a resource embedded within a content: an iframe, a script,
+ * but also an image, a video or an audio. A source is allowed only if it is either an HTTPS URL on
+ * one of the allowed hosts or a relative URL within the Silverpeas application or within the
+ * weblib one, which serves beside Silverpeas the resources specific to the platform. A relative
+ * URL must not attempt to go up in the paths (no ".." sequence) and, when it is an absolute path,
+ * it must start with the path of one of these two applications. In other terms, the resources the
+ * platform hosts itself are allowed, whereas the external ones have to be explicitly declared.
+ * <p>
+ * Among the resources Silverpeas hosts, the files attached to the contributions are particular:
+ * they are uploaded by the users themselves. Loaded as a script, such a file would run in the
+ * browser of the readers of a content, and in their name, a code nobody has checked. So a
+ * validator can be asked to reject the sources served by the file servers of Silverpeas, which is
+ * expected for the scripts. The iframes aren't concerned: the document they embed is served by
+ * those file servers along with a content security policy forbidding it any script, so that a
+ * PDF document or an HTML page attached to a contribution can be safely embedded.
+ * </p>
  * <p>
  * This rule is shared by the two ends at which such resources are taken in charge: the filtering
- * of the incoming requests, which rejects the contents embedding a non-allowed iframe, and the
- * sanitization of the contents being rendered or exported, which drops the non-allowed resources.
- * Both have hence to agree on what an allowed source is.
+ * of the incoming requests, which rejects the contents embedding a non-allowed iframe or script,
+ * and the sanitization of the contents being rendered or exported, which drops the non-allowed
+ * resources. Both have hence to agree on what an allowed source is.
  * </p>
  * @author mmoquillon
  */
@@ -58,6 +70,15 @@ public final class EmbeddedSourceValidator {
   private static final Pattern TRAILING_SLASHES_PATTERN = Pattern.compile("(?<!/)/++$");
   private static final String PATH_TRAVERSAL = "..";
   private static final String HTTPS_SCHEME = "https";
+  private static final String WEBLIB_PATH = "/weblib";
+
+  /**
+   * The routes, relative to the Silverpeas application, by which the files attached to the
+   * contributions are served: by their own URL, by their permalink which redirects to it, or by
+   * the other file servers.
+   */
+  private static final Set<String> FILE_SERVERS = Set.of("attached_file", "File", "Document",
+      "FileServer", "OnlineFileServer", "TempFileServer");
   /**
    * The characters forbidden by the URI syntax that a browser percent-encodes before sending the
    * request, without any further interpretation.
@@ -66,20 +87,37 @@ public final class EmbeddedSourceValidator {
 
   private final Set<String> allowedHosts;
   private final String applicationPath;
+  private final boolean attachedFilesAllowed;
 
   /**
-   * Constructs a validator accepting only the sources referring the specified hosts or the
-   * specified application.
+   * Constructs a validator accepting only the sources referring the specified hosts, the
+   * specified application or the weblib one.
    * @param allowedHosts the hosts from which a resource can be embedded within a content. The
    * {@link #ANY_HOST} value allows them all.
    * @param applicationPath the path of the Silverpeas application (for example /silverpeas).
    */
   public EmbeddedSourceValidator(final Collection<String> allowedHosts,
       final String applicationPath) {
+    this(allowedHosts, applicationPath, true);
+  }
+
+  /**
+   * Constructs a validator accepting only the sources referring the specified hosts, the
+   * specified application or the weblib one, and accepting or not the files attached to the
+   * contributions among them.
+   * @param allowedHosts the hosts from which a resource can be embedded within a content. The
+   * {@link #ANY_HOST} value allows them all.
+   * @param applicationPath the path of the Silverpeas application (for example /silverpeas).
+   * @param attachedFilesAllowed is a file attached to a contribution an allowed source? It
+   * shouldn't for a script, unless the users are all trusted.
+   */
+  public EmbeddedSourceValidator(final Collection<String> allowedHosts,
+      final String applicationPath, final boolean attachedFilesAllowed) {
     this.allowedHosts = allowedHosts.stream()
         .map(h -> h.toLowerCase(Locale.ROOT))
         .collect(Collectors.toSet());
     this.applicationPath = TRAILING_SLASHES_PATTERN.matcher(applicationPath).replaceFirst("");
+    this.attachedFilesAllowed = attachedFilesAllowed;
   }
 
   /**
@@ -120,9 +158,12 @@ public final class EmbeddedSourceValidator {
   }
 
   private boolean isAllowed(final URI uri) {
-    if (uri.getScheme() == null && uri.getRawAuthority() == null) {
-      return isAllowedRelativeURI(uri);
-    }
+    final boolean relative = uri.getScheme() == null && uri.getRawAuthority() == null;
+    final boolean allowed = relative ? isAllowedRelativeURI(uri) : isAllowedAbsoluteURI(uri);
+    return allowed && (attachedFilesAllowed || !isAttachedFile(uri));
+  }
+
+  private boolean isAllowedAbsoluteURI(final URI uri) {
     return HTTPS_SCHEME.equalsIgnoreCase(uri.getScheme()) && uri.getHost() != null &&
         (allowedHosts.contains(ANY_HOST) ||
             allowedHosts.contains(uri.getHost().toLowerCase(Locale.ROOT)));
@@ -132,8 +173,36 @@ public final class EmbeddedSourceValidator {
     // the path and the query are here decoded, so any encoded path traversal is also detected
     final String path = uri.getPath();
     final String query = Objects.toString(uri.getQuery(), "");
-    final boolean inApplication = !path.startsWith("/") || path.equals(applicationPath) ||
-        path.startsWith(applicationPath + "/");
+    final boolean inApplication =
+        !path.startsWith("/") || isWithin(applicationPath, path) || isWithin(WEBLIB_PATH, path);
     return inApplication && !path.contains(PATH_TRAVERSAL) && !query.contains(PATH_TRAVERSAL);
+  }
+
+  private static boolean isWithin(final String applicationPath, final String path) {
+    return path.equals(applicationPath) || path.startsWith(applicationPath + "/");
+  }
+
+  private boolean isAttachedFile(final URI uri) {
+    final String path = Objects.toString(uri.getPath(), "");
+    final List<String> segments = segmentsOf(path);
+    // a relative path is resolved against the one of the page rendering the content
+    final boolean relativePath =
+        uri.getScheme() == null && uri.getRawAuthority() == null && !path.startsWith("/");
+    final List<String> application = relativePath ? List.of() : segmentsOf(applicationPath);
+    final int route = application.size();
+    return segments.size() > route && segments.subList(0, route).equals(application) &&
+        FILE_SERVERS.contains(segments.get(route));
+  }
+
+  /**
+   * Gets the segments of the specified path the way the server reads them to find out the
+   * resource to serve: without the parameters a segment can carry, and without the empty and the
+   * dot ones.
+   */
+  private static List<String> segmentsOf(final String path) {
+    return Arrays.stream(path.split("/"))
+        .map(s -> s.contains(";") ? s.substring(0, s.indexOf(';')) : s)
+        .filter(s -> !s.isEmpty() && !".".equals(s))
+        .collect(Collectors.toList());
   }
 }

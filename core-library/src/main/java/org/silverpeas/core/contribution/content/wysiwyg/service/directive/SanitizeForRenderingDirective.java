@@ -56,7 +56,12 @@ import java.util.regex.Pattern;
  *   <li>the event callback attributes, whatever the element carrying them;</li>
  *   <li>the attributes referring a URL with a scripting scheme;</li>
  *   <li>the iframes and the media whose source isn't allowed, according to the very rule applied
- *   by the filtering of the incoming requests.</li>
+ *   by the filtering of the incoming requests;</li>
+ *   <li>the scripts loading their code from a file attached to a contribution, unless such a
+ *   source is explicitly allowed: those files are uploaded by the users themselves;</li>
+ *   <li>the scripts, but for the ones loading their code from an allowed source, according again
+ *   to the rule applied by the filtering of the incoming requests. Whatever such a script carries
+ *   by itself is dropped.</li>
  * </ul>
  * <p>
  * The parsing is delegated to the HTML tokenizer of the OWASP sanitizer, so the content is read the
@@ -67,6 +72,7 @@ import java.util.regex.Pattern;
 public class SanitizeForRenderingDirective implements WysiwygContentTransformerDirective {
 
   private static final String IFRAME = "iframe";
+  private static final String SCRIPT = "script";
   private static final String SRC = "src";
   private static final String POSTER = "poster";
   private static final String SRCDOC = "srcdoc";
@@ -80,10 +86,10 @@ public class SanitizeForRenderingDirective implements WysiwygContentTransformerD
 
   /**
    * The elements dropped along with their content: they either run code or take over the document
-   * the content is rendered into.
+   * the content is rendered into. The scripts are handled apart.
    */
   private static final Set<String> FORBIDDEN_ELEMENTS = setOf("applet", "base", "embed", "frame",
-      "frameset", "link", "math", "meta", "object", "script", "svg");
+      "frameset", "link", "math", "meta", "object", "svg");
 
   private static final Set<String> MEDIA_ELEMENTS = setOf("audio", "img", "source", "track",
       "video");
@@ -127,6 +133,7 @@ public class SanitizeForRenderingDirective implements WysiwygContentTransformerD
     private final HtmlStreamEventReceiver output;
     private final EmbeddedSourceValidator iframeSources = iframeSources();
     private final EmbeddedSourceValidator mediaSources = mediaSources();
+    private final EmbeddedSourceValidator scriptSources = scriptSources();
     private String skippedElement = null;
     private int skippedDepth = 0;
 
@@ -159,6 +166,11 @@ public class SanitizeForRenderingDirective implements WysiwygContentTransformerD
         return;
       }
       output.openTag(element, keepHarmlessAttributes(attributes));
+      if (SCRIPT.equals(element)) {
+        // the code is loaded from the source: whatever the script carries by itself is dropped
+        output.closeTag(element);
+        skip(element);
+      }
     }
 
     @Override
@@ -194,6 +206,10 @@ public class SanitizeForRenderingDirective implements WysiwygContentTransformerD
         // an iframe without any source has nothing to embed
         return !iframeSources.isAllowed(src);
       }
+      if (SCRIPT.equals(element)) {
+        // a script without any source carries its code by itself
+        return !scriptSources.isAllowed(src);
+      }
       // a media can carry its source by a child source element instead of by its own attribute
       return MEDIA_ELEMENTS.contains(element) && src != null && isNotAllowedMedia(src);
     }
@@ -206,6 +222,11 @@ public class SanitizeForRenderingDirective implements WysiwygContentTransformerD
     private static EmbeddedSourceValidator mediaSources() {
       return new EmbeddedSourceValidator(SecuritySettings.getAllowedHostsForMedia(),
           URLUtil.getApplicationURL());
+    }
+
+    private static EmbeddedSourceValidator scriptSources() {
+      return new EmbeddedSourceValidator(SecuritySettings.getAllowedHostsForScript(),
+          URLUtil.getApplicationURL(), SecuritySettings.areScriptsFromAttachedFilesAllowed());
     }
 
     private boolean isNotAllowedMedia(final String src) {
