@@ -43,7 +43,8 @@ import jakarta.ws.rs.core.Response;
 @Path(AuthenticationResource.PATH)
 public class AuthenticationResource extends RESTWebService {
 
-  static final String PATH = "authentication";\n  static final String TRUSTED_DEVICE_HEADER = "X-Silverpeas-Trusted-Device";
+  static final String PATH = "authentication";
+  static final String TRUSTED_DEVICE_HEADER = "X-Silverpeas-Trusted-Device";
   @Inject
   private UserPrivilegeValidation privilegeValidation;
 
