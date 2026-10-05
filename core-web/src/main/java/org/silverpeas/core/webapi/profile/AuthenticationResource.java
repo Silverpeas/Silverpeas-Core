@@ -162,7 +162,12 @@ public class AuthenticationResource extends RESTWebService {
 
     clearRestTwoFactorChallenge(session);
     HTTPAuthentication.clearTwoFactorChallenge(session);
-    User user = authenticationService.getUserByAuthToken(result.getToken());
+    final User user;
+    try {
+      user = authenticationService.getUserByAuthToken(result.getToken());
+    } catch (AuthenticationException e) {
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
     openAuthenticatedSession(user);
     getHttpServletResponse().addHeader(TRUSTED_DEVICE_HEADER, result.getTrustedDeviceToken());
     getHttpServletResponse().addHeader("Access-Control-Expose-Headers", TRUSTED_DEVICE_HEADER);
