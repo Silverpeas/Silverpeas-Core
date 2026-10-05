@@ -181,16 +181,20 @@ public class AuthenticationResource extends RESTWebService {
   @POST
   @Path("trusted-device/create")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response createTrustedDevice() throws AuthenticationException {
+  public Response createTrustedDevice() {
     validateUserAuthentication(privilegeValidation);
     User user = getUser();
     AuthenticationService authenticationService = AuthenticationServiceProvider.getService();
-    String trustedDeviceToken = authenticationService.createTrustedDevice(
-        user.getLogin(), user.getDomainId(), getHttpServletRequest().getHeader("User-Agent"));
-    return Response.ok()
-        .header(TRUSTED_DEVICE_HEADER, trustedDeviceToken)
-        .header("Access-Control-Expose-Headers", TRUSTED_DEVICE_HEADER)
-        .build();
+    try {
+      String trustedDeviceToken = authenticationService.createTrustedDevice(
+          user.getLogin(), user.getDomainId(), getHttpServletRequest().getHeader("User-Agent"));
+      return Response.ok()
+          .header(TRUSTED_DEVICE_HEADER, trustedDeviceToken)
+          .header("Access-Control-Expose-Headers", TRUSTED_DEVICE_HEADER)
+          .build();
+    } catch (AuthenticationException e) {
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
   }
 
   private int getTwoFactorAttempts(final HttpSession session) {
