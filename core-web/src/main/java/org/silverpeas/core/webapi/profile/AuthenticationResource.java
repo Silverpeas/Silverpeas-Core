@@ -117,7 +117,12 @@ public class AuthenticationResource extends RESTWebService {
 
     clearRestTwoFactorChallenge(session);
     HTTPAuthentication.clearTwoFactorChallenge(session);
-    User user = authenticationService.getUserByAuthToken(result.getToken());
+    final User user;
+    try {
+      user = authenticationService.getUserByAuthToken(result.getToken());
+    } catch (AuthenticationException e) {
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
     openAuthenticatedSession(user);
     return Response.ok(UserProfileEntity.fromUser(user)
         .withAsUri(ProfileResourceBaseURIs.uriOfUser(user.getId())))
