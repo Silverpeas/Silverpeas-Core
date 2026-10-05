@@ -71,6 +71,34 @@ class IFrameCheckerTest {
   }
 
   /**
+   * The weblib application serves, beside Silverpeas, the resources specific to the platform.
+   */
+  @Test
+  void iframeOnRelativeUrlWithinWeblibIsAllowed() {
+    assertAllowed("<iframe src=\"/weblib/pages/page.html\"></iframe>");
+    assertAllowed("<iframe src=\"/weblib\"></iframe>");
+    assertRejected("<iframe src=\"/weblibother/page.html\"></iframe>");
+    assertRejected("<iframe src=\"/weblib/../other/app\"></iframe>");
+  }
+
+  /**
+   * The files attached to the contributions, like the PDF documents, are commonly embedded within
+   * the contents. Unlike the scripts, the iframes have not to be protected here from the code such
+   * a file could carry: the file servers of Silverpeas serve it along with a content security
+   * policy forbidding it any script.
+   */
+  @Test
+  void iframeOnAnAttachedFileIsAllowed() {
+    final String attachedFile =
+        "/silverpeas/attached_file/componentId/kmelia1/attachmentId/7088b9d6/lang/fr/name/";
+    assertAllowed("<iframe src=\"" + attachedFile + "document.pdf\"></iframe>");
+    assertAllowed("<iframe src=\"" + attachedFile + "page.html\"></iframe>");
+    assertAllowed("<iframe src=\"/silverpeas/File/7088b9d6\"></iframe>");
+    assertAllowed("<iframe src=\"https://silverpeas.example.org" + attachedFile +
+        "document.pdf\"></iframe>");
+  }
+
+  /**
    * The browsers accept a URL with some characters forbidden by the URI syntax, a whitespace for
    * example, by encoding them: such a URL is checked as the browsers would send it.
    */
@@ -127,6 +155,30 @@ class IFrameCheckerTest {
     assertRejected("<iframe src=\"https&#58;//www.evil.org/\"></iframe>");
     assertRejected("<iframe src=\"https://www.youtube.com/a\"></iframe><iframe " +
         "src=\"https://www.evil.org/b\"></iframe>");
+  }
+
+  /**
+   * The source is read the way the browsers read it: they know far more entities than the ones of
+   * HTML 4, and they decode them even when they are loosely written. A source going out of the
+   * allowed ones once decoded has to be rejected, however it is written.
+   */
+  @Test
+  void iframeWhoseSourceIsDisguisedByEntitiesIsRejected() {
+    assertRejected("<iframe src=\"https&colon;//www.evil.org/\"></iframe>");
+    assertRejected("<iframe src=\"&sol;&sol;www.evil.org/\"></iframe>");
+    assertRejected("<iframe src=\"https://www.evil.org&sol;@www.youtube.com/\"></iframe>");
+    assertRejected("<iframe src=\"/silverpeas/&period;&period;/other/app\"></iframe>");
+    assertRejected("<iframe src=\"/silverpeas/.&#46/other/app\"></iframe>");
+    assertRejected("<iframe src=\"/silverpeas/&#x2e;&#x2E;/other/app\"></iframe>");
+    assertRejected("<iframe src=\"/silverpeas/.&Tab;./other/app\"></iframe>");
+  }
+
+  @Test
+  void iframeWhoseAllowedSourceIsWrittenWithEntitiesIsAllowed() {
+    assertAllowed("<iframe src=\"https&colon;//www.youtube.com/embed/xyz\"></iframe>");
+    assertAllowed("<iframe src=\"/silverpeas/Rkmelia&sol;kmelia1&#47;Main\"></iframe>");
+    // an ampersand which introduces no entity is the separator of the parameters of a query
+    assertAllowed("<iframe src=\"https://www.youtube.com/embed?a=1&b=2&copy=3\"></iframe>");
   }
 
   @Test

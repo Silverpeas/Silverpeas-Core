@@ -98,9 +98,6 @@ public class MassiveWebSecurityFilterIT {
         assertXSS(param("< \\ script  >"), false);
         assertXSS(param("<script " + "type=\"text/javascript\">var webContext='/silverpeas';</script>"),
                 true);
-        assertXSS(param("<script " +
-                        "type=\"text/javascript\" src=\"/silverpeas/util/javaScript/silverpeas.js\"></script>"),
-                true);
     }
 
     @Test
@@ -109,14 +106,48 @@ public class MassiveWebSecurityFilterIT {
         assertXSS(param("<iframe src=\"https://www.youtube.com/embed/xyz\"></iframe>"), false);
         assertXSS(param("<iframe\n src=\"https://www.youtube.com/embed/xyz\"\n></iframe>"), false);
         assertXSS(param("<iframe src=\"/silverpeas/Rkmelia/kmelia1/Main\"></iframe>"), false);
+        assertXSS(param("<iframe src=\"/weblib/pages/page.html\"></iframe>"), false);
+        assertXSS(param("<iframe src=\"/silverpeas/attached_file/componentId/kmelia1/attachmentId/" +
+                "7088b9d6/lang/fr/name/document.pdf\"></iframe>"), false);
+        assertXSS(param("<iframe src=\"/silverpeas/File/7088b9d6\"></iframe>"), false);
         assertXSS(param("<iframe src=\"/silverpeas/../other/app\"></iframe>"), true);
         assertXSS(param("<iframe src=\"/other/app\"></iframe>"), true);
         assertXSS(param("<iframe src=\"http://www.youtube.com/embed/xyz\"></iframe>"), true);
         assertXSS(param("<iframe src=\"https://www.evil.org/\"></iframe>"), true);
+        assertXSS(param("<iframe src=\"https&colon;//www.evil.org/\"></iframe>"), true);
         assertXSS(param("<iframe src=\"https://www.youtube.com/\" srcdoc=\"x\"></iframe>"), true);
         assertXSS(param("<iframe src=\"https://www.youtube.com/\" onload=\"alert(1)\"></iframe>"),
                 true);
         assertXSS(param("<iframe src=\"https://www.youtube.com/\"></iframe><script>"), true);
+    }
+
+    @Test
+    public void secureAgainstXssByScript() {
+        assertXSS(skippedParam("<script>alert(1)</script>"), false);
+        assertXSS(param("<script " +
+                        "type=\"text/javascript\" src=\"/silverpeas/util/javaScript/silverpeas.js\"></script>"),
+                false);
+        assertXSS(param("<script src=\"/weblib/custom.js\"></script>"), false);
+        assertXSS(param("<p>a page</p><script type=\"text/javascript\"\n" +
+                " src=\"/weblib/js/custom.js\">\n</script>"), false);
+        assertXSS(param("<script src=\"/weblib/a.js\"></script><script src=\"/weblib/b.js\"></script>"),
+                false);
+        assertXSS(param("<script src=\"https://scripts.example.org/api.js?v=2&amp;key=x\"></script>"),
+                false);
+        assertXSS(param("<script src=\"/weblib/custom.js\">alert(1)</script>"), true);
+        assertXSS(param("<script src=\"/weblib/custom.js\"></script><script>alert(1)</script>"),
+                true);
+        assertXSS(param("<script src=\"/weblib/../other/evil.js\"></script>"), true);
+        assertXSS(param("<script src=\"/other/evil.js\"></script>"), true);
+        assertXSS(param("<script src=\"/silverpeas/attached_file/componentId/kmelia1/attachmentId/" +
+                "7088b9d6/lang/fr/name/evil.js\"></script>"), true);
+        assertXSS(param("<script src=\"/silverpeas/File/7088b9d6\"></script>"), true);
+        assertXSS(param("<script src=\"https://www.evil.org/weblib/custom.js\"></script>"), true);
+        assertXSS(param("<script src=\"https://www.youtube.com/custom.js\"></script>"), true);
+        assertXSS(param("<script src=\"http://scripts.example.org/api.js\"></script>"), true);
+        assertXSS(param("<script src=\"https&colon;//www.evil.org/evil.js\"></script>"), true);
+        assertXSS(param("<script src=\"/weblib/custom.js\" onload=\"alert(1)\"></script>"), true);
+        assertXSS(param("<script src=\"/weblib/custom.js\"></script></script>"), true);
     }
 
     private void assertXSS(URLConfigTest urlConfigTest, boolean expected) {

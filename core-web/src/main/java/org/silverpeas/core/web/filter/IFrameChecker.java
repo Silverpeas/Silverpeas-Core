@@ -23,13 +23,9 @@
  */
 package org.silverpeas.core.web.filter;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.silverpeas.core.security.html.EmbeddedSourceValidator;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,13 +43,9 @@ import java.util.regex.Pattern;
 final class IFrameChecker {
 
   private static final Pattern IFRAME_PATTERN = Pattern.compile("(?i)<[\\s/]*iframe");
-  private static final Pattern IFRAME_OPENING_PATTERN = Pattern.compile("(?i)<iframe");
-  private static final Pattern ATTRIBUTE_PATTERN = Pattern.compile(
-      "\\G\\s+([^\\s\"'>/=]+)(?:\\s*=\\s*(?:\"([^\"]*)\"|'([^']*)'|([^\\s\"'=<>`]+)))?");
-  private static final Pattern TAG_END_PATTERN = Pattern.compile("\\G\\s*/?>");
+  private static final String IFRAME = "iframe";
   private static final String SRC = "src";
   private static final String SRCDOC = "srcdoc";
-  private static final String EVENT_HANDLER_PREFIX = "on";
 
   private final EmbeddedSourceValidator sourceValidator;
 
@@ -86,37 +78,9 @@ final class IFrameChecker {
   }
 
   private boolean isAllowed(final String text, final int tagStart) {
-    final Matcher opening = IFRAME_OPENING_PATTERN.matcher(text).region(tagStart, text.length());
-    if (!opening.lookingAt()) {
-      return false;
-    }
-    final Map<String, String> attributes = new HashMap<>();
-    final Matcher attribute = ATTRIBUTE_PATTERN.matcher(text).region(opening.end(), text.length());
-    int position = opening.end();
-    while (attribute.find()) {
-      final String name = attribute.group(1).toLowerCase(Locale.ROOT);
-      if (attributes.containsKey(name) || name.startsWith(EVENT_HANDLER_PREFIX)) {
-        return false;
-      }
-      attributes.put(name, valueOf(attribute));
-      position = attribute.end();
-    }
-    final Matcher end = TAG_END_PATTERN.matcher(text).region(position, text.length());
-    return end.lookingAt() && !attributes.containsKey(SRCDOC) &&
-        isAllowedSource(attributes.get(SRC));
-  }
-
-  private static String valueOf(final Matcher attribute) {
-    for (int group = 2; group <= 4; group++) {
-      if (attribute.group(group) != null) {
-        return attribute.group(group);
-      }
-    }
-    return "";
-  }
-
-  private boolean isAllowedSource(final String src) {
-    // the source is here extracted from a raw text, so its HTML entities have still to be decoded
-    return src != null && sourceValidator.isAllowed(StringEscapeUtils.unescapeHtml4(src));
+    return OpeningTag.of(IFRAME, text, tagStart)
+        .filter(t -> !t.hasAttribute(SRCDOC) && !t.hasEventHandlerAttribute() &&
+            sourceValidator.isAllowed(t.getAttribute(SRC)))
+        .isPresent();
   }
 }
