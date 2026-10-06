@@ -304,7 +304,7 @@ public class AuthenticationService implements Authentication {
       // Do not create the Silverpeas authentication token before the second factor
       // has been validated, including for remotely authenticated users.
       if (AUTHENTICATION_SETTINGS.getBoolean("twoFactorTotpEnabled", false)) {
-        final int userId = getUserId(connection, credential);
+        final int userId = getUserId(credential);
         if (!isAnonymousUser(userId)) {
           final boolean configured = twoFactorAuthenticationService.getAuthentication(userId)
               .map(authentication -> authentication.isEnabled())
