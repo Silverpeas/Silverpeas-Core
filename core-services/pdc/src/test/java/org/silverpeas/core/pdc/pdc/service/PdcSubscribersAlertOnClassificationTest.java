@@ -28,7 +28,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.ClassifyValue;
-import org.silverpeas.core.pdc.subscription.service.PdcSubscriptionManager;
+import org.silverpeas.core.pdc.subscription.service.PdcSubscriptionService;
 import org.silverpeas.core.test.unit.extention.JEETestContext;
 import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
@@ -60,7 +60,7 @@ class PdcSubscribersAlertOnClassificationTest {
   private static final int NO_POSITION = -1;
 
   private final PdcClassifyManager pdcClassifyManager = mock(PdcClassifyManager.class);
-  private final PdcSubscriptionManager pdcSubscriptionManager = mock(PdcSubscriptionManager.class);
+  private final PdcSubscriptionService pdcSubscriptionService = mock(PdcSubscriptionService.class);
   private GlobalPdcManager pdcManager;
 
   private final ClassifyPosition position =
@@ -72,7 +72,7 @@ class PdcSubscribersAlertOnClassificationTest {
     // is spied to do without them
     pdcManager = spy(new GlobalPdcManager());
     FieldUtils.writeField(pdcManager, "pdcClassifyManager", pdcClassifyManager, true);
-    FieldUtils.writeField(pdcManager, "pdcSubscriptionManager", pdcSubscriptionManager, true);
+    FieldUtils.writeField(pdcManager, "pdcSubscriptionService", pdcSubscriptionService, true);
     when(pdcClassifyManager.isPositionAlreadyExists(SILVER_CONTENT_ID, position)).thenReturn(
         NO_POSITION);
     doReturn(new ArrayList<>()).when(pdcManager)
@@ -83,7 +83,7 @@ class PdcSubscribersAlertOnClassificationTest {
   void theSubscribersAreAlertedByDefaultAboutANewPositionOfAContribution() throws Exception {
     pdcManager.addPosition(SILVER_CONTENT_ID, position, COMPONENT_ID);
 
-    verify(pdcSubscriptionManager).notifyClassification(position.getValues(), COMPONENT_ID,
+    verify(pdcSubscriptionService).notifyClassification(position.getValues(), COMPONENT_ID,
         SILVER_CONTENT_ID);
   }
 
@@ -91,7 +91,7 @@ class PdcSubscribersAlertOnClassificationTest {
   void theSubscribersAreAlertedOnDemandAboutANewPositionOfAContribution() throws Exception {
     pdcManager.addPosition(SILVER_CONTENT_ID, position, COMPONENT_ID, true);
 
-    verify(pdcSubscriptionManager).notifyClassification(position.getValues(), COMPONENT_ID,
+    verify(pdcSubscriptionService).notifyClassification(position.getValues(), COMPONENT_ID,
         SILVER_CONTENT_ID);
   }
 
@@ -100,7 +100,7 @@ class PdcSubscribersAlertOnClassificationTest {
     pdcManager.addPosition(SILVER_CONTENT_ID, position, COMPONENT_ID, false);
 
     verify(pdcClassifyManager).addPosition(SILVER_CONTENT_ID, position, COMPONENT_ID);
-    verify(pdcSubscriptionManager, never()).notifyClassification(anyList(), anyString(), anyInt());
+    verify(pdcSubscriptionService, never()).notifyClassification(anyList(), anyString(), anyInt());
   }
 
   @Test
@@ -110,14 +110,14 @@ class PdcSubscribersAlertOnClassificationTest {
     pdcManager.addPosition(SILVER_CONTENT_ID, position, COMPONENT_ID, true);
 
     verify(pdcClassifyManager, never()).addPosition(anyInt(), any(), anyString());
-    verify(pdcSubscriptionManager, never()).notifyClassification(anyList(), anyString(), anyInt());
+    verify(pdcSubscriptionService, never()).notifyClassification(anyList(), anyString(), anyInt());
   }
 
   @Test
   void theSubscribersAreAlertedByDefaultAboutAModifiedPositionOfAContribution() throws Exception {
     pdcManager.updatePosition(position, COMPONENT_ID, SILVER_CONTENT_ID);
 
-    verify(pdcSubscriptionManager).notifyClassification(position.getValues(), COMPONENT_ID,
+    verify(pdcSubscriptionService).notifyClassification(position.getValues(), COMPONENT_ID,
         SILVER_CONTENT_ID);
   }
 
@@ -126,7 +126,7 @@ class PdcSubscribersAlertOnClassificationTest {
     pdcManager.updatePosition(position, COMPONENT_ID, SILVER_CONTENT_ID, false);
 
     verify(pdcClassifyManager).updatePosition(position);
-    verify(pdcSubscriptionManager, never()).notifyClassification(anyList(), anyString(), anyInt());
+    verify(pdcSubscriptionService, never()).notifyClassification(anyList(), anyString(), anyInt());
   }
 
   private static ClassifyPosition any() {
