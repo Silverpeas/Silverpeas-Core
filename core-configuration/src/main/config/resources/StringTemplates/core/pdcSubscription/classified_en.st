@@ -1,1 +1,1 @@
-The contribution <b>$contributionName$</b> has just been classified in your center of interest <b>$centerOfInterest$</b>.
+$if(thumbnail)$<img src="$thumbnail$" alt="$contributionName$" height="$thumbnailHeight$"/> $endif$The contribution <b>$contributionName$</b> has just been classified in your center of interest <b>$centerOfInterest$</b>.

@@ -1,1 +1,1 @@
-Der Beitrag <b>$contributionName$</b> wurde soeben in Ihrem Interessenschwerpunkt <b>$centerOfInterest$</b> klassifiziert.
+$if(thumbnail)$<img src="$thumbnail$" alt="$contributionName$" height="$thumbnailHeight$"/> $endif$Der Beitrag <b>$contributionName$</b> wurde soeben in Ihrem Interessenschwerpunkt <b>$centerOfInterest$</b> klassifiziert.
