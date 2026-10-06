@@ -249,6 +249,19 @@ class PdcResourceClassificationUserNotificationTest {
   }
 
   /**
+   * In German, the message names the contribution with the same term as the subject of the
+   * notification does: a publication.
+   */
+  @Test
+  void theGermanMessageNamesTheContributionAsItsSubjectDoes() {
+    final NotificationMetaData metaData =
+        aNotificationTo(A_SUBSCRIBER).build().getNotificationMetaData();
+
+    assertThat(metaData.getContent(DE),
+        containsString("Die Publikation <b>A contribution in " + DE + "</b>"));
+  }
+
+  /**
    * As for the other notifications to subscribers, the thumbnail of the contribution is inlined
    * into the message and carried for the synthesis of the delayed notifications.
    */
