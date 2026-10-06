@@ -26,6 +26,7 @@ package org.silverpeas.core.pdc.subscription.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.io.TempDir;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
@@ -36,6 +37,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.contribution.contentcontainer.content.ManagedContribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.Thumbnail;
 import org.silverpeas.core.notification.user.NullUserNotification;
 import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
@@ -52,6 +54,10 @@ import org.silverpeas.kernel.test.annotations.TestManagedMock;
 import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.kernel.test.extension.LocalizationBundleStub;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -63,6 +69,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -87,6 +94,7 @@ class PdcResourceClassificationUserNotificationTest {
   private static final String AUTHOR = "1";
   private static final String A_SUBSCRIBER = "3";
   private static final String ANOTHER_SUBSCRIBER = "5";
+  private static final byte[] AN_IMAGE = {(byte) 0x89, 'P', 'N', 'G', 13, 10, 26, 10};
 
   @RegisterExtension
   static LocalizationBundleStub pdcSubscriptionBundle = new LocalizationBundleStub(
@@ -238,6 +246,49 @@ class PdcResourceClassificationUserNotificationTest {
     }
     assertThat(metaData.getContent(FR), not(is(metaData.getContent(EN))));
     assertThat(metaData.getContent(EN), not(is(metaData.getContent(DE))));
+  }
+
+  /**
+   * As for the other notifications to subscribers, the thumbnail of the contribution is inlined
+   * into the message and carried for the synthesis of the delayed notifications.
+   */
+  @Test
+  void theThumbnailOfTheClassifiedContributionIsCarriedByTheNotification(@TempDir Path directory)
+      throws IOException {
+    final ManagedContribution contribution = aContribution();
+    final Thumbnail thumbnail = aThumbnailIn(directory);
+    when(contribution.getThumbnail()).thenReturn(thumbnail);
+
+    final NotificationMetaData metaData =
+        new PdcResourceClassificationUserNotification(criteria, List.of(A_SUBSCRIBER),
+            contribution, aUser(AUTHOR)).build().getNotificationMetaData();
+
+    final String image = "data:image/png;base64," + Base64.getEncoder().encodeToString(AN_IMAGE);
+    for (final String language : List.of(FR, EN, DE)) {
+      assertThat(metaData.getContent(language), containsString("<img src=\"" + image + "\""));
+      assertThat(metaData.getNotificationResourceData(language).getResourceThumbnail(),
+          is(image));
+    }
+  }
+
+  @Test
+  void theMessageAboutAContributionWithoutThumbnailHasNoImage() {
+    final NotificationMetaData metaData =
+        aNotificationTo(A_SUBSCRIBER).build().getNotificationMetaData();
+
+    for (final String language : List.of(FR, EN, DE)) {
+      assertThat(metaData.getContent(language), not(containsString("<img")));
+      assertThat(metaData.getNotificationResourceData(language).getResourceThumbnail(),
+          is(nullValue()));
+    }
+  }
+
+  private static Thumbnail aThumbnailIn(final Path directory) throws IOException {
+    final Path image = Files.write(directory.resolve("thumbnail.png"), AN_IMAGE);
+    final Thumbnail thumbnail = mock(Thumbnail.class);
+    when(thumbnail.getMimeType()).thenReturn("image/png");
+    when(thumbnail.getPath()).thenReturn(Optional.of(image));
+    return thumbnail;
   }
 
   private PdcResourceClassificationUserNotification aNotificationTo(final String... userIds) {

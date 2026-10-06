@@ -39,7 +39,7 @@ import java.util.Date;
  * (which are part of the old API). The classification of the user contributions onto the PdC is
  * again based upon the old API.
  */
-public class ManagedContribution implements SilverpeasContent, WithURL {
+public class ManagedContribution implements SilverpeasContent, WithURL, WithThumbnail {
 
   private final Contribution wrappedInstance;
   private final ContributionIdentifier contributionId;
@@ -111,6 +111,19 @@ public class ManagedContribution implements SilverpeasContent, WithURL {
       return ((WithURL) wrappedInstance).getURL();
     }
     // Indeed, the URL into context of PDC result is not used for now...
+    return null;
+  }
+
+  /**
+   * Gets the thumbnail of the managed contribution.
+   * @return the thumbnail of the contribution or null if either the contribution doesn't support
+   * the thumbnails or no thumbnail has been set for it.
+   */
+  @Override
+  public Thumbnail getThumbnail() {
+    if (wrappedInstance instanceof WithThumbnail withThumbnail) {
+      return withThumbnail.getThumbnail();
+    }
     return null;
   }
 
