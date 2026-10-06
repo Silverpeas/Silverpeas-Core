@@ -319,7 +319,7 @@ public class AuthenticationService implements Authentication {
     // Do not create the Silverpeas authentication token before the second factor
     // has been validated, including for remotely authenticated users.
     if (AUTHENTICATION_SETTINGS.getBoolean("twoFactorTotpEnabled", false)) {
-      final int userId = getUserId(connection, credential);
+      final int userId = getUserId(credential);
       if (!isAnonymousUser(userId)) {
         final boolean configured = twoFactorAuthenticationService.getAuthentication(userId)
             .map(authentication -> authentication.isEnabled())
@@ -589,7 +589,7 @@ public class AuthenticationService implements Authentication {
 
   private int getUserId(final AuthenticationCredential credential) throws AuthenticationException {
     try (Connection connection = openConnection()) {
-      return getUserId(connection, credential);
+      return getUserId(credential);
     } catch (SQLException e) {
       throw new AuthenticationException("Unable to resolve the authenticated user", e);
     }
