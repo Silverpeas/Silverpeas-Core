@@ -36,7 +36,7 @@ import org.silverpeas.core.pdc.classification.ObjectValuePair;
 import org.silverpeas.core.pdc.classification.PertinentAxis;
 import org.silverpeas.core.pdc.classification.Position;
 import org.silverpeas.core.pdc.pdc.model.*;
-import org.silverpeas.core.pdc.subscription.service.PdcSubscriptionManager;
+import org.silverpeas.core.pdc.subscription.service.PdcSubscriptionService;
 import org.silverpeas.core.pdc.tree.model.TreeManagerException;
 import org.silverpeas.core.pdc.tree.model.TreeNode;
 import org.silverpeas.core.pdc.tree.model.TreeNodePK;
@@ -99,7 +99,7 @@ public class GlobalPdcManager implements PdcManager {
   @Inject
   private PdcClassificationService pdcClassificationService;
   @Inject
-  private PdcSubscriptionManager pdcSubscriptionManager;
+  private PdcSubscriptionService pdcSubscriptionService;
   @Inject
   private TreeService treeService;
   @Inject
@@ -524,7 +524,7 @@ public class GlobalPdcManager implements PdcManager {
 
       // Unregister axis to classifyEngine
       pdcClassifyManager.unregisterAxis(con, Integer.parseInt(axisId));
-      pdcSubscriptionManager.checkAxisOnDelete(Integer.parseInt(axisId), axisHeader.getName());
+      pdcSubscriptionService.checkAxisOnDelete(Integer.parseInt(axisId), axisHeader.getName());
 
       // remove axisheader from cache
       axisHeaders.remove(axisId);
@@ -1153,7 +1153,7 @@ public class GlobalPdcManager implements PdcManager {
         for (int i = 0; i < oldPath.size(); i++) {
           newPath.add(motherPath);
         }
-        pdcSubscriptionManager
+        pdcSubscriptionService
             .checkValueOnDelete(Integer.parseInt(axisId), axisName, oldPath, newPath, pathInfo);
 
         // call the ClassifyBm to create oldValue and newValue
@@ -1228,7 +1228,7 @@ public class GlobalPdcManager implements PdcManager {
 
           // call the ClassifyBm to create oldValue and newValue
           // and to replace the oldValue by the newValue
-          pdcSubscriptionManager
+          pdcSubscriptionService
               .checkValueOnDelete(Integer.parseInt(axisId), axisName, oldPath, newPath, pathInfo);
           pdcClassifyManager.createValuesAndReplace(con, axisId, oldPath, newPath);
         }
@@ -1727,7 +1727,7 @@ public class GlobalPdcManager implements PdcManager {
 
       if (alertSubscribers) {
         // Alert subscribers to the position
-        pdcSubscriptionManager
+        pdcSubscriptionService
             .notifyClassification(position.getValues(), sComponentId, silverObjectId);
       }
     }
@@ -1771,7 +1771,7 @@ public class GlobalPdcManager implements PdcManager {
     }
 
     if (alertSubscribers) {
-      pdcSubscriptionManager.notifyClassification(position.getValues(), instanceId, silverObjectId);
+      pdcSubscriptionService.notifyClassification(position.getValues(), instanceId, silverObjectId);
     }
 
     return 0;
