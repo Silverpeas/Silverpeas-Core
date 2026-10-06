@@ -255,13 +255,15 @@ public class AuthenticationService implements Authentication {
       // token before the second factor has been validated.
       if (AUTHENTICATION_SETTINGS.getBoolean("twoFactorTotpEnabled", false)) {
         final int userId = getUserId(connection, credential);
-        final boolean configured = twoFactorAuthenticationService.getAuthentication(userId)
-            .map(authentication -> authentication.isEnabled())
-            .orElse(false);
-        final boolean mandatory = AUTHENTICATION_SETTINGS.getBoolean(
-            "twoFactorTotpMandatory", false);
-        if (configured || mandatory) {
-          throw new AuthenticationTwoFactorRequiredException();
+        if (!isAnonymousUser(userId)) {
+          final boolean configured = twoFactorAuthenticationService.getAuthentication(userId)
+              .map(authentication -> authentication.isEnabled())
+              .orElse(false);
+          final boolean mandatory = AUTHENTICATION_SETTINGS.getBoolean(
+              "twoFactorTotpMandatory", false);
+          if (configured || mandatory) {
+            throw new AuthenticationTwoFactorRequiredException();
+          }
         }
       }
 
@@ -317,14 +319,16 @@ public class AuthenticationService implements Authentication {
     // Do not create the Silverpeas authentication token before the second factor
     // has been validated, including for remotely authenticated users.
     if (AUTHENTICATION_SETTINGS.getBoolean("twoFactorTotpEnabled", false)) {
-      final int userId = getUserId(credential);
-      final boolean configured = twoFactorAuthenticationService.getAuthentication(userId)
-          .map(authentication -> authentication.isEnabled())
-          .orElse(false);
-      final boolean mandatory = AUTHENTICATION_SETTINGS.getBoolean(
-          "twoFactorTotpMandatory", false);
-      if (configured || mandatory) {
-        throw new AuthenticationTwoFactorRequiredException();
+      final int userId = getUserId(connection, credential);
+      if (!isAnonymousUser(userId)) {
+        final boolean configured = twoFactorAuthenticationService.getAuthentication(userId)
+            .map(authentication -> authentication.isEnabled())
+            .orElse(false);
+        final boolean mandatory = AUTHENTICATION_SETTINGS.getBoolean(
+            "twoFactorTotpMandatory", false);
+        if (configured || mandatory) {
+          throw new AuthenticationTwoFactorRequiredException();
+        }
       }
     }
 
@@ -396,6 +400,11 @@ public class AuthenticationService implements Authentication {
   * @param domainId the user domain identifier.
   * @return true when the configured second factor is locked.
   */
+  private boolean isAnonymousUser(final int userId) {
+    final User user = UserProvider.get().getUser(String.valueOf(userId));
+    return user != null && user.isAnonymous();
+  }
+
   public boolean isTwoFactorLocked(final String login, final String domainId) {
     try {
       if (!AUTHENTICATION_SETTINGS.getBoolean("twoFactorTotpEnabled", false)) {
