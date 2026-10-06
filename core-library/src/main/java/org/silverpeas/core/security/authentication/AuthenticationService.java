@@ -245,7 +245,7 @@ public class AuthenticationService implements Authentication {
       // Password authentication has succeeded. Do not create the Silverpeas authentication
       // token before the second factor has been validated.
       if (AUTHENTICATION_SETTINGS.getBoolean("twoFactorTotpEnabled", false)) {
-        final int userId = getUserId(connection, credential);
+        final int userId = getUserId(credential);
         if (!isAnonymousUser(userId)) {
           final boolean configured = twoFactorAuthenticationService.getAuthentication(userId)
               .map(authentication -> authentication.isEnabled())
@@ -388,7 +388,7 @@ public class AuthenticationService implements Authentication {
   * @return true when the configured second factor is locked.
   */
   private boolean isAnonymousUser(final int userId) {
-    final User user = UserProvider.get().getUser(String.valueOf(userId));
+    final UserDetail user = UserDetail.getById(String.valueOf(userId));
     return user != null && user.isAnonymous();
   }
 
