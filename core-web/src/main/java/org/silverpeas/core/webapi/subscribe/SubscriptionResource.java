@@ -33,19 +33,24 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.comment.CommentRuntimeException;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
+import org.silverpeas.core.subscription.ContributionSubscribersProvider;
 import org.silverpeas.core.subscription.SubscriberDirective;
 import org.silverpeas.core.subscription.Subscription;
 import org.silverpeas.core.subscription.SubscriptionResourceType;
 import org.silverpeas.core.subscription.SubscriptionSubscriber;
+import org.silverpeas.core.subscription.constant.SubscriberType;
 import org.silverpeas.core.subscription.service.ResourceSubscriptionProvider;
 import org.silverpeas.core.subscription.service.SubscribeRuntimeException;
 import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
 import org.silverpeas.core.subscription.util.SubscriptionList;
-import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 import org.silverpeas.core.rs.doc.NotFound;
 
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -57,6 +62,9 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.stream.Stream;
 
 import static org.silverpeas.core.contribution.publication.subscription.OnLocationDirective.onLocationId;
 import static org.silverpeas.core.subscription.SubscriptionServiceProvider.getSubscribeService;
@@ -72,6 +80,11 @@ import static org.silverpeas.kernel.util.StringUtil.isDefined;
 @Path(SubscriptionResourceURIs.SUBSCRIPTION_BASE_URI + "/{componentId}")
 @Authorized
 public class SubscriptionResource extends AbstractSubscriptionResource {
+
+  @Inject
+  private Instance<ContributionSubscribersProvider> contributionSubscribersProviders;
+  @Inject
+  private ComponentAccessControl componentAccessControl;
 
   /**
    * Gets the JSON representation of component subscriptions in relation with the user.
@@ -195,10 +208,16 @@ public class SubscriptionResource extends AbstractSubscriptionResource {
   /**
    * Gets the JSON representation of resource subscription subscribers with inheritance.
    * For example, it returns subscribers af a node and those of its parents too.
+   * Only the subscribers able to access the application are taken into account.
    * If it doesn't exist, a 404 HTTP code is returned.
    * If the user isn't authentified, a 401 HTTP code is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
    * @param subscriptionType the type of subscription.
+   * @param contributionLocalId optional local identifier of a contribution of the application.
+   * When specified with its type, the subscribers concerned by this contribution for other
+   * reasons than a subscription to the application (its classification on the PdC for example)
+   * are also taken into account.
+   * @param contributionType optional type of the contribution above.
    * @param existenceIndicatorOnly indicates if the return must only be true (if it exists at
    * least one subscriber) or false (no subscribers).
    * @return the response to the HTTP GET request with the JSON representation of the asked
@@ -212,13 +231,17 @@ public class SubscriptionResource extends AbstractSubscriptionResource {
   @Path("{subscriptionType}/" + SubscriptionResourceURIs.SUBSCRIPTION_SUBSCRIBER_URI_PART + "/inheritance")
   public Response getComponentSubscribersWithInheritance(
       @PathParam("subscriptionType") String subscriptionType,
+      @QueryParam("contributionId") String contributionLocalId,
+      @QueryParam("contributionType") String contributionType,
       @QueryParam("existenceIndicatorOnly") boolean existenceIndicatorOnly) {
-    return getSubscribersWithInheritance(subscriptionType, null, null, existenceIndicatorOnly);
+    return getSubscribersWithInheritance(subscriptionType, null, null, contributionLocalId,
+        contributionType, existenceIndicatorOnly);
   }
 
   /**
    * Gets the JSON representation of resource subscription subscribers with inheritance.
    * For example, it returns subscribers af a node and those of its parents too.
+   * Only the subscribers able to access the application are taken into account.
    * If it doesn't exist, a 404 HTTP code is returned.
    * If the user isn't authentified, a 401 HTTP code is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
@@ -226,6 +249,11 @@ public class SubscriptionResource extends AbstractSubscriptionResource {
    * @param resourceId identifier of the aimed resource (NODE for now). When a new type of resource
    * will be managed, the resource type will have to be passed into URI
    * @param locationId optional identifier of the current location of the requested resource.
+   * @param contributionLocalId optional local identifier of a contribution of the application.
+   * When specified with its type, the subscribers concerned by this contribution for other
+   * reasons than a subscription to the resource (its classification on the PdC for example)
+   * are also taken into account.
+   * @param contributionType optional type of the contribution above.
    * @param existenceIndicatorOnly indicates if the return must only be true (if it exists at
    * least one subscriber) or false (no subscribers).
    * @return the response to the HTTP GET request with the JSON representation of the asked
@@ -240,6 +268,8 @@ public class SubscriptionResource extends AbstractSubscriptionResource {
   public Response getSubscribersWithInheritance(
       @PathParam("subscriptionType") String subscriptionType, @PathParam("id") String resourceId,
       @QueryParam("locationId") String locationId,
+      @QueryParam("contributionId") String contributionLocalId,
+      @QueryParam("contributionType") String contributionType,
       @QueryParam("existenceIndicatorOnly") boolean existenceIndicatorOnly) {
     try {
       final SubscriptionResourceType parsedSubscriptionResourceType = decodeSubscriptionResourceType(subscriptionType);
@@ -253,16 +283,20 @@ public class SubscriptionResource extends AbstractSubscriptionResource {
       final SubscriberDirective[] directives = isDefined(locationId) ?
           new SubscriberDirective[]{onLocationId(locationId)} :
           new SubscriberDirective[0];
-      SubscriptionSubscriberList subscribers =
-          ResourceSubscriptionProvider.getSubscribersOfComponentAndTypedResource(
-          getComponentId(), parsedSubscriptionResourceType, resourceId, directives);
+      final Stream<SubscriptionSubscriber> subscribers = Stream.concat(
+              ResourceSubscriptionProvider.getSubscribersOfComponentAndTypedResource(
+                  getComponentId(), parsedSubscriptionResourceType, resourceId, directives)
+                  .stream(),
+              getSubscribersConcernedBy(contributionLocalId, contributionType).stream())
+          .distinct()
+          .filter(this::canAccessTheApplication);
       if (existenceIndicatorOnly) {
         return Response
-            .ok(String.valueOf(!subscribers.getAllUserIds().isEmpty()), MediaType.APPLICATION_JSON)
+            .ok(String.valueOf(subscribers.findAny().isPresent()), MediaType.APPLICATION_JSON)
             .build();
       } else {
-        return Response.ok(asSubscriberWebEntities(subscribers), MediaType.APPLICATION_JSON)
-            .build();
+        return Response.ok(asSubscriberWebEntities(subscribers.toList()),
+            MediaType.APPLICATION_JSON).build();
       }
     } catch (SubscribeRuntimeException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);
@@ -271,6 +305,46 @@ public class SubscriptionResource extends AbstractSubscriptionResource {
     } catch (Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
+  }
+
+  /**
+   * Gets the subscribers concerned by the specified contribution of the application for other
+   * reasons than a subscription to one of the resources of the application: its classification
+   * on the PdC for example.
+   * @param contributionLocalId the local identifier of a contribution.
+   * @param contributionType the type of the contribution.
+   * @return the subscribers concerned by the contribution or nothing if the contribution isn't
+   * fully identified.
+   */
+  private Set<SubscriptionSubscriber> getSubscribersConcernedBy(final String contributionLocalId,
+      final String contributionType) {
+    final Set<SubscriptionSubscriber> subscribers = new LinkedHashSet<>();
+    if (isDefined(contributionLocalId) && isDefined(contributionType)) {
+      final ContributionIdentifier contribution =
+          ContributionIdentifier.from(getComponentId(), contributionLocalId, contributionType);
+      contributionSubscribersProviders.forEach(
+          p -> subscribers.addAll(p.getSubscribersOf(contribution)));
+    }
+    return subscribers;
+  }
+
+  /**
+   * Is the specified subscriber able to access the application? A subscriber that cannot access
+   * the application isn't notified about the modifications of its contributions. A group of users
+   * can access the application when at least one of its users can do it.
+   * @param subscriber a subscriber.
+   * @return true if the subscriber can access the application, false otherwise.
+   */
+  private boolean canAccessTheApplication(final SubscriptionSubscriber subscriber) {
+    if (subscriber.getType() == SubscriberType.GROUP) {
+      final User[] users = getOrganisationController().getAllUsersOfGroup(subscriber.getId());
+      return Stream.of(users).anyMatch(u -> canAccessTheApplication(u.getId()));
+    }
+    return canAccessTheApplication(subscriber.getId());
+  }
+
+  private boolean canAccessTheApplication(final String userId) {
+    return componentAccessControl.isUserAuthorized(userId, getComponentId());
   }
 
   /**

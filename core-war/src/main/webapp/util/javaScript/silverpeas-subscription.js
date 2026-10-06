@@ -223,10 +223,18 @@
         baseUrl += item.subscription.componentInstanceId;
         baseUrl += '/' + item.subscription.type.toLowerCase() + '/subscribers';
         baseUrl += '/inheritance/' + item.subscription.resourceId;
-        const url = sp.url.format(baseUrl , {
+        const params = {
           'existenceIndicatorOnly' : true,
           'locationId' : item.contribution.locationId
-        });
+        };
+        const contributionId = item.contribution.contributionId;
+        if (contributionId.componentInstanceId === item.subscription.componentInstanceId) {
+          // the subscribers concerned by the contribution for other reasons than a subscription
+          // to the aimed resource (its classification on the PdC for example) are also checked
+          params['contributionId'] = contributionId.localId;
+          params['contributionType'] = contributionId.type;
+        }
+        const url = sp.url.format(baseUrl , params);
         sp.ajaxRequest(url).send().then(function(request){
           if (request.responseText === 'true') {
             resolve(true);
