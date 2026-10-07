@@ -35,6 +35,7 @@ import org.silverpeas.core.contribution.publication.social.SocialInformationPubl
 import org.silverpeas.core.node.coordinates.model.Coordinate;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.notification.system.ResourceEvent;
+import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SilverpeasList;
@@ -208,7 +209,7 @@ public interface PublicationService {
   Collection<PublicationDetail> getOrphanPublications(String componentId);
 
   /**
-   * Gets the unique identifying key of all of the fathers of the specified publication and in the
+   * Gets the unique identifying key of all the fathers of the specified publication and in the
    * same component instance.
    *
    * @param pubPK the identifying key of the publication.
@@ -217,7 +218,7 @@ public interface PublicationService {
    * {@link #getAllFatherPKInSamePublicationComponentInstance(PublicationPK)}. This signature has
    * been kept in case of external uses.
    */
-  @Deprecated
+  @Deprecated(since = "6.0")
   Collection<NodePK> getAllFatherPK(PublicationPK pubPK);
 
   /**
@@ -439,6 +440,7 @@ public interface PublicationService {
    * @param criteria the criteria.
    * @return a list of publications
    */
+  @NonNull
   SilverpeasList<PublicationDetail> getAuthorizedPublicationsForUserByCriteria(final String userId,
       final PublicationCriteria criteria);
 

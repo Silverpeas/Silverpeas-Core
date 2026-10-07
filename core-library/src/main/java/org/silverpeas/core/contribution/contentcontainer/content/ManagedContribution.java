@@ -107,8 +107,8 @@ public class ManagedContribution implements SilverpeasContent, WithURL, WithThum
 
   @Override
   public String getURL() {
-    if (wrappedInstance instanceof WithURL) {
-      return ((WithURL) wrappedInstance).getURL();
+    if (wrappedInstance instanceof WithURL withURL) {
+      return withURL.getURL();
     }
     // Indeed, the URL into context of PDC result is not used for now...
     return null;
@@ -149,8 +149,8 @@ public class ManagedContribution implements SilverpeasContent, WithURL, WithThum
 
   @Override
   public String getSilverpeasContentId() {
-    if (wrappedInstance instanceof SilverpeasContent) {
-      return ((SilverpeasContent) wrappedInstance).getSilverpeasContentId();
+    if (wrappedInstance instanceof SilverpeasContent content) {
+      return content.getSilverpeasContentId();
     }
     return "";
   }

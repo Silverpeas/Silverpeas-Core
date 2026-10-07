@@ -146,7 +146,9 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     if (publications != null && !publications.isEmpty()) {
       long startTime = System.currentTimeMillis();
       final List<String> publicationIds =
-          publications.stream().map(PublicationDetail::getId).collect(Collectors.toList());
+          publications.stream()
+              .map(PublicationDetail::getId)
+              .toList();
       try {
         final Map<String, List<PublicationI18N>> translations =
             i18nDAO.getIndexedTranslations(con, publicationIds);
@@ -702,10 +704,13 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   public Pair<Collection<Location>, Collection<Location>> setAliases(PublicationPK pubPK,
       List<Location> aliases) {
     Collection<Location> previousAliases = getAllAliases(pubPK);
-    Collection<Location> removedAliases = previousAliases.stream().filter(l -> !aliases.contains(l))
-        .collect(Collectors.toList());
+    Collection<Location> removedAliases = previousAliases.stream()
+        .filter(l -> !aliases.contains(l))
+        .toList();
     Collection<Location> newAliases =
-        aliases.stream().filter(l -> !previousAliases.contains(l)).collect(Collectors.toList());
+        aliases.stream()
+            .filter(l -> !previousAliases.contains(l))
+            .toList();
 
     try (final Connection connection = getConnection()) {
       addAlias(connection, pubPK, newAliases);
@@ -864,11 +869,11 @@ public class DefaultPublicationService implements PublicationService, ComponentI
 
   @Override
   public List<PublicationDetail> getPublications(Collection<PublicationPK> publicationPKs) {
-    final Set<PublicationPK> indexedPks = new HashSet<>(publicationPKs.size());
+    final Set<PublicationPK> indexedPks = HashSet.newHashSet(publicationPKs.size());
     final List<String> pubIds = publicationPKs.stream().map(pk -> {
       indexedPks.add(pk);
       return pk.getId();
-    }).collect(Collectors.toList());
+    }).toList();
     return getByIds(pubIds, indexedPks);
   }
 
@@ -1100,8 +1105,8 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       final PublicationDetail pubDetail) {
     try {
       Thumbnail thumbnail = pubDetail.getThumbnail();
-      if (thumbnail instanceof ThumbnailDetail) {
-        String[] imageProps = ThumbnailController.getImageAndMimeType((ThumbnailDetail) thumbnail);
+      if (thumbnail instanceof ThumbnailDetail detail) {
+        String[] imageProps = ThumbnailController.getImageAndMimeType(detail);
         indexEntry.setThumbnail(imageProps[0]);
         indexEntry.setThumbnailMimeType(imageProps[1]);
       }
@@ -1120,7 +1125,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
           .sorted(comparing((Location l) -> !l.getInstanceId().equals(pubDetail.getInstanceId()))
               .thenComparing(Location::getInstanceId))
           .map(l -> nodeService.getDetail(l).getFullPath())
-          .collect(Collectors.toList());
+          .toList();
       indexEntry.setPaths(mainLocations.isEmpty() ? null : mainLocations);
     }
   }
@@ -1502,6 +1507,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   }
 
   @Override
+  @NonNull
   public SilverpeasList<PublicationDetail> getAuthorizedPublicationsForUserByCriteria(
       final String userId, final PublicationCriteria criteria) {
     long startTime = System.currentTimeMillis();
@@ -1573,11 +1579,11 @@ public class DefaultPublicationService implements PublicationService, ComponentI
           try {
             final SilverpeasList<PublicationPK> pubPks = publicationDAO.selectPksByCriteria(con,
                 criteria.paginateBy(p));
-            final Set<PublicationPK> indexedPks = new HashSet<>(pubPks.size());
+            final Set<PublicationPK> indexedPks = HashSet.newHashSet(pubPks.size());
             final List<String> pubIds = pubPks.stream().map(pk -> {
               indexedPks.add(pk);
               return pk.getId();
-            }).collect(Collectors.toList());
+            }).toList();
             return publicationDAO.getByIds(con, pubIds, indexedPks).stream().collect(SilverpeasList.collector(pubPks));
           } catch (Exception e) {
             SilverLogger.getLogger(this).error(failureOnGetting("publications of with ", criteria));
