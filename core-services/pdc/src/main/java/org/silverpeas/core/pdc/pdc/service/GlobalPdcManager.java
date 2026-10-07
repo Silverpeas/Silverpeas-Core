@@ -137,6 +137,7 @@ public class GlobalPdcManager implements PdcManager {
 
   /**
    * Returns a list of axes sorted in according to the axe type.
+   *
    * @param type - the whished type of the axe.
    * @return a sorted list.
    */
@@ -191,6 +192,7 @@ public class GlobalPdcManager implements PdcManager {
 
   /**
    * Returns a list of axes sorted.
+   *
    * @return a list sorted or null otherwise
    */
   @Override
@@ -208,6 +210,7 @@ public class GlobalPdcManager implements PdcManager {
 
   /**
    * Return the number of axe.
+   *
    * @return the number of axe
    */
   @Override
@@ -217,6 +220,7 @@ public class GlobalPdcManager implements PdcManager {
 
   /**
    * Return the max number of axis.
+   *
    * @return the max number of axis
    */
   @Override
@@ -226,6 +230,7 @@ public class GlobalPdcManager implements PdcManager {
 
   /**
    * Create an axe into the database.
+   *
    * @param axisHeader - the object which contains all data about an axe
    * @return 1 if the maximun of axe is atteignable, 2 if the axe already exist, 0 otherwise
    */
@@ -300,6 +305,7 @@ public class GlobalPdcManager implements PdcManager {
 
   /**
    * Update an axe into the database.
+   *
    * @param axisHeader - the object which contains all data about an axe
    * @return 2 if the axe already exist, 0 otherwise
    */
@@ -407,7 +413,7 @@ public class GlobalPdcManager implements PdcManager {
           axisHeaderI18NDAO.getTranslations(con, axisHeader.getPK().getId());
 
       if (translations != null && !translations.isEmpty()) {
-        AxisHeaderI18N translation = translations.get(0);
+        AxisHeaderI18N translation = translations.getFirst();
 
         axisHeader.setLanguage(translation.getLanguage());
         axisHeader.setName(translation.getName());
@@ -504,6 +510,7 @@ public class GlobalPdcManager implements PdcManager {
 
   /**
    * delete the axe from the database and all its subtrees.
+   *
    * @param axisId - the id of the selected axe
    */
   @Override
@@ -538,6 +545,7 @@ public class GlobalPdcManager implements PdcManager {
 
   /**
    * Returns a detail axe (header,values).
+   *
    * @param axisId - the id of the selected axe.
    * @return the Axis Object
    */
@@ -566,6 +574,7 @@ public class GlobalPdcManager implements PdcManager {
 
   /**
    * Returns a value from an axe.
+   *
    * @param valueId - the id of the selected value
    * @return the Value object
    */
@@ -582,6 +591,7 @@ public class GlobalPdcManager implements PdcManager {
 
   /**
    * Returns a value from an axe.
+   *
    * @param valueId - the id of the selected value
    * @return the Value object
    */
@@ -601,6 +611,7 @@ public class GlobalPdcManager implements PdcManager {
 
   /**
    * Return a list of axis values having the value name in parameter
+   *
    * @param valueName the name of the value.
    * @return a list of axis values.
    * @throws PdcException if an error occurs while getting the axis values.
@@ -617,6 +628,7 @@ public class GlobalPdcManager implements PdcManager {
 
   /**
    * Return a list of String corresponding to the valueId of the value in parameter
+   *
    * @param axisId axis identifier
    * @param valueId value identifier
    * @return List of String
@@ -643,6 +655,7 @@ public class GlobalPdcManager implements PdcManager {
 
   /**
    * Return the Value corresponding to the axis done
+   *
    * @param axisId the axis identifier
    * @return org.silverpeas.core.pdc.pdc.model.Value
    * @throws PdcException while getting the root value of the specified axis.
@@ -682,6 +695,7 @@ public class GlobalPdcManager implements PdcManager {
 
   /**
    * insert a value which is defined like a mother value
+   *
    * @param valueToInsert - a Value object
    * @param refValue - the id of the Value to insert
    * @return 1 if the name already exist 0 otherwise
@@ -736,6 +750,7 @@ public class GlobalPdcManager implements PdcManager {
 
   /**
    * Move a value under a new father
+   *
    * @param axis : l'axe concerné
    * @param valueToMove - a Value object
    * @param newFatherId - the id of the new father
@@ -936,6 +951,7 @@ public class GlobalPdcManager implements PdcManager {
 
   /**
    * Return treeService where the root value is the refValue.
+   *
    * @param con - the connection to the database
    * @param refValue - the id of the reference Value Object
    * @return a list of each pathes found
@@ -988,6 +1004,7 @@ public class GlobalPdcManager implements PdcManager {
 
   /**
    * insert a value which is defined like a daughter value
+   *
    * @param valueToInsert - a Value object
    * @param refValue - the id of the Value to insert
    * @return 1 if the name already exist 0 otherwise
@@ -1020,6 +1037,7 @@ public class GlobalPdcManager implements PdcManager {
 
   /**
    * insert a value which is defined like a daughter value
+   *
    * @param valueToInsert - a Value object
    * @param refValue - the id of the Value to insert
    * @return -1 if the name already exists id otherwise
@@ -1051,6 +1069,7 @@ public class GlobalPdcManager implements PdcManager {
 
   /**
    * Update the selected value
+   *
    * @param value - a Value object
    * @return 1 if the name already exist 0 otherwise
    */
@@ -1100,6 +1119,7 @@ public class GlobalPdcManager implements PdcManager {
 
   /**
    * Delete a value and it's sub treeService
+   *
    * @param valueId - the id of the select value
    */
   @Override
@@ -1168,6 +1188,7 @@ public class GlobalPdcManager implements PdcManager {
   /**
    * Delete the selected value. If a daughter of the selected value is named like a sister of her
    * mother the delete is not possible.
+   *
    * @param valueId - the id of the select value
    * @return null if the delete is possible, the name of her daughter else.
    */
@@ -1241,6 +1262,7 @@ public class GlobalPdcManager implements PdcManager {
 
   /**
    * Returns the full path of the value
+   *
    * @param valueId - the id of the selected value (value is not empty)
    * @return the complet path - It's a List of ArrayList. Each ArrayList contains the name, the id
    * and the treeId of the value in the path.
@@ -1261,6 +1283,7 @@ public class GlobalPdcManager implements PdcManager {
 
   /**
    * This method searches if a name of axes is already used!
+   *
    * @param axis - a list of axes
    * @param axisToCheck - the axe to check its existence
    * @return true if the name of the axe exists, false otherwise
@@ -1287,6 +1310,7 @@ public class GlobalPdcManager implements PdcManager {
 
   /**
    * This method searches if a name of values is already used!
+   *
    * @param values - a list of values
    * @param valueToCheck - the value to check its existence
    * @return true if the name of the value exists, false otherwise
@@ -1312,6 +1336,7 @@ public class GlobalPdcManager implements PdcManager {
 
   /**
    * This method searches if one name of valuesToCheck is alreadey used !
+   *
    * @param values - a list of values
    * @param valuesToCheck - a list of values to check
    * @return the name of the value if the name of one value exists, null otherwise
@@ -1365,6 +1390,7 @@ public class GlobalPdcManager implements PdcManager {
 
   /**
    * Returns an AxisHeader Object. (pass the connection WORK AROUND FOR THE connection BUG !!!!!!!)
+   *
    * @param axisId - the id of the selected axe
    * @return an AxisHeader
    */
@@ -1380,6 +1406,7 @@ public class GlobalPdcManager implements PdcManager {
 
   /**
    * Returns a list of Value Object.
+   *
    * @param con - a connection
    * @param refValue - the id of the selected axe
    * @return a list
@@ -1416,21 +1443,17 @@ public class GlobalPdcManager implements PdcManager {
 
   /**
    * Creates a list of Value objects with a list of treeNodes objects
+   *
    * @param treeNodes - a list of TreeNode objects
    * @return a Value list
    */
   private List<Value> createValuesList(List<TreeNode> treeNodes) {
-    List<Value> values = new ArrayList<>();
-
-    for (TreeNode node : treeNodes) {
-      values.add(createValue(node));
-    }
-
-    return values;
+    return treeNodes.stream().map(this::createValue).toList();
   }
 
   /**
    * Creates a Value object with a TreeNode object
+   *
    * @param treeNode - a TreeNode Object
    * @return a Value Object
    */
@@ -1444,9 +1467,8 @@ public class GlobalPdcManager implements PdcManager {
   }
 
   /**
-   * **************************************************
-   * ******** PDC Utilization Settings Methods ********
-   * **************************************************
+   * ************************************************** ******** PDC Utilization Settings Methods
+   * ******** **************************************************
    */
   @Override
   public UsedAxis getUsedAxis(String usedAxisId) throws PdcException {
@@ -1509,6 +1531,7 @@ public class GlobalPdcManager implements PdcManager {
   /**
    * recherche si la valeur de base de l'axe est une valeur ascendante par rapport aux valeurs se
    * trouvant dans SB_Classify...
+   *
    * @param objectIdList - une list d'objets se trouvant dans une instance donnée
    * @param usedAxis - l'objet UsedAxis contenant la nouvelle valeur de base
    * @return vrai si la valeur de base est une valeur ascendante sinon faux
@@ -1693,6 +1716,7 @@ public class GlobalPdcManager implements PdcManager {
 
   /**
    * From the usedAxis, retrieve the UsedAxis corresponding to axisId
+   *
    * @param usedAxis a List of UsedAxis
    * @param axisId the axis id to search
    * @return the UsedAxis found or null if no object found
@@ -1746,22 +1770,18 @@ public class GlobalPdcManager implements PdcManager {
       boolean alertSubscribers) throws PdcException {
 
     List<UsedAxis> usedAxisList = getUsedAxisToClassify(instanceId, silverObjectId);
-    Set<Integer> invariantUsedAxis = new HashSet<>(usedAxisList.size());
-    for (UsedAxis ua : usedAxisList) {
-      // on cherche les axes invariants
-      if (ua.getVariant() == 0) {
-        invariantUsedAxis.add(ua.getAxisId());
-      }
-    }
+    // on cherche les axes invariants
+    Set<Integer> invariantUsedAxis = usedAxisList.stream()
+        .filter(ua -> ua.getVariant() == 0)
+        .map(UsedAxis::getAxisId)
+        .collect(toCollection(() -> HashSet.newHashSet(usedAxisList.size())));
 
     // maintenant, on cherche les valeurs qui sont sur un axe invariant
     List<ClassifyValue> classifyValueList = position.getValues();
-    List<org.silverpeas.core.pdc.classification.Value> classifyValues = new ArrayList<>();
-    for (ClassifyValue cv : classifyValueList) {
-      if (invariantUsedAxis.contains(cv.getAxisId())) {
-        classifyValues.add(cv);
-      }
-    }
+    List<org.silverpeas.core.pdc.classification.Value> classifyValues =
+        classifyValueList.stream()
+            .filter(cv -> invariantUsedAxis.contains(cv.getAxisId()))
+            .collect(toList());
 
     pdcClassifyManager.updatePosition(position);
 
@@ -2008,7 +2028,7 @@ public class GlobalPdcManager implements PdcManager {
     final List<PublicationPK> pks = ovps.stream()
         .filter(o -> o.getInstanceId().startsWith(KMELIA_COMPONENT_NAME))
         .map(o -> new PublicationPK(o.getObjectId(), o.getInstanceId()))
-        .collect(toList());
+        .toList();
     final AccessControlContext context = AccessControlContext.init().onOperationsOf(SEARCH);
     final Set<String> accessiblePks = PublicationAccessControl.get()
         .filterAuthorizedByUser(pks, userId, context)
@@ -2016,12 +2036,12 @@ public class GlobalPdcManager implements PdcManager {
         .collect(Collectors.toSet());
     return ovps.stream()
         .filter(o -> !o.getInstanceId().startsWith(KMELIA_COMPONENT_NAME) || accessiblePks.contains(o.getInstanceId() + "@" + o.getObjectId()))
-        .collect(toList());
+        .toList();
   }
 
   private int getNumberOfContents(List<ObjectValuePair> ovps, String valuePath, boolean deeply) {
     int nb = 0;
-    final Set<String> countedObjects = new HashSet<>(ovps.size());
+    final Set<String> countedObjects = HashSet.newHashSet(ovps.size());
     for (ObjectValuePair ovp : ovps) {
       String key = ovp.getInstanceId() + "-" + ovp.getObjectId();
       if ((deeply ? ovp.getValuePath().startsWith(valuePath) :
@@ -2035,6 +2055,7 @@ public class GlobalPdcManager implements PdcManager {
 
   /**
    * To know if classifying is mandatory on a given component
+   *
    * @param componentId - id of the component to test
    * @return true if at least one axis has been selected on component AND at least one axis is
    * mandatory
@@ -2142,7 +2163,7 @@ public class GlobalPdcManager implements PdcManager {
       // Convert the first position in SearchContext
       SearchContext searchContext = new SearchContext(null);
       if (alPositions != null && !alPositions.isEmpty()) {
-        Position<org.silverpeas.core.pdc.classification.Value> pos = alPositions.get(0);
+        Position<org.silverpeas.core.pdc.classification.Value> pos = alPositions.getFirst();
         List<org.silverpeas.core.pdc.classification.Value> alValues = pos.getValues();
         for (int nI = 0; alValues != null && nI < alValues.size(); nI++) {
           org.silverpeas.core.pdc.classification.Value value = alValues.get(nI);
@@ -2245,7 +2266,7 @@ public class GlobalPdcManager implements PdcManager {
             }
             return Stream.empty();
           })
-          .collect(toList());
+          .toList();
     } catch (Exception e) {
       throw new PdcRuntimeException(e);
     }
