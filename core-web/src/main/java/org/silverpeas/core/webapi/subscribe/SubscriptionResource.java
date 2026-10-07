@@ -65,6 +65,7 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 import static org.silverpeas.core.contribution.publication.subscription.OnLocationDirective.onLocationId;
 import static org.silverpeas.core.subscription.SubscriptionServiceProvider.getSubscribeService;
@@ -74,7 +75,7 @@ import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * A REST Web resource representing a given subscription.
- * It is a web service that provides an access to a subscription referenced by its URL.
+ * It is a web service that provides access to a subscription referenced by its URL.
  */
 @WebService
 @Path(SubscriptionResourceURIs.SUBSCRIPTION_BASE_URI + "/{componentId}")
@@ -353,11 +354,9 @@ public class SubscriptionResource extends AbstractSubscriptionResource {
    * @return a collection of subscription entities
    */
   protected Collection<SubscriptionEntity> asWebEntities(Collection<Subscription> subscriptions) {
-    final Collection<SubscriptionEntity> entities = new ArrayList<>(subscriptions.size());
-    for (Subscription subscription : subscriptions) {
-      entities.add(asWebEntity(subscription));
-    }
-    return entities;
+    return subscriptions.stream()
+        .map(this::asWebEntity)
+        .collect(Collectors.toCollection(() -> new ArrayList<>(subscriptions.size())));
   }
 
   /**
@@ -376,11 +375,9 @@ public class SubscriptionResource extends AbstractSubscriptionResource {
    */
   protected Collection<SubscriberEntity> asSubscriberWebEntities(
       Collection<SubscriptionSubscriber> subscribers) {
-    final Collection<SubscriberEntity> entities = new ArrayList<>(subscribers.size());
-    for (SubscriptionSubscriber subscriber : subscribers) {
-      entities.add(asSubscriberWebEntity(subscriber));
-    }
-    return entities;
+    return subscribers.stream()
+        .map(this::asSubscriberWebEntity)
+        .collect(Collectors.toCollection(() -> new ArrayList<>(subscribers.size())));
   }
 
   /**
