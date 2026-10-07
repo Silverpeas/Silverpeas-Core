@@ -28,6 +28,7 @@ import org.silverpeas.core.web.rs.UserPrivilegeValidation;
 import org.silverpeas.core.web.token.SynchronizerTokenService;
 
 import jakarta.inject.Inject;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpSession;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -35,6 +36,13 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.silverpeas.core.util.Charsets;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.util.StringUtil;
+
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 
 /**
  * A REST-based Web service to authenticate a user in Silverpeas.
@@ -44,7 +52,9 @@ import jakarta.ws.rs.core.Response;
 public class AuthenticationResource extends RESTWebService {
 
   static final String PATH = "authentication";
-  static final String TRUSTED_DEVICE_HEADER = "X-Silverpeas-Trusted-Device";
+  static final String TRUSTED_DEVICE_COOKIE = "Silverpeas_TrustedDevice";
+  private static final SettingBundle AUTHENTICATION_SETTINGS = ResourceLocator.getSettingBundle(
+      "org.silverpeas.authentication.settings.authenticationSettings");
   @Inject
   private UserPrivilegeValidation privilegeValidation;
 
@@ -129,8 +139,7 @@ public class AuthenticationResource extends RESTWebService {
     if (trustDevice) {
       String trustedDeviceToken = authenticationService.createTrustedDevice(
           user.getLogin(), user.getDomainId(), getHttpServletRequest().getHeader("User-Agent"));
-      response.header(TRUSTED_DEVICE_HEADER, trustedDeviceToken)
-          .header("Access-Control-Expose-Headers", TRUSTED_DEVICE_HEADER);
+      writeTrustedDeviceCookie(trustedDeviceToken);
     }
     return response.build();
   }
@@ -156,7 +165,7 @@ public class AuthenticationResource extends RESTWebService {
       return Response.status(Response.Status.UNAUTHORIZED).build();
     }
 
-    String trustedDeviceToken = getHttpServletRequest().getHeader(TRUSTED_DEVICE_HEADER);
+    String trustedDeviceToken = getTrustedDeviceToken();
     AuthenticationService authenticationService = AuthenticationServiceProvider.getService();
     AuthenticationResponse result = authenticationService.authenticateTrustedDevice(
         login, domainId, trustedDeviceToken, getHttpServletRequest().getHeader("User-Agent"));
@@ -175,11 +184,34 @@ public class AuthenticationResource extends RESTWebService {
       return Response.status(Response.Status.UNAUTHORIZED).build();
     }
     openAuthenticatedSession(user);
-    getHttpServletResponse().addHeader(TRUSTED_DEVICE_HEADER, result.getTrustedDeviceToken());
-    getHttpServletResponse().addHeader("Access-Control-Expose-Headers", TRUSTED_DEVICE_HEADER);
+    writeTrustedDeviceCookie(result.getTrustedDeviceToken());
     return Response.ok(UserProfileEntity.fromUser(user)
         .withAsUri(ProfileResourceBaseURIs.uriOfUser(user.getId())))
         .build();
+  }
+
+  private String getTrustedDeviceToken() {
+    if (getHttpServletRequest().getCookies() == null) {
+      return null;
+    }
+    for (Cookie cookie : getHttpServletRequest().getCookies()) {
+      if (TRUSTED_DEVICE_COOKIE.equals(cookie.getName())) {
+        return URLDecoder.decode(cookie.getValue(), Charsets.UTF_8);
+      }
+    }
+    return null;
+  }
+
+  private void writeTrustedDeviceCookie(final String token) {
+    if (!StringUtil.isDefined(token)) {
+      return;
+    }
+    final String cookieValue = URLEncoder.encode(token, Charsets.UTF_8);
+    getHttpServletResponse().addHeader("Set-Cookie", TRUSTED_DEVICE_COOKIE + "=" + cookieValue
+        + "; Max-Age=" + AUTHENTICATION_SETTINGS.getInteger(
+            "twoFactorTrustedDeviceLifetime", 2592000)
+        + "; Path=/; HttpOnly; SameSite=Lax"
+        + (getHttpServletRequest().isSecure() ? "; Secure" : ""));
   }
 
   private int getTwoFactorAttempts(final HttpSession session) {
