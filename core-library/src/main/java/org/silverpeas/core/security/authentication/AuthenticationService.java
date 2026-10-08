@@ -428,7 +428,7 @@ public class AuthenticationService implements Authentication {
       // Route to exactly one validator so a failed attempt is counted only once.
       final String normalizedCode = code == null ? "" :
           code.replaceAll("[\\s-]", "").toUpperCase(java.util.Locale.ROOT);
-      final boolean recoveryCode = normalizedCode.matches("[A-HJ-NP-Z2-9]{10}");
+      final boolean recoveryCode = normalizedCode.matches("[ABCDEFGHJKLMNPQRSTUVWXYZ2-9]{10}");
       final boolean valid = recoveryCode
           ? twoFactorAuthenticationService.validateRecoveryCode(userId, code)
           : twoFactorAuthenticationService.validate(userId, code);
