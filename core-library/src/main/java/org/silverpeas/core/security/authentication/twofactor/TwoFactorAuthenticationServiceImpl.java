@@ -263,7 +263,7 @@ public class TwoFactorAuthenticationServiceImpl implements TwoFactorAuthenticati
             }
             final Instant now = Instant.now();
             final boolean consumed = recoveryCodeRepository.consume(
-                    connection, hashRecoveryCode(normalizeRecoveryCode(code)), now);
+                    connection, userId, hashRecoveryCode(normalizeRecoveryCode(code)), now);
             if (consumed) {
                 repository.resetFailedAttempts(connection, userId);
                 repository.updateLastUsedAt(connection, userId, now);
