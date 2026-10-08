@@ -24,6 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.contains;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -74,9 +76,28 @@ class TrustedDeviceServiceImplTest {
     assertNotNull(newToken);
     assertFalse(newToken.equals("old-token"));
     verify(statement).setString(1, sha256(newToken));
-    verify(statement).setString(4, "Firefox");
-    verify(statement).setString(6, sha256("old-token"));
+    verify(statement).setString(3, "Firefox");
+    verify(statement).setString(5, sha256("old-token"));
+    verify(statement).setTimestamp(eq(6), org.mockito.ArgumentMatchers.any(Timestamp.class));
     verify(statement).executeUpdate();
+  }
+
+  @Test
+  void shouldPreserveAbsoluteExpiryWhenRotating() throws Exception {
+    when(connection.prepareStatement(anyString())).thenReturn(statement);
+    when(statement.executeQuery()).thenReturn(resultSet);
+    when(resultSet.next()).thenReturn(true);
+    when(resultSet.getLong(1)).thenReturn(123L);
+    when(resultSet.getTimestamp(2)).thenReturn(
+        Timestamp.from(Instant.now().plusSeconds(3600)));
+    when(statement.executeUpdate()).thenReturn(1);
+
+    assertNotNull(service.validateAndRotate(USER_ID, "old-token", "Firefox"));
+
+    verify(connection).prepareStatement(contains(
+        "SET tokenHash = ?, lastUsedAt = ?, userAgent = ?"));
+    verify(statement, never()).setTimestamp(eq(2),
+        org.mockito.ArgumentMatchers.any(Timestamp.class));
   }
 
   @Test
