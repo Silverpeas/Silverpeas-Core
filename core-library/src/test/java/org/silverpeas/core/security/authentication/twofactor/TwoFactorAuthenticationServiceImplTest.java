@@ -66,6 +66,9 @@ class TwoFactorAuthenticationServiceImplTest {
     private TotpService totpService;
 
     @Mock
+    private TrustedDeviceService trustedDeviceService;
+
+    @Mock
     private Connection connection;
 
     private TwoFactorAuthenticationServiceImpl service;
@@ -73,7 +76,7 @@ class TwoFactorAuthenticationServiceImplTest {
     @BeforeEach
     void setUp() {
         service = new TestableTwoFactorAuthenticationService(
-                repository, recoveryCodeRepository, totpService, connection);
+                repository, recoveryCodeRepository, trustedDeviceService, totpService, connection);
     }
 
     @Test
@@ -314,6 +317,7 @@ class TwoFactorAuthenticationServiceImplTest {
     void shouldDisableAuthentication() throws Exception {
         service.disable(USER_ID);
 
+        verify(trustedDeviceService).revokeAll(USER_ID);
         verify(repository).delete(connection, USER_ID);
     }
 
@@ -364,9 +368,10 @@ class TwoFactorAuthenticationServiceImplTest {
         private TestableTwoFactorAuthenticationService(
                 final TwoFactorAuthenticationRepository repository,
                 final RecoveryCodeRepository recoveryCodeRepository,
+                final TrustedDeviceService trustedDeviceService,
                 final TotpService totpService,
                 final Connection connection) {
-            super(repository, recoveryCodeRepository, totpService);
+            super(repository, recoveryCodeRepository, trustedDeviceService, totpService);
             this.connection = connection;
         }
 
