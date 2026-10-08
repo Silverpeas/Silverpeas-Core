@@ -249,7 +249,8 @@ public class AuthenticationResource extends RESTWebService {
       pending = twoFactorService.startEnrollment(userId);
     }
     return Response.ok(new EnrollmentEntity(pending.getSecret(),
-        totpService.buildOtpAuthUri(pending.getSecret(), user.getLogin())))
+        java.util.Base64.getEncoder().encodeToString(qrCodeGenerator.generate(
+            totpService.buildOtpAuthUri(pending.getSecret(), user.getLogin()), 256))))
         .header("Cache-Control", "no-store").build();
   }
 
@@ -309,15 +310,15 @@ public class AuthenticationResource extends RESTWebService {
 
   public static class EnrollmentEntity {
     private final String secret;
-    private final String otpAuthUri;
+    private final String qrCode;
 
-    public EnrollmentEntity(String secret, String otpAuthUri) {
+    public EnrollmentEntity(String secret, String qrCode) {
       this.secret = secret;
-      this.otpAuthUri = otpAuthUri;
+      this.qrCode = qrCode;
     }
 
     public String getSecret() { return secret; }
-    public String getOtpAuthUri() { return otpAuthUri; }
+    public String getQrCode() { return qrCode; }
   }
 
   public static class EnrollmentConfirmationEntity {
