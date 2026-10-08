@@ -202,17 +202,7 @@ public class TwoFactorAuthenticationServiceImpl implements TwoFactorAuthenticati
                 return false;
             }
             if (!totpService.validate(authentication.getSecret(), code)) {
-                final int failedAttempts = authentication.getFailedAttempts() + 1;
-                final int maxAttempts = AUTHENTICATION_SETTINGS.getInteger(
-                        "twoFactorTotpMaxAttempts", 5);
-                if (failedAttempts >= maxAttempts) {
-                    final int lockDuration = AUTHENTICATION_SETTINGS.getInteger(
-                            "twoFactorTotpLockDuration", 300);
-                    repository.updateFailedAttempts(connection, userId, failedAttempts,
-                            now.plusSeconds(lockDuration));
-                } else {
-                    repository.updateFailedAttempts(connection, userId, failedAttempts, null);
-                }
+                recordFailedAttempt(connection, userId, authentication, now);
                 return false;
             }
 
@@ -270,12 +260,18 @@ public class TwoFactorAuthenticationServiceImpl implements TwoFactorAuthenticati
             if (authentication.isEmpty() || !authentication.get().isEnabled()) {
                 return false;
             }
+            final TwoFactorAuthentication current = authentication.get();
             final Instant now = Instant.now();
+            if (current.isLocked(now)) {
+                return false;
+            }
             final boolean consumed = recoveryCodeRepository.consume(
                     connection, userId, hashRecoveryCode(normalizeRecoveryCode(code)), now);
             if (consumed) {
                 repository.resetFailedAttempts(connection, userId);
                 repository.updateLastUsedAt(connection, userId, now);
+            } else {
+                recordFailedAttempt(connection, userId, current, now);
             }
             return consumed;
         } catch (SQLException e) {
@@ -343,6 +339,22 @@ public class TwoFactorAuthenticationServiceImpl implements TwoFactorAuthenticati
      */
     protected Connection openConnection() throws SQLException {
         return DBUtil.openConnection();
+    }
+
+    private void recordFailedAttempt(final Connection connection, final int userId,
+            final TwoFactorAuthentication authentication, final Instant now)
+            throws SQLException {
+        final int failedAttempts = authentication.getFailedAttempts() + 1;
+        final int maxAttempts = AUTHENTICATION_SETTINGS.getInteger(
+                "twoFactorTotpMaxAttempts", 5);
+        if (failedAttempts >= maxAttempts) {
+            final int lockDuration = AUTHENTICATION_SETTINGS.getInteger(
+                    "twoFactorTotpLockDuration", 300);
+            repository.updateFailedAttempts(connection, userId, failedAttempts,
+                    now.plusSeconds(lockDuration));
+        } else {
+            repository.updateFailedAttempts(connection, userId, failedAttempts, null);
+        }
     }
 
     private String generateRecoveryCode() {
