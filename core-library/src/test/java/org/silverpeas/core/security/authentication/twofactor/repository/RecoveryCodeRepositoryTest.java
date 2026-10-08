@@ -113,7 +113,7 @@ class RecoveryCodeRepositoryTest {
         try (Connection connection = connection()) {
             repository.save(connection, recoveryCode(USER_ID, HASH, false, createdAt, null));
 
-            assertThat(repository.consume(connection, HASH, usedAt), is(true));
+            assertThat(repository.consume(connection, USER_ID, HASH, usedAt), is(true));
 
             List<RecoveryCode> codes = repository.getUnused(connection, USER_ID);
             assertThat(codes, is(empty()));
@@ -138,7 +138,7 @@ class RecoveryCodeRepositoryTest {
             repository.save(connection,
                     recoveryCode(USER_ID, HASH, true, createdAt, originalUsedAt));
 
-            assertThat(repository.consume(connection, HASH, attemptedUsedAt), is(false));
+            assertThat(repository.consume(connection, USER_ID, HASH, attemptedUsedAt), is(false));
 
             try (Statement statement = connection.createStatement();
                  ResultSet resultSet = statement.executeQuery(
@@ -154,7 +154,38 @@ class RecoveryCodeRepositoryTest {
         Instant usedAt = Instant.parse("2026-09-23T09:00:00Z");
 
         try (Connection connection = connection()) {
-            assertThat(repository.consume(connection, HASH, usedAt), is(false));
+            assertThat(repository.consume(connection, USER_ID, HASH, usedAt), is(false));
+        }
+    }
+
+    @Test
+    void shouldNotConsumeAnotherUsersRecoveryCode() throws SQLException {
+        Instant createdAt = Instant.parse("2026-09-23T08:00:00Z");
+        Instant usedAt = Instant.parse("2026-09-23T09:00:00Z");
+
+        try (Connection connection = connection()) {
+            repository.save(connection,
+                    recoveryCode(OTHER_USER_ID, HASH, false, createdAt, null));
+
+            assertThat(repository.consume(connection, USER_ID, HASH, usedAt), is(false));
+            assertThat(repository.getUnused(connection, OTHER_USER_ID).size(), is(1));
+            assertThat(repository.consume(connection, OTHER_USER_ID, HASH, usedAt), is(true));
+            assertThat(repository.getUnused(connection, OTHER_USER_ID), is(empty()));
+        }
+    }
+
+    @Test
+    void shouldConsumeOnlyMatchingUsersCodeWhenHashesAreIdentical() throws SQLException {
+        Instant createdAt = Instant.parse("2026-09-23T08:00:00Z");
+        Instant usedAt = Instant.parse("2026-09-23T09:00:00Z");
+
+        try (Connection connection = connection()) {
+            repository.save(connection, recoveryCode(USER_ID, HASH, false, createdAt, null));
+            repository.save(connection, recoveryCode(OTHER_USER_ID, HASH, false, createdAt, null));
+
+            assertThat(repository.consume(connection, USER_ID, HASH, usedAt), is(true));
+            assertThat(repository.getUnused(connection, USER_ID), is(empty()));
+            assertThat(repository.getUnused(connection, OTHER_USER_ID).size(), is(1));
         }
     }
 
