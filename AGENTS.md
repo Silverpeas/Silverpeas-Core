@@ -117,6 +117,18 @@ Beans needing startup logic implement `org.silverpeas.core.initialization.Initia
 - Javadoc must satisfy the Java 21 doclint.
 - LF line endings for all text and source files (enforced by `.gitattributes`).
 
+### Web front-end conventions
+
+- No inline script or style in JSP, HTML or other view files: the JavaScript code and the CSS
+  declarations go into dedicated `.js` and `.css` files, included with `<script src="…">` and
+  `<link rel="stylesheet" href="…">` (or the matching Silverpeas tags). This covers `<script>`
+  and `<style>` blocks with a body, `style="…"` attributes and event-handler attributes
+  (`onclick="…"`, `onchange="…"`, `href="javascript:…"`, …): bind the handlers from the
+  JavaScript file instead. Values computed server-side are passed to the scripts through `data-*`
+  attributes or as parameters.
+- In JavaScript, declare variables with `const`, or with `let` when they are reassigned. Use
+  `var` only for a variable that has to be explicitly global, and then explain why in a comment.
+
 ### Git, CI & versioning
 
 - Commit messages reference the Redmine tracker: `Feature #<n> ...`, `Fix bug #<n> ...`,
