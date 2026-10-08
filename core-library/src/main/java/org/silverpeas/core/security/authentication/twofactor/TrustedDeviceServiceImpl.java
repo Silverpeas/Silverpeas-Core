@@ -103,17 +103,17 @@ public class TrustedDeviceServiceImpl implements TrustedDeviceService {
           }
 
           final String newToken = generateToken();
-          final Instant newExpiresAt = now.plusSeconds(getLifetime());
+          // Keep the original absolute expiry when rotating the token.
           try (PreparedStatement update = connection.prepareStatement(
               "UPDATE " + TABLE +
-                  " SET tokenHash = ?, expiresAt = ?, lastUsedAt = ?, userAgent = ? " +
-                  " WHERE id = ? AND tokenHash = ?")) {
+                  " SET tokenHash = ?, lastUsedAt = ?, userAgent = ? " +
+                  " WHERE id = ? AND tokenHash = ? AND expiresAt > ?")) {
             update.setString(1, hashToken(newToken));
-            update.setTimestamp(2, Timestamp.from(newExpiresAt));
-            update.setTimestamp(3, Timestamp.from(now));
-            update.setString(4, normalizeUserAgent(userAgent));
-            update.setLong(5, id);
-            update.setString(6, tokenHash);
+            update.setTimestamp(2, Timestamp.from(now));
+            update.setString(3, normalizeUserAgent(userAgent));
+            update.setLong(4, id);
+            update.setString(5, tokenHash);
+            update.setTimestamp(6, Timestamp.from(now));
             if (update.executeUpdate() != 1) {
               return null;
             }
