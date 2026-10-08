@@ -257,7 +257,7 @@ public class AuthenticationResource extends RESTWebService {
   @Path("enrollment/confirm")
   @Produces(MediaType.APPLICATION_JSON)
   public Response confirmEnrollment(@QueryParam("code") String code,
-      @QueryParam("trustDevice") boolean trustDevice) {
+      @QueryParam("trustDevice") boolean trustDevice) throws AuthenticationException {
     User user = getPendingTwoFactorUser();
     if (user == null) {
       return Response.status(Response.Status.UNAUTHORIZED).build();
