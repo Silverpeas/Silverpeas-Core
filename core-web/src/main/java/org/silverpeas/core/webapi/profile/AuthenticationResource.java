@@ -205,7 +205,13 @@ public class AuthenticationResource extends RESTWebService {
       return Response.status(Response.Status.UNAUTHORIZED).build();
     }
     openAuthenticatedSession(user);
-    writeTrustedDeviceCookie(result.getTrustedDeviceToken());
+    try {
+      writeTrustedDeviceCookie(result.getTrustedDeviceToken(),
+          authenticationService.getTrustedDeviceRemainingLifetime(
+              login, domainId, result.getTrustedDeviceToken()));
+    } catch (AuthenticationException e) {
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
     return Response.ok(UserProfileEntity.fromUser(user)
         .withAsUri(ProfileResourceBaseURIs.uriOfUser(user.getId())))
         .build();
@@ -328,6 +334,11 @@ public class AuthenticationResource extends RESTWebService {
   }
 
   private void writeTrustedDeviceCookie(final String token) {
+    writeTrustedDeviceCookie(token,
+        AUTHENTICATION_SETTINGS.getInteger("twoFactorTrustedDeviceLifetime", 2592000));
+  }
+
+  private void writeTrustedDeviceCookie(final String token, final long maxAge) {
     if (!StringUtil.isDefined(token)) {
       return;
     }
