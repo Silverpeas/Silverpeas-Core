@@ -19,7 +19,6 @@ import org.silverpeas.core.security.authentication.twofactor.TwoFactorAuthentica
 import org.silverpeas.core.security.authentication.twofactor.model.TwoFactorAuthentication;
 import org.silverpeas.core.security.totp.TotpService;
 import org.silverpeas.core.webapi.twofactor.QrCodeGenerator;
-import jakarta.ws.rs.GET;
 import java.util.List;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.security.authentication.AuthenticationResponse;
@@ -252,24 +251,6 @@ public class AuthenticationResource extends RESTWebService {
         java.util.Base64.getEncoder().encodeToString(qrCodeGenerator.generate(
             totpService.buildOtpAuthUri(pending.getSecret(), user.getLogin()), 256))))
         .header("Cache-Control", "no-store").build();
-  }
-
-  @GET
-  @Path("enrollment/qr")
-  @Produces("image/png")
-  public Response getEnrollmentQrCode() {
-    User user = getPendingTwoFactorUser();
-    if (user == null) {
-      return Response.status(Response.Status.UNAUTHORIZED).build();
-    }
-    TwoFactorAuthentication pending = twoFactorService.getAuthentication(
-        Integer.parseInt(user.getId())).orElse(null);
-    if (pending == null || !pending.isPending()) {
-      return Response.status(Response.Status.NOT_FOUND).build();
-    }
-    byte[] png = qrCodeGenerator.generate(
-        totpService.buildOtpAuthUri(pending.getSecret(), user.getLogin()), 256);
-    return Response.ok(png, "image/png").header("Cache-Control", "no-store").build();
   }
 
   @POST
