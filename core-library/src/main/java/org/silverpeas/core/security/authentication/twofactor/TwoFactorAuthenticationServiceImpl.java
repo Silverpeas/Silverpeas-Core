@@ -84,8 +84,17 @@ public class TwoFactorAuthenticationServiceImpl implements TwoFactorAuthenticati
             final TwoFactorAuthenticationRepository repository,
             final RecoveryCodeRepository recoveryCodeRepository,
             final TotpService totpService) {
+        this(repository, recoveryCodeRepository, null, totpService);
+    }
+
+    protected TwoFactorAuthenticationServiceImpl(
+            final TwoFactorAuthenticationRepository repository,
+            final RecoveryCodeRepository recoveryCodeRepository,
+            final TrustedDeviceService trustedDeviceService,
+            final TotpService totpService) {
         this.repository = repository;
         this.recoveryCodeRepository = recoveryCodeRepository;
+        this.trustedDeviceService = trustedDeviceService;
         this.totpService = totpService;
     }
 
