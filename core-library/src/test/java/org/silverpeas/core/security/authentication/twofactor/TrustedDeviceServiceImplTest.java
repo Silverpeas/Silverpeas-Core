@@ -96,7 +96,8 @@ class TrustedDeviceServiceImplTest {
 
     verify(connection).prepareStatement(contains(
         "SET tokenHash = ?, lastUsedAt = ?, userAgent = ?"));
-    verify(statement, never()).setTimestamp(eq(2),
+    // Parameter 2 is lastUsedAt, not expiresAt. The UPDATE must not change expiresAt.
+    verify(statement).setTimestamp(eq(2),
         org.mockito.ArgumentMatchers.any(Timestamp.class));
   }
 
