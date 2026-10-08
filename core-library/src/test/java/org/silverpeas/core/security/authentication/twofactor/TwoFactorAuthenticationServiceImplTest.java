@@ -314,6 +314,48 @@ class TwoFactorAuthenticationServiceImplTest {
     }
 
     @Test
+    void shouldRejectRecoveryCodeWhenLocked() throws Exception {
+        final TwoFactorAuthentication locked =
+                authentication(TwoFactorAuthentication.Status.ENABLED).toBuilder()
+                        .failedAttempts(5)
+                        .lockedUntil(Instant.now().plusSeconds(300))
+                        .build();
+        when(repository.get(connection, USER_ID)).thenReturn(Optional.of(locked));
+
+        assertFalse(service.validateRecoveryCode(USER_ID, "ABCD2345EF"));
+
+        verify(recoveryCodeRepository, never()).consume(
+                any(), anyInt(), any(String.class), any(Instant.class));
+    }
+
+    @Test
+    void shouldCountInvalidRecoveryCodeAttempt() throws Exception {
+        final TwoFactorAuthentication enabled =
+                authentication(TwoFactorAuthentication.Status.ENABLED).toBuilder()
+                        .failedAttempts(2)
+                        .build();
+        when(repository.get(connection, USER_ID)).thenReturn(Optional.of(enabled));
+
+        assertFalse(service.validateRecoveryCode(USER_ID, "INVALID"));
+
+        verify(repository).updateFailedAttempts(connection, USER_ID, 3, null);
+    }
+
+    @Test
+    void shouldLockAfterMaximumInvalidRecoveryCodes() throws Exception {
+        final TwoFactorAuthentication enabled =
+                authentication(TwoFactorAuthentication.Status.ENABLED).toBuilder()
+                        .failedAttempts(4)
+                        .build();
+        when(repository.get(connection, USER_ID)).thenReturn(Optional.of(enabled));
+
+        assertFalse(service.validateRecoveryCode(USER_ID, "INVALID"));
+
+        verify(repository).updateFailedAttempts(
+                eq(connection), eq(USER_ID), eq(5), any(Instant.class));
+    }
+
+    @Test
     void shouldDisableAuthentication() throws Exception {
         service.disable(USER_ID);
 
