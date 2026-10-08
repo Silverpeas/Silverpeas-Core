@@ -58,6 +58,11 @@ public final class EmbeddedSourceValidator {
   private static final Pattern TRAILING_SLASHES_PATTERN = Pattern.compile("(?<!/)/++$");
   private static final String PATH_TRAVERSAL = "..";
   private static final String HTTPS_SCHEME = "https";
+  /**
+   * The characters forbidden by the URI syntax that a browser percent-encodes before sending the
+   * request, without any further interpretation.
+   */
+  private static final String CHARACTERS_ENCODED_BY_BROWSERS = " \"<>[]^`{|}";
 
   private final Set<String> allowedHosts;
   private final String applicationPath;
@@ -79,6 +84,15 @@ public final class EmbeddedSourceValidator {
 
   /**
    * Is the specified source allowed to be referred by an embedded resource?
+   * <p>
+   * The source is read the way a browser reads it. In particular, a browser accepts a URL with
+   * some characters the URI syntax forbids, a whitespace for example, by encoding them before
+   * sending the request: the name of a file is commonly made of such characters. So, when the
+   * source isn't a well-formed URI, it is checked as the browser would send it. The backslashes
+   * and the control characters aren't encoded, because a browser gives them a meaning of their
+   * own (a backslash is read as a slash and the tabulations and line breaks are removed), which
+   * would make the validation disagree with the URL the browser actually resolves.
+   * </p>
    * @param src the value of the src attribute, with any HTML entity already decoded.
    * @return true if the source can be embedded, false otherwise and in particular if it is null.
    */
@@ -87,16 +101,31 @@ public final class EmbeddedSourceValidator {
       return false;
     }
     try {
-      final URI uri = new URI(src);
-      if (uri.getScheme() == null && uri.getRawAuthority() == null) {
-        return isAllowedRelativeURI(uri);
-      }
-      return HTTPS_SCHEME.equalsIgnoreCase(uri.getScheme()) && uri.getHost() != null &&
-          (allowedHosts.contains(ANY_HOST) ||
-              allowedHosts.contains(uri.getHost().toLowerCase(Locale.ROOT)));
+      return isAllowed(new URI(src));
+    } catch (URISyntaxException e) {
+      return isAllowedAsSentByBrowsers(src);
+    }
+  }
+
+  private boolean isAllowedAsSentByBrowsers(final String src) {
+    final String encoded = src.chars()
+        .mapToObj(c -> CHARACTERS_ENCODED_BY_BROWSERS.indexOf(c) < 0 ? String.valueOf((char) c) :
+            String.format("%%%02X", c))
+        .collect(Collectors.joining());
+    try {
+      return isAllowed(new URI(encoded));
     } catch (URISyntaxException e) {
       return false;
     }
+  }
+
+  private boolean isAllowed(final URI uri) {
+    if (uri.getScheme() == null && uri.getRawAuthority() == null) {
+      return isAllowedRelativeURI(uri);
+    }
+    return HTTPS_SCHEME.equalsIgnoreCase(uri.getScheme()) && uri.getHost() != null &&
+        (allowedHosts.contains(ANY_HOST) ||
+            allowedHosts.contains(uri.getHost().toLowerCase(Locale.ROOT)));
   }
 
   private boolean isAllowedRelativeURI(final URI uri) {
