@@ -14,6 +14,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.service.UserProvider;
+import org.silverpeas.core.security.authentication.twofactor.TwoFactorAuthenticationService;
+import org.silverpeas.core.security.authentication.twofactor.model.TwoFactorAuthentication;
+import org.silverpeas.core.security.totp.TotpService;
+import org.silverpeas.core.webapi.twofactor.QrCodeGenerator;
+import jakarta.ws.rs.GET;
+import java.util.List;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.security.authentication.AuthenticationResponse;
 import org.silverpeas.core.security.authentication.AuthenticationService;
@@ -57,6 +64,12 @@ public class AuthenticationResource extends RESTWebService {
       "org.silverpeas.authentication.settings.authenticationSettings");
   @Inject
   private UserPrivilegeValidation privilegeValidation;
+  @Inject
+  private TwoFactorAuthenticationService twoFactorService;
+  @Inject
+  private TotpService totpService;
+  @Inject
+  private QrCodeGenerator qrCodeGenerator;
 
   @Operation(summary = "Authenticates the user from his credentials passed through the " +
       "Authorization HTTP header, opens a new HTTP session in Silverpeas in the case of a Basic " +
@@ -76,6 +89,15 @@ public class AuthenticationResource extends RESTWebService {
     boolean twoFactorRequired = Boolean.TRUE.equals(
         getHttpServletRequest().getAttribute(HTTPAuthentication.TWO_FACTOR_REQUIRED));
     if (twoFactorRequired) {
+      User pendingUser = getPendingTwoFactorUser();
+      if (pendingUser != null && !twoFactorService.getAuthentication(
+          Integer.parseInt(pendingUser.getId())).filter(TwoFactorAuthentication::isEnabled)
+          .isPresent()) {
+        return Response.status(Response.Status.UNAUTHORIZED)
+            .header("X-Silverpeas-2FA-Enrollment-Required", "true")
+            .header("Access-Control-Expose-Headers", "X-Silverpeas-2FA-Enrollment-Required")
+            .entity(AuthenticationChallengeEntity.twoFactorRequired()).build();
+      }
       return Response.status(Response.Status.UNAUTHORIZED)
           .header("X-Silverpeas-2FA-Required", "true")
           .header("Access-Control-Expose-Headers", "X-Silverpeas-2FA-Required")
@@ -188,6 +210,127 @@ public class AuthenticationResource extends RESTWebService {
     return Response.ok(UserProfileEntity.fromUser(user)
         .withAsUri(ProfileResourceBaseURIs.uriOfUser(user.getId())))
         .build();
+  }
+
+
+  /**
+   * Returns the user whose password has already been validated for this HTTP session.
+   * Never accept a user identifier from the client during enrollment.
+   */
+  private User getPendingTwoFactorUser() {
+    HttpSession session = getHttpServletRequest().getSession(false);
+    if (session == null) {
+      return null;
+    }
+    String login = (String) session.getAttribute(HTTPAuthentication.TWO_FACTOR_LOGIN);
+    String domain = (String) session.getAttribute(HTTPAuthentication.TWO_FACTOR_DOMAIN);
+    Long expires = (Long) session.getAttribute(HTTPAuthentication.TWO_FACTOR_EXPIRES_AT);
+    if (!HTTPAuthentication.isValidTwoFactorChallenge(login, domain, expires)) {
+      return null;
+    }
+    return UserProvider.get().getUserByLoginAndDomainId(login, domain);
+  }
+
+  @POST
+  @Path("enrollment")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response startEnrollment() {
+    User user = getPendingTwoFactorUser();
+    if (user == null) {
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
+    int userId = Integer.parseInt(user.getId());
+    TwoFactorAuthentication pending = twoFactorService.getAuthentication(userId).orElse(null);
+    if (pending != null && pending.isEnabled()) {
+      return Response.status(Response.Status.CONFLICT).build();
+    }
+    // Reuse an existing pending secret when the mobile screen is reopened.
+    if (pending == null) {
+      pending = twoFactorService.startEnrollment(userId);
+    }
+    return Response.ok(new EnrollmentEntity(pending.getSecret(),
+        totpService.buildOtpAuthUri(pending.getSecret(), user.getLogin())))
+        .header("Cache-Control", "no-store").build();
+  }
+
+  @GET
+  @Path("enrollment/qr")
+  @Produces("image/png")
+  public Response getEnrollmentQrCode() {
+    User user = getPendingTwoFactorUser();
+    if (user == null) {
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
+    TwoFactorAuthentication pending = twoFactorService.getAuthentication(
+        Integer.parseInt(user.getId())).orElse(null);
+    if (pending == null || !pending.isPending()) {
+      return Response.status(Response.Status.NOT_FOUND).build();
+    }
+    byte[] png = qrCodeGenerator.generate(
+        totpService.buildOtpAuthUri(pending.getSecret(), user.getLogin()), 256);
+    return Response.ok(png, "image/png").header("Cache-Control", "no-store").build();
+  }
+
+  @POST
+  @Path("enrollment/confirm")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response confirmEnrollment(@QueryParam("code") String code,
+      @QueryParam("trustDevice") boolean trustDevice) {
+    User user = getPendingTwoFactorUser();
+    if (user == null) {
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
+    HttpSession session = getHttpServletRequest().getSession(false);
+    int attempts = getTwoFactorAttempts(session);
+    if (attempts >= HTTPAuthentication.getTwoFactorMaxAttempts()) {
+      clearRestTwoFactorChallenge(session);
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
+    int userId = Integer.parseInt(user.getId());
+    if (!twoFactorService.confirmEnrollment(userId, code)) {
+      session.setAttribute(HTTPAuthentication.TWO_FACTOR_ATTEMPTS, attempts + 1);
+      if (attempts + 1 >= HTTPAuthentication.getTwoFactorMaxAttempts()) {
+        clearRestTwoFactorChallenge(session);
+      }
+      return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
+    List<String> recoveryCodes = twoFactorService.generateRecoveryCodes(userId);
+    clearRestTwoFactorChallenge(session);
+    openAuthenticatedSession(user);
+    if (trustDevice) {
+      String token = AuthenticationServiceProvider.getService().createTrustedDevice(
+          user.getLogin(), user.getDomainId(), getHttpServletRequest().getHeader("User-Agent"));
+      writeTrustedDeviceCookie(token);
+    }
+    return Response.ok(new EnrollmentConfirmationEntity(
+        UserProfileEntity.fromUser(user).withAsUri(ProfileResourceBaseURIs.uriOfUser(userId + "")),
+        recoveryCodes)).header("Cache-Control", "no-store").build();
+  }
+
+  public static class EnrollmentEntity {
+    private final String secret;
+    private final String otpAuthUri;
+
+    public EnrollmentEntity(String secret, String otpAuthUri) {
+      this.secret = secret;
+      this.otpAuthUri = otpAuthUri;
+    }
+
+    public String getSecret() { return secret; }
+    public String getOtpAuthUri() { return otpAuthUri; }
+  }
+
+  public static class EnrollmentConfirmationEntity {
+    private final UserProfileEntity profile;
+    private final List<String> recoveryCodes;
+
+    public EnrollmentConfirmationEntity(UserProfileEntity profile, List<String> recoveryCodes) {
+      this.profile = profile;
+      this.recoveryCodes = recoveryCodes;
+    }
+
+    public UserProfileEntity getProfile() { return profile; }
+    public List<String> getRecoveryCodes() { return recoveryCodes; }
   }
 
   private String getTrustedDeviceToken() {
