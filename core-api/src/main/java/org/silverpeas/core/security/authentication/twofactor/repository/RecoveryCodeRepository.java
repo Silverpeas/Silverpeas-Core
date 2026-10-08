@@ -40,23 +40,17 @@ public interface RecoveryCodeRepository {
     void save(Connection connection, RecoveryCode recoveryCode) throws SQLException;
 
     /**
-     * Marks a recovery code as used.
+     * Atomically consumes an unused recovery code belonging to the specified user.
      *
      * @param connection the database connection.
-     * @param id the recovery code identifier.
-     * @param usedAt the date at which the code was consumed.
-     * @throws SQLException if an error occurs while accessing the database.
-     */
-    /**
-     * Atomically consumes an unused recovery code.
-     *
-     * @param connection the database connection.
+     * @param userId the Silverpeas user identifier.
      * @param hash the hash of the recovery code.
      * @param usedAt the date at which the code was consumed.
-     * @return true if an unused code was consumed.
+     * @return true if an unused code belonging to the user was consumed.
      * @throws SQLException if an error occurs while accessing the database.
      */
-    boolean consume(Connection connection, String hash, Instant usedAt) throws SQLException;
+    boolean consume(Connection connection, int userId, String hash, Instant usedAt)
+            throws SQLException;
 
     /**
      * Deletes all recovery codes of a user.
