@@ -34,6 +34,12 @@ public interface TrustedDeviceService {
   String validateAndRotate(int userId, String token, String userAgent);
 
   /**
+   * Returns the remaining lifetime, in seconds, of a trusted-device token.
+   * Returns zero when the token is unknown or expired.
+   */
+  long getRemainingLifetime(int userId, String token);
+
+  /**
    * Revokes every trusted device of the user.
    *
    * @param userId the Silverpeas user identifier.
