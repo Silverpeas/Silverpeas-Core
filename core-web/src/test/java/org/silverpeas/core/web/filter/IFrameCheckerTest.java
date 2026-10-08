@@ -70,6 +70,18 @@ class IFrameCheckerTest {
     assertThat(new IFrameChecker(List.of(), "/silverpeas/").areAllAllowedIn(iframe), is(true));
   }
 
+  /**
+   * The browsers accept a URL with some characters forbidden by the URI syntax, a whitespace for
+   * example, by encoding them: such a URL is checked as the browsers would send it.
+   */
+  @Test
+  void iframeOnUrlWithCharactersTheBrowsersEncodeIsCheckedAsEncoded() {
+    assertAllowed("<iframe src=\"/silverpeas/Rkmelia/kmelia1/Main?name=my file.pdf\"></iframe>");
+    assertAllowed("<iframe src=\"https://www.youtube.com/embed/my video\"></iframe>");
+    assertRejected("<iframe src=\"https://www.evil.org/my video\"></iframe>");
+    assertRejected("<iframe src=\"/silverpeas/../other/my file.pdf\"></iframe>");
+  }
+
   @Test
   void iframeOnRelativeUrlOutsideSilverpeasIsRejected() {
     assertRejected("<iframe src=\"/other/app\"></iframe>");

@@ -483,7 +483,8 @@
                 <td class="odd ${forbiddenDownloadClass}" style="text-align: left">
                   <c:choose>
                     <c:when test="${originWysiwyg}">
-                      <a href="javascript:selectFile('<c:out value="${silfn:escapeJs(currentAttachmentUrl)}" />');"><c:out value="${varAttachment.filename}" /></a>
+                      <%-- not a javascript: href: the browser would percent-decode the URL before running the script --%>
+                      <a href="#" onclick="selectFile('<c:out value="${silfn:escapeJs(currentAttachmentUrl)}" />'); return false;"><c:out value="${varAttachment.filename}" /></a>
                     </c:when>
                     <c:otherwise>
                       <c:choose>

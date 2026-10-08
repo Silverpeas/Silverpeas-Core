@@ -326,6 +326,23 @@ public class WysiwygContentTransformerTest {
   }
 
   /**
+   * The name of an attached file is commonly made of characters forbidden by the URI syntax,
+   * whitespaces for example, that the browsers accept all the same by encoding them. Such a media
+   * is as legitimate as another one hosted by Silverpeas and has to be kept as it is.
+   */
+  @Test
+  void sanitizeForRenderingKeepsTheMediaWhoseSourceHasCharactersTheBrowsersEncode() {
+    final String image = "<img src=\"/silverpeas/attached_file/componentId/kmelia1/attachmentId/" +
+        "2/lang/fr/name/my image (1).png\" alt=\"\" />";
+    assertThat(sanitizedForRendering(image), is(image));
+    final String video = "<video src=\"/silverpeas/v 1.mp4\" poster=\"/silverpeas/p 1.png\"></video>";
+    assertThat(sanitizedForRendering(video), is(video));
+    assertThat(sanitizedForRendering("<img src=\"https://www.unallowed.org/my image.png\" />"),
+        is(""));
+    assertThat(sanitizedForRendering("<img src=\"/silverpeas/../other/my image.png\" />"), is(""));
+  }
+
+  /**
    * Whereas the default sanitization, aimed at the contents extracted out of Silverpeas, keeps
    * strictly the safe content.
    */
