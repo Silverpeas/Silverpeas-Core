@@ -292,19 +292,19 @@ class TwoFactorAuthenticationServiceImplTest {
     void shouldValidateRecoveryCode() throws Exception {
         when(repository.get(connection, USER_ID)).thenReturn(
                 Optional.of(authentication(TwoFactorAuthentication.Status.ENABLED)));
-        when(recoveryCodeRepository.consume(eq(connection), any(String.class), any(Instant.class)))
+        when(recoveryCodeRepository.consume(eq(connection), eq(USER_ID), any(String.class), any(Instant.class)))
                 .thenReturn(true);
 
         assertTrue(service.validateRecoveryCode(USER_ID, "ABCD-2345-EF"));
 
-        verify(recoveryCodeRepository).consume(eq(connection), any(String.class), any(Instant.class));
+        verify(recoveryCodeRepository).consume(eq(connection), eq(USER_ID), any(String.class), any(Instant.class));
     }
 
     @Test
     void shouldRejectInvalidRecoveryCode() throws Exception {
         when(repository.get(connection, USER_ID)).thenReturn(
                 Optional.of(authentication(TwoFactorAuthentication.Status.ENABLED)));
-        when(recoveryCodeRepository.consume(eq(connection), any(String.class), any(Instant.class)))
+        when(recoveryCodeRepository.consume(eq(connection), eq(USER_ID), any(String.class), any(Instant.class)))
                 .thenReturn(false);
 
         assertFalse(service.validateRecoveryCode(USER_ID, "INVALID"));
