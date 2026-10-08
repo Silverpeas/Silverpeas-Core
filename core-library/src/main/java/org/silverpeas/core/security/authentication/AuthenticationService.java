@@ -424,8 +424,15 @@ public class AuthenticationService implements Authentication {
       final AuthenticationCredential credential =
           AuthenticationCredential.newWithAsLogin(login).withAsDomainId(domainId);
       final int userId = getUserId(credential);
-      if (!twoFactorAuthenticationService.validate(userId, code)
-          && !twoFactorAuthenticationService.validateRecoveryCode(userId, code)) {
+      // A recovery code has 10 characters from the configured recovery alphabet.
+      // Route to exactly one validator so a failed attempt is counted only once.
+      final String normalizedCode = code == null ? "" :
+          code.replaceAll("[\\s-]", "").toUpperCase(java.util.Locale.ROOT);
+      final boolean recoveryCode = normalizedCode.matches("[A-HJ-NP-Z2-9]{10}");
+      final boolean valid = recoveryCode
+          ? twoFactorAuthenticationService.validateRecoveryCode(userId, code)
+          : twoFactorAuthenticationService.validate(userId, code);
+      if (!valid) {
         return AuthenticationResponse.error(Status.TWO_FACTOR_REQUIRED);
       }
 
