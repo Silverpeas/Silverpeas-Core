@@ -132,6 +132,41 @@ class TrustedDeviceServiceImplTest {
   }
 
   @Test
+  void shouldReturnRemainingLifetimeForTrustedDevice() throws Exception {
+    when(connection.prepareStatement(anyString())).thenReturn(statement);
+    when(statement.executeQuery()).thenReturn(resultSet);
+    when(resultSet.next()).thenReturn(true);
+    when(resultSet.getTimestamp(1)).thenReturn(
+        Timestamp.from(Instant.now().plusSeconds(3600)));
+
+    final long remaining = service.getRemainingLifetime(USER_ID, "valid-token");
+
+    assertTrue(remaining > 0 && remaining <= 3600);
+    verify(statement).setInt(1, USER_ID);
+    verify(statement).setString(2, sha256("valid-token"));
+  }
+
+  @Test
+  void shouldReturnZeroRemainingLifetimeForExpiredDevice() throws Exception {
+    when(connection.prepareStatement(anyString())).thenReturn(statement);
+    when(statement.executeQuery()).thenReturn(resultSet);
+    when(resultSet.next()).thenReturn(true);
+    when(resultSet.getTimestamp(1)).thenReturn(
+        Timestamp.from(Instant.now().minusSeconds(1)));
+
+    assertTrue(service.getRemainingLifetime(USER_ID, "expired-token") == 0);
+  }
+
+  @Test
+  void shouldReturnZeroRemainingLifetimeForUnknownDevice() throws Exception {
+    when(connection.prepareStatement(anyString())).thenReturn(statement);
+    when(statement.executeQuery()).thenReturn(resultSet);
+    when(resultSet.next()).thenReturn(false);
+
+    assertTrue(service.getRemainingLifetime(USER_ID, "unknown-token") == 0);
+  }
+
+  @Test
   void shouldRevokeAllTrustedDevices() throws Exception {
     when(connection.prepareStatement(anyString())).thenReturn(statement);
 
