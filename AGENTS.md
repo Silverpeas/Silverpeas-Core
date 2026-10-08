@@ -105,6 +105,10 @@ Beans needing startup logic implement `org.silverpeas.core.initialization.Initia
 
 - Follow the clean code principles. A constructor that would take more than four parameters is
   replaced by a builder.
+- Prefer streams to classic loops, and the features of the Java release in use to the classic
+  approaches: records rather than hand-written value classes, text blocks rather than concatenated
+  multi-line strings, switch expressions and pattern matching rather than `if`/`else` chains with
+  casts, and so on.
 - Every source file carries the AGPL v3 + Silverpeas FLOSS-exception header (`license.txt` and
   `exceptions.txt` at the repository root); copy it into new files with the current year as upper
   bound, or run `mvn generate-sources -Plicense`.
