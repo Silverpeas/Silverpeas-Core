@@ -596,6 +596,12 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
 
   private void writeTrustedDeviceCookie(final HttpServletResponse response,
       final String token, final boolean secure) {
+    writeTrustedDeviceCookie(response, token, secure,
+        AUTHENTICATION_SETTINGS.getInteger("twoFactorTrustedDeviceLifetime", 2592000));
+  }
+
+  private void writeTrustedDeviceCookie(final HttpServletResponse response,
+      final String token, final boolean secure, final long maxAge) {
     if (!StringUtil.isDefined(token)) {
       return;
     }
