@@ -128,6 +128,35 @@ public class TrustedDeviceServiceImpl implements TrustedDeviceService {
   }
 
   @Override
+  public long getRemainingLifetime(final int userId, final String token) {
+    validateUserId(userId);
+    if (token == null || token.isBlank()) {
+      return 0;
+    }
+    try (Connection connection = openConnection();
+         PreparedStatement statement = connection.prepareStatement(
+             "SELECT expiresAt FROM " + TABLE + " WHERE userId = ? AND tokenHash = ?")) {
+      statement.setInt(1, userId);
+      statement.setString(2, hashToken(token));
+      try (ResultSet rs = statement.executeQuery()) {
+        if (!rs.next()) {
+          return 0;
+        }
+        final Timestamp expiresAt = rs.getTimestamp(1);
+        if (expiresAt == null) {
+          return 0;
+        }
+        final long remainingMillis = expiresAt.toInstant().toEpochMilli()
+            - Instant.now().toEpochMilli();
+        return Math.max(0, (remainingMillis + 999) / 1000);
+      }
+    } catch (SQLException e) {
+      throw new IllegalStateException(
+          "Unable to get trusted-device lifetime for user " + userId, e);
+    }
+  }
+
+  @Override
   @Transactional(Transactional.TxType.REQUIRED)
   public void revokeAll(final int userId) {
     validateUserId(userId);
