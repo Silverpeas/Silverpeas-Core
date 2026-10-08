@@ -36,10 +36,10 @@ import org.silverpeas.core.web.token.SynchronizerTokenService;
 import jakarta.inject.Inject;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpSession;
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.silverpeas.core.util.Charsets;
@@ -116,9 +116,15 @@ public class AuthenticationResource extends RESTWebService {
   @ApiResponse(responseCode = "401", description = "No pending authentication or invalid second factor.")
   @POST
   @Path("two-factor")
+  @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  public Response authenticateTwoFactor(@QueryParam("code") final String code,
-      @QueryParam("trustDevice") final boolean trustDevice) throws AuthenticationException {
+  public Response authenticateTwoFactor(final TwoFactorCodeRequest request)
+      throws AuthenticationException {
+    if (request == null || request.getCode() == null || request.getCode().isBlank()) {
+      return Response.status(Response.Status.BAD_REQUEST).build();
+    }
+    final String code = request.getCode();
+    final boolean trustDevice = request.isTrustDevice();
     HttpSession session = getHttpServletRequest().getSession(false);
     if (session == null) {
       return Response.status(Response.Status.UNAUTHORIZED).build();
@@ -261,9 +267,15 @@ public class AuthenticationResource extends RESTWebService {
 
   @POST
   @Path("enrollment/confirm")
+  @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  public Response confirmEnrollment(@QueryParam("code") String code,
-      @QueryParam("trustDevice") boolean trustDevice) throws AuthenticationException {
+  public Response confirmEnrollment(final TwoFactorCodeRequest request)
+      throws AuthenticationException {
+    if (request == null || request.getCode() == null || request.getCode().isBlank()) {
+      return Response.status(Response.Status.BAD_REQUEST).build();
+    }
+    final String code = request.getCode();
+    final boolean trustDevice = request.isTrustDevice();
     User user = getPendingTwoFactorUser();
     if (user == null) {
       return Response.status(Response.Status.UNAUTHORIZED).build();
@@ -293,6 +305,30 @@ public class AuthenticationResource extends RESTWebService {
     return Response.ok(new EnrollmentConfirmationEntity(
         UserProfileEntity.fromUser(user).withAsUri(ProfileResourceBaseURIs.uriOfUser(userId + "")),
         recoveryCodes)).header("Cache-Control", "no-store").build();
+  }
+
+  public static class TwoFactorCodeRequest {
+    private String code;
+    private boolean trustDevice;
+
+    public TwoFactorCodeRequest() {
+    }
+
+    public String getCode() {
+      return code;
+    }
+
+    public void setCode(final String code) {
+      this.code = code;
+    }
+
+    public boolean isTrustDevice() {
+      return trustDevice;
+    }
+
+    public void setTrustDevice(final boolean trustDevice) {
+      this.trustDevice = trustDevice;
+    }
   }
 
   public static class EnrollmentEntity {
