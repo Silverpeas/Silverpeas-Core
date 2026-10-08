@@ -344,8 +344,7 @@ public class AuthenticationResource extends RESTWebService {
     }
     final String cookieValue = URLEncoder.encode(token, Charsets.UTF_8);
     getHttpServletResponse().addHeader("Set-Cookie", TRUSTED_DEVICE_COOKIE + "=" + cookieValue
-        + "; Max-Age=" + AUTHENTICATION_SETTINGS.getInteger(
-            "twoFactorTrustedDeviceLifetime", 2592000)
+        + "; Max-Age=" + Math.max(0, maxAge)
         + "; Path=/; HttpOnly; SameSite=Lax"
         + (getHttpServletRequest().isSecure() ? "; Secure" : ""));
   }
