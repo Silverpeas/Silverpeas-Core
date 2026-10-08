@@ -496,6 +496,16 @@ public class AuthenticationService implements Authentication {
   }
 
   /**
+   * Gets the remaining validity of a trusted-device token, in seconds.
+   */
+  public long getTrustedDeviceRemainingLifetime(final String login,
+      final String domainId, final String token) throws AuthenticationException {
+    final AuthenticationCredential credential =
+        AuthenticationCredential.newWithAsLogin(login).withAsDomainId(domainId);
+    return trustedDeviceService.getRemainingLifetime(getUserId(credential), token);
+  }
+
+  /**
    * Indicates whether the user must enroll a TOTP factor before completing authentication.
    */
   public boolean isTwoFactorEnrollmentRequired(final String login, final String domainId) {
