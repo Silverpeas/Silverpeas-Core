@@ -62,15 +62,16 @@ public class RecoveryCodeRepositoryImpl implements RecoveryCodeRepository {
     }
 
     @Override
-    public boolean consume(final Connection connection, final String hash, final Instant usedAt)
+    public boolean consume(final Connection connection, final int userId, final String hash, final Instant usedAt)
             throws SQLException {
         final String sql = "UPDATE " + TABLE
-                + " SET used = ?, usedAt = ? WHERE hash = ? AND used = ?";
+                + " SET used = ?, usedAt = ? WHERE userId = ? AND hash = ? AND used = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setBoolean(1, true);
             statement.setTimestamp(2, Timestamp.from(usedAt));
-            statement.setString(3, hash);
-            statement.setBoolean(4, false);
+            statement.setInt(3, userId);
+            statement.setString(4, hash);
+            statement.setBoolean(5, false);
             return statement.executeUpdate() == 1;
         }
     }
