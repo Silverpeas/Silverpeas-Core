@@ -37,6 +37,8 @@ import org.silverpeas.web.test.stub.TestHttpResponse;
 
 import jakarta.servlet.http.HttpServletResponse;
 
+import java.util.Collections;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -213,6 +215,40 @@ public class MassiveWebSecurityFilterIT {
                     false);
         }
         assertSQL(param("GRANT SELECsT, INSERsT, UPDAsTE, DELsETE ON suppliers TO smithj"), false);
+    }
+
+    /**
+     * A long list of privileges must neither overflow the stack nor take ages to be checked,
+     * whether the value is finally a GRANT statement or not.
+     */
+    @Test
+    public void secureAgainstSqlGRANTWithALongListOfPrivileges() {
+        for (String privilege : SQL_PRIVILEGES) {
+            String privileges = longListOf(privilege);
+            assertSQL(param("GRANT " + privileges + " ON suppliers TO smithj"), true);
+            assertSQL(param("GRANT /*" + privileges + "*/" + privilege + " ON suppliers TO smithj"),
+                    true);
+            assertSQL(param("GRANT " + privileges), false);
+            assertSQL(param("GRANT " + privileges + " ON suppliers"), false);
+            assertSQL(param("GRANT " + privileges + " ON suppliers FROM smithj"), false);
+        }
+    }
+
+    @Test
+    public void secureAgainstSqlREVOKEWithALongListOfPrivileges() {
+        for (String privilege : SQL_PRIVILEGES) {
+            String privileges = longListOf(privilege);
+            assertSQL(param("REVOKE " + privileges + " ON suppliers FROM smithj"), true);
+            assertSQL(param("REVOKE /*" + privileges + "*/" + privilege + " ON suppliers FROM smithj"),
+                    true);
+            assertSQL(param("REVOKE " + privileges), false);
+            assertSQL(param("REVOKE " + privileges + " ON suppliers"), false);
+            assertSQL(param("REVOKE " + privileges + " ON suppliers TO smithj"), false);
+        }
+    }
+
+    private static String longListOf(String privilege) {
+        return String.join(", ", Collections.nCopies(2000, privilege));
     }
 
     @Test

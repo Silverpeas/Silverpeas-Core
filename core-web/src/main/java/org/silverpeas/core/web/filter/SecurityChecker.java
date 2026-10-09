@@ -83,6 +83,6 @@ interface SecurityChecker {
    */
   static String excerptOf(final String text, final int start) {
     final int end = Math.min(text.length(), start + EXCERPT_LENGTH);
-    return "\"" + text.substring(start, end) + (end < text.length() ? "\u2026" : "") + "\"";
+    return "\"" + text.substring(start, end) + (end < text.length() ? "…" : "") + "\"";
   }
 }

@@ -41,8 +41,8 @@ final class XssPatternChecker implements SecurityChecker {
       new XssPattern("(?i)<[\\s/]*(svg|math|details)", "a forbidden element"),
       // an event callback declaration isn't necessarily preceded by a whitespace: according to the
       // HTML tokenizer, the solidus and the closing quote of the previous attribute value both lead
-      // back to the state at which an attribute name is expected. So "<img src="x"onerror=..." does
-      // declare an onerror callback and browsers do run it. The callbacks are named one by one,
+      // back to the state at which an attribute name is expected. So ""<img src="x"onerror=..."" does
+      // declare a onerror callback and browsers do run it. The callbacks are named one by one,
       // which spares the false rejections a mere on prefix followed by any word characters would
       // cause (on a text such as "a value only=42"); the iframes and the scripts, whose attributes
       // are parsed, reject on their side any attribute starting with on.

@@ -117,19 +117,22 @@ public class MassiveWebSecurityFilter implements Filter {
           Pattern.compile(SecuritySettings.skippedParametersAboutWebXssInjectionSecurity()));
     }
 
+    // The privileges of a GRANT or REVOKE aren't matched by a repeated group, as it would be
+    // handled recursively by the regexp engine (risk of stack overflow with a long value): the
+    // '.*' before the last privilege already absorbs the previous ones.
     SQL_PATTERNS = new ArrayList<>(6);
     SQL_PATTERNS.add(
-        Pattern.compile("(?i)grant(([\\s/*]+.*\\s*)(select|insert|update|delete))+" +
-            "([\\s/*]+.*\\s*)on([\\s/*]+.*\\s*)to"));
+        Pattern.compile("(?i)grant[\\s/*]+.*\\s*(select|insert|update|delete)" +
+            "[\\s/*]+.*\\s*on[\\s/*]+.*\\s*to"));
     SQL_PATTERNS.add(
-        Pattern.compile("(?i)revoke(([\\s/*]+.*\\s*)(select|insert|update|delete))+" +
-            "([\\s/*]+.*\\s*)on([\\s/*]+.*\\s*)from"));
+        Pattern.compile("(?i)revoke[\\s/*]+.*\\s*(select|insert|update|delete)" +
+            "[\\s/*]+.*\\s*on[\\s/*]+.*\\s*from"));
     SQL_PATTERNS.add(
-        Pattern.compile("(?i)grant(([\\s/*]+.*\\s*)(references|alter|index|all))+" +
-            "([\\s/*]+.*\\s*)on([\\s/*]+.*\\s*)to"));
+        Pattern.compile("(?i)grant[\\s/*]+.*\\s*(references|alter|index|all)" +
+            "[\\s/*]+.*\\s*on[\\s/*]+.*\\s*to"));
     SQL_PATTERNS.add(
-        Pattern.compile("(?i)revoke(([\\s/*]+.*\\s*)(references|alter|index|all))+" +
-            "([\\s/*]+.*\\s*)on([\\s/*]+.*\\s*)from"));
+        Pattern.compile("(?i)revoke[\\s/*]+.*\\s*(references|alter|index|all)" +
+            "[\\s/*]+.*\\s*on[\\s/*]+.*\\s*from"));
     SQL_PATTERNS.add(Pattern.compile("(?i)(create|drop|alter)([\\s/*]+.*\\s*)" +
         "(table|database|schema)"));
     SQL_PATTERNS.add(SQL_SELECT_FROM_PATTERN);
@@ -318,7 +321,7 @@ public class MassiveWebSecurityFilter implements Filter {
         if (headerName.toLowerCase().startsWith("x-")) {
           String headerValue = httpRequest.getHeader(headerName);
           checkValueForInjection(headerValue, true, true, xss);
-          // some of our custom headers carry an URI-encoded value (a file name for example) so
+          // some of our custom headers carry a URI-encoded value (a file name for example) so
           // that non Latin-1 characters can be transferred: the decoded value has to be checked too
           String decodedHeaderValue = decodeSafely(headerValue);
           if (!decodedHeaderValue.equals(headerValue)) {
@@ -588,10 +591,10 @@ public class MassiveWebSecurityFilter implements Filter {
      * buffer capability to the input stream on its body content.
      */
     public static HttpRequest decorate(ServletRequest request) {
-      if (request instanceof BufferedHttpRequest) {
-        return (BufferedHttpRequest) request;
-      } else if (request instanceof HttpRequest) {
-        return new BufferedHttpRequest((HttpRequest) request);
+      if (request instanceof BufferedHttpRequest req) {
+        return req;
+      } else if (request instanceof HttpRequest req) {
+        return new BufferedHttpRequest(req);
       }
       return HttpRequest.decorate(new BufferedHttpRequest(request));
     }

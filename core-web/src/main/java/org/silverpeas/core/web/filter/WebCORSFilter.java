@@ -41,8 +41,8 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * This filter provide the right behaviour to handle Cross-Origin Resource Sharing (CORS).
- * Please taking a look at <code>http://www.w3.org/TR/2012/WD-cors-20120403/</code>.
+ * This filter provide the right behavior to handle Cross-Origin Resource Sharing (CORS).
+ * Please taking a look at <a href="http://www.w3.org/TR/2012/WD-cors-20120403/">CORS</a>.
  * A huge advantage, for example, is that there is no need to change the coding of the ajax http
  * request even in the case where requests are sent from a different domain of that of the requested
  * server ...

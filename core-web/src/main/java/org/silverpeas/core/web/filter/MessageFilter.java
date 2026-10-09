@@ -49,28 +49,27 @@ import static org.silverpeas.core.web.mvc.controller.MainSessionController.MAIN_
  */
 public class MessageFilter implements Filter {
   /**
-   * The HTTP header paremeter that contains the registred key of messages.
+   * The HTTP header parameter that contains the registered key of messages.
    */
   public static final String HTTP_MESSAGEKEY = "X-Silverpeas-MessageKey";
 
   @Override
   public void doFilter(final ServletRequest request, final ServletResponse response,
       final FilterChain chain) throws IOException, ServletException {
-    if (response instanceof HttpServletResponse) {
+    if ( response instanceof HttpServletResponse httpResponse) {
       final HttpServletRequest httpRequest = (HttpServletRequest) request;
-      final HttpServletResponse httpResponse = (HttpServletResponse) response;
 
       // Initializing the manager of messages associated to the current request
-      String registredKey = MessageManager.initialize();
+      String registeredKey = MessageManager.initialize();
       MessageManager
-          .addListener(new RequestMessageListener(httpRequest, httpResponse, registredKey));
+          .addListener(new RequestMessageListener(httpRequest, httpResponse, registeredKey));
       try {
         chain.doFilter(request, response);
       } finally {
         // Remove message container if no message registered
-        var container = MessageManager.getMessageContainer(registredKey);
+        var container = MessageManager.getMessageContainer(registeredKey);
         if (container != null && container.getMessages().isEmpty() ) {
-          MessageManager.clear(registredKey);
+          MessageManager.clear(registeredKey);
           httpResponse.setHeader(HTTP_MESSAGEKEY, null);
         }
 
@@ -99,13 +98,13 @@ public class MessageFilter implements Filter {
   private static class RequestMessageListener implements MessageListener {
     private final HttpServletRequest httpRequest;
     private final HttpServletResponse httpResponse;
-    private final String registredKeyOfMessages;
+    private final String registeredKeyOfMessages;
 
     public RequestMessageListener(final HttpServletRequest httpRequest,
-        final HttpServletResponse httpResponse, final String registredKeyOfMessages) {
+        final HttpServletResponse httpResponse, final String registeredKeyOfMessages) {
       this.httpRequest = httpRequest;
       this.httpResponse = httpResponse;
-      this.registredKeyOfMessages = registredKeyOfMessages;
+      this.registeredKeyOfMessages = registeredKeyOfMessages;
     }
 
     @Override
@@ -127,7 +126,7 @@ public class MessageFilter implements Filter {
 
     @Override
     public void afterMessageAdded(final MessageContainer container, final Message message) {
-      httpResponse.setHeader(HTTP_MESSAGEKEY, registredKeyOfMessages);
+      httpResponse.setHeader(HTTP_MESSAGEKEY, registeredKeyOfMessages);
     }
   }
 }
