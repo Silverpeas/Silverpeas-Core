@@ -39,6 +39,18 @@ public abstract class WebSecurityException extends SilverpeasException {
    * @param message the reason of the exception
    */
   protected WebSecurityException(final String message) {
-    super(message + LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+    this(message, null);
+  }
+
+  /**
+   * Constructs an exception whose message ends with a detail on what has been detected. The
+   * message is both logged and sent back to the client, so that the writer of a content can be
+   * told what to fix.
+   * @param message the reason of the exception
+   * @param detail what has been detected, null if nothing more than the message can be told.
+   */
+  protected WebSecurityException(final String message, final String detail) {
+    super(message + LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME) +
+        (detail == null ? "" : ": " + detail));
   }
 }

@@ -41,6 +41,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.core.UriBuilder;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
@@ -192,6 +193,27 @@ public class MassiveWebSecurityFilterOnReportedXssIT {
   public void aCallbackIsExpectedToFollowAnAttributeSeparator() {
     assertNotBlocked(injection("onerror=alert(1)"));
     assertNotBlocked(injection("https://www.silverpeas.org/page?online=true"));
+  }
+
+  /**
+   * The client is told the reason of a rejection along with an excerpt of what has been detected,
+   * so that the writer of a content knows what to fix. The message is the one logged.
+   */
+  @Test
+  public void theClientIsToldTheReasonOfTheRejection() {
+    assertBlockedFor(injection("<img src=x onerror=alert(1)>"),
+        "an event callback attribute in \" onerror=alert(1)>\"");
+    assertBlockedFor(injection("<script src=\"/weblib/toto.js\"/><p>text</p>"),
+        "a script not immediately closed (carrying code or missing its closing tag) in " +
+            "\"<script src=\"/weblib/toto.js\"/><p>text</p>\"");
+    assertBlockedFor(injection("<iframe src=\"https://www.evil.org/\"></iframe>"),
+        "the source of an iframe isn't allowed in \"<iframe src=\"https://www.evil.org/\"></iframe>\"");
+  }
+
+  private void assertBlockedFor(final TestHttpRequest request, final String reason) {
+    Pair<Integer, String> status = filter(request);
+    assertThat(status.getFirst(), is(HttpServletResponse.SC_FORBIDDEN));
+    assertThat(status.getSecond(), containsString(reason));
   }
 
   private TestHttpRequest injection(final String payload) {

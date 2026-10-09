@@ -26,8 +26,10 @@ package org.silverpeas.core.web.filter;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 
 /**
@@ -170,6 +172,41 @@ class ScriptCheckerTest {
     assertRejected("</script>");
     assertRejected("text</ script >");
     assertRejected("<script src=\"/weblib/custom.js\"></script></script>");
+  }
+
+  /**
+   * The reason of a rejection tells what is wrong with the script, so that the writer of a content
+   * can fix it. In particular, a self-closing script tag isn't closed in HTML: the browsers read the
+   * rest of the document as the code of the script.
+   */
+  @Test
+  void rejectionTellsItsReason() {
+    assertRejectedFor("<h1>title</h1><script src=\"/weblib/toto.js\"/><p>text</p>",
+        "a script not immediately closed (carrying code or missing its closing tag) in " +
+            "\"<script src=\"/weblib/toto.js\"/><p>text</p>\"");
+    assertRejectedFor("<script src=\"/weblib/custom.js\">alert(1)</script>",
+        "a script not immediately closed (carrying code or missing its closing tag) in " +
+            "\"<script src=\"/weblib/custom.js\">alert(1)</script>\"");
+    assertRejectedFor("<script>alert(1)</script>",
+        "the source of a script isn't allowed in \"<script>alert(1)</script>\"");
+    assertRejectedFor("<script src=\"/other/evil.js\"></script>",
+        "the source of a script isn't allowed in \"<script src=\"/other/evil.js\"></script>\"");
+    assertRejectedFor("<script/src=\"/weblib/custom.js\"></script>",
+        "a script that cannot be strictly parsed in \"<script/src=\"/weblib/custom.js\"></script>\"");
+    assertRejectedFor("text</script>",
+        "a closing script tag out of an allowed script in \"</script>\"");
+    // whatever the name of the callback, even one the patterns of the filter don't know
+    assertRejectedFor("<script src=\"/weblib/custom.js\" onreadystatechange=\"alert(1)\"></script>",
+        "a script with an event handler attribute in \"<script src=\"/weblib/custom.js\" " +
+            "onreadystatechange=\"alert(1)\"></script>\"");
+    assertThat(checker.rejectionIn("<script src=\"/weblib/custom.js\"></script>"),
+        is(Optional.empty()));
+  }
+
+  private void assertRejectedFor(final String text, final String reason) {
+    final Optional<String> rejection = checker.rejectionIn(text);
+    assertThat(text, rejection.isPresent(), is(true));
+    assertThat(rejection.get(), containsString(reason));
   }
 
   private void assertAllowed(final String text) {

@@ -26,6 +26,7 @@ package org.silverpeas.core.web.filter;
 import org.silverpeas.core.security.html.EmbeddedSourceValidator;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,7 +41,7 @@ import java.util.regex.Pattern;
  *
  * @author mmoquillon
  */
-final class ScriptChecker {
+final class ScriptChecker implements SecurityChecker {
 
   private static final String SCRIPT = "script";
   private static final String SRC = "src";
@@ -65,36 +66,44 @@ final class ScriptChecker {
   }
 
   /**
-   * Are all the scripts in the given text allowed?
+   * Gets the reason for which the first non-allowed script in the given text is rejected.
    *
    * @param text the text to check.
-   * @return true if there is no script in the text or if all of them are allowed. False otherwise.
+   * @return the reason of the rejection, with an excerpt of the script, or nothing if there is no
+   * script in the text or if all of them are allowed.
    */
-  boolean areAllAllowedIn(final String text) {
+  @Override
+  public Optional<String> rejectionIn(final String text) {
     final Matcher script = SCRIPT_PATTERN.matcher(text);
     int position = 0;
     while (script.find(position)) {
-      position = endOfAllowedScript(text, script.start());
-      if (position < 0) {
-        return false;
+      final int tagStart = script.start();
+      if (script.group().contains("/")) {
+        return rejection("a closing script tag out of an allowed script", text, tagStart);
       }
+      final Optional<OpeningTag> tag = OpeningTag.of(SCRIPT, text, tagStart);
+      if (tag.isEmpty()) {
+        return rejection("a script that cannot be strictly parsed", text, tagStart);
+      }
+      if (tag.get().hasEventHandlerAttribute()) {
+        return rejection("a script with an event handler attribute", text, tagStart);
+      }
+      if (!sourceValidator.isAllowed(tag.get().getAttribute(SRC))) {
+        return rejection("the source of a script isn't allowed", text, tagStart);
+      }
+      final Matcher closing =
+          CLOSING_TAG_PATTERN.matcher(text).region(tag.get().getEnd(), text.length());
+      if (!closing.lookingAt()) {
+        return rejection("a script not immediately closed (carrying code or missing its closing " +
+            "tag)", text, tagStart);
+      }
+      position = closing.end();
     }
-    return true;
+    return Optional.empty();
   }
 
-  /**
-   * Gets the position following the allowed script starting at the given position.
-   *
-   * @return the position just after the closing tag of the script, or -1 if there is no allowed
-   * script at the given position.
-   */
-  private int endOfAllowedScript(final String text, final int tagStart) {
-    return OpeningTag.of(SCRIPT, text, tagStart)
-        .filter(t -> !t.hasEventHandlerAttribute() &&
-            sourceValidator.isAllowed(t.getAttribute(SRC)))
-        .map(t -> CLOSING_TAG_PATTERN.matcher(text).region(t.getEnd(), text.length()))
-        .filter(Matcher::lookingAt)
-        .map(Matcher::end)
-        .orElse(-1);
+  private static Optional<String> rejection(final String reason, final String text,
+      final int tagStart) {
+    return SecurityChecker.rejection(reason, text, tagStart);
   }
 }

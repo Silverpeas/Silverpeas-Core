@@ -26,6 +26,7 @@ package org.silverpeas.core.web.filter;
 import org.silverpeas.core.security.html.EmbeddedSourceValidator;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,7 +41,7 @@ import java.util.regex.Pattern;
  *
  * @author mmoquillon
  */
-final class IFrameChecker {
+final class IFrameChecker implements SecurityChecker {
 
   private static final Pattern IFRAME_PATTERN = Pattern.compile("(?i)<[\\s/]*iframe");
   private static final String IFRAME = "iframe";
@@ -61,26 +62,41 @@ final class IFrameChecker {
   }
 
   /**
-   * Are all the iframes in the given text allowed?
+   * Gets the reason for which the first non-allowed iframe in the given text is rejected.
    *
    * @param text the text to check.
-   * @return true if there is no iframe in the text or if all of them are allowed. False otherwise.
+   * @return the reason of the rejection, with an excerpt of the iframe, or nothing if there is no
+   * iframe in the text or if all of them are allowed.
    */
-  boolean areAllAllowedIn(final String text) {
+  @Override
+  public Optional<String> rejectionIn(final String text) {
     final Matcher iframe = IFRAME_PATTERN.matcher(text);
     while (iframe.find()) {
       final boolean isClosingTag = iframe.group().contains("/");
-      if (!isClosingTag && !isAllowed(text, iframe.start())) {
-        return false;
+      if (!isClosingTag) {
+        final Optional<String> rejection = rejectionOf(text, iframe.start());
+        if (rejection.isPresent()) {
+          return rejection;
+        }
       }
     }
-    return true;
+    return Optional.empty();
   }
 
-  private boolean isAllowed(final String text, final int tagStart) {
-    return OpeningTag.of(IFRAME, text, tagStart)
-        .filter(t -> !t.hasAttribute(SRCDOC) && !t.hasEventHandlerAttribute() &&
-            sourceValidator.isAllowed(t.getAttribute(SRC)))
-        .isPresent();
+  private Optional<String> rejectionOf(final String text, final int tagStart) {
+    final Optional<OpeningTag> tag = OpeningTag.of(IFRAME, text, tagStart);
+    final String reason;
+    if (tag.isEmpty()) {
+      reason = "an iframe that cannot be strictly parsed";
+    } else if (tag.get().hasAttribute(SRCDOC)) {
+      reason = "an iframe with a srcdoc attribute";
+    } else if (tag.get().hasEventHandlerAttribute()) {
+      reason = "an iframe with an event handler attribute";
+    } else if (!sourceValidator.isAllowed(tag.get().getAttribute(SRC))) {
+      reason = "the source of an iframe isn't allowed";
+    } else {
+      return Optional.empty();
+    }
+    return SecurityChecker.rejection(reason, text, tagStart);
   }
 }

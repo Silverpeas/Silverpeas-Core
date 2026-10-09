@@ -21,27 +21,38 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.web.filter.exception;
+package org.silverpeas.core.web.filter;
 
-import java.io.Serial;
+import java.util.List;
+import java.util.Optional;
 
 /**
- * User: Yohann Chastagnier
- * Date: 05/03/14
+ * Checks a value sent to Silverpeas against the XSS injections by composing the security checkers
+ * it is given: a value is allowed only if all of them allow it, and the reason told for a rejection
+ * is the one of the first checker rejecting the value. This composite knows none of the checkers
+ * in particular, they are provided by the {@link SecurityCheckerProvider}.
+ *
+ * @author mmoquillon
  */
-public class WebXssInjectionSecurityException extends WebSecurityException {
-  @Serial
-  private static final long serialVersionUID = 1565523880339634671L;
+final class XssChecker implements SecurityChecker {
 
-  public WebXssInjectionSecurityException() {
-    super("Attempt of a XSS injection detected at ");
-  }
+  private final List<SecurityChecker> checkers;
 
   /**
-   * Constructs an exception whose message tells what has been detected.
-   * @param detail what has been detected.
+   * Constructs a checker composing the specified checkers, consulted in their order.
+   *
+   * @param checkers the security checkers to compose.
    */
-  public WebXssInjectionSecurityException(final String detail) {
-    super("Attempt of a XSS injection detected at ", detail);
+  XssChecker(final List<SecurityChecker> checkers) {
+    this.checkers = List.copyOf(checkers);
+  }
+
+  @Override
+  public Optional<String> rejectionIn(final String value) {
+    return checkers.stream()
+        .map(c -> c.rejectionIn(value))
+        .filter(Optional::isPresent)
+        .map(Optional::get)
+        .findFirst();
   }
 }

@@ -34,7 +34,11 @@ public class WebSqlInjectionSecurityException extends WebSecurityException {
     super("Attempt of a SQL injection detected at ");
   }
 
-  public WebSqlInjectionSecurityException(String vulnValue) {
-    super("Attempt of a SQL injection detected '" + vulnValue + "' at ");
+  /**
+   * Constructs an exception whose message tells what has been detected.
+   * @param detail what has been detected.
+   */
+  public WebSqlInjectionSecurityException(final String detail) {
+    super("Attempt of a SQL injection detected at ", detail);
   }
 }
