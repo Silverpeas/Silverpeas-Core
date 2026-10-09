@@ -80,25 +80,84 @@ public abstract class Ticket extends BasicJpaEntity<Ticket, UuidIdentifier>
   protected int nbAccessMax;
   @Column(name = "nbaccess")
   protected int nbAccess;
-
+  @Column(name = "securitycode")
+  protected String securityCode;
   protected Ticket() {
   }
 
-  protected Ticket(int sharedObjectId, String componentId, UserDetail creator, Date creationDate,
-      Date endDate, int nbAccessMax) {
-    this(sharedObjectId, componentId, creator.getId(), creationDate, endDate, nbAccessMax);
+  protected Ticket(TicketDetail detail) {
+    this.sharedObjectId = detail.getSharedObjectId();
+    this.componentId = detail.getComponentId();
+    this.creatorId = detail.getCreatorId();
+    this.creationDate = detail.getCreationDate().getTime();
+    if (detail.getEndDate() != null) {
+      this.endDate = detail.getEndDate().getTime();
+    }
+    this.nbAccessMax = detail.getNbAccessMax();
+    this.securityCode = detail.getSecurityCode();
+    if (StringUtil.isDefined(detail.getToken())) {
+      setId(detail.getToken());
+    }
   }
 
-  protected Ticket(int sharedObjectId, String componentId, String creatorId, Date creationDate,
-      Date endDate, int nbAccessMax) {
-    this.sharedObjectId = sharedObjectId;
-    this.componentId = componentId;
-    this.creatorId = creatorId;
-    this.creationDate = creationDate.getTime();
-    if (endDate != null) {
-      this.endDate = endDate.getTime();
+  public abstract static class Builder<B extends Builder<B>> {
+    protected final TicketDetail.Builder detail;
+
+    protected Builder() {
+      this.detail = TicketDetail.builder();
     }
-    this.nbAccessMax = nbAccessMax;
+
+    protected Builder(TicketDetail detail) {
+      this.detail = TicketDetail.builder(detail);
+    }
+
+    protected abstract B self();
+
+    public B setSharedObjectId(long sharedObjectId) {
+      detail.setSharedObjectId(sharedObjectId);
+      return self();
+    }
+
+    public B setComponentId(String componentId) {
+      detail.setComponentId(componentId);
+      return self();
+    }
+
+    public B setCreatorId(String creatorId) {
+      detail.setCreatorId(creatorId);
+      return self();
+    }
+
+    public B setCreationDate(Date creationDate) {
+      detail.setCreationDate(creationDate);
+      return self();
+    }
+
+    public B setEndDate(Date endDate) {
+      detail.setEndDate(endDate);
+      return self();
+    }
+
+    public B setNbAccessMax(int nbAccessMax) {
+      detail.setNbAccessMax(nbAccessMax);
+      return self();
+    }
+
+    public B setSecurityCode(String securityCode) {
+      detail.setSecurityCode(securityCode);
+      return self();
+    }
+
+    public B setToken(String token) {
+      detail.setToken(token);
+      return self();
+    }
+
+    protected TicketDetail buildDetail(String type) {
+      return detail.setSharedObjectType(type).build();
+    }
+
+    public abstract Ticket build();
   }
 
   public long getSharedObjectId() {
@@ -158,6 +217,14 @@ public abstract class Ticket extends BasicJpaEntity<Ticket, UuidIdentifier>
     } else {
       this.endDate = null;
     }
+  }
+
+  public String getSecurityCode() {
+    return securityCode;
+  }
+
+  public void setSecurityCode(String securityCode) {
+    this.securityCode = securityCode;
   }
 
   public int getNbAccessMax() {
@@ -275,6 +342,10 @@ public abstract class Ticket extends BasicJpaEntity<Ticket, UuidIdentifier>
 
   public abstract <R> ShareableResource<R> getResource();
 
+  public boolean checkSecurityCode(String securityCode) {
+    if (this.securityCode != null) return this.securityCode.equals(securityCode);
+    return true;
+  }
   public enum QUERY_ORDER_BY {
 
     CREATION_DATE_ASC(asc("creationDate")), CREATION_DATE_DESC(desc("creationDate")),

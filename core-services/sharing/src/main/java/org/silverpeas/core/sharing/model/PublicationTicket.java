@@ -33,7 +33,6 @@ import org.silverpeas.core.sharing.security.ShareableResource;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Transient;
-import java.util.Date;
 
 /**
  *
@@ -45,10 +44,36 @@ public class PublicationTicket extends Ticket {
 
   private static final long serialVersionUID = 6661700474412230957L;
 
-  public PublicationTicket(int sharedObjectId, String componentId, String creatorId, Date creationDate,
-      Date endDate, int nbAccessMax) {
-    super(sharedObjectId, componentId, creatorId, creationDate, endDate, nbAccessMax);
+  private PublicationTicket(TicketDetail detail) {
+    super(detail);
     this.sharedObjectType = PUBLICATION_TYPE;
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  public static Builder builder(TicketDetail detail) {
+    return new Builder(detail);
+  }
+
+  public static class Builder extends Ticket.Builder<Builder> {
+    private Builder() {
+    }
+
+    private Builder(TicketDetail detail) {
+      super(detail);
+    }
+
+    @Override
+    protected Builder self() {
+      return this;
+    }
+
+    @Override
+    public PublicationTicket build() {
+      return new PublicationTicket(buildDetail(PUBLICATION_TYPE));
+    }
   }
 
   protected PublicationTicket() {

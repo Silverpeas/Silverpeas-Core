@@ -126,8 +126,14 @@ public class TicketJpaRepositoryIT {
     Transaction.performInOne(() -> {
       UserDetail creator = new UserDetail();
       creator.setId("0");
-      Ticket ticket = new SimpleFileTicket(5, "kmelia2", creator, new Date(1330972778622L),
-          new Date(1330988399000L), -1);
+      Ticket ticket = SimpleFileTicket.builder()
+          .setSharedObjectId(5)
+          .setComponentId("kmelia2")
+          .setCreatorId(creator.getId())
+          .setCreationDate(new Date(1330972778622L))
+          .setEndDate(new Date(1330988399000L))
+          .setNbAccessMax(-1)
+          .build();
       Ticket newTicket = service.save(ticket);
       assertThat(newTicket, is(notNullValue()));
       assertThat(newTicket, instanceOf(SimpleFileTicket.class));

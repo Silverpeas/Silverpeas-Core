@@ -25,6 +25,7 @@ package org.silverpeas.core.webapi.sharing;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.sharing.model.Ticket;
+import org.silverpeas.core.sharing.model.TicketDetail;
 import org.silverpeas.core.sharing.model.TicketFactory;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.kernel.util.StringUtil;
@@ -79,6 +80,9 @@ public class TicketEntity implements WebEntity {
   @XmlElement
   protected int nbAccess;
 
+  @XmlElement
+  protected String securityCode;
+
   @XmlElement(defaultValue = "")
   protected String token;
   @XmlElement(defaultValue = "")
@@ -125,24 +129,22 @@ public class TicketEntity implements WebEntity {
   }
 
   public Ticket toTicket(UserDetail user) throws ParseException {
-    Ticket ticket;
-    long theSharedObjectId = this.sharedObjectId;
+    Date theEndDate = null;
     if ("1".equals(this.validity)) {
-      Date theEndDate = DateUtil.getEndOfDay(
+      theEndDate = DateUtil.getEndOfDay(
           DateUtil.stringToDate(this.endDateStr, user.getUserPreferences().getLanguage()));
-      int maxAccessNb = this.nbAccessMax;
-
-      ticket =
-          TicketFactory.aTicket((int) theSharedObjectId, this.componentId, user.getId(),
-              new Date(), theEndDate, maxAccessNb, this.sharedObjectType);
-
-    } else {
-      ticket =
-          TicketFactory.continuousTicket((int) theSharedObjectId, componentId, user.getId(),
-              new Date(), this.sharedObjectType);
-
     }
-    return ticket;
+    TicketDetail detail = TicketDetail.builder()
+        .setSharedObjectId(this.sharedObjectId)
+        .setComponentId(this.componentId)
+        .setCreatorId(user.getId())
+        .setCreationDate(new Date())
+        .setEndDate(theEndDate)
+        .setNbAccessMax("1".equals(this.validity) ? this.nbAccessMax : -1)
+        .setSharedObjectType(this.sharedObjectType)
+        .setSecurityCode(this.securityCode)
+        .build();
+    return TicketFactory.aTicket(detail);
   }
 
   /**
