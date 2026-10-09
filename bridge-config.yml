@@ -1,0 +1,121 @@
+# Black Duck Bridge Configuration for Silverpeas Core
+# This configuration file optimizes Bridge scanning for the Maven multi-module project
+
+# Project identification
+project:
+  name: "Silverpeas-Core"
+  description: "The foundation of Silverpeas platform"
+  
+# Black Duck server configuration
+blackduck:
+  # Server URL and authentication are handled via environment variables
+  # BLACKDUCK_URL and BLACKDUCK_TOKEN should be set in GitHub secrets/variables
+  trust_cert: true
+  timeout: 7200  # 2 hours for large projects
+
+# Detect configuration for Maven multi-module project
+detect:
+  # Project structure
+  source_path: "."
+  search_depth: 4
+  
+  # Maven specific settings
+  maven:
+    build_command: "mvn clean compile"
+    scope: "compile,runtime"
+    include_plugins: false
+    excluded_modules: []
+    
+  # Detector configuration - focus on Java/Maven
+  included_detector_types: "MAVEN"
+  excluded_detector_types: "NUGET,NPM,YARN,PEAR,COMPOSER,CPAN,RUBYGEMS,PACKAGIST,CLANG,BAZEL,CARGO,COCOAPODS,CONDA,CRAN,GO_MOD,GRADLE,HEX,LERNA,POETRY,PIPENV,SBT,SWIFT"
+  
+  # Exclusions for build artifacts and test files
+  excluded_directories:
+    - "target"
+    - ".git"
+    - ".idea"
+    - ".vscode"
+    - "node_modules"
+    - ".mvn"
+    - ".bridge"
+    - ".codesight"
+    
+  excluded_files:
+    - "*.class"
+    - "*.jar"
+    - "*.war"
+    - "*.ear"
+    - "*.zip"
+    - "*.tar.gz"
+    - "*.log"
+    - "*.tmp"
+    - ".gitignore"
+    - "*.md"
+    
+  # Performance optimizations
+  parallel_processors: 4
+  cleanup: true
+  
+  # Policy and compliance
+  policy_check:
+    fail_on_severities: "BLOCKER,CRITICAL"
+    
+  # Reporting
+  reports:
+    risk_report_pdf: true
+    notices_report: true
+    vulnerability_report: true
+    
+  # Output configuration
+  output_path: "./bridge-output"
+  diagnostic: true
+  diagnostic_extended: false
+
+# Scanning profiles for different scenarios
+profiles:
+  # Full scan for main branches
+  full:
+    detect:
+      maven:
+        scope: "compile,runtime,test"
+      policy_check:
+        fail_on_severities: "BLOCKER,CRITICAL,MAJOR"
+      timeout: 10800  # 3 hours
+      diagnostic_extended: true
+      
+  # Rapid scan for pull requests  
+  rapid:
+    detect:
+      maven:
+        scope: "compile,runtime"
+      policy_check:
+        fail_on_severities: "BLOCKER"
+      timeout: 3600  # 1 hour
+      cleanup: true
+      
+  # Security baseline scan
+  baseline:
+    detect:
+      maven:
+        scope: "compile,runtime,provided,test"
+      search_depth: 6
+      policy_check:
+        fail_on_severities: "BLOCKER,CRITICAL,MAJOR,MINOR"
+      timeout: 14400  # 4 hours
+      diagnostic_extended: true
+      reports:
+        risk_report_pdf: true
+        notices_report: true
+        vulnerability_report: true
+        
+# GitHub integration
+github:
+  comment_enabled: true
+  pr_comment_enabled: true
+  sarif_upload: true
+  
+# Logging configuration
+logging:
+  level: "INFO"
+  file: "./bridge-output/bridge.log"

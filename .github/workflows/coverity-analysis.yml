@@ -1,0 +1,434 @@
+name: Coverity Static Analysis
+
+on:
+  workflow_dispatch:
+    inputs:
+      analysis_type:
+        description: 'Type of Coverity analysis to perform'
+        required: false
+        default: 'FULL'
+        type: choice
+        options:
+        - FULL
+        - INCREMENTAL
+        - PREVIEW
+
+jobs:
+  coverity-analysis:
+    runs-on: ubuntu-latest
+    
+    # Set longer timeout for Coverity analysis (can be time-consuming for large projects)
+    timeout-minutes: 180
+    
+    steps:
+    - name: Checkout Source Code
+      uses: actions/checkout@v4
+      with:
+        # Fetch full history for better analysis context
+        fetch-depth: 0
+      
+    - name: Setup Java JDK
+      uses: actions/setup-java@v4
+      with:
+        java-version: 21
+        distribution: temurin
+        cache: maven
+    
+    - name: Cache Coverity Tools
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/coverity-tools
+          ~/.coverity
+        key: coverity-tools-${{ runner.os }}-${{ hashFiles('.github/workflows/coverity-analysis.yml') }}
+        restore-keys: |
+          coverity-tools-${{ runner.os }}-
+    
+    - name: Download and Setup Coverity Tools
+      env:
+        COVERITY_URL: ${{ vars.COVERITY_URL }}
+        COVERITY_USERNAME: ${{ secrets.COVERITY_USERNAME }}
+        COVERITY_PASSWORD: ${{ secrets.COVERITY_PASSWORD }}
+      run: |
+        # Create tools directory
+        mkdir -p ~/coverity-tools
+        cd ~/coverity-tools
+        
+        # Download Coverity tools if not cached
+        if [ ! -f "cov-analysis-linux64.tar.gz" ]; then
+          echo "Downloading Coverity analysis tools..."
+          echo "Using Coverity server: ${COVERITY_URL}"
+          
+          # First try to authenticate and get session token
+          echo "Authenticating with Coverity server..."
+          
+          # Method 1: Try curl with form-based login (most common for Coverity Connect)
+          SESSION_COOKIE=$(mktemp)
+          LOGIN_URL="${COVERITY_URL}/j_spring_security_check"
+          
+          if curl -s -c "$SESSION_COOKIE" \
+                  -d "j_username=${COVERITY_USERNAME}" \
+                  -d "j_password=${COVERITY_PASSWORD}" \
+                  -X POST \
+                  --insecure \
+                  "${LOGIN_URL}" > /dev/null 2>&1; then
+            
+            echo "Successfully authenticated with session cookie"
+            DOWNLOAD_URL="${COVERITY_URL}/downloadFile.htm?fn=cov-analysis-linux64.tar.gz"
+            
+            # Download using session cookie
+            if curl -s -b "$SESSION_COOKIE" \
+                    --insecure \
+                    --connect-timeout 300 \
+                    --max-time 1800 \
+                    -L \
+                    "${DOWNLOAD_URL}" \
+                    -o cov-analysis-linux64.tar.gz; then
+              echo "Download completed successfully using session authentication"
+            else
+              echo "Failed to download with session cookie, trying alternative method..."
+              rm -f cov-analysis-linux64.tar.gz
+              
+              # Method 2: Try direct download with basic auth and different headers
+              if curl -s -u "${COVERITY_USERNAME}:${COVERITY_PASSWORD}" \
+                      --insecure \
+                      --connect-timeout 300 \
+                      --max-time 1800 \
+                      -L \
+                      -H "Accept: application/octet-stream" \
+                      -H "User-Agent: Coverity-Analysis-Download" \
+                      "${DOWNLOAD_URL}" \
+                      -o cov-analysis-linux64.tar.gz; then
+                echo "Download completed successfully using basic authentication"
+              else
+                echo "Both authentication methods failed"
+                rm -f "$SESSION_COOKIE"
+                exit 1
+              fi
+            fi
+            
+            rm -f "$SESSION_COOKIE"
+          else
+            echo "Session authentication failed, trying basic auth..."
+            
+            # Fallback: Try wget with basic auth
+            DOWNLOAD_URL="${COVERITY_URL}/downloadFile.htm?fn=cov-analysis-linux64.tar.gz"
+            
+            if ! wget --http-user="${COVERITY_USERNAME}" \
+                    --http-password="${COVERITY_PASSWORD}" \
+                    --no-check-certificate \
+                    --timeout=300 \
+                    --tries=3 \
+                    "${DOWNLOAD_URL}" \
+                    -O cov-analysis-linux64.tar.gz; then
+              echo "Failed to download Coverity tools from: ${DOWNLOAD_URL}"
+              echo "Authentication failed with both session and basic auth methods."
+              echo ""
+              echo "Please verify:"
+              echo "1. COVERITY_URL is correct: ${COVERITY_URL}"
+              echo "2. COVERITY_USERNAME and COVERITY_PASSWORD are valid"
+              echo "3. Your account has download permissions"
+              echo "4. The Coverity server is accessible from GitHub Actions"
+              echo ""
+              echo "Common solutions:"
+              echo "- Check if your Coverity server uses SSO/SAML (requires different approach)"
+              echo "- Verify the analysis tools are available for download"
+              echo "- Consider using pre-downloaded tools from artifacts or cache"
+              exit 1
+            fi
+          fi
+          
+          # Verify download
+          if [ ! -f "cov-analysis-linux64.tar.gz" ] || [ ! -s "cov-analysis-linux64.tar.gz" ]; then
+            echo "Download failed or file is empty"
+            ls -la cov-analysis-linux64.tar.gz 2>/dev/null || echo "File does not exist"
+            exit 1
+          fi
+          
+          # Check file type to ensure it's actually a tar.gz file
+          if ! file cov-analysis-linux64.tar.gz | grep -q "gzip compressed"; then
+            echo "Downloaded file is not a valid gzip archive:"
+            file cov-analysis-linux64.tar.gz
+            head -c 500 cov-analysis-linux64.tar.gz
+            exit 1
+          fi
+          
+          echo "Download and verification completed successfully"
+        fi
+        
+        # Extract and setup tools
+        if [ ! -d "cov-analysis-linux64" ]; then
+          tar -xzf cov-analysis-linux64.tar.gz
+        fi
+        
+        # Add Coverity tools to PATH
+        echo "$(pwd)/cov-analysis-linux64/bin" >> $GITHUB_PATH
+        
+        # Verify installation
+        export PATH="$(pwd)/cov-analysis-linux64/bin:$PATH"
+        cov-build --version
+        cov-analyze --version
+        cov-commit-defects --version
+    
+    - name: Clean and Prepare Build
+      run: |
+        # Clean any previous builds
+        mvn clean
+        
+        # Create Coverity intermediate directory
+        mkdir -p coverity-output
+        
+        # Generate dependency tree for analysis context
+        mvn dependency:tree -DoutputFile=coverity-output/dependency-tree.txt
+    
+    - name: Configure Coverity Analysis
+      run: |
+        # Create Coverity configuration file
+        cat > coverity-config.xml << 'EOF'
+        <?xml version="1.0" encoding="UTF-8"?>
+        <coverity>
+          <cov-build>
+            <!-- Build configuration -->
+            <build-cmd>mvn clean compile -DskipTests=true -Dmaven.javadoc.skip=true</build-cmd>
+            <intermediate-dir>coverity-output/idir</intermediate-dir>
+          </cov-build>
+          <cov-analyze>
+            <!-- Analysis configuration -->
+            <dir>coverity-output/idir</dir>
+            <checkers>
+              <!-- Enable comprehensive Java security checkers -->
+              <checker>SECURE_CODING</checker>
+              <checker>QUALITY</checker>
+              <checker>CONCURRENCY</checker>
+              <checker>RESOURCE_LEAK</checker>
+              <checker>NULL_RETURNS</checker>
+              <checker>UNINIT</checker>
+              <checker>DEADCODE</checker>
+              <checker>STACK_USE</checker>
+              <checker>HARDCODED_CREDENTIALS</checker>
+              <checker>WEAK_CRYPTOGRAPHIC_HASH</checker>
+              <checker>WEAK_PASSWORD_HASH</checker>
+            </checkers>
+            <!-- Java-specific settings -->
+            <java>
+              <source-version>21</source-version>
+              <target-version>21</target-version>
+            </java>
+          </cov-analyze>
+          <cov-commit-defects>
+            <!-- Commit configuration -->
+            <url>${{ vars.COVERITY_URL }}</url>
+            <stream>${{ github.event.repository.name }}-${{ github.ref_name }}</stream>
+            <user>${{ secrets.COVERITY_USERNAME }}</user>
+            <password>${{ secrets.COVERITY_PASSWORD }}</password>
+          </cov-commit-defects>
+        </coverity>
+        EOF
+    
+    - name: Coverity Build Capture
+      run: |
+        echo "Starting Coverity build capture..."
+        
+        # Capture the build process
+        cov-build \
+          --dir coverity-output/idir \
+          --java-coverage-notices \
+          mvn clean compile -DskipTests=true -Dmaven.javadoc.skip=true -Dmaven.test.skip=true
+        
+        # Verify build capture
+        echo "Build capture completed. Checking intermediate directory..."
+        ls -la coverity-output/idir/
+        
+        # Show captured files count
+        find coverity-output/idir -name "*.emit" | wc -l || echo "No emit files found"
+    
+    - name: Coverity Static Analysis
+      run: |
+        echo "Running Coverity static analysis..."
+        
+        cov-analyze \
+          --dir coverity-output/idir \
+          --ticker-mode none \
+          --strip-path ${{ github.workspace }} \
+          --webapp-security \
+          --webapp-security-preview \
+          --concurrency \
+          --security \
+          --rule \
+          --enable-constraint-fpp \
+          --enable-fnptr \
+          --enable-virtual
+        
+        echo "Static analysis completed."
+    
+    - name: Generate Coverity Reports
+      run: |
+        echo "Generating Coverity reports..."
+        
+        # Generate text report
+        cov-format-errors \
+          --dir coverity-output/idir \
+          --html-output coverity-output/html-report \
+          --json-output-v7 coverity-output/results.json \
+          --file coverity-output/defects-report.txt
+        
+        # Generate summary statistics
+        cov-format-errors \
+          --dir coverity-output/idir \
+          --json-output-v7 coverity-output/summary.json \
+          --include-files ".*\.java$"
+        
+        echo "Reports generated successfully."
+    
+    - name: Commit Results to Coverity Connect (Main Branches Only)
+      if: github.event_name == 'push' && (github.ref_name == 'main' || github.ref_name == 'master' || github.ref_name == 'develop')
+      env:
+        COVERITY_URL: ${{ vars.COVERITY_URL }}
+        COVERITY_USERNAME: ${{ secrets.COVERITY_USERNAME }}
+        COVERITY_PASSWORD: ${{ secrets.COVERITY_PASSWORD }}
+      run: |
+        echo "Committing results to Coverity Connect..."
+        
+        # Create stream if it doesn't exist
+        STREAM_NAME="${{ github.event.repository.name }}-${{ github.ref_name }}"
+        
+        cov-commit-defects \
+          --dir coverity-output/idir \
+          --url "$COVERITY_URL" \
+          --user "$COVERITY_USERNAME" \
+          --password "$COVERITY_PASSWORD" \
+          --stream "$STREAM_NAME" \
+          --scm git \
+          --description "GitHub Actions build ${{ github.run_number }} - ${{ github.sha }}"
+        
+        echo "Results committed to stream: $STREAM_NAME"
+    
+    - name: Process Analysis Results
+      if: always()
+      run: |
+        echo "Processing Coverity analysis results..."
+        
+        # Count defects by severity
+        if [ -f "coverity-output/results.json" ]; then
+          echo "=== Coverity Analysis Summary ==="
+          
+          # Extract high-level statistics
+          HIGH_IMPACT=$(jq '[.issues[] | select(.impact == "High")] | length' coverity-output/results.json 2>/dev/null || echo "0")
+          MEDIUM_IMPACT=$(jq '[.issues[] | select(.impact == "Medium")] | length' coverity-output/results.json 2>/dev/null || echo "0")
+          LOW_IMPACT=$(jq '[.issues[] | select(.impact == "Low")] | length' coverity-output/results.json 2>/dev/null || echo "0")
+          TOTAL_ISSUES=$(jq '[.issues[]] | length' coverity-output/results.json 2>/dev/null || echo "0")
+          
+          echo "Total Issues: $TOTAL_ISSUES"
+          echo "High Impact: $HIGH_IMPACT"
+          echo "Medium Impact: $MEDIUM_IMPACT"  
+          echo "Low Impact: $LOW_IMPACT"
+          
+          # Set GitHub Actions outputs
+          echo "total_issues=$TOTAL_ISSUES" >> $GITHUB_OUTPUT
+          echo "high_impact=$HIGH_IMPACT" >> $GITHUB_OUTPUT
+          echo "medium_impact=$MEDIUM_IMPACT" >> $GITHUB_OUTPUT
+          echo "low_impact=$LOW_IMPACT" >> $GITHUB_OUTPUT
+          
+          # Fail build on high-impact issues
+          if [ "$HIGH_IMPACT" -gt "0" ]; then
+            echo "::error::Build failed due to $HIGH_IMPACT high-impact security issues"
+            exit 1
+          fi
+        else
+          echo "No results file found - analysis may have failed"
+          echo "total_issues=unknown" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Upload Coverity Results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverity-analysis-results-${{ github.run_number }}
+        path: |
+          coverity-output/results.json
+          coverity-output/summary.json
+          coverity-output/defects-report.txt
+          coverity-output/html-report/**
+          coverity-output/dependency-tree.txt
+        retention-days: 30
+        if-no-files-found: warn
+    
+    - name: Comment on Pull Request
+      if: github.event_name == 'pull_request' && always()
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          
+          let totalIssues = 'Unknown';
+          let highImpact = 'Unknown';
+          let mediumImpact = 'Unknown';
+          let lowImpact = 'Unknown';
+          
+          try {
+            // Read results if available
+            if (fs.existsSync('coverity-output/results.json')) {
+              const results = JSON.parse(fs.readFileSync('coverity-output/results.json', 'utf8'));
+              const issues = results.issues || [];
+              
+              totalIssues = issues.length;
+              highImpact = issues.filter(i => i.impact === 'High').length;
+              mediumImpact = issues.filter(i => i.impact === 'Medium').length;
+              lowImpact = issues.filter(i => i.impact === 'Low').length;
+            }
+          } catch (error) {
+            console.log('Error reading Coverity results:', error);
+          }
+          
+          const comment = `## 🔍 Coverity Static Analysis Results
+          
+          **Analysis Status:** ${{ job.status }}
+          **Total Issues Found:** ${totalIssues}
+          
+          ### Issue Breakdown by Impact
+          - 🔴 **High Impact:** ${highImpact}
+          - 🟡 **Medium Impact:** ${mediumImpact}  
+          - 🟢 **Low Impact:** ${lowImpact}
+          
+          ${highImpact > 0 ? '⚠️ **High-impact security issues detected. Please review and address these issues.**' : '✅ **No high-impact security issues detected.**'}
+          
+          📊 **Detailed Analysis Report:** Available in workflow artifacts
+          🔗 **Coverity Connect:** View detailed results in your Coverity server
+          
+          ---
+          *Analysis performed on commit ${{ github.sha }}*
+          `;
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
+
+  # Preview analysis for draft PRs or experimental branches
+  coverity-preview:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == true || github.event.inputs.analysis_type == 'PREVIEW'
+    timeout-minutes: 60
+    
+    steps:
+    - name: Checkout Source Code
+      uses: actions/checkout@v4
+      
+    - name: Setup Java JDK
+      uses: actions/setup-java@v4
+      with:
+        java-version: 21
+        distribution: temurin
+        cache: maven
+    
+    - name: Lightweight Coverity Preview Analysis
+      run: |
+        echo "Running lightweight Coverity preview analysis..."
+        
+        # This would use Coverity's preview/incremental analysis features
+        # for faster feedback on draft PRs
+        
+        echo "Preview analysis is a placeholder - configure based on your Coverity license"
+        echo "This typically runs a subset of checkers for faster feedback"
