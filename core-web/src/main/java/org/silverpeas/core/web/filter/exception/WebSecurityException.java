@@ -27,6 +27,7 @@ import org.silverpeas.kernel.SilverpeasException;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 /**
  * User: Yohann Chastagnier
@@ -34,11 +35,32 @@ import java.time.format.DateTimeFormatter;
  */
 public abstract class WebSecurityException extends SilverpeasException {
 
+  private final String detail;
+
   /**
    * Default constructor.
    * @param message the reason of the exception
    */
   protected WebSecurityException(final String message) {
+    this(message, null);
+  }
+
+  /**
+   * Constructs an exception with a detail on what has been detected. Unlike the message, which is
+   * sent back to the client, the detail is meant for the logs only.
+   * @param message the reason of the exception
+   * @param detail what has been detected, null if nothing more than the message can be told.
+   */
+  protected WebSecurityException(final String message, final String detail) {
     super(message + LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+    this.detail = detail;
+  }
+
+  /**
+   * Gets the detail on what has been detected.
+   * @return the detail, or nothing if there is no more to tell than the message.
+   */
+  public Optional<String> getDetail() {
+    return Optional.ofNullable(detail);
   }
 }
