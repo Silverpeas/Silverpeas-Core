@@ -26,8 +26,10 @@ package org.silverpeas.core.web.filter;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 
 /**
@@ -192,6 +194,30 @@ class IFrameCheckerTest {
     assertRejected("<iframe title=\">\" src=\"https://www.evil.org/\"></iframe>");
     assertRejected("<iframe src=\"https://www.youtube.com/\" title=\">\" srcdoc=\"x\"></iframe>");
     assertRejected("<iframe src=https://www.youtube.com/ a=\\\"x srcdoc=y b=\\\"></iframe>");
+  }
+
+  /**
+   * The reason of a rejection tells what is wrong with the iframe, so that the writer of a content
+   * can fix it.
+   */
+  @Test
+  void rejectionTellsItsReason() {
+    assertRejectedFor("<p>text</p><iframe src=\"https://www.evil.org/\"></iframe>",
+        "the source of an iframe isn't allowed in \"<iframe src=\"https://www.evil.org/\"></iframe>\"");
+    assertRejectedFor("<iframe></iframe>",
+        "the source of an iframe isn't allowed in \"<iframe></iframe>\"");
+    assertRejectedFor("<iframe src=\"https://www.youtube.com/\" srcdoc=\"x\"></iframe>",
+        "an iframe with a srcdoc attribute in \"<iframe src=\"https://www.youtube.com/\" srcdoc=");
+    assertRejectedFor("<iframe/src=\"https://www.youtube.com/\"></iframe>",
+        "an iframe that cannot be strictly parsed in \"<iframe/src=");
+    assertThat(checker.rejectionIn("<iframe src=\"https://www.youtube.com/embed/xyz\"></iframe>"),
+        is(Optional.empty()));
+  }
+
+  private void assertRejectedFor(final String text, final String reason) {
+    final Optional<String> rejection = checker.rejectionIn(text);
+    assertThat(text, rejection.isPresent(), is(true));
+    assertThat(rejection.get(), containsString(reason));
   }
 
   private void assertAllowed(final String text) {

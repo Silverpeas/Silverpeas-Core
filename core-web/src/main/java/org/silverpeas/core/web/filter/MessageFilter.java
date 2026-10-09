@@ -109,7 +109,7 @@ public class MessageFilter implements Filter {
   /**
    * Listener of messages.
    */
-  private class RequestMessageListener implements MessageListener {
+  private static class RequestMessageListener implements MessageListener {
     private final HttpServletRequest httpRequest;
     private final HttpServletResponse httpResponse;
     private final String registredKeyOfMessages;

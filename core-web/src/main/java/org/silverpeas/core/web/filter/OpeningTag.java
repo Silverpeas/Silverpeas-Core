@@ -97,7 +97,7 @@ final class OpeningTag {
    * Gets the value of the specified attribute as the browsers read it, that is to say with its
    * HTML entities decoded. The decoding is the one of the HTML tokenizer of the OWASP sanitizer,
    * by which the contents being rendered are read: unlike a decoding of the sole entities of HTML
-   * 4, it knows all the entities the browsers know and it decodes them even when they are loosely
+   * 4, it knows all the entities the browsers know, and it decodes them even when they are loosely
    * written, without their ending semicolon for example. So a value cannot be read here in a way
    * and by the browsers in another one.
    *
