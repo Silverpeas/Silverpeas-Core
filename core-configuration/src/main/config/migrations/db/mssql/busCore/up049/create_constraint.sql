@@ -1,0 +1,11 @@
+ALTER TABLE ST_User_2FA
+    ADD CONSTRAINT PK_User_2FA
+        PRIMARY KEY (userId);
+
+ALTER TABLE ST_User_2FA
+    ADD CONSTRAINT FK_User_2FA_User
+        FOREIGN KEY (userId)
+            REFERENCES ST_User(id);
+
+ALTER TABLE ST_User_2FA_Recovery ADD CONSTRAINT FK_User_2FA_Recovery_User FOREIGN KEY (userId) REFERENCES ST_User(id);
+ALTER TABLE ST_User_2FA_Trusted_Device ADD CONSTRAINT FK_User_2FA_Trusted_Device_User FOREIGN KEY (userId) REFERENCES ST_User(id);
