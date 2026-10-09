@@ -34,7 +34,8 @@ body {
  /* J'ai mis plus toute les NEWSMODIF */
  /*.txtlibform, .txtsublibform { enlever toutes les petites modif de font size*/
 
-  --font-size:12px;
+  --sp-font-size:12px;
+  --font-family:"Verdana", "Arial", sans-serif;
 
   --color-flashy-principale:#7eb73b;
   --color-text-sur-flashy-principale:#FFF;
@@ -161,7 +162,7 @@ body {
   --color-text-description:#5e5e5e;
 
 
-  /*bouton*/
+  /*bouton La couleur des boutons principales est la couleur color-flashy-principale */
   --radius-btn:0;
   --radius-btn-secondaire:5px;
   --bgColor-btn-secondaire:linear-gradient(180deg,  rgba(243,243,243,1) 0%, rgba(243,243,243,1) 33%,rgba(228,228,228,1) 100%);
@@ -190,10 +191,10 @@ body {
   --height-input:22px;
 
 
-  font-family: "Verdana", "Arial", sans-serif;
-  font-size: var(--font-size);
+  font-family: var(--font-family);
+  font-size: var(--sp-font-size);
   margin: 0px;
-  color:var(--color-text);
+  color: var(--color-text);
 }
 
 
@@ -210,7 +211,7 @@ td,div {
 }
 
 a {
-  font-family: "Verdana", "Arial", sans-serif;
+  font-family: var(--font-family);
   font-size: 1em;
   text-decoration: none;
   color:var(--color-text);
@@ -218,7 +219,7 @@ a {
 
 input {
   background-color:#FFF;
-  font-family: "Verdana", "Arial", sans-serif;
+  font-family:  var(--font-family);
   border:1px solid #999;
   color:#333;
   font-size:1em;
@@ -247,7 +248,7 @@ input[type=file] {
 select,
 textarea {
   background-color:#FFF;
-  font-family: "Verdana", "Arial", sans-serif;
+  font-family: var(--font-family);
   font-size: 1em;
   color:#333;
   border: 1px solid #999;
@@ -284,7 +285,7 @@ td.title {
 
 #topPage {
   width: calc( 100% - 2em );
-  padding: 1em;
+  padding:0 1em;
 }
 
 /***************************************
@@ -365,6 +366,10 @@ Definition des class de style Silverpeas
   clear:right;
   float:right;
   margin-top:1em;
+}
+
+.hautFrame:has(#backToSearch):not(*:has(#pagination)) .rightContent {
+  margin-top:calc(2em + var(--sp-font-size) );
 }
 
 .principal-content-title {
@@ -1144,7 +1149,7 @@ Style Utilise par le ViewGenerator
 #pdcLabel {
   margin-left: 2px;
   font-size: 11px;
-  font-family: Verdana, Arial, sans-serif;
+  font-family: var(--font-family);
 }
 
 #pdc a {
@@ -1376,6 +1381,10 @@ Style Utilise par le ViewGenerator
 
 .hautFrame {
   padding: 1em 0;
+}
+
+.hautFrame > table {
+  width: 100%;
 }
 
 /* Objet board */
@@ -3592,15 +3601,20 @@ ul.attachmentList li.attachmentListItem .linkAllVersions {
 
 .commentaires div.avatar {
   position:absolute;
-  border:1px solid #CECECE;
-  padding:1px;
-  background-color:#FFF;
-  top:-50px;
+  top:calc( -1 *  var(--width-avatar-comment) );
   left:-1em;
+  border-radius:var(--radius-avatar-comment) ;
+  border:var(--border-width-avatar-comment) solid var(--border-color-avatar-comment);
+  padding:var(--border-width-avatar-comment);
+  background-color:var(--bg-color-avatar-comment);
+  box-shadow:var(--shadow-avatar-comment);
+  width:var(--width-avatar-comment)  ;
+  height: var(--height-avatar-comment) ;
+  overflow: hidden;
 }
 
 .commentaires div.avatar img {
-  width:50px;
+  width:var(--width-avatar-comment);
   height:auto;
 }
 
