@@ -87,6 +87,7 @@ function openSecurityCodeDialog(token, baseURL, onSuccess) {
               onSuccess();
             } else {
               document.getElementById("securityCode").value = "";
+              alert(window.i18n.prop("sharing.security.error"));
             }
           }).catch(function(error) {
             const locked = error.message === "SHARING_CODE_LOCKED";
