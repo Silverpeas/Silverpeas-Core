@@ -1,0 +1,12 @@
+/** Styles for the invalid sharing security code page. */
+.invalid-security-code td {
+  font-family: Verdana, Arial, sans-serif;
+  font-size: 10px;
+}
+.invalid-security-code fieldset {
+  vertical-align: middle;
+  text-align: center;
+}
+.invalid-security-code legend {
+  display: none;
+}
