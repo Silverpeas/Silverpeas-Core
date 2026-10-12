@@ -91,6 +91,10 @@ public class SharingResource extends RESTWebService {
   public boolean checkSecurityCode() {
     String securityCode = this.getHttpRequest().getHeader("X-Verification-Code");
     Ticket ticket = SharingServiceProvider.getSharingTicketService().getTicket(token);
+    return verifySecurityCode(ticket, securityCode);
+  }
+
+  static boolean verifySecurityCode(Ticket ticket, String securityCode) {
     if (ticket == null || !ticket.isValid()) {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
     }
