@@ -28,6 +28,32 @@ function sharingFetch(url) {
   });
 }
 
+function sharingDownload(url, filename) {
+  return sharingFetch(url).then(function(response) {
+    if (!response.ok) {
+      throw new Error("Download failed: " + response.status);
+    }
+    return response.blob();
+  }).then(function(blob) {
+    const objectUrl = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = objectUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(function() { URL.revokeObjectURL(objectUrl); }, 60000);
+  }).catch(function(error) {
+    console.error(error);
+    alert("Unable to download file.");
+  });
+}
+
+function sharingDownloadLink(event, url, filename) {
+  event.preventDefault();
+  sharingDownload(url, filename);
+}
+
 function openSecurityCodeDialog(token, baseURL, onSuccess) {
   var dialog = document.getElementById("securityDialog");
   dialog.innerHTML = '<div id="securityCheck"><span>' + window.i18n.prop("sharing.security.code") +
