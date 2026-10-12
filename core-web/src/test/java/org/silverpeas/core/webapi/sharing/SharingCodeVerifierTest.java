@@ -93,4 +93,26 @@ public class SharingCodeVerifierTest {
       assertTrue(verify(ticket, null, 1000 + i));
     }
   }
+  @Test
+  public void cleanupRemovesExpiredFailures() {
+    Ticket ticket = ticket("ABC123");
+    int before = SharingCodeVerifier.trackedTickets();
+    assertFalse(verify(ticket, "wrong", 1000));
+    assertEquals(before + 1, SharingCodeVerifier.trackedTickets());
+    SharingCodeVerifier.cleanup(1000 + 16 * MINUTE, 15 * MINUTE);
+    assertEquals(before, SharingCodeVerifier.trackedTickets());
+  }
+
+  @Test
+  public void cleanupPreservesActiveLockUntilItExpires() {
+    Ticket ticket = ticket("ABC123");
+    for (int i = 0; i < 4; i++) {
+      assertFalse(verify(ticket, "wrong", 1000 + i));
+    }
+    assertLocked(ticket, "wrong", 1004);
+    SharingCodeVerifier.cleanup(1004 + MINUTE, 15 * MINUTE);
+    assertLocked(ticket, "ABC123", 1004 + MINUTE);
+    SharingCodeVerifier.cleanup(1004 + 16 * MINUTE, 15 * MINUTE);
+    assertTrue(verify(ticket, "ABC123", 1004 + 16 * MINUTE));
+  }
 }
