@@ -37,6 +37,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.security.SecureRandom;
+import java.security.GeneralSecurityException;
+import java.util.Base64;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 import java.util.Date;
 import java.util.Objects;
 
@@ -56,6 +61,10 @@ public abstract class Ticket extends BasicJpaEntity<Ticket, UuidIdentifier>
     implements Serializable {
 
   private static final long serialVersionUID = -612174156104966079L;
+  private static final String CODE_PREFIX = "pbkdf2-sha256$";
+  private static final int CODE_ITERATIONS = 120_000;
+  private static final int CODE_SALT_BYTES = 16;
+  private static final int CODE_HASH_BITS = 256;
 
   public static final String FILE_TYPE = "Attachment";
   public static final String VERSION_TYPE = "Versionned";
@@ -96,7 +105,7 @@ public abstract class Ticket extends BasicJpaEntity<Ticket, UuidIdentifier>
       this.endDate = detail.getEndDate().getTime();
     }
     this.nbAccessMax = detail.getNbAccessMax();
-    this.securityCode = StringUtil.isDefined(detail.getSecurityCode()) ? detail.getSecurityCode() : null;
+    this.securityCode = encodeSecurityCode(detail.getSecurityCode());
     if (StringUtil.isDefined(detail.getToken())) {
       setId(detail.getToken());
     }
@@ -226,7 +235,7 @@ public abstract class Ticket extends BasicJpaEntity<Ticket, UuidIdentifier>
   }
 
   public void setSecurityCode(String securityCode) {
-    this.securityCode = StringUtil.isDefined(securityCode) ? securityCode : null;
+    this.securityCode = encodeSecurityCode(securityCode);
   }
 
   public int getNbAccessMax() {
@@ -351,8 +360,44 @@ public abstract class Ticket extends BasicJpaEntity<Ticket, UuidIdentifier>
     if (securityCode == null) {
       return false;
     }
+    if (this.securityCode.startsWith(CODE_PREFIX)) {
+      String[] parts = this.securityCode.split("\\$", -1);
+      if (parts.length != 3) {
+        return false;
+      }
+      try {
+        byte[] salt = Base64.getDecoder().decode(parts[1]);
+        byte[] expected = Base64.getDecoder().decode(parts[2]);
+        return MessageDigest.isEqual(expected, deriveSecurityCode(securityCode, salt));
+      } catch (IllegalArgumentException e) {
+        return false;
+      }
+    }
+    // Tickets created before secure code storage retain their original plaintext value.
     return MessageDigest.isEqual(this.securityCode.getBytes(StandardCharsets.UTF_8),
         securityCode.getBytes(StandardCharsets.UTF_8));
+  }
+
+  private static String encodeSecurityCode(String code) {
+    if (!StringUtil.isDefined(code)) {
+      return null;
+    }
+    byte[] salt = new byte[CODE_SALT_BYTES];
+    new SecureRandom().nextBytes(salt);
+    return CODE_PREFIX + Base64.getEncoder().encodeToString(salt) + "$" +
+        Base64.getEncoder().encodeToString(deriveSecurityCode(code, salt));
+  }
+
+  private static byte[] deriveSecurityCode(String code, byte[] salt) {
+    PBEKeySpec spec = new PBEKeySpec(code.toCharArray(), salt, CODE_ITERATIONS, CODE_HASH_BITS);
+    try {
+      return SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256").generateSecret(spec)
+          .getEncoded();
+    } catch (GeneralSecurityException e) {
+      throw new IllegalStateException("Unable to derive sharing verification code", e);
+    } finally {
+      spec.clearPassword();
+    }
   }
   public enum QUERY_ORDER_BY {
 
