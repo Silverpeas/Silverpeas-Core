@@ -56,7 +56,7 @@
 			// get sharing informations according to token
 			var token = href.substring(href.indexOf("?")+1, href.length);
 			var uri = baseURL+"/silverpeas/services/sharing/"+token;
-			$.getJSON(uri,
+			sharingAjax(uri,
 					function(sharing) {
 						if (sharing.expiration) {
 							var d = new Date();
@@ -70,7 +70,7 @@
 							} else {
 							loadTreeview(sharing.webApplicationRootUri);
 						}
-					}, 'json');
+					});
 
 			function loadTreeview(rootUri) {
 				$("#breadcrumb").show();
@@ -87,7 +87,7 @@
 									url = node.original.attr["uri"];
 								}
 								return url;
-							}, "success" : function(new_data) {
+							}, "headers": sharingVerificationCode === null ? {} : {"X-Verification-Code": sharingVerificationCode}, "success" : function(new_data) {
 								try {
 									// init breadcrumb
 									$("#breadcrumb .path").html(new_data.data);
@@ -143,7 +143,7 @@
 
 			function displayPublications(nodeId, instanceId) {
 				var url = baseURL+"/silverpeas/services/sharing/publications/"+token+"/node/"+nodeId+"?withAttachments=true";
-				$.getJSON(url,
+				sharingAjax(url,
 						function(data) {
 							try {
 								var items = "";
