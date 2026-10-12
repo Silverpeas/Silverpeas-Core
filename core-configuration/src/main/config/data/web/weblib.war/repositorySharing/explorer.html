@@ -251,21 +251,7 @@
 						// generate zip file
 						var instanceId = $("#instanceId").val();
 						var url = baseURL+"/silverpeas/services/sharing/attachments/"+instanceId+"/"+token+"/"+ids+"/zip";
-						$.getJSON(url,
-								function(zip) {
-									// display modal dialog to download zip
-									$("#downloadZip-dialog a").attr("href", zip.url);
-									$("#downloadZip-dialog #zipSize").html(bytesToSize(zip.size, 2));
-									$( "#downloadZip-dialog" ).dialog({
-										modal: true,
-										resizable: false,
-										width: 400,
-										buttons: [{
-											text: window.i18n.prop("download.dialog.close"),
-											click: function() { $(this).dialog("close"); }}
-										]
-									});
-								}, 'json');
+						sharingDownload(url, 'shared-files.zip');
 					}
 			);
 
