@@ -139,7 +139,8 @@ public class SharedPublicationResource extends AbstractPublicationResource {
 
   private Ticket getTicketByToken(String token) {
     Ticket theTicket = SharingServiceProvider.getSharingTicketService().getTicket(token);
-    if (theTicket == null || !theTicket.isValid()) {
+    if (theTicket == null || !theTicket.isValid() ||
+        !theTicket.checkSecurityCode(getHttpRequest().getHeader("X-Verification-Code"))) {
       throw new WebApplicationException(Status.UNAUTHORIZED);
     }
     return theTicket;
