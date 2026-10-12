@@ -15,7 +15,8 @@ CREATE TABLE IF NOT EXISTS sb_filesharing_ticket
 	nbAccessMax INTEGER NOT NULL,
 	nbAccess INTEGER NULL,
 	keyfile	VARCHAR(40) NOT NULL,
-  shared_object_type VARCHAR(255) NOT NULL
+  shared_object_type VARCHAR(255) NOT NULL,
+  securitycode VARCHAR(255)
 );
 
 CREATE TABLE IF NOT EXISTS sb_filesharing_history
