@@ -73,6 +73,12 @@ function openSecurityCodeDialog(token, baseURL, onSuccess) {
             method: "GET",
             headers: { "X-Verification-Code": code }
           }).then(function(response) {
+            if (response.status === 429) {
+              throw new Error("SHARING_CODE_LOCKED");
+            }
+            if (!response.ok) {
+              throw new Error("SHARING_CODE_ERROR");
+            }
             return response.json();
           }).then(function(result) {
             if (result) {
@@ -82,6 +88,13 @@ function openSecurityCodeDialog(token, baseURL, onSuccess) {
             } else {
               document.getElementById("securityCode").value = "";
             }
+          }).catch(function(error) {
+            const locked = error.message === "SHARING_CODE_LOCKED";
+            const messageKey = locked ? "sharing.security.locked" : "sharing.security.error";
+            const message = window.i18n.prop(messageKey);
+            alert(message === messageKey ?
+                (locked ? "Too many attempts. Please try again later." :
+                    "Unable to verify the security code.") : message);
           });
         }
       },
