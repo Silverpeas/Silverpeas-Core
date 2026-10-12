@@ -94,7 +94,7 @@ public class SharingResource extends RESTWebService {
     if (ticket == null || !ticket.isValid()) {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
     }
-    return ticket.checkSecurityCode(securityCode);
+    return SharingCodeVerifier.verify(ticket, securityCode);
   }
 
 
