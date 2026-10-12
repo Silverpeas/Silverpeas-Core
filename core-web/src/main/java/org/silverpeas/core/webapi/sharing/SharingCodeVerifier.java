@@ -107,8 +107,8 @@ public final class SharingCodeVerifier {
     }));
   }
 
-  static int trackedTickets() {
-    return ATTEMPTS.size();
+  static boolean isTracking(String token) {
+    return ATTEMPTS.containsKey(token);
   }
 
   private static final class Attempts {
