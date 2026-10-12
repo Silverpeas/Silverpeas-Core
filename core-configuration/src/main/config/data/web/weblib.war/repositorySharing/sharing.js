@@ -11,6 +11,23 @@ function bytesToSize(bytes, precision) {
   }
   return bytes.toFixed(precision) + " " + sizes[posttxt];
 }
+let sharingVerificationCode = null;
+
+function sharingAjax(url, onSuccess) {
+  return $.ajax({
+    url: url,
+    dataType: "json",
+    headers: sharingVerificationCode === null ? {} : {"X-Verification-Code": sharingVerificationCode},
+    success: onSuccess
+  });
+}
+
+function sharingFetch(url) {
+  return fetch(url, {
+    headers: sharingVerificationCode === null ? {} : {"X-Verification-Code": sharingVerificationCode}
+  });
+}
+
 function openSecurityCodeDialog(token, baseURL, onSuccess) {
   var dialog = document.getElementById("securityDialog");
   dialog.innerHTML = '<div id="securityCheck"><span>' + window.i18n.prop("sharing.security.code") +
@@ -33,6 +50,7 @@ function openSecurityCodeDialog(token, baseURL, onSuccess) {
             return response.json();
           }).then(function(result) {
             if (result) {
+              sharingVerificationCode = code;
               $(currentDialog).dialog("close");
               onSuccess();
             } else {
