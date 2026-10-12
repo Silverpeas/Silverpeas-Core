@@ -91,10 +91,7 @@ function openSecurityCodeDialog(token, baseURL, onSuccess) {
           }).catch(function(error) {
             const locked = error.message === "SHARING_CODE_LOCKED";
             const messageKey = locked ? "sharing.security.locked" : "sharing.security.error";
-            const message = window.i18n.prop(messageKey);
-            alert(message === messageKey ?
-                (locked ? "Too many attempts. Please try again later." :
-                    "Unable to verify the security code.") : message);
+            alert(window.i18n.prop(messageKey));
           });
         }
       },
