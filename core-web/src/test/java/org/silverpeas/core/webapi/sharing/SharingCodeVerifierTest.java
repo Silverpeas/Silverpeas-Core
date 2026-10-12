@@ -96,11 +96,10 @@ public class SharingCodeVerifierTest {
   @Test
   public void cleanupRemovesExpiredFailures() {
     Ticket ticket = ticket("ABC123");
-    int before = SharingCodeVerifier.trackedTickets();
     assertFalse(verify(ticket, "wrong", 1000));
-    assertEquals(before + 1, SharingCodeVerifier.trackedTickets());
+    assertTrue(SharingCodeVerifier.isTracking(ticket.getToken()));
     SharingCodeVerifier.cleanup(1000 + 16 * MINUTE, 15 * MINUTE);
-    assertEquals(before, SharingCodeVerifier.trackedTickets());
+    assertFalse(SharingCodeVerifier.isTracking(ticket.getToken()));
   }
 
   @Test
