@@ -7,6 +7,7 @@ import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 
 import java.time.Clock;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,6 +23,8 @@ public final class SharingCodeVerifier {
   private static final String SETTINGS =
       "org.silverpeas.sharing.settings.sharingSecurity";
   private static final ConcurrentMap<String, Attempts> ATTEMPTS = new ConcurrentHashMap<>();
+  private static final AtomicInteger REQUEST_COUNT = new AtomicInteger();
+  private static final int CLEANUP_INTERVAL = 256;
 
   private SharingCodeVerifier() {
   }
@@ -44,28 +47,68 @@ public final class SharingCodeVerifier {
     long duration = TimeUnit.MINUTES.toMillis(
         Math.max(1, settings.getInteger("sharing.securityCode.lockDuration", 15)));
 
-    Attempts attempts = ATTEMPTS.computeIfAbsent(ticket.getToken(), ignored -> new Attempts());
-    synchronized (attempts) {
-      if (attempts.lockedUntil > now) {
-        throw new WebApplicationException(Response.Status.TOO_MANY_REQUESTS);
+    return verify(ticket, code, now, maximum, window, duration);
+  }
+
+  static boolean verify(Ticket ticket, String code, long now, int maximum, long window,
+      long duration) {
+    if (ticket == null || !ticket.isValid()) {
+      return false;
+    }
+    if (ticket.getSecurityCode() == null || ticket.getSecurityCode().isEmpty()) {
+      return true;
+    }
+    if (REQUEST_COUNT.incrementAndGet() % CLEANUP_INTERVAL == 0) {
+      cleanup(now);
+    }
+    final boolean[] accepted = {false};
+    final boolean[] locked = {false};
+    ATTEMPTS.compute(ticket.getToken(), (token, attempts) -> {
+      if (attempts == null) {
+        attempts = new Attempts();
       }
-      attempts.failures.removeIf(time -> time <= now - window);
-      if (attempts.lockedUntil != 0 && attempts.lockedUntil <= now) {
+      if (attempts.lockedUntil > now) {
+        locked[0] = true;
+        return attempts;
+      }
+      if (attempts.lockedUntil != 0) {
         attempts.failures.clear();
         attempts.lockedUntil = 0;
       }
+      attempts.failures.removeIf(time -> time <= now - window);
       if (ticket.checkSecurityCode(code)) {
-        attempts.failures.clear();
-        ATTEMPTS.remove(ticket.getToken(), attempts);
-        return true;
+        accepted[0] = true;
+        return null;
       }
       attempts.failures.addLast(now);
       if (attempts.failures.size() >= maximum) {
         attempts.lockedUntil = now + duration;
-        throw new WebApplicationException(Response.Status.TOO_MANY_REQUESTS);
+        locked[0] = true;
       }
-      return false;
+      return attempts;
+    });
+    if (locked[0]) {
+      throw new WebApplicationException(Response.Status.TOO_MANY_REQUESTS);
     }
+    return accepted[0];
+  }
+
+  private static void cleanup(long now) {
+    // Conditional removal is atomic with verification updates for the same token.
+    ATTEMPTS.forEach((token, ignored) -> ATTEMPTS.computeIfPresent(token, (key, attempts) -> {
+      if (attempts.lockedUntil > now) {
+        return attempts;
+      }
+      if (attempts.lockedUntil != 0) {
+        return null;
+      }
+      // Retain only recent failures. Entries without failures can be discarded.
+      // The longest supported attempt window is bounded by the configured value.
+      long window = TimeUnit.MINUTES.toMillis(Math.max(1, ResourceLocator
+          .getSettingBundle(SETTINGS).getInteger("sharing.securityCode.attemptWindow", 15)));
+      attempts.failures.removeIf(time -> time <= now - window);
+      return attempts.failures.isEmpty() ? null : attempts;
+    }));
   }
 
   private static final class Attempts {
