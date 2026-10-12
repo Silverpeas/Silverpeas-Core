@@ -35,6 +35,7 @@ import org.silverpeas.core.webapi.sharing.SharingCodeVerifier;
 import org.silverpeas.core.sharing.security.AccessControlContext;
 import org.silverpeas.core.sharing.services.SharingServiceProvider;
 
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
