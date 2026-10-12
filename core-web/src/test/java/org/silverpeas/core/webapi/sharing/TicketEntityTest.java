@@ -4,6 +4,9 @@ import org.junit.Test;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.sharing.model.SimpleFileTicket;
 import org.silverpeas.core.sharing.model.Ticket;
+import org.silverpeas.core.sharing.model.TicketDetail;
+import org.silverpeas.core.sharing.model.TicketFactory;
+import org.mockito.MockedStatic;
 
 import java.net.URI;
 import java.util.Date;
@@ -25,7 +28,12 @@ public class TicketEntityTest {
   private Ticket createTicket(TicketEntity entity) throws Exception {
     UserDetail user = mock(UserDetail.class);
     when(user.getId()).thenReturn("42");
-    return entity.toTicket(user);
+    try (MockedStatic<TicketFactory> factory = mockStatic(TicketFactory.class)) {
+      factory.when(() -> TicketFactory.aTicket(any(TicketDetail.class)))
+          .thenAnswer(invocation -> SimpleFileTicket.builder(
+              invocation.getArgument(0, TicketDetail.class)).build());
+      return entity.toTicket(user);
+    }
   }
 
   @Test
