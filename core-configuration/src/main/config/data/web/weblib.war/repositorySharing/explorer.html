@@ -196,6 +196,8 @@
 				return li;
 			}
 
+			$(document).on("click", ".shared-file-download", function(event) { sharingDownloadLink(event, this.href, $(this).data("filename")); });
+
 			function displayAttachments(attachments) {
 				var ul = "";
 				if (attachments != null && attachments.length > 0) {
@@ -206,7 +208,7 @@
 						if (attachment.title) {
 							label = attachment.title;
 						}
-						ul += "<li class=\"attachment\"><input type=\"checkbox\" name=\"attachmentId\" value=\""+attachment.id+"\" onclick=\"javascript:clickOnFile()\"/><a href=\""+attachment.sharedUri+"\" target=\"_blank\"><img alt=\"\" src=\""+attachment.icon+"\"/>"+label+"</a>";
+						ul += "<li class=\"attachment\"><input type=\"checkbox\" name=\"attachmentId\" value=\""+attachment.id+"\" onclick=\"javascript:clickOnFile()\"/><a href=\""+attachment.sharedUri+"\" class=\"shared-file-download\" data-filename=\""+attachment.logicalName+"\"><img alt=\"\" src=\""+attachment.icon+"\"/>"+label+"</a>";
 						ul += "<span class=\"size\">"+bytesToSize(attachment.size, 0);
 						if (attachment.title) {
 							ul += " - " + attachment.logicalName;
