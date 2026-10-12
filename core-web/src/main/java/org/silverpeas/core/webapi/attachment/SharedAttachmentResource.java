@@ -149,7 +149,9 @@ public class SharedAttachmentResource extends AbstractAttachmentResource {
   protected boolean isFileReadable(SimpleDocument attachment) {
     Ticket ticket = SharingServiceProvider.getSharingTicketService().getTicket(getToken());
     var ctx = AccessControlContext.about(attachment);
-    return ticket != null && ticket.getAccessControl().isReadable(ctx);
+    return ticket != null && ticket.isValid() &&
+        ticket.checkSecurityCode(getHttpRequest().getHeader("X-Verification-Code")) &&
+        ticket.getAccessControl().isReadable(ctx);
   }
 
   protected String getToken() {
