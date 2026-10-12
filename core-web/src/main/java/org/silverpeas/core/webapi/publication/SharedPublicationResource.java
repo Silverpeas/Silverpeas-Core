@@ -36,6 +36,7 @@ import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.sharing.model.Ticket;
+import org.silverpeas.core.webapi.sharing.SharingCodeVerifier;
 import org.silverpeas.core.sharing.security.AccessControlContext;
 import org.silverpeas.core.sharing.services.SharingServiceProvider;
 import org.silverpeas.core.webapi.attachment.AttachmentEntity;
@@ -140,7 +141,7 @@ public class SharedPublicationResource extends AbstractPublicationResource {
   private Ticket getTicketByToken(String token) {
     Ticket theTicket = SharingServiceProvider.getSharingTicketService().getTicket(token);
     if (theTicket == null || !theTicket.isValid() ||
-        !theTicket.checkSecurityCode(getHttpRequest().getHeader("X-Verification-Code"))) {
+        !SharingCodeVerifier.verify(theTicket, getHttpRequest().getHeader("X-Verification-Code"))) {
       throw new WebApplicationException(Status.UNAUTHORIZED);
     }
     return theTicket;
