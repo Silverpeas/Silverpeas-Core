@@ -34,12 +34,40 @@ import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.NodeAccessControl;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
 
+import java.util.Date;
+
 
 /**
  *
  * @author ehugonnet
  */
 public class TicketFactory {
+
+  /**
+   * @deprecated use {@link #aTicket(TicketDetail)} instead.
+   */
+  @Deprecated
+  public static Ticket aTicket(int sharedObjectId, String componentId, String creatorId,
+      Date creationDate, Date endDate, int nbAccessMax, String type) {
+    return aTicket(TicketDetail.builder()
+        .setSharedObjectId(sharedObjectId)
+        .setComponentId(componentId)
+        .setCreatorId(creatorId)
+        .setCreationDate(creationDate)
+        .setEndDate(endDate)
+        .setNbAccessMax(nbAccessMax)
+        .setSharedObjectType(type)
+        .build());
+  }
+
+  /**
+   * @deprecated use {@link #aTicket(TicketDetail)} instead.
+   */
+  @Deprecated
+  public static Ticket continuousTicket(int sharedObjectId, String componentId, String creatorId,
+      Date creationDate, String type) {
+    return aTicket(sharedObjectId, componentId, creatorId, creationDate, null, -1, type);
+  }
 
   public static Ticket aTicket(TicketDetail detail) {
     if (!isUserAllowed((int) detail.getSharedObjectId(), detail.getComponentId(),
