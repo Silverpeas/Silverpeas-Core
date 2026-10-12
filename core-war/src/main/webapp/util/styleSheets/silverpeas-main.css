@@ -3828,14 +3828,13 @@ table.pdcPositionsField {
   display:inline-block;
 }
 
-<<<<<<< HEAD
 .sp_button[href*='selectSubscribers']:hover,
 .simple-button:hover {
   background:var(--bgColor-btn-secondaire-hover);
-=======
+}
+
 .simple-button.btn-ui-dialog {
   margin-left: 30%;
->>>>>>> 93a47c8ec4 (report feature-15283 on jakarta branch)
 }
 
 /** Css pour presentation pdc dans formsOnline **/
