@@ -47,6 +47,7 @@
   <view:sp-head-part noLookAndFeel="false">
     <link href="<c:url value='/util/styleSheets/silverpeas-main.css'/>" type="text/css" rel="stylesheet"/>
     <link href="<c:url value='/sharing/jsp/styleSheets/sharing.css'/>" type="text/css" rel="stylesheet"/>
+    <view:script src="/sharing/jsp/javaScript/displayTicketInfo.js"/>
   </view:sp-head-part>
   <view:sp-body-part id="fileSharingTicket">
     <div class="tableBoard">
@@ -60,9 +61,9 @@
       <em><fmt:message key="sharing.downloadFileHelp"/></em>
     </div>
     <div class="sp_buttonPane">
-      <a id="downloadLink" class="sp_button" target="_blank" href="<c:url value="/LinkFile/Key/${requestScope.Key}/${ticket.resource.name}" />"><fmt:message key="sharing.downloadLink"/></a>
+      <a id="downloadLink" class="sp_button" target="_blank" data-no-code="${noCode}" data-filename="<c:out value='${ticket.resource.name}'/>" data-download-error="<fmt:message key='sharing.invalideSecurityCode'/>" href="<c:url value="/LinkFile/Key/${requestScope.Key}/${ticket.resource.name}" />"><fmt:message key="sharing.downloadLink"/></a>
     </div>
-<div id="securityDialog" style="display:none;">
+<div id="securityDialog" class="security-dialog">
   <div id="securityCheck">
     <span><fmt:message key="sharing.security.code"/></span>
     <input type="text" id="securityCode" name="securityCode"/>
@@ -70,53 +71,3 @@
 </div>
   </view:sp-body-part>
 </view:sp-page>
-
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const link = document.getElementById("downloadLink");
-
-    link.addEventListener("click", function (e) {
-      e.preventDefault();
-
-      const noCode = ${noCode};
-      const baseUrl = link.getAttribute("href");
-      const url = new URL(baseUrl, window.location.origin);
-      if (noCode) {
-        const code = "";
-        fetch(url.toString(), {
-          method: 'GET',
-          headers: {
-            'X-Verification-Code': code
-          }
-        })
-                .then(res => res.blob())
-                .then(data => {
-                  const newUrl = URL.createObjectURL(data);
-                  window.open(newUrl, '_blank');
-                });
-        return;
-      }
-
-      jQuery('#securityDialog').popup('validation', {
-        title: "",
-        callback: function() {
-          const input = document.getElementById("securityCode");
-          const code = input.value;
-
-          fetch(url.toString(), {
-            method: 'GET',
-            headers: {
-              'X-Verification-Code': code
-            }
-          })
-                  .then(res => res.blob())
-                  .then(data => {
-                    const newUrl = URL.createObjectURL(data);
-                    window.open(newUrl, '_blank');
-                  });
-        }
-      });
-    });
-
-  });
-</script>
