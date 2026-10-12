@@ -46,7 +46,7 @@
       // get sharing informations according to token
       var token = href.substring(href.indexOf("?") + 1, href.length);
       var uri = baseURL + "/silverpeas/services/sharing/" + token;
-      $.getJSON(uri, function(sharing) {
+      sharingAjax(uri, function(sharing) {
         var d = new Date();
         d.setTime(sharing.creationDate);
         $("#sharingDate").html(d.toLocaleString());
@@ -63,13 +63,13 @@
           } else {
           displayPublication();
         }
-      }, 'json');
+      });
 
       function displayPublication() {
         var url = baseURL + "/silverpeas/services/sharing/publications/" + token;
         $("#breadcrumb").show();
         $("#publication").show();
-        $.getJSON(url, function(publication) {
+        sharingAjax(url, function(publication) {
           try {
             $(".publiName").html(publication.name);
             if (publication.description) {
@@ -85,7 +85,7 @@
             //do nothing
             alert(e);
           }
-        }, 'json');
+        });
       }
 
       function displayAttachments(attachments) {
@@ -165,7 +165,7 @@
         var instanceId = $("#instanceId").val();
         var url = baseURL + "/silverpeas/services/sharing/attachments/" + instanceId + "/" + token +
                 "/" + ids + "/zip";
-        $.getJSON(url, function(zip) {
+        sharingAjax(url, function(zip) {
           // display modal dialog to download zip
           $("#downloadZip-dialog a").attr("href", zip.url);
           $("#downloadZip-dialog #zipSize").html(bytesToSize(zip.size, 2));
@@ -176,7 +176,7 @@
               }
             }]
           });
-        }, 'json');
+        });
       });
 
     });
