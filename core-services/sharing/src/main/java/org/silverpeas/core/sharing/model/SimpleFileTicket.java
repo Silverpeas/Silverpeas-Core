@@ -34,6 +34,8 @@ import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Transient;
 
+import java.util.Date;
+
 /**
  * Ticket for attached files.
  */
@@ -49,6 +51,48 @@ public class SimpleFileTicket extends Ticket {
   private SimpleFileTicket(TicketDetail detail) {
     super(detail);
     this.sharedObjectType = FILE_TYPE;
+  }
+
+  /**
+   * @deprecated use {@link #builder()} instead.
+   */
+  @Deprecated
+  public SimpleFileTicket(int sharedObjectId, String componentId, String creatorId,
+      Date creationDate, Date endDate, int nbAccessMax) {
+    this(TicketDetail.builder()
+        .setSharedObjectId(sharedObjectId)
+        .setComponentId(componentId)
+        .setCreatorId(creatorId)
+        .setCreationDate(creationDate)
+        .setEndDate(endDate)
+        .setNbAccessMax(nbAccessMax)
+        .build());
+  }
+
+  /**
+   * @deprecated use {@link #builder()} instead.
+   */
+  @Deprecated
+  public SimpleFileTicket(int sharedObjectId, String componentId, UserDetail creator,
+      Date creationDate, Date endDate, int nbAccessMax) {
+    this(TicketDetail.builder()
+        .setSharedObjectId(sharedObjectId)
+        .setComponentId(componentId)
+        .setCreatorId(creator.getId())
+        .setCreationDate(creationDate)
+        .setEndDate(endDate)
+        .setNbAccessMax(nbAccessMax)
+        .build());
+  }
+
+  /**
+   * @deprecated use {@link #builder()} instead.
+   */
+  @Deprecated
+  public SimpleFileTicket(String key, int sharedObjectId, String componentId, UserDetail creator,
+      Date creationDate, Date endDate, int nbAccessMax) {
+    this(sharedObjectId, componentId, creator, creationDate, endDate, nbAccessMax);
+    setToken(key);
   }
 
   public static Builder builder() {
