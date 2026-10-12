@@ -35,6 +35,8 @@ import org.silverpeas.kernel.util.StringUtil;
 import jakarta.persistence.*;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.Date;
 import java.util.Objects;
 
@@ -343,7 +345,14 @@ public abstract class Ticket extends BasicJpaEntity<Ticket, UuidIdentifier>
   public abstract <R> ShareableResource<R> getResource();
 
   public boolean checkSecurityCode(String securityCode) {
-    return !StringUtil.isDefined(this.securityCode) || this.securityCode.equals(securityCode);
+    if (!StringUtil.isDefined(this.securityCode)) {
+      return true;
+    }
+    if (securityCode == null) {
+      return false;
+    }
+    return MessageDigest.isEqual(this.securityCode.getBytes(StandardCharsets.UTF_8),
+        securityCode.getBytes(StandardCharsets.UTF_8));
   }
   public enum QUERY_ORDER_BY {
 
