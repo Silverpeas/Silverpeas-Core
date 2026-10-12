@@ -34,24 +34,14 @@
   <view:setBundle basename="org.silverpeas.sharing.multilang.fileSharingBundle"/>
   <view:setBundle basename="org.silverpeas.sharing.settings.fileSharingIcons" var="icons"/>
   <view:sp-head-part noLookAndFeel="true">
-    <style type="text/css">
-      td {
-        font-family: "Verdana", "Arial", sans-serif;
-        font-size: 10px
-      }
-      fieldset {
-        vertical-align: middle;
-        text-align: center;
-      }
-      legend {
-        display: none;
-      }
-    </style>
+    <link href="<c:url value='/sharing/jsp/styleSheets/invalidSecurityCode.css'/>" type="text/css" rel="stylesheet"/>
   </view:sp-head-part>
   <view:sp-body-part>
+    <div class="invalid-security-code">
     <fieldset>
       <fmt:message key="sharing.invalideSecurityCode"/>
       <legend></legend>
     </fieldset>
+    </div>
   </view:sp-body-part>
 </view:sp-page>
