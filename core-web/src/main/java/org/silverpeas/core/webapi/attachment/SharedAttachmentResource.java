@@ -29,7 +29,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -37,10 +36,8 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.sharing.security.AccessControlContext;
 import org.silverpeas.core.sharing.services.SharingServiceProvider;
-import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.ZipUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileUtil;
 
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -49,7 +46,6 @@ import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.core.UriBuilderException;
 import java.io.*;
 import java.net.URI;
-import java.nio.file.Files;
 import java.util.StringTokenizer;
 import java.util.UUID;
 
@@ -132,23 +128,6 @@ public class SharedAttachmentResource extends AbstractAttachmentResource {
     throw new WebApplicationException(Status.NOT_FOUND);
   }
 
-  private Response getLegacyZipContent(String zipFileName) {
-    checkFileName(zipFileName);
-    String zipFilePath = FileRepositoryManager.getTemporaryPath() + zipFileName;
-    File realFile = new File(zipFilePath);
-    if (!Files.exists(realFile.toPath()) && !Files.isRegularFile(realFile.toPath())) {
-      return Response.ok().build();
-    } else {
-      try(ByteArrayOutputStream output = new ByteArrayOutputStream();
-          InputStream in = new FileInputStream(realFile)) {
-        output.write(in);
-        return Response.ok().entity(output.toByteArray()).type(MimeTypes.SHORT_ARCHIVE_MIME_TYPE).
-            build();
-      } catch (IOException e) {
-        throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
-      }
-    }
-  }
 
 
   @Override
