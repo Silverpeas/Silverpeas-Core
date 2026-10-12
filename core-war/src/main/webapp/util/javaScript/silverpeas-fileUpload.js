@@ -405,17 +405,23 @@
     $form.append($fileInput);
     $fileInputs.append($form);
     if (isFileAPI && params.options.dragAndDropDisplay) {
+      // The native file input is moved out of the screen, the browse button below standing for
+      // it. It is also removed from the tab sequence: otherwise a dialog opening on it (jQuery UI
+      // gives the focus to the first tabbable element of its content) would focus it. The browse
+      // button, which is focusable, takes over the keyboard access to the file chooser.
       $fileInput.css('position', 'absolute');
       $fileInput.css('top', '-10000px');
       $fileInput.css('right', '0');
+      $fileInput.attr('tabindex', '-1');
       if ($img) {
         $img.addClass('dng');
       }
       $uploadBloc.addClass('dng');
-      const $buttonInput = $('<div>').addClass('sp_button').addClass('button').append($('<a>').append(params.options.labels.browse).click(function() {
-            $fileInput.click();
-            return false;
-          }));
+      const $browseLink = $('<a>', {href : '#'}).append(params.options.labels.browse).click(function() {
+        $fileInput.click();
+        return false;
+      });
+      const $buttonInput = $('<div>').addClass('sp_button').addClass('button').append($browseLink);
       const $areaInput = $('<div>').addClass('droparea').append($('<span>').append((
               params.options.multiple ? params.options.labels.dragAndDropFiles :
               params.options.labels.dragAndDropFile))).click(function() {

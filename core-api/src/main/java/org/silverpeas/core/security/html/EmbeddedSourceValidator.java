@@ -204,6 +204,6 @@ public final class EmbeddedSourceValidator {
     return Arrays.stream(path.split("/"))
         .map(s -> s.contains(";") ? s.substring(0, s.indexOf(';')) : s)
         .filter(s -> !s.isEmpty() && !".".equals(s))
-        .collect(Collectors.toList());
+        .toList();
   }
 }

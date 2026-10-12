@@ -5516,6 +5516,13 @@ div.fileUpload {
   color:#333 !important;
 }
 
+/* the browse button stands for the native file input, hidden out of the screen and out of the
+   tab sequence: it is the keyboard access to the file chooser, so its focus has to be visible */
+.fileUpload-container .actions.dng .sp_button.button a:focus {
+  outline: 1px dashed blue;
+  outline-offset: 1px;
+}
+
 .fileUpload-container .actions a {
   cursor: pointer;
   white-space: nowrap;
@@ -5603,13 +5610,6 @@ div.fileUpload {
 
 .fileUpload-container input[type=file] {
   width: auto;
-}
-
-.fileUpload-container input[type="file"]:focus {
-  position: relative !important;
-  top: inherit !important;
-  right: inherit !important;
-  border: 1px dashed blue;
 }
 
 .fileUpload-container div.fileinputs {

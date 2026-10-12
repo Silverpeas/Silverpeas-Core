@@ -484,7 +484,11 @@
                   <c:choose>
                     <c:when test="${originWysiwyg}">
                       <%-- not a javascript: href: the browser would percent-decode the URL before running the script --%>
-                      <a href="#" onclick="selectFile('<c:out value="${silfn:escapeJs(currentAttachmentUrl)}" />'); return false;"><c:out value="${varAttachment.filename}" /></a>
+                      <button type="button"
+                              class="link"
+                              onclick="selectFile('<c:out value="${silfn:escapeJs(currentAttachmentUrl)}" />'); return false;">
+                          <c:out value="${varAttachment.filename}" />
+                      </button>
                     </c:when>
                     <c:otherwise>
                       <c:choose>
