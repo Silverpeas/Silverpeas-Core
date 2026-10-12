@@ -55,7 +55,7 @@ function sharingDownloadLink(event, url, filename) {
 }
 
 function openSecurityCodeDialog(token, baseURL, onSuccess) {
-  var dialog = document.getElementById("securityDialog");
+  const dialog = document.getElementById("securityDialog");
   dialog.innerHTML = '<div id="securityCheck"><span>' + window.i18n.prop("sharing.security.code") +
       '</span><input type="text" id="securityCode" name="securityCode"/></div>';
   $(dialog).dialog({
@@ -66,9 +66,9 @@ function openSecurityCodeDialog(token, baseURL, onSuccess) {
       {
         text: window.i18n.prop("sharing.security.ok"),
         click: function() {
-          var currentDialog = this;
-          var code = document.getElementById("securityCode").value;
-          var uri = baseURL + "/silverpeas/services/sharing/" + token + "/check";
+          const currentDialog = this;
+          const code = document.getElementById("securityCode").value;
+          const uri = baseURL + "/silverpeas/services/sharing/" + token + "/check";
           fetch(uri, {
             method: "GET",
             headers: { "X-Verification-Code": code }
