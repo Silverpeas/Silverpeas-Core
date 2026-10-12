@@ -94,7 +94,7 @@ public abstract class Ticket extends BasicJpaEntity<Ticket, UuidIdentifier>
       this.endDate = detail.getEndDate().getTime();
     }
     this.nbAccessMax = detail.getNbAccessMax();
-    this.securityCode = detail.getSecurityCode();
+    this.securityCode = StringUtil.isDefined(detail.getSecurityCode()) ? detail.getSecurityCode() : null;
     if (StringUtil.isDefined(detail.getToken())) {
       setId(detail.getToken());
     }
@@ -224,7 +224,7 @@ public abstract class Ticket extends BasicJpaEntity<Ticket, UuidIdentifier>
   }
 
   public void setSecurityCode(String securityCode) {
-    this.securityCode = securityCode;
+    this.securityCode = StringUtil.isDefined(securityCode) ? securityCode : null;
   }
 
   public int getNbAccessMax() {
@@ -343,8 +343,7 @@ public abstract class Ticket extends BasicJpaEntity<Ticket, UuidIdentifier>
   public abstract <R> ShareableResource<R> getResource();
 
   public boolean checkSecurityCode(String securityCode) {
-    if (this.securityCode != null) return this.securityCode.equals(securityCode);
-    return true;
+    return !StringUtil.isDefined(this.securityCode) || this.securityCode.equals(securityCode);
   }
   public enum QUERY_ORDER_BY {
 
