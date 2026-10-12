@@ -127,6 +127,12 @@ public class SharedAttachmentResource extends AbstractAttachmentResource {
   @Path("zipcontent/{name}")
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
   public Response getZipContent(@PathParam("name") String zipFileName) {
+    // A temporary ZIP filename is not bound to the sharing ticket or its permissions.
+    // Do not expose archives through a guessable or reusable direct download URL.
+    throw new WebApplicationException(Status.NOT_FOUND);
+  }
+
+  private Response getLegacyZipContent(String zipFileName) {
     checkFileName(zipFileName);
     String zipFilePath = FileRepositoryManager.getTemporaryPath() + zipFileName;
     File realFile = new File(zipFilePath);
