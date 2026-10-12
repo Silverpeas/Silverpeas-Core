@@ -57,7 +57,8 @@ function sharingDownloadLink(event, url, filename) {
 function openSecurityCodeDialog(token, baseURL, onSuccess) {
   const dialog = document.getElementById("securityDialog");
   dialog.innerHTML = '<div id="securityCheck"><span>' + window.i18n.prop("sharing.security.code") +
-      '</span><input type="text" id="securityCode" name="securityCode"/></div>';
+      '</span><input type="text" id="securityCode" name="securityCode"/>' +
+      '<div id="securityCodeError" class="ui-state-error" role="alert" aria-live="polite" style="display:none"></div></div>';
   $(dialog).dialog({
     modal: true,
     title: window.i18n.prop("sharing.security.code"),
@@ -68,6 +69,9 @@ function openSecurityCodeDialog(token, baseURL, onSuccess) {
         click: function() {
           const currentDialog = this;
           const code = document.getElementById("securityCode").value;
+          const errorElement = document.getElementById("securityCodeError");
+          errorElement.textContent = "";
+          $(errorElement).hide();
           const uri = baseURL + "/silverpeas/services/sharing/" + token + "/check";
           fetch(uri, {
             method: "GET",
@@ -87,12 +91,14 @@ function openSecurityCodeDialog(token, baseURL, onSuccess) {
               onSuccess();
             } else {
               document.getElementById("securityCode").value = "";
-              alert(window.i18n.prop("sharing.security.error"));
+              errorElement.textContent = window.i18n.prop("sharing.security.invalid");
+              $(errorElement).show();
             }
           }).catch(function(error) {
             const locked = error.message === "SHARING_CODE_LOCKED";
             const messageKey = locked ? "sharing.security.locked" : "sharing.security.error";
-            alert(window.i18n.prop(messageKey));
+            errorElement.textContent = window.i18n.prop(messageKey);
+            $(errorElement).show();
           });
         }
       },
