@@ -61,7 +61,7 @@
       <em><fmt:message key="sharing.downloadFileHelp"/></em>
     </div>
     <div class="sp_buttonPane">
-      <a id="downloadLink" class="sp_button" target="_blank" data-no-code="${noCode}" data-filename="<c:out value='${ticket.resource.name}'/>" data-download-error="<fmt:message key='sharing.invalideSecurityCode'/>" data-confirm-label="OK" data-cancel-label="<fmt:message key='sharing.security.cancel'/>" data-verification-error="<fmt:message key='sharing.security.error'/>" href="<c:url value="/LinkFile/Key/${requestScope.Key}/${ticket.resource.name}" />"><fmt:message key="sharing.downloadLink"/></a>
+      <a id="downloadLink" class="sp_button" target="_blank" data-no-code="${noCode}" data-filename="<c:out value='${ticket.resource.name}'/>" data-download-error="<fmt:message key='sharing.invalideSecurityCode'/>" data-security-title="<fmt:message key='sharing.security.code'/>" data-locked-error="<fmt:message key='sharing.security.locked'/>" data-confirm-label="OK" data-cancel-label="<fmt:message key='sharing.security.cancel'/>" data-verification-error="<fmt:message key='sharing.security.error'/>" href="<c:url value="/LinkFile/Key/${requestScope.Key}/${ticket.resource.name}" />"><fmt:message key="sharing.downloadLink"/></a>
     </div>
 <div id="securityDialog" class="security-dialog">
   <div id="securityCheck">
