@@ -17,6 +17,17 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockedStatic;
 import org.silverpeas.core.sharing.model.Ticket;
+import org.silverpeas.core.sharing.model.SimpleFileTicket;
+import org.silverpeas.core.sharing.model.DownloadDetail;
+import org.silverpeas.core.sharing.security.ShareableResource;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.io.ByteArrayOutputStream;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.WriteListener;
+import org.mockito.ArgumentCaptor;
+import static org.junit.Assert.*;
 import org.silverpeas.core.sharing.services.SharingServiceProvider;
 import org.silverpeas.core.sharing.services.SharingTicketService;
 
@@ -87,4 +98,70 @@ public class GetLinkFileServletTest {
       verify(invalidCode, never()).forward(request, response);
     }
   }
+  private void assertSuccessfulDownload(String requiredCode) throws Exception {
+    Path file = Files.createTempFile("silverpeas-sharing-", ".txt");
+    byte[] content = "shared content".getBytes(java.nio.charset.StandardCharsets.UTF_8);
+    try {
+      Files.write(file, content);
+      SimpleFileTicket ticket = mock(SimpleFileTicket.class);
+      @SuppressWarnings("unchecked")
+      ShareableResource<SimpleDocument> resource = mock(ShareableResource.class);
+      SimpleDocument document = mock(SimpleDocument.class);
+      when(sharingService.getTicket("token")).thenReturn(ticket);
+      when(ticket.isValid()).thenReturn(true);
+      when(ticket.checkSecurityCode(requiredCode)).thenReturn(true);
+      when(ticket.getResource()).thenReturn(resource);
+      when(resource.getAccessedObject()).thenReturn(document);
+      when(document.getAttachmentPath()).thenReturn(file.toString());
+      when(document.getContentType()).thenReturn("text/plain");
+      when(document.getFilename()).thenReturn("shared.txt");
+      when(document.getSize()).thenReturn((long) content.length);
+      when(request.getHeader("X-Verification-Code")).thenReturn(requiredCode);
+      when(request.getRemoteAddr()).thenReturn("127.0.0.1");
+      ByteArrayOutputStream downloaded = new ByteArrayOutputStream();
+      when(response.getOutputStream()).thenReturn(new ServletOutputStream() {
+        @Override
+        public void write(int value) {
+          downloaded.write(value);
+        }
+
+        @Override
+        public boolean isReady() {
+          return true;
+        }
+
+        @Override
+        public void setWriteListener(WriteListener listener) {
+        }
+      });
+
+      try (MockedStatic<SharingServiceProvider> provider = mockStatic(SharingServiceProvider.class)) {
+        provider.when(SharingServiceProvider::getSharingTicketService).thenReturn(sharingService);
+        servlet.service(request, response);
+      }
+
+      assertArrayEquals(content, downloaded.toByteArray());
+      verify(response).setContentType("text/plain");
+      verify(response).setHeader("Content-Length", String.valueOf(content.length));
+      verify(response).setHeader("Content-Disposition", "inline; filename=\"shared.txt\"");
+      ArgumentCaptor<DownloadDetail> download = ArgumentCaptor.forClass(DownloadDetail.class);
+      verify(sharingService).addDownload(download.capture());
+      assertEquals("127.0.0.1", download.getValue().getUserIP());
+      verify(invalidTicket, never()).forward(request, response);
+      verify(invalidCode, never()).forward(request, response);
+    } finally {
+      Files.deleteIfExists(file);
+    }
+  }
+
+  @Test
+  public void downloadWithoutSecurityCodeSucceedsAndIsCounted() throws Exception {
+    assertSuccessfulDownload(null);
+  }
+
+  @Test
+  public void downloadWithValidSecurityCodeSucceedsAndIsCounted() throws Exception {
+    assertSuccessfulDownload("correct");
+  }
+
 }
