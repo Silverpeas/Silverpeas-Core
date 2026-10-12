@@ -34,6 +34,8 @@ import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Transient;
 
+import java.util.Date;
+
 /**
  *
  * @author ehugonnet
@@ -46,6 +48,22 @@ public class NodeTicket extends Ticket {
   private NodeTicket(TicketDetail detail) {
     super(detail);
     this.sharedObjectType = NODE_TYPE;
+  }
+
+  /**
+   * @deprecated use {@link #builder()} instead.
+   */
+  @Deprecated
+  public NodeTicket(int sharedObjectId, String componentId, String creatorId,
+      Date creationDate, Date endDate, int nbAccessMax) {
+    this(TicketDetail.builder()
+        .setSharedObjectId(sharedObjectId)
+        .setComponentId(componentId)
+        .setCreatorId(creatorId)
+        .setCreationDate(creationDate)
+        .setEndDate(endDate)
+        .setNbAccessMax(nbAccessMax)
+        .build());
   }
 
   public static Builder builder() {
