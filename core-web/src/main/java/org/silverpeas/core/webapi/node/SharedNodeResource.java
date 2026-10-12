@@ -53,7 +53,9 @@ public class SharedNodeResource extends AbstractNodeResource {
   protected boolean isNodeReadable(NodeDetail node) {
     Ticket ticket = SharingServiceProvider.getSharingTicketService().getTicket(token);
     var ctx = AccessControlContext.about(node);
-    return ticket != null && ticket.getAccessControl().isReadable(ctx);
+    return ticket != null && ticket.isValid() &&
+        ticket.checkSecurityCode(getHttpRequest().getHeader("X-Verification-Code")) &&
+        ticket.getAccessControl().isReadable(ctx);
   }
 
 }
