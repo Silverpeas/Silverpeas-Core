@@ -36,6 +36,8 @@ import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Transient;
 
+import java.util.Date;
+
 /**
  * Ticket for files with versions.
  */
@@ -47,6 +49,22 @@ public class VersionFileTicket extends Ticket {
   private VersionFileTicket(TicketDetail detail) {
     super(detail);
     this.sharedObjectType = VERSION_TYPE;
+  }
+
+  /**
+   * @deprecated use {@link #builder()} instead.
+   */
+  @Deprecated
+  public VersionFileTicket(int sharedObjectId, String componentId, String creatorId,
+      Date creationDate, Date endDate, int nbAccessMax) {
+    this(TicketDetail.builder()
+        .setSharedObjectId(sharedObjectId)
+        .setComponentId(componentId)
+        .setCreatorId(creatorId)
+        .setCreationDate(creationDate)
+        .setEndDate(endDate)
+        .setNbAccessMax(nbAccessMax)
+        .build());
   }
 
   public static Builder builder() {
