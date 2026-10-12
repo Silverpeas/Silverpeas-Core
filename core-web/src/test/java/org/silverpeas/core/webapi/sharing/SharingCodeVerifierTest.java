@@ -6,6 +6,7 @@ import org.silverpeas.core.sharing.model.SimpleFileTicket;
 import org.silverpeas.core.sharing.model.Ticket;
 
 import java.util.Date;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
@@ -17,7 +18,8 @@ public class SharingCodeVerifierTest {
 
   private Ticket ticket(String code) {
     return SimpleFileTicket.builder().setSharedObjectId(1).setComponentId("kmelia1")
-        .setCreatorId("1").setCreationDate(new Date()).setSecurityCode(code).build();
+        .setCreatorId("1").setCreationDate(new Date())
+        .setToken(UUID.randomUUID().toString()).setSecurityCode(code).build();
   }
 
   private boolean verify(Ticket ticket, String code, long now) {
