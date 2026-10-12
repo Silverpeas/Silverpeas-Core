@@ -59,7 +59,7 @@ public final class SharingCodeVerifier {
       return true;
     }
     if (REQUEST_COUNT.incrementAndGet() % CLEANUP_INTERVAL == 0) {
-      cleanup(now);
+      cleanup(now, window);
     }
     final boolean[] accepted = {false};
     final boolean[] locked = {false};
@@ -93,8 +93,8 @@ public final class SharingCodeVerifier {
     return accepted[0];
   }
 
-  private static void cleanup(long now) {
-    // Conditional removal is atomic with verification updates for the same token.
+  static void cleanup(long now, long window) {
+    // computeIfPresent serializes cleanup with verification for each token.
     ATTEMPTS.forEach((token, ignored) -> ATTEMPTS.computeIfPresent(token, (key, attempts) -> {
       if (attempts.lockedUntil > now) {
         return attempts;
@@ -102,13 +102,13 @@ public final class SharingCodeVerifier {
       if (attempts.lockedUntil != 0) {
         return null;
       }
-      // Retain only recent failures. Entries without failures can be discarded.
-      // The longest supported attempt window is bounded by the configured value.
-      long window = TimeUnit.MINUTES.toMillis(Math.max(1, ResourceLocator
-          .getSettingBundle(SETTINGS).getInteger("sharing.securityCode.attemptWindow", 15)));
       attempts.failures.removeIf(time -> time <= now - window);
       return attempts.failures.isEmpty() ? null : attempts;
     }));
+  }
+
+  static int trackedTickets() {
+    return ATTEMPTS.size();
   }
 
   private static final class Attempts {
