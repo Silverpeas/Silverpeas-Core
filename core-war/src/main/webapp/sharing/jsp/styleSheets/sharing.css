@@ -74,3 +74,6 @@ body{
 #securityCheck {
   margin:10px auto 10px;
 }
+.security-dialog {
+  display: none;
+}
