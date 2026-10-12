@@ -108,7 +108,7 @@
             checkbox.appendTo(li);
 
             var img = $("<img>").attr("src", attachment.icon);
-            var a = $("<a>").attr("href", attachment.sharedUri).attr("target", "_blank");
+            var a = $("<a>").attr("href", attachment.sharedUri).on("click", function(event) { sharingDownloadLink(event, attachment.sharedUri, attachment.logicalName); });
             a.append(img);
             var label = $("<span>").html(label);
             label.appendTo(a);
@@ -165,17 +165,7 @@
         var instanceId = $("#instanceId").val();
         var url = baseURL + "/silverpeas/services/sharing/attachments/" + instanceId + "/" + token +
                 "/" + ids + "/zip";
-        sharingAjax(url, function(zip) {
-          // display modal dialog to download zip
-          $("#downloadZip-dialog a").attr("href", zip.url);
-          $("#downloadZip-dialog #zipSize").html(bytesToSize(zip.size, 2));
-          $("#downloadZip-dialog").dialog({
-            modal : true, resizable : false, width : 400, buttons : [{
-              text : window.i18n.prop("download.dialog.close"), click : function() {
-                $(this).dialog("close");
-              }
-            }]
-          });
+        sharingDownload(url, 'shared-files.zip');
         });
       });
 
