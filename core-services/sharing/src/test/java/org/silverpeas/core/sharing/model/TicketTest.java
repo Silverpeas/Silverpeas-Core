@@ -21,6 +21,8 @@ import org.junit.Test;
 import java.util.Date;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -51,6 +53,26 @@ public class TicketTest {
   @Test
   public void matchingCodeAllowsAccess() {
     assertTrue(newTicket("ABC123").checkSecurityCode("ABC123"));
+  }
+
+  @Test
+  public void newCodesAreSaltedAndNotStoredInPlaintext() {
+    Ticket first = newTicket("ABC123");
+    Ticket second = newTicket("ABC123");
+    assertNotNull(first.getSecurityCode());
+    assertTrue(first.getSecurityCode().startsWith("pbkdf2-sha256$"));
+    assertNotEquals("ABC123", first.getSecurityCode());
+    assertNotEquals(first.getSecurityCode(), second.getSecurityCode());
+    assertTrue(first.checkSecurityCode("ABC123"));
+    assertFalse(first.checkSecurityCode("wrong"));
+  }
+
+  @Test
+  public void legacyPlaintextCodeStillWorks() {
+    Ticket ticket = newTicket(null);
+    ticket.securityCode = "OLD123";
+    assertTrue(ticket.checkSecurityCode("OLD123"));
+    assertFalse(ticket.checkSecurityCode("wrong"));
   }
 
   @Test
