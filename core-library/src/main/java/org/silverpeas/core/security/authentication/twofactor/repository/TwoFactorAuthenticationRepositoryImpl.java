@@ -3,13 +3,15 @@
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,230 +23,129 @@
  */
 package org.silverpeas.core.security.authentication.twofactor.repository;
 
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import org.silverpeas.core.annotation.Repository;
+import org.silverpeas.core.persistence.datasource.model.jpa.EntityManagerProvider;
+import java.time.Instant;
 import org.silverpeas.core.security.authentication.twofactor.model.TwoFactorAuthentication;
 import org.silverpeas.core.security.encryption.ContentEncryptionService;
-import jakarta.inject.Inject;
 import org.silverpeas.core.security.encryption.cipher.CryptoException;
-
-import java.security.SecureRandom;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.Optional;
 
 /**
- * JDBC repository of native two-factor authentication configurations.
+ * JPA repository of two-factor configurations. Only encrypted secrets are persisted.
  */
 @Repository
-public class TwoFactorAuthenticationRepositoryImpl
-        implements TwoFactorAuthenticationRepository {
+@Transactional(Transactional.TxType.SUPPORTS)
+public class TwoFactorAuthenticationRepositoryImpl implements TwoFactorAuthenticationRepository {
 
-    private static final String TABLE = "ST_User_2FA";
+  private final EntityManagerProvider entityManagerProvider;
+  private final ContentEncryptionService encryptionService;
 
-    private static final String USER_ID = "userId";
-    private static final String SECRET = "secret";
-    private static final String STATUS = "status";
-    private static final String CREATED_AT = "createdAt";
-    private static final String UPDATED_AT = "updatedAt";
-    private static final String LAST_USED_AT = "lastUsedAt";
-    private static final String FAILED_ATTEMPTS = "failedAttempts";
-    private static final String LOCKED_UNTIL = "lockedUntil";
+  @Inject
+  protected TwoFactorAuthenticationRepositoryImpl(final EntityManagerProvider entityManagerProvider,
+      final ContentEncryptionService encryptionService) {
+    this.entityManagerProvider = entityManagerProvider;
+    this.encryptionService = encryptionService;
+  }
 
-    private static final int CIPHER_KEY_SIZE = 32;
+  @Override
+  public Optional<TwoFactorAuthentication> get(final int userId) {
+    // Projection reads the database after bulk updates without returning stale managed entities.
+    return entityManager().createQuery("select a.secret, a.status, a.createdAt, a.updatedAt, " +
+        "a.lastUsedAt, a.failedAttempts, a.lockedUntil from TwoFactorAuthenticationEntity a " +
+        "where a.userId = :userId", Object[].class).setParameter("userId", userId)
+        .getResultStream().findFirst().map(a -> TwoFactorAuthentication.builder(userId)
+            .secret(decryptSecret((String) a[0]))
+            .status(TwoFactorAuthentication.Status.valueOf((String) a[1]))
+            .createdAt((Instant) a[2]).updatedAt((Instant) a[3]).lastUsedAt((Instant) a[4])
+            .failedAttempts((Integer) a[5]).lockedUntil((Instant) a[6]).build());
+  }
 
-    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
-
-    @Inject
-    private ContentEncryptionService encryptionService;
-
-    @Override
-    public Optional<TwoFactorAuthentication> get(
-            final Connection connection,
-            final int userId) throws SQLException {
-
-        final String sql =
-                "SELECT userId, secret, status, createdAt, updatedAt, lastUsedAt, " +
-                        "failedAttempts, lockedUntil FROM " + TABLE + " WHERE userId = ?";
-
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setInt(1, userId);
-            try (ResultSet rs = statement.executeQuery()) {
-                if (!rs.next()) {
-                    return Optional.empty();
-                }
-                return Optional.of(TwoFactorAuthentication.builder(userId)
-                        .secret(decryptSecret(rs.getString(SECRET)))
-                        .status(TwoFactorAuthentication.Status.valueOf(rs.getString(STATUS)))
-                        .createdAt(toInstant(rs.getTimestamp(CREATED_AT)))
-                        .updatedAt(toInstant(rs.getTimestamp(UPDATED_AT)))
-                        .lastUsedAt(toInstant(rs.getTimestamp(LAST_USED_AT)))
-                        .failedAttempts(rs.getInt(FAILED_ATTEMPTS))
-                        .lockedUntil(toInstant(rs.getTimestamp(LOCKED_UNTIL)))
-                        .build());
-            }
-        }
+  @Override
+  @Transactional(Transactional.TxType.REQUIRED)
+  public void save(final TwoFactorAuthentication authentication) {
+    String encrypted = encryptSecret(authentication.getSecret());
+    Instant now = Instant.now();
+    EntityManager em = entityManager();
+    int updated = em.createQuery("update TwoFactorAuthenticationEntity a set a.secret = :secret, " +
+        "a.status = :status, a.updatedAt = :now, a.lastUsedAt = :lastUsedAt, " +
+        "a.failedAttempts = :attempts, a.lockedUntil = :lockedUntil where a.userId = :userId")
+        .setParameter("secret", encrypted).setParameter("status", authentication.getStatus().name())
+        .setParameter("now", now).setParameter("lastUsedAt", authentication.getLastUsedAt())
+        .setParameter("attempts", authentication.getFailedAttempts())
+        .setParameter("lockedUntil", authentication.getLockedUntil())
+        .setParameter("userId", authentication.getUserId()).executeUpdate();
+    if (updated == 0) {
+      TwoFactorAuthenticationEntity entity = new TwoFactorAuthenticationEntity();
+      entity.userId = authentication.getUserId();
+      entity.secret = encrypted;
+      entity.status = authentication.getStatus().name();
+      entity.createdAt = now;
+      entity.updatedAt = now;
+      entity.lastUsedAt = authentication.getLastUsedAt();
+      entity.failedAttempts = authentication.getFailedAttempts();
+      entity.lockedUntil = authentication.getLockedUntil();
+      em.persist(entity);
     }
+  }
 
-    @Override
-    public void save(
-            final Connection connection,
-            final TwoFactorAuthentication authentication) throws SQLException {
+  @Override
+  @Transactional(Transactional.TxType.REQUIRED)
+  public void delete(final int userId) {
+    entityManager().createQuery("delete from TwoFactorAuthenticationEntity a where a.userId = :userId")
+        .setParameter("userId", userId).executeUpdate();
+  }
 
-        final String encryptedSecret = encryptSecret(authentication.getSecret());
-        final Instant now = Instant.now();
+  @Override
+  @Transactional(Transactional.TxType.REQUIRED)
+  public void updateLastUsedAt(final int userId, final Instant lastUsedAt) {
+    entityManager().createQuery("update TwoFactorAuthenticationEntity a set " +
+        "a.lastUsedAt = :lastUsedAt, a.updatedAt = :now where a.userId = :userId")
+        .setParameter("lastUsedAt", lastUsedAt).setParameter("now", Instant.now())
+        .setParameter("userId", userId).executeUpdate();
+  }
 
-        if (get(connection, authentication.getUserId()).isPresent()) {
-            final String sql =
-                    "UPDATE " + TABLE + " SET secret = ?, status = ?, updatedAt = ?, " +
-                            "lastUsedAt = ?, failedAttempts = ?, lockedUntil = ? WHERE userId = ?";
-            try (PreparedStatement statement = connection.prepareStatement(sql)) {
-                statement.setString(1, encryptedSecret);
-                statement.setString(2, authentication.getStatus().name());
-                statement.setTimestamp(3, Timestamp.from(now));
-                setTimestamp(statement, 4, authentication.getLastUsedAt());
-                statement.setInt(5, authentication.getFailedAttempts());
-                setTimestamp(statement, 6, authentication.getLockedUntil());
-                statement.setInt(7, authentication.getUserId());
-                statement.executeUpdate();
-            }
-        } else {
-            final String sql =
-                    "INSERT INTO " + TABLE +
-                            " (userId, secret, status, createdAt, updatedAt, lastUsedAt, " +
-                            "failedAttempts, lockedUntil) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-            try (PreparedStatement statement = connection.prepareStatement(sql)) {
-                statement.setInt(1, authentication.getUserId());
-                statement.setString(2, encryptedSecret);
-                statement.setString(3, authentication.getStatus().name());
-                statement.setTimestamp(4, Timestamp.from(now));
-                statement.setTimestamp(5, Timestamp.from(now));
-                setTimestamp(statement, 6, authentication.getLastUsedAt());
-                statement.setInt(7, authentication.getFailedAttempts());
-                setTimestamp(statement, 8, authentication.getLockedUntil());
-                statement.executeUpdate();
-            }
-        }
+  @Override
+  @Transactional(Transactional.TxType.REQUIRED)
+  public void updateFailedAttempts(final int userId, final int failedAttempts,
+      final Instant lockedUntil) {
+    entityManager().createQuery("update TwoFactorAuthenticationEntity a set " +
+        "a.failedAttempts = :attempts, a.lockedUntil = :lockedUntil, a.updatedAt = :now " +
+        "where a.userId = :userId").setParameter("attempts", failedAttempts)
+        .setParameter("lockedUntil", lockedUntil).setParameter("now", Instant.now())
+        .setParameter("userId", userId).executeUpdate();
+  }
+
+  @Override
+  @Transactional(Transactional.TxType.REQUIRED)
+  public void resetFailedAttempts(final int userId) {
+    updateFailedAttempts(userId, 0, null);
+  }
+
+  private String encryptSecret(final String secret) {
+    if (!encryptionService.isCipherKeyDefined()) {
+      throw new IllegalStateException("The Silverpeas content encryption key must be configured " +
+          "before enrolling in two-factor authentication");
     }
-
-    @Override
-    public void delete(final Connection connection, final int userId) throws SQLException {
-        try (PreparedStatement statement =
-                     connection.prepareStatement("DELETE FROM " + TABLE + " WHERE userId = ?")) {
-            statement.setInt(1, userId);
-            statement.executeUpdate();
-        }
+    try {
+      return encryptionService.encryptContent(secret)[0];
+    } catch (CryptoException e) {
+      throw new IllegalStateException("Unable to encrypt the two-factor authentication secret", e);
     }
+  }
 
-    @Override
-    public void updateLastUsedAt(
-            final Connection connection,
-            final int userId,
-            final Instant lastUsedAt) throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement(
-                "UPDATE " + TABLE + " SET lastUsedAt = ?, updatedAt = ? WHERE userId = ?")) {
-            setTimestamp(statement, 1, lastUsedAt);
-            statement.setTimestamp(2, Timestamp.from(Instant.now()));
-            statement.setInt(3, userId);
-            statement.executeUpdate();
-        }
+  private String decryptSecret(final String secret) {
+    try {
+      return encryptionService.decryptContent(secret)[0];
+    } catch (CryptoException e) {
+      throw new IllegalStateException("Unable to decrypt the two-factor authentication secret", e);
     }
+  }
 
-    @Override
-    public void updateFailedAttempts(
-            final Connection connection,
-            final int userId,
-            final int failedAttempts,
-            final Instant lockedUntil) throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement(
-                "UPDATE " + TABLE +
-                        " SET failedAttempts = ?, lockedUntil = ?, updatedAt = ? WHERE userId = ?")) {
-            statement.setInt(1, failedAttempts);
-            setTimestamp(statement, 2, lockedUntil);
-            statement.setTimestamp(3, Timestamp.from(Instant.now()));
-            statement.setInt(4, userId);
-            statement.executeUpdate();
-        }
-    }
-
-    @Override
-    public void resetFailedAttempts(
-            final Connection connection,
-            final int userId) throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement(
-                "UPDATE " + TABLE +
-                        " SET failedAttempts = 0, lockedUntil = NULL, updatedAt = ? WHERE userId = ?")) {
-            statement.setTimestamp(1, Timestamp.from(Instant.now()));
-            statement.setInt(2, userId);
-            statement.executeUpdate();
-        }
-    }
-
-    private String encryptSecret(final String secret) {
-        if (secret == null) {
-            return null;
-        }
-
-        ensureCipherKeyDefined();
-
-        try {
-            return encryptionService.encryptContent(secret)[0];
-        } catch (CryptoException e) {
-            throw new IllegalStateException(
-                    "Unable to encrypt the two-factor authentication secret",
-                    e);
-        }
-    }
-
-    private void ensureCipherKeyDefined() {
-        synchronized (TwoFactorAuthenticationRepositoryImpl.class) {
-            if (encryptionService.isCipherKeyDefined()) {
-                return;
-            }
-
-            try {
-                encryptionService.updateCipherKey(generateCipherKey());
-            } catch (CryptoException e) {
-                throw new IllegalStateException(
-                        "Unable to initialize the Silverpeas content encryption key",
-                        e);
-            }
-        }
-    }
-
-    private String generateCipherKey() {
-        final byte[] key = new byte[CIPHER_KEY_SIZE];
-        SECURE_RANDOM.nextBytes(key);
-        return java.util.HexFormat.of().formatHex(key);
-    }
-
-    private String decryptSecret(final String encryptedSecret) {
-        if (encryptedSecret == null) {
-            return null;
-        }
-
-        try {
-            return encryptionService.decryptContent(encryptedSecret)[0];
-        } catch (CryptoException e) {
-            throw new IllegalStateException(
-                    "Unable to decrypt the two-factor authentication secret",
-                    e);
-        }
-    }
-
-    private Instant toInstant(final Timestamp timestamp) {
-        return timestamp == null ? null : timestamp.toInstant();
-    }
-    private void setTimestamp(final PreparedStatement statement, final int index,
-            final Instant value) throws SQLException {
-        if (value == null) {
-            statement.setTimestamp(index, null);
-        } else {
-            statement.setTimestamp(index, Timestamp.from(value));
-        }
-    }
-
+  private EntityManager entityManager() {
+    return entityManagerProvider.getEntityManager();
+  }
 }

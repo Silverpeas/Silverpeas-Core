@@ -3,213 +3,111 @@
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation: either version 3 of the License,
- * or (at your option) any later version.
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 package org.silverpeas.core.security.authentication.twofactor;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Timestamp;
+import org.silverpeas.core.security.authentication.twofactor.repository.TrustedDeviceRepository;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
+import org.silverpeas.kernel.test.annotations.TestManagedBean;
+import org.silverpeas.kernel.test.annotations.TestedBean;
 import java.time.Instant;
+import java.util.Optional;
+import java.util.HexFormat;
+import java.security.MessageDigest;
+import java.nio.charset.StandardCharsets;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.contains;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
+@EnableSilverTestEnv(context = JEETestContext.class)
 class TrustedDeviceServiceImplTest {
+  // The Silverpeas test container supports no-argument construction only.
+  // Supply constructor dependencies explicitly and register the resulting tested bean.
+  TrustedDeviceServiceImplTest(
+      @TestManagedMock TrustedDeviceRepository repository) {
+    this.repository = repository;
+    this.service = new TrustedDeviceServiceImpl(repository);
+  }
 
-  private static final int USER_ID = 42;
-
-  private Connection connection;
-  private PreparedStatement statement;
-  private ResultSet resultSet;
+  @TestManagedBean
+  private TrustedDeviceRepository repository;
+  @TestedBean
   private TrustedDeviceServiceImpl service;
 
-  @BeforeEach
-  void setUp() {
-    connection = mock(Connection.class);
-    statement = mock(PreparedStatement.class);
-    resultSet = mock(ResultSet.class);
-    service = new TestableTrustedDeviceService(connection);
-  }
-
   @Test
-  void shouldCreateTrustedDevice() throws Exception {
-    when(connection.prepareStatement(anyString())).thenReturn(statement);
-
-    final String token = service.create(USER_ID, "Mozilla/5.0");
-
-    assertNotNull(token);
+  void shouldStoreOnlyHashOfRandomTokenAndTruncateUserAgent() throws Exception {
+    String token = service.create(42, "a".repeat(1100));
     assertTrue(token.matches("[A-Za-z0-9_-]{43}"));
-    verify(statement).setInt(1, USER_ID);
-    verify(statement).setString(2, sha256(token));
-    verify(statement).setString(6, "Mozilla/5.0");
-    verify(statement).executeUpdate();
+    verify(repository).save(eq(42), eq(hash(token)), any(Instant.class), any(Instant.class),
+        eq("a".repeat(1024)));
   }
 
   @Test
-  void shouldRotateValidTrustedDevice() throws Exception {
-    when(connection.prepareStatement(anyString())).thenReturn(statement);
-    when(statement.executeQuery()).thenReturn(resultSet);
-    when(resultSet.next()).thenReturn(true);
-    when(resultSet.getLong(1)).thenReturn(123L);
-    when(resultSet.getTimestamp(2)).thenReturn(
-        Timestamp.from(Instant.now().plusSeconds(3600)));
-    when(statement.executeUpdate()).thenReturn(1);
-
-    final String newToken = service.validateAndRotate(USER_ID, "old-token", "Firefox");
-
-    assertNotNull(newToken);
-    assertFalse(newToken.equals("old-token"));
-    verify(statement).setString(1, sha256(newToken));
-    verify(statement).setString(3, "Firefox");
-    verify(statement).setString(5, sha256("old-token"));
-    verify(statement).setTimestamp(eq(6), org.mockito.ArgumentMatchers.any(Timestamp.class));
-    verify(statement).executeUpdate();
+  void shouldRotateOnlyValidTokens() throws Exception {
+    when(repository.rotate(eq(42), eq(hash("old")), anyString(), any(), eq("Firefox")))
+        .thenReturn(true);
+    String rotated = service.validateAndRotate(42, "old", "Firefox");
+    assertNotNull(rotated);
+    assertNotEquals("old", rotated);
+    verify(repository).rotate(eq(42), eq(hash("old")), eq(hash(rotated)), any(), eq("Firefox"));
+    assertNull(service.validateAndRotate(42, "unknown", "Firefox"));
   }
 
   @Test
-  void shouldPreserveAbsoluteExpiryWhenRotating() throws Exception {
-    when(connection.prepareStatement(anyString())).thenReturn(statement);
-    when(statement.executeQuery()).thenReturn(resultSet);
-    when(resultSet.next()).thenReturn(true);
-    when(resultSet.getLong(1)).thenReturn(123L);
-    when(resultSet.getTimestamp(2)).thenReturn(
-        Timestamp.from(Instant.now().plusSeconds(3600)));
-    when(statement.executeUpdate()).thenReturn(1);
-
-    assertNotNull(service.validateAndRotate(USER_ID, "old-token", "Firefox"));
-
-    verify(connection).prepareStatement(contains(
-        "SET tokenHash = ?, lastUsedAt = ?, userAgent = ?"));
-    // Parameter 2 is lastUsedAt, not expiresAt. The UPDATE must not change expiresAt.
-    verify(statement).setTimestamp(eq(2),
-        org.mockito.ArgumentMatchers.any(Timestamp.class));
+  void shouldRejectBlankTokensWithoutQueryingRepository() {
+    assertNull(service.validateAndRotate(42, " ", "Firefox"));
+    assertEquals(0, service.getRemainingLifetime(42, null));
+    verifyNoInteractions(repository);
   }
 
   @Test
-  void shouldRejectExpiredTrustedDeviceAndDeleteIt() throws Exception {
-    when(connection.prepareStatement(anyString())).thenReturn(statement);
-    when(statement.executeQuery()).thenReturn(resultSet);
-    when(resultSet.next()).thenReturn(true);
-    when(resultSet.getLong(1)).thenReturn(123L);
-    when(resultSet.getTimestamp(2)).thenReturn(
-        Timestamp.from(Instant.now().minusSeconds(1)));
-
-    assertNull(service.validateAndRotate(USER_ID, "expired-token", "Firefox"));
-
-    verify(statement).setLong(1, 123L);
-    verify(statement, never()).setString(1, sha256("expired-token"));
-  }
-
-  @Test
-  void shouldRejectUnknownTrustedDevice() throws Exception {
-    when(connection.prepareStatement(anyString())).thenReturn(statement);
-    when(statement.executeQuery()).thenReturn(resultSet);
-    when(resultSet.next()).thenReturn(false);
-
-    assertNull(service.validateAndRotate(USER_ID, "unknown-token", "Firefox"));
-  }
-
-  @Test
-  void shouldRejectBlankTrustedDeviceToken() throws Exception {
-    assertNull(service.validateAndRotate(USER_ID, " ", "Firefox"));
-    verify(connection, never()).prepareStatement(anyString());
-  }
-
-  @Test
-  void shouldReturnRemainingLifetimeForTrustedDevice() throws Exception {
-    when(connection.prepareStatement(anyString())).thenReturn(statement);
-    when(statement.executeQuery()).thenReturn(resultSet);
-    when(resultSet.next()).thenReturn(true);
-    when(resultSet.getTimestamp(1)).thenReturn(
-        Timestamp.from(Instant.now().plusSeconds(3600)));
-
-    final long remaining = service.getRemainingLifetime(USER_ID, "valid-token");
-
+  void shouldReturnRemainingLifetimeOrZero() throws Exception {
+    when(repository.getExpiration(42, hash("valid")))
+        .thenReturn(Optional.of(Instant.now().plusSeconds(3600)));
+    long remaining = service.getRemainingLifetime(42, "valid");
     assertTrue(remaining > 0 && remaining <= 3600);
-    verify(statement).setInt(1, USER_ID);
-    verify(statement).setString(2, sha256("valid-token"));
+    when(repository.getExpiration(42, hash("expired")))
+        .thenReturn(Optional.of(Instant.now().minusSeconds(1)));
+    assertEquals(0, service.getRemainingLifetime(42, "expired"));
+    assertEquals(0, service.getRemainingLifetime(42, "unknown"));
   }
 
   @Test
-  void shouldReturnZeroRemainingLifetimeForExpiredDevice() throws Exception {
-    when(connection.prepareStatement(anyString())).thenReturn(statement);
-    when(statement.executeQuery()).thenReturn(resultSet);
-    when(resultSet.next()).thenReturn(true);
-    when(resultSet.getTimestamp(1)).thenReturn(
-        Timestamp.from(Instant.now().minusSeconds(1)));
-
-    assertTrue(service.getRemainingLifetime(USER_ID, "expired-token") == 0);
+  void shouldRevokeAllOwnersDevices() {
+    service.revokeAll(42);
+    verify(repository).deleteAll(42);
   }
 
   @Test
-  void shouldReturnZeroRemainingLifetimeForUnknownDevice() throws Exception {
-    when(connection.prepareStatement(anyString())).thenReturn(statement);
-    when(statement.executeQuery()).thenReturn(resultSet);
-    when(resultSet.next()).thenReturn(false);
-
-    assertTrue(service.getRemainingLifetime(USER_ID, "unknown-token") == 0);
-  }
-
-  @Test
-  void shouldRevokeAllTrustedDevices() throws Exception {
-    when(connection.prepareStatement(anyString())).thenReturn(statement);
-
-    service.revokeAll(USER_ID);
-
-    verify(statement).setInt(1, USER_ID);
-    verify(statement).executeUpdate();
-  }
-
-  @Test
-  void shouldRejectNegativeUserIdentifier() {
+  void shouldRejectNegativeOwner() {
     assertThrows(IllegalArgumentException.class, () -> service.create(-1, "Firefox"));
-    assertThrows(IllegalArgumentException.class,
-        () -> service.validateAndRotate(-1, "token", "Firefox"));
+    assertThrows(IllegalArgumentException.class, () -> service.validateAndRotate(-1, "token", null));
+    assertThrows(IllegalArgumentException.class, () -> service.getRemainingLifetime(-1, "token"));
     assertThrows(IllegalArgumentException.class, () -> service.revokeAll(-1));
   }
 
-  @Test
-  void shouldTruncateLongUserAgent() throws Exception {
-    when(connection.prepareStatement(anyString())).thenReturn(statement);
-
-    service.create(USER_ID, "a".repeat(1100));
-
-    verify(statement).setString(6, "a".repeat(1024));
-  }
-
-  private String sha256(final String value) throws Exception {
-    return java.util.HexFormat.of().formatHex(
-        java.security.MessageDigest.getInstance("SHA-256")
-            .digest(value.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
-  }
-
-  private static class TestableTrustedDeviceService extends TrustedDeviceServiceImpl {
-
-    private final Connection connection;
-
-    private TestableTrustedDeviceService(final Connection connection) {
-      this.connection = connection;
-    }
-
-    @Override
-    protected Connection openConnection() {
-      return connection;
-    }
+  private String hash(String token) throws Exception {
+    return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256")
+        .digest(token.getBytes(StandardCharsets.UTF_8)));
   }
 }
