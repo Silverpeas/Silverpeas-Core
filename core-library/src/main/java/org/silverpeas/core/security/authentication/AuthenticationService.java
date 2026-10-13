@@ -380,18 +380,17 @@ public class AuthenticationService implements Authentication {
     onPasswordAndEmailChanged(credential, email);
   }
 
- /**
-  * Checks whether the TOTP authentication of the specified user is temporarily locked.
-  *
-  * @param login the user login.
-  * @param domainId the user domain identifier.
-  * @return true when the configured second factor is locked.
-  */
   private boolean isAnonymousUser(final int userId) {
     final UserDetail user = UserDetail.getById(String.valueOf(userId));
     return user != null && user.isAnonymous();
   }
 
+  /**
+   * Checks whether the TOTP authentication of the specified user is temporarily locked.
+   * @param login the user login.
+   * @param domainId the user domain identifier.
+   * @return true when the configured second factor is locked.
+   */
   public boolean isTwoFactorLocked(final String login, final String domainId) {
     try {
       if (!AUTHENTICATION_SETTINGS.getBoolean("twoFactorTotpEnabled", false)) {
