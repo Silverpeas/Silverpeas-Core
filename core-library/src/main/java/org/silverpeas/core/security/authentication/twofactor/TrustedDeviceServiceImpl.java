@@ -5,30 +5,40 @@
  * it under the terms of the GNU Affero General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 package org.silverpeas.core.security.authentication.twofactor;
 
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.kernel.bundle.ResourceLocator;
-import org.silverpeas.kernel.bundle.SettingBundle;
-
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Base64;
+import java.util.HexFormat;
+import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.security.authentication.twofactor.repository.TrustedDeviceRepository;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
 /**
- * JDBC implementation of trusted-device management.
+ * JPA implementation of trusted-device management.
  *
  * <p>The browser receives only the random token. The database stores its
  * SHA-256 hash, so a database disclosure does not directly disclose usable
@@ -38,13 +48,19 @@ import java.util.Base64;
 @Transactional(Transactional.TxType.SUPPORTS)
 public class TrustedDeviceServiceImpl implements TrustedDeviceService {
 
-  private static final String TABLE = "ST_User_2FA_Trusted_Device";
   private static final int TOKEN_SIZE = 32;
   private static final int MAX_USER_AGENT_LENGTH = 1024;
   private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
   private static final SettingBundle AUTHENTICATION_SETTINGS = ResourceLocator.getSettingBundle(
       "org.silverpeas.authentication.settings.authenticationSettings");
+
+  private final TrustedDeviceRepository repository;
+
+  @Inject
+  protected TrustedDeviceServiceImpl(final TrustedDeviceRepository repository) {
+    this.repository = repository;
+  }
 
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
@@ -54,22 +70,8 @@ public class TrustedDeviceServiceImpl implements TrustedDeviceService {
     final Instant expiresAt = now.plusSeconds(getLifetime());
     final String token = generateToken();
 
-    try (Connection connection = openConnection();
-         PreparedStatement statement = connection.prepareStatement(
-             "INSERT INTO " + TABLE +
-                 " (userId, tokenHash, createdAt, expiresAt, lastUsedAt, userAgent) " +
-                 " VALUES (?, ?, ?, ?, ?, ?)")) {
-      statement.setInt(1, userId);
-      statement.setString(2, hashToken(token));
-      statement.setTimestamp(3, Timestamp.from(now));
-      statement.setTimestamp(4, Timestamp.from(expiresAt));
-      statement.setTimestamp(5, Timestamp.from(now));
-      statement.setString(6, normalizeUserAgent(userAgent));
-      statement.executeUpdate();
-      return token;
-    } catch (SQLException e) {
-      throw new IllegalStateException("Unable to create a trusted device for user " + userId, e);
-    }
+    repository.save(userId, hashToken(token), now, expiresAt, normalizeUserAgent(userAgent));
+    return token;
   }
 
   @Override
@@ -81,50 +83,9 @@ public class TrustedDeviceServiceImpl implements TrustedDeviceService {
       return null;
     }
 
-    final String tokenHash = hashToken(token);
-    try (Connection connection = openConnection()) {
-      final String selectSql =
-          "SELECT id, expiresAt FROM " + TABLE +
-              " WHERE userId = ? AND tokenHash = ?";
-      try (PreparedStatement select = connection.prepareStatement(selectSql)) {
-        select.setInt(1, userId);
-        select.setString(2, tokenHash);
-        try (ResultSet rs = select.executeQuery()) {
-          if (!rs.next()) {
-            return null;
-          }
-
-          final long id = rs.getLong(1);
-          final Timestamp expiresAt = rs.getTimestamp(2);
-          final Instant now = Instant.now();
-          if (expiresAt == null || !expiresAt.toInstant().isAfter(now)) {
-            delete(connection, id);
-            return null;
-          }
-
-          final String newToken = generateToken();
-          // Keep the original absolute expiry when rotating the token.
-          try (PreparedStatement update = connection.prepareStatement(
-              "UPDATE " + TABLE +
-                  " SET tokenHash = ?, lastUsedAt = ?, userAgent = ? " +
-                  " WHERE id = ? AND tokenHash = ? AND expiresAt > ?")) {
-            update.setString(1, hashToken(newToken));
-            update.setTimestamp(2, Timestamp.from(now));
-            update.setString(3, normalizeUserAgent(userAgent));
-            update.setLong(4, id);
-            update.setString(5, tokenHash);
-            update.setTimestamp(6, Timestamp.from(now));
-            if (update.executeUpdate() != 1) {
-              return null;
-            }
-          }
-          return newToken;
-        }
-      }
-    } catch (SQLException e) {
-      throw new IllegalStateException(
-          "Unable to validate a trusted device for user " + userId, e);
-    }
+    final String newToken = generateToken();
+    return repository.rotate(userId, hashToken(token), hashToken(newToken), Instant.now(),
+        normalizeUserAgent(userAgent)) ? newToken : null;
   }
 
   @Override
@@ -133,54 +94,17 @@ public class TrustedDeviceServiceImpl implements TrustedDeviceService {
     if (token == null || token.isBlank()) {
       return 0;
     }
-    try (Connection connection = openConnection();
-         PreparedStatement statement = connection.prepareStatement(
-             "SELECT expiresAt FROM " + TABLE + " WHERE userId = ? AND tokenHash = ?")) {
-      statement.setInt(1, userId);
-      statement.setString(2, hashToken(token));
-      try (ResultSet rs = statement.executeQuery()) {
-        if (!rs.next()) {
-          return 0;
-        }
-        final Timestamp expiresAt = rs.getTimestamp(1);
-        if (expiresAt == null) {
-          return 0;
-        }
-        final long remainingMillis = expiresAt.toInstant().toEpochMilli()
-            - Instant.now().toEpochMilli();
-        return Math.max(0, (remainingMillis + 999) / 1000);
-      }
-    } catch (SQLException e) {
-      throw new IllegalStateException(
-          "Unable to get trusted-device lifetime for user " + userId, e);
-    }
+    return repository.getExpiration(userId, hashToken(token)).map(expiresAt -> {
+      final long remainingMillis = expiresAt.toEpochMilli() - Instant.now().toEpochMilli();
+      return Math.max(0, (remainingMillis + 999) / 1000);
+    }).orElse(0L);
   }
 
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
   public void revokeAll(final int userId) {
     validateUserId(userId);
-    try (Connection connection = openConnection();
-         PreparedStatement statement = connection.prepareStatement(
-             "DELETE FROM " + TABLE + " WHERE userId = ?")) {
-      statement.setInt(1, userId);
-      statement.executeUpdate();
-    } catch (SQLException e) {
-      throw new IllegalStateException(
-          "Unable to revoke trusted devices for user " + userId, e);
-    }
-  }
-
-  protected Connection openConnection() throws SQLException {
-    return DBUtil.openConnection();
-  }
-
-  private void delete(final Connection connection, final long id) throws SQLException {
-    try (PreparedStatement statement = connection.prepareStatement(
-        "DELETE FROM " + TABLE + " WHERE id = ?")) {
-      statement.setLong(1, id);
-      statement.executeUpdate();
-    }
+    repository.deleteAll(userId);
   }
 
   private String generateToken() {
@@ -191,7 +115,7 @@ public class TrustedDeviceServiceImpl implements TrustedDeviceService {
 
   private String hashToken(final String token) {
     try {
-      return java.util.HexFormat.of().formatHex(
+      return HexFormat.of().formatHex(
           MessageDigest.getInstance("SHA-256")
               .digest(token.getBytes(StandardCharsets.UTF_8)));
     } catch (NoSuchAlgorithmException e) {

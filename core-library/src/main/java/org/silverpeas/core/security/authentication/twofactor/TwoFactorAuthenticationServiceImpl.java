@@ -9,7 +9,9 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,25 +25,24 @@ package org.silverpeas.core.security.authentication.twofactor;
 
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.HexFormat;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.security.authentication.twofactor.model.RecoveryCode;
 import org.silverpeas.core.security.authentication.twofactor.model.TwoFactorAuthentication;
 import org.silverpeas.core.security.authentication.twofactor.repository.RecoveryCodeRepository;
 import org.silverpeas.core.security.authentication.twofactor.repository.TwoFactorAuthenticationRepository;
 import org.silverpeas.core.security.totp.TotpService;
-
-import java.sql.Connection;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.sql.SQLException;
-import java.time.Instant;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * Default implementation of the native two-factor authentication service.
@@ -58,35 +59,12 @@ public class TwoFactorAuthenticationServiceImpl implements TwoFactorAuthenticati
     private static final String RECOVERY_CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
-    @Inject
-    private TwoFactorAuthenticationRepository repository;
+    private final TwoFactorAuthenticationRepository repository;
+    private final RecoveryCodeRepository recoveryCodeRepository;
+    private final TrustedDeviceService trustedDeviceService;
+    private final TotpService totpService;
 
     @Inject
-    private RecoveryCodeRepository recoveryCodeRepository;
-
-    @Inject
-    private TrustedDeviceService trustedDeviceService;
-
-    @Inject
-    private TotpService totpService;
-
-    protected TwoFactorAuthenticationServiceImpl() {
-    }
-
-    protected TwoFactorAuthenticationServiceImpl(
-            final TwoFactorAuthenticationRepository repository,
-            final TotpService totpService) {
-        this.repository = repository;
-        this.totpService = totpService;
-    }
-
-    protected TwoFactorAuthenticationServiceImpl(
-            final TwoFactorAuthenticationRepository repository,
-            final RecoveryCodeRepository recoveryCodeRepository,
-            final TotpService totpService) {
-        this(repository, recoveryCodeRepository, null, totpService);
-    }
-
     protected TwoFactorAuthenticationServiceImpl(
             final TwoFactorAuthenticationRepository repository,
             final RecoveryCodeRepository recoveryCodeRepository,
@@ -101,46 +79,35 @@ public class TwoFactorAuthenticationServiceImpl implements TwoFactorAuthenticati
     @Override
     public Optional<TwoFactorAuthentication> getAuthentication(final int userId) {
         validateUserId(userId);
-        try (Connection connection = openConnection()) {
-            return repository.get(connection, userId);
-        } catch (SQLException e) {
-            throw new IllegalStateException(
-                    "Unable to get two-factor authentication for user " + userId, e);
-        }
+        return repository.get(userId);
     }
 
     @Override
     @Transactional(Transactional.TxType.REQUIRED)
     public TwoFactorAuthentication startEnrollment(final int userId) {
         validateUserId(userId);
-        try (Connection connection = openConnection()) {
-            final Optional<TwoFactorAuthentication> current =
-                    repository.get(connection, userId);
-            if (current.isPresent() && current.get().isEnabled()) {
-                throw new IllegalStateException(
-                        "Two-factor authentication is already enabled for user " + userId);
-            }
-
-            final Instant now = Instant.now();
-            final TwoFactorAuthentication authentication =
-                    TwoFactorAuthentication.builder(userId)
-                            .secret(totpService.generateSecret())
-                            .status(TwoFactorAuthentication.Status.PENDING)
-                            .createdAt(current.map(TwoFactorAuthentication::getCreatedAt)
-                                    .orElse(now))
-                            .updatedAt(now)
-                            .lastUsedAt(null)
-                            .failedAttempts(0)
-                            .lockedUntil(null)
-                            .build();
-
-            repository.save(connection, authentication);
-            return authentication;
-        } catch (SQLException e) {
+        final Optional<TwoFactorAuthentication> current =
+                repository.get(userId);
+        if (current.isPresent() && current.get().isEnabled()) {
             throw new IllegalStateException(
-                    "Unable to start two-factor authentication enrollment for user " + userId,
-                    e);
+                    "Two-factor authentication is already enabled for user " + userId);
         }
+
+        final Instant now = Instant.now();
+        final TwoFactorAuthentication authentication =
+                TwoFactorAuthentication.builder(userId)
+                        .secret(totpService.generateSecret())
+                        .status(TwoFactorAuthentication.Status.PENDING)
+                        .createdAt(current.map(TwoFactorAuthentication::getCreatedAt)
+                                .orElse(now))
+                        .updatedAt(now)
+                        .lastUsedAt(null)
+                        .failedAttempts(0)
+                        .lockedUntil(null)
+                        .build();
+
+        repository.save(authentication);
+        return authentication;
     }
 
     @Override
@@ -151,34 +118,27 @@ public class TwoFactorAuthenticationServiceImpl implements TwoFactorAuthenticati
             return false;
         }
 
-        try (Connection connection = openConnection()) {
-            final Optional<TwoFactorAuthentication> current =
-                    repository.get(connection, userId);
-            if (current.isEmpty() || !current.get().isPending()) {
-                return false;
-            }
-
-            final TwoFactorAuthentication authentication = current.get();
-            if (!totpService.validate(authentication.getSecret(), code)) {
-                return false;
-            }
-
-            final Instant now = Instant.now();
-            repository.resetFailedAttempts(connection, userId);
-            repository.save(
-                    connection,
-                    authentication.toBuilder()
-                            .status(TwoFactorAuthentication.Status.ENABLED)
-                            .updatedAt(now)
-                            .failedAttempts(0)
-                            .lockedUntil(null)
-                            .build());
-            return true;
-        } catch (SQLException e) {
-            throw new IllegalStateException(
-                    "Unable to confirm two-factor authentication enrollment for user " + userId,
-                    e);
+        final Optional<TwoFactorAuthentication> current =
+                repository.get(userId);
+        if (current.isEmpty() || !current.get().isPending()) {
+            return false;
         }
+
+        final TwoFactorAuthentication authentication = current.get();
+        if (!totpService.validate(authentication.getSecret(), code)) {
+            return false;
+        }
+
+        final Instant now = Instant.now();
+        repository.resetFailedAttempts(userId);
+        repository.save(
+                authentication.toBuilder()
+                        .status(TwoFactorAuthentication.Status.ENABLED)
+                        .updatedAt(now)
+                        .failedAttempts(0)
+                        .lockedUntil(null)
+                        .build());
+        return true;
     }
 
     @Override
@@ -189,61 +149,51 @@ public class TwoFactorAuthenticationServiceImpl implements TwoFactorAuthenticati
             return false;
         }
 
-        try (Connection connection = openConnection()) {
-            final Optional<TwoFactorAuthentication> current =
-                    repository.get(connection, userId);
-            if (current.isEmpty() || !current.get().isEnabled()) {
-                return false;
-            }
-
-            final TwoFactorAuthentication authentication = current.get();
-            final Instant now = Instant.now();
-            if (authentication.isLocked(now)) {
-                return false;
-            }
-            if (!totpService.validate(authentication.getSecret(), code)) {
-                recordFailedAttempt(connection, userId, authentication, now);
-                return false;
-            }
-
-            repository.resetFailedAttempts(connection, userId);
-            repository.updateLastUsedAt(connection, userId, now);
-            return true;
-        } catch (SQLException e) {
-            throw new IllegalStateException(
-                    "Unable to validate two-factor authentication for user " + userId, e);
+        final Optional<TwoFactorAuthentication> current =
+                repository.get(userId);
+        if (current.isEmpty() || !current.get().isEnabled()) {
+            return false;
         }
+
+        final TwoFactorAuthentication authentication = current.get();
+        final Instant now = Instant.now();
+        if (authentication.isLocked(now)) {
+            return false;
+        }
+        if (!totpService.validate(authentication.getSecret(), code)) {
+            recordFailedAttempt(userId, authentication, now);
+            return false;
+        }
+
+        repository.resetFailedAttempts(userId);
+        repository.updateLastUsedAt(userId, now);
+        return true;
     }
 
     @Override
     @Transactional(Transactional.TxType.REQUIRED)
     public List<String> generateRecoveryCodes(final int userId) {
         validateUserId(userId);
-        try (Connection connection = openConnection()) {
-            final Optional<TwoFactorAuthentication> authentication =
-                    repository.get(connection, userId);
-            if (authentication.isEmpty() || !authentication.get().isEnabled()) {
-                throw new IllegalStateException(
-                        "Two-factor authentication is not enabled for user " + userId);
-            }
-
-            recoveryCodeRepository.deleteAll(connection, userId);
-            final List<String> codes = new ArrayList<>(RECOVERY_CODE_COUNT);
-            final Instant now = Instant.now();
-            for (int i = 0; i < RECOVERY_CODE_COUNT; i++) {
-                final String code = generateRecoveryCode();
-                recoveryCodeRepository.save(connection, RecoveryCode.builder(userId)
-                        .hash(hashRecoveryCode(code))
-                        .createdAt(now)
-                        .used(false)
-                        .build());
-                codes.add(code);
-            }
-            return codes;
-        } catch (SQLException e) {
+        final Optional<TwoFactorAuthentication> authentication =
+                repository.get(userId);
+        if (authentication.isEmpty() || !authentication.get().isEnabled()) {
             throw new IllegalStateException(
-                    "Unable to generate recovery codes for user " + userId, e);
+                    "Two-factor authentication is not enabled for user " + userId);
         }
+
+        recoveryCodeRepository.deleteAll(userId);
+        final List<String> codes = new ArrayList<>(RECOVERY_CODE_COUNT);
+        final Instant now = Instant.now();
+        for (int i = 0; i < RECOVERY_CODE_COUNT; i++) {
+            final String code = generateRecoveryCode();
+            recoveryCodeRepository.save(RecoveryCode.builder(userId)
+                    .hash(hashRecoveryCode(code))
+                    .createdAt(now)
+                    .used(false)
+                    .build());
+            codes.add(code);
+        }
+        return codes;
     }
 
     @Override
@@ -254,63 +204,52 @@ public class TwoFactorAuthenticationServiceImpl implements TwoFactorAuthenticati
             return false;
         }
 
-        try (Connection connection = openConnection()) {
-            final Optional<TwoFactorAuthentication> authentication =
-                    repository.get(connection, userId);
-            if (authentication.isEmpty() || !authentication.get().isEnabled()) {
-                return false;
-            }
-            final TwoFactorAuthentication current = authentication.get();
-            final Instant now = Instant.now();
-            if (current.isLocked(now)) {
-                return false;
-            }
-            final boolean consumed = recoveryCodeRepository.consume(
-                    connection, userId, hashRecoveryCode(normalizeRecoveryCode(code)), now);
-            if (consumed) {
-                repository.resetFailedAttempts(connection, userId);
-                repository.updateLastUsedAt(connection, userId, now);
-            } else {
-                recordFailedAttempt(connection, userId, current, now);
-            }
-            return consumed;
-        } catch (SQLException e) {
-            throw new IllegalStateException(
-                    "Unable to validate recovery code for user " + userId, e);
+        final Optional<TwoFactorAuthentication> authentication =
+                repository.get(userId);
+        if (authentication.isEmpty() || !authentication.get().isEnabled()) {
+            return false;
         }
+        final TwoFactorAuthentication current = authentication.get();
+        final Instant now = Instant.now();
+        if (current.isLocked(now)) {
+            return false;
+        }
+        final boolean consumed = recoveryCodeRepository.consume(
+                userId, hashRecoveryCode(normalizeRecoveryCode(code)), now);
+        if (consumed) {
+            repository.resetFailedAttempts(userId);
+            repository.updateLastUsedAt(userId, now);
+        } else {
+            recordFailedAttempt(userId, current, now);
+        }
+        return consumed;
     }
 
     @Override
     @Transactional(Transactional.TxType.REQUIRED)
     public void resetEnrollment(final int userId) {
         validateUserId(userId);
-        try (Connection connection = openConnection()) {
-            final Optional<TwoFactorAuthentication> authentication =
-                    repository.get(connection, userId);
-            if (authentication.isEmpty() || !authentication.get().isEnabled()) {
-                throw new IllegalStateException(
-                        "Two-factor authentication is not enabled for user " + userId);
-            }
-
-            recoveryCodeRepository.deleteAll(connection, userId);
-            trustedDeviceService.revokeAll(userId);
-            final Instant now = Instant.now();
-            final TwoFactorAuthentication resetAuthentication =
-                    TwoFactorAuthentication.builder(userId)
-                            .secret(totpService.generateSecret())
-                            .status(TwoFactorAuthentication.Status.PENDING)
-                            .createdAt(authentication.get().getCreatedAt())
-                            .updatedAt(now)
-                            .lastUsedAt(null)
-                            .failedAttempts(0)
-                            .lockedUntil(null)
-                            .build();
-            repository.save(connection, resetAuthentication);
-        } catch (SQLException e) {
+        final Optional<TwoFactorAuthentication> authentication =
+                repository.get(userId);
+        if (authentication.isEmpty() || !authentication.get().isEnabled()) {
             throw new IllegalStateException(
-                    "Unable to reset two-factor authentication enrollment for user " + userId,
-                    e);
+                    "Two-factor authentication is not enabled for user " + userId);
         }
+
+        recoveryCodeRepository.deleteAll(userId);
+        trustedDeviceService.revokeAll(userId);
+        final Instant now = Instant.now();
+        final TwoFactorAuthentication resetAuthentication =
+                TwoFactorAuthentication.builder(userId)
+                        .secret(totpService.generateSecret())
+                        .status(TwoFactorAuthentication.Status.PENDING)
+                        .createdAt(authentication.get().getCreatedAt())
+                        .updatedAt(now)
+                        .lastUsedAt(null)
+                        .failedAttempts(0)
+                        .lockedUntil(null)
+                        .build();
+        repository.save(resetAuthentication);
     }
 
     @Override
@@ -321,39 +260,23 @@ public class TwoFactorAuthenticationServiceImpl implements TwoFactorAuthenticati
             throw new IllegalStateException(
                     "Two-factor authentication cannot be disabled while it is mandatory");
         }
-        try (Connection connection = openConnection()) {
-            recoveryCodeRepository.deleteAll(connection, userId);
-            trustedDeviceService.revokeAll(userId);
-            repository.delete(connection, userId);
-        } catch (SQLException e) {
-            throw new IllegalStateException(
-                    "Unable to disable two-factor authentication for user " + userId, e);
-        }
+        recoveryCodeRepository.deleteAll(userId);
+        trustedDeviceService.revokeAll(userId);
+        repository.delete(userId);
     }
 
-    /**
-     * Opens the database connection used by this service.
-     *
-     * <p>The method is protected to allow unit tests to provide an isolated
-     * connection without mocking the static database utility.</p>
-     */
-    protected Connection openConnection() throws SQLException {
-        return DBUtil.openConnection();
-    }
-
-    private void recordFailedAttempt(final Connection connection, final int userId,
-            final TwoFactorAuthentication authentication, final Instant now)
-            throws SQLException {
+    private void recordFailedAttempt(final int userId,
+            final TwoFactorAuthentication authentication, final Instant now) {
         final int failedAttempts = authentication.getFailedAttempts() + 1;
         final int maxAttempts = AUTHENTICATION_SETTINGS.getInteger(
                 "twoFactorTotpMaxAttempts", 5);
         if (failedAttempts >= maxAttempts) {
             final int lockDuration = AUTHENTICATION_SETTINGS.getInteger(
                     "twoFactorTotpLockDuration", 300);
-            repository.updateFailedAttempts(connection, userId, failedAttempts,
+            repository.updateFailedAttempts(userId, failedAttempts,
                     now.plusSeconds(lockDuration));
         } else {
-            repository.updateFailedAttempts(connection, userId, failedAttempts, null);
+            repository.updateFailedAttempts(userId, failedAttempts, null);
         }
     }
 
@@ -367,13 +290,13 @@ public class TwoFactorAuthenticationServiceImpl implements TwoFactorAuthenticati
     }
 
     private String normalizeRecoveryCode(final String code) {
-        return code.replaceAll("[\\s-]", "").toUpperCase(java.util.Locale.ROOT);
+        return code.replaceAll("[\\s-]", "").toUpperCase(Locale.ROOT);
     }
 
     private String hashRecoveryCode(final String code) {
         try {
-            return java.util.HexFormat.of().formatHex(
-                    MessageDigest.getInstance("SHA-256").digest(code.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+            return HexFormat.of().formatHex(
+                    MessageDigest.getInstance("SHA-256").digest(code.getBytes(StandardCharsets.UTF_8)));
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException("Unable to hash recovery code", e);
         }
