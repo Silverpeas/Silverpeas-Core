@@ -40,7 +40,9 @@
   pageContext.setAttribute("availableLooks", gef.getAvailableLooksForUser());
 %>
 <div id="settings">
-<form name="UserForm" action="<%=MyProfileRoutes.UpdateMySettings %>" method="post">
+<fmt:message key="myProfile.settings.ChangeLookAlert" var="changeLookAlert"/>
+<form name="UserForm" data-current-look="<c:out value="${preferences.look}"/>"
+      data-change-look-alert="<c:out value="${changeLookAlert}"/>" action="<%=MyProfileRoutes.UpdateMySettings %>" method="post">
   <table border="0" cellspacing="0" cellpadding="5" width="100%">
     <tr id="language">
       <td class="txtlibform"><fmt:message key="${'myProfile.settings.FavoriteLanguage'}"/> :</td>
@@ -137,23 +139,89 @@
     </tr>
   </table>
   <br/>
+  <c:if test="${requestScope['twoFactorAvailable']}">
+    <hr/>
+    <h3><fmt:message key="myProfile.twoFactor.title"/></h3>
+    <p><fmt:message key="myProfile.twoFactor.description"/></p>
+
+    <c:if test="${not empty requestScope['twoFactorMessage']}">
+      <p class="txtlibform"><fmt:message key="${requestScope['twoFactorMessage']}"/></p>
+    </c:if>
+    <c:if test="${not empty requestScope['twoFactorError']}">
+      <p class="txtlibform"><fmt:message key="${requestScope['twoFactorError']}"/></p>
+    </c:if>
+
+    <c:choose>
+      <c:when test="${requestScope['twoFactorEnabled']}">
+        <p><fmt:message key="myProfile.twoFactor.enabled"/></p>
+        <fmt:message key="myProfile.twoFactor.recoveryCodes" var="recoveryCodesLabel"/>
+        <button type="submit" class="twoFA_button"
+                formaction="<%=MyProfileRoutes.GenerateRecoveryCodes %>">
+          <c:out value="${recoveryCodesLabel}"/>
+        </button>
+        <c:if test="${not empty requestScope['twoFactorRecoveryCodes']}">
+          <div class="tableBoard two-factor-recovery-codes">
+            <p><strong><fmt:message key="myProfile.twoFactor.recoveryCodesGenerated"/></strong></p>
+            <p><fmt:message key="myProfile.twoFactor.recoveryCodesWarning"/></p>
+            <div class="two-factor-recovery-grid">
+              <c:forEach items="${requestScope['twoFactorRecoveryCodes']}" var="recoveryCode">
+                <code><c:out value="${recoveryCode}"/></code>
+              </c:forEach>
+            </div>
+          </div>
+        </c:if>
+        <c:if test="${not requestScope['twoFactorMandatory']}">
+          <fmt:message key="myProfile.twoFactor.disable" var="disableTwoFactorLabel"/>
+          <button type="submit" class="twoFA_button"
+                  formaction="<%=MyProfileRoutes.DisableTwoFactor %>">
+            <c:out value="${disableTwoFactorLabel}"/>
+          </button>
+        </c:if>
+      </c:when>
+      <c:when test="${requestScope['twoFactorPending']}">
+        <p class="twoFA_infos"><strong><fmt:message key="myProfile.twoFactor.secret"/></strong></p>
+        <p class="twoFA_infos"><code><c:out value="${requestScope['twoFactorAuthentication'].secret}"/></code></p>
+        <p class="twoFA_infos"><fmt:message key="myProfile.twoFactor.authenticatorUri"/></p>
+        <p class="twoFA_infos two-factor-otp-uri">
+          <code><c:out value="${requestScope['twoFactorOtpAuthUri']}"/></code>
+        </p>
+        <div class="tableBoard two-factor-profile-qr-code">
+          <p><strong><fmt:message key="myProfile.twoFactor.qrCode"/></strong></p>
+          <p><fmt:message key="myProfile.twoFactor.qrCodeDescription"/></p>
+          <img src="${pageContext.request.contextPath}/services/two-factor/qrcode"
+               width="256" height="256"
+               alt="<fmt:message key='myProfile.twoFactor.qrCodeAlt'/>"
+               class="two-factor-qr-image"/>
+        </div>
+        <label for="twoFactorCode"><fmt:message key="myProfile.twoFactor.code"/></label>
+        <input id="twoFactorCode" name="twoFactorCode" type="text" inputmode="numeric"
+               autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6"/>
+        <fmt:message key="myProfile.twoFactor.confirm" var="confirmTwoFactorLabel"/>
+        <button type="submit" class="twoFA_button"
+                formaction="<%=MyProfileRoutes.ConfirmTwoFactor %>">
+          <c:out value="${confirmTwoFactorLabel}"/>
+        </button>
+      </c:when>
+      <c:otherwise>
+        <c:if test="${not requestScope['twoFactorMandatory']}">
+          <fmt:message key="myProfile.twoFactor.enable" var="enableTwoFactorLabel"/>
+          <button type="submit" class="twoFA_button"
+                  formaction="<%=MyProfileRoutes.StartTwoFactor %>">
+            <c:out value="${enableTwoFactorLabel}"/>
+          </button>
+        </c:if>
+      </c:otherwise>
+    </c:choose>
+  </c:if>
+
   <fmt:message key="GML.validate" var="validate"/>
   <fmt:message key="GML.cancel" var="cancel"/>
   <center>
     <view:buttonPane>
-      <view:button action="javascript:onClick=submitForm();" label="${validate}" disabled="false"/>
-      <view:button action="javascript:onClick=history.back();" label="${cancel}" disabled="false"/>
+      <view:button action="#" classes="my-profile-settings-save" label="${validate}" disabled="false"/>
+      <view:button action="#" classes="my-profile-settings-cancel" label="${cancel}" disabled="false"/>
     </view:buttonPane>
   </center>
 </form>
 </div>
-<script type="text/javascript">
-  function submitForm() {
-    var currentLook = '<caption:out balue="${preferences.look}"/>';
-    if (document.UserForm.SelectedLook.value != currentLook) {
-      alert("<fmt:message key="${'myProfile.settings.ChangeLookAlert'}"/>");
-    }
-
-    document.UserForm.submit();
-  }
-</script>
+<script src="<c:url value="/socialNetwork/jsp/js/myProfileSettings.js"/>"></script>

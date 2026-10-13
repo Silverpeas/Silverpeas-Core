@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have received a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
@@ -19,9 +19,8 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 package org.silverpeas.core.security.authentication;
 
 import org.silverpeas.kernel.bundle.LocalizationBundle;
@@ -46,7 +45,12 @@ public class AuthenticationResponse {
    * @return the {@link AuthenticationResponse} instance for a successful authentication.
    */
   public static AuthenticationResponse succeed(final String authToken) {
-    return new AuthenticationResponse(authToken);
+    return new AuthenticationResponse(authToken, null);
+  }
+
+  public static AuthenticationResponse succeed(final String authToken,
+      final String trustedDeviceToken) {
+    return new AuthenticationResponse(authToken, trustedDeviceToken);
   }
 
   /**
@@ -63,15 +67,18 @@ public class AuthenticationResponse {
 
   private final Status status;
   private final String token;
+  private final String trustedDeviceToken;
 
-  AuthenticationResponse(final String token) {
+  AuthenticationResponse(final String token, final String trustedDeviceToken) {
     this.status = Status.SUCCESS;
     this.token = token;
+    this.trustedDeviceToken = trustedDeviceToken;
   }
 
   AuthenticationResponse(final Status error) {
     this.status = error;
     this.token = StringUtil.EMPTY;
+    this.trustedDeviceToken = null;
   }
 
   /**
@@ -90,6 +97,10 @@ public class AuthenticationResponse {
    */
   public String getToken() {
     return token;
+  }
+
+  public String getTrustedDeviceToken() {
+    return trustedDeviceToken;
   }
 
   /**
@@ -148,6 +159,11 @@ public class AuthenticationResponse {
      * password and the email address of the user to be changed before.
      */
     PASSWORD_EMAIL_TO_CHANGE_ON_FIRST_LOGIN(ERROR_PREFIX + "PwdAndEmailMustBeChangedOnFirstLogin"),
+    /**
+     * The authentication has succeeded with the password but requires a second authentication
+     * factor before the user session can be opened.
+     */
+    TWO_FACTOR_REQUIRED(ERROR_PREFIX + "TwoFactorRequired"),
     /**
      * The authentication has failed because the account of the user in Silverpeas has been
      * blocked.

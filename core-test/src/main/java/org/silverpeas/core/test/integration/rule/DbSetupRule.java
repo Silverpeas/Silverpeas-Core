@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.test.integration.rule;
 
+import java.util.Locale;
+
 import com.ninja_squad.dbsetup.DbSetup;
 import com.ninja_squad.dbsetup.DbSetupTracker;
 import com.ninja_squad.dbsetup.Operations;
@@ -215,6 +217,7 @@ public class DbSetupRule implements TestRule {
       }
     }
 
+
     Operation preparation = Operations.sequenceOf(tableCreation, dataSetLoading);
     DataSource dataSource = DataSourceProvider.getDataSource();
     DbSetup dbSetup = new DbSetup(new DataSourceDestination(dataSource), preparation);
@@ -237,6 +240,9 @@ public class DbSetupRule implements TestRule {
                 IOUtils.copy(sqlScriptInput, sqlScriptContent, StandardCharsets.UTF_8);
                 if (sqlScriptContent.toString() != null && !sqlScriptContent.toString().isEmpty()) {
                   String[] sql = sqlScriptContent.toString().split(";");
+                  if (INITIAL_TABLES.equals(s)) {
+                    sql = filterExistingQuartzConstraints(sql);
+                  }
                   statements.add(Operations.sql(sql));
                 }
               }
@@ -249,14 +255,44 @@ public class DbSetupRule implements TestRule {
     return Operations.sequenceOf(statements);
   }
 
+  /**
+   * Quartz tables are kept between tests. Skip their constraints when those tables already exist,
+   * independently of the database vendor and identifier case.
+   */
+  private String[] filterExistingQuartzConstraints(String[] sqlStatements) {
+    try (Connection connection = getSafeConnection()) {
+      return filterExistingQuartzConstraints(connection, sqlStatements);
+    } catch (SQLException e) {
+      throw new SilverpeasRuntimeException(e);
+    }
+  }
+
+  static String[] filterExistingQuartzConstraints(final Connection connection,
+      final String[] sqlStatements) throws SQLException {
+    boolean quartzTablesExist = false;
+    try (ResultSet tables = connection.getMetaData().getTables(
+        connection.getCatalog(), connection.getSchema(), null, new String[]{"TABLE"})) {
+      while (tables.next() && !quartzTablesExist) {
+        quartzTablesExist = tables.getString("TABLE_NAME").toUpperCase(Locale.ROOT)
+            .startsWith("QRTZ_");
+      }
+    }
+    if (!quartzTablesExist) {
+      return sqlStatements;
+    }
+    return Stream.of(sqlStatements)
+        .filter(sql -> !sql.trim().toUpperCase(Locale.ROOT).startsWith("ALTER TABLE QRTZ_"))
+        .toArray(String[]::new);
+  }
+
   private void cleanUpDataSource(Description description) {
     try {
       try (Connection connection = getSafeConnection();
-           PreparedStatement statement = connection.prepareStatement("SHOW TABLES");
-           ResultSet rs = statement.executeQuery()) {
+           ResultSet rs = connection.getMetaData().getTables(
+               connection.getCatalog(), connection.getSchema(), "%", new String[]{"TABLE"})) {
         List<String> tableNames = new ArrayList<>();
         while (rs.next()) {
-          tableNames.add(rs.getString(1));
+          tableNames.add(rs.getString("TABLE_NAME"));
         }
         for (String tableName : tableNames) {
           if (!tableName.toUpperCase().startsWith(QUARTZ_TABLE_PREFIX)) {
@@ -373,7 +409,7 @@ public class DbSetupRule implements TestRule {
     if (theCurrentRuleInstance == null) {
       String message =
           "Calling getSafeConnection method requires that the test must use directly DbSetupRule " +
-              "or extends DataSetTest.\n";
+          "or extends DataSetTest.\n";
       message += "Maybe is the method called from a Thread instantiated from a Test method. " +
           "Please call instead getSafeConnectionFromDifferentThread method if it is the case.";
       Logger.getLogger(DbSetupRule.class.getName()).severe(message);
@@ -407,8 +443,8 @@ public class DbSetupRule implements TestRule {
   }
 
   /**
-   * Gets the actual data set in the database so that you can check information persisted in the
-   * data source according to the operations that were performed in the behaviour of the test.
+   * Gets the actual data set in the database so that you can check information persisted in
+   * the data source according to the operations that were performed in the behaviour of the test.
    * @param connection a connection to the database
    * @return the actual data set.
    */

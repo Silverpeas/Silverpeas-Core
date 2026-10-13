@@ -84,6 +84,9 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
+import org.silverpeas.core.security.authentication.twofactor.TwoFactorAuthenticationService;
+import org.silverpeas.core.security.authentication.twofactor.model.TwoFactorAuthentication;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.web.util.ListIndex;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
@@ -163,6 +166,35 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
    * @param function the function to apply.
    * @throws Exception if the administrative task fails.
    */
+  /**
+   * Returns whether two-factor authentication is currently enabled for the target user.
+   *
+   * @param userId the Silverpeas user identifier.
+   * @return true when 2FA is enabled, false otherwise.
+   */
+  public boolean isTwoFactorAuthenticationEnabled(final String userId) {
+    if (!StringUtil.isInteger(userId)) {
+      return false;
+    }
+    return ServiceProvider.getService(TwoFactorAuthenticationService.class)
+        .getAuthentication(Integer.parseInt(userId))
+        .map(TwoFactorAuthentication::isEnabled)
+        .orElse(false);
+  }
+
+  /**
+   * Resets the two-factor authentication enrollment of an enabled user.
+   *
+   * @param userId the Silverpeas user identifier.
+   */
+  public void resetTwoFactorAuthentication(final String userId) {
+    if (!StringUtil.isInteger(userId)) {
+      throw new IllegalArgumentException("Invalid user identifier: " + userId);
+    }
+    ServiceProvider.getService(TwoFactorAuthenticationService.class)
+        .resetEnrollment(Integer.parseInt(userId));
+  }
+
   public void securelyApply(String token, AdminTask function) throws Exception {
     if (token == null || !this.token.isDefined() || !token.equals(this.token.getValue())) {
       throwForbiddenError();

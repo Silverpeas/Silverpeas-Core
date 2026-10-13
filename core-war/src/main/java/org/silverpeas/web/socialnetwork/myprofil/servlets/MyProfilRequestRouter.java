@@ -28,10 +28,14 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.security.authentication.exception.AuthenticationBadCredentialException;
+import org.silverpeas.core.security.authentication.twofactor.TwoFactorAuthenticationService;
+import org.silverpeas.core.security.authentication.twofactor.model.TwoFactorAuthentication;
 import org.silverpeas.core.security.encryption.cipher.CryptMD5;
 import org.silverpeas.core.socialnetwork.model.SocialInformationType;
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.util.ServiceProvider;
+import jakarta.inject.Inject;
+import org.silverpeas.core.security.totp.TotpService;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.core.util.file.FileRepositoryManager;
@@ -64,6 +68,13 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
 
   private static final long serialVersionUID = -9194682447286602180L;
 
+  @Inject
+  private SocialNetworkHelper socialNetworkHelper;
+  @Inject
+  private TwoFactorAuthenticationService twoFactorService;
+  @Inject
+  private TotpService totpService;
+
   @Override
   public String getSessionControlBeanName() {
     return "myProfile";
@@ -84,7 +95,6 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
     String destination = "#";
     SNFullUser snUserFull = new SNFullUser(myProfilSC.getUserId());
     MyProfileRoutes route = MyProfileRoutes.valueOf(function);
-    SocialNetworkHelper socialNetworkHelper = ServiceProvider.getService(SocialNetworkHelper.class);
 
     try {
       if (route == Main || route == MyInfos) {
@@ -115,6 +125,18 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
       } else if (route == MyProfileRoutes.UpdateMySettings) {
         updateUserSettings(request, myProfilSC);
 
+        return getDestination(MySettings.toString(), myProfilSC, request);
+      } else if (route == StartTwoFactor) {
+        startTwoFactor(request, myProfilSC);
+        return getDestination(MySettings.toString(), myProfilSC, request);
+      } else if (route == ConfirmTwoFactor) {
+        confirmTwoFactor(request, myProfilSC);
+        return getDestination(MySettings.toString(), myProfilSC, request);
+      } else if (route == DisableTwoFactor) {
+        disableTwoFactor(request, myProfilSC);
+        return getDestination(MySettings.toString(), myProfilSC, request);
+      } else if (route == GenerateRecoveryCodes) {
+        generateRecoveryCodes(request, myProfilSC);
         return getDestination(MySettings.toString(), myProfilSC, request);
       } else if (route == MyNetworks) {
         request.setAttribute("View", function);
@@ -208,13 +230,13 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
 
       if (!"gif".equalsIgnoreCase(extension) && !"jpg".equalsIgnoreCase(extension) && !"png".
           equalsIgnoreCase(extension) && !"webp".equalsIgnoreCase(extension)) {
-        throw new org.silverpeas.kernel.SilverpeasRuntimeException(
+        throw new SilverpeasRuntimeException(
             "Bad extension, .gif or .jpg or .png or .webp expected.");
       }
       try (InputStream fis = file.getInputStream()) {
         img.saveImage(fis);
       } catch (IOException e) {
-        throw new org.silverpeas.kernel.SilverpeasRuntimeException("Problem while saving image.");
+        throw new SilverpeasRuntimeException("Problem while saving image.");
       }
     } else if ("yes".equals(removeImageFile)) {// Remove
       img.removeImage();
@@ -309,6 +331,82 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
       request.setAttribute("MenuDisplay", false);
     }
     request.setAttribute("UserSelfDeletionAccountEnabled", isUserSelfDeletionAccountEnabled());
+    final SettingBundle authenticationSettings = ResourceLocator.getSettingBundle(
+        "org.silverpeas.authentication.settings.authenticationSettings");
+    final boolean twoFactorAvailable =
+        authenticationSettings.getBoolean("twoFactorTotpEnabled", false);
+    final boolean twoFactorMandatory =
+        authenticationSettings.getBoolean("twoFactorTotpMandatory", false);
+    request.setAttribute("twoFactorAvailable", twoFactorAvailable);
+    request.setAttribute("twoFactorMandatory", twoFactorMandatory);
+    request.setAttribute("twoFactorAuthentication", null);
+    request.setAttribute("twoFactorEnabled", false);
+    request.setAttribute("twoFactorPending", false);
+    if (twoFactorAvailable) {
+      twoFactorService.getAuthentication(Integer.parseInt(sc.getUserId())).ifPresent(authentication -> {
+        request.setAttribute("twoFactorAuthentication", authentication);
+        request.setAttribute("twoFactorEnabled", authentication.isEnabled());
+        request.setAttribute("twoFactorPending", authentication.isPending());
+      });
+    }
+  }
+
+  private void startTwoFactor(HttpServletRequest request, MyProfilSessionController sc) {
+    if (!isTwoFactorAvailable()) {
+      throwHttpForbiddenError();
+    }
+    TwoFactorAuthentication authentication = twoFactorService.startEnrollment(Integer.parseInt(sc.getUserId()));
+    String issuer = ResourceLocator.getSettingBundle(
+        "org.silverpeas.authentication.settings.authenticationSettings")
+        .getString("twoFactorTotpIssuer", "Silverpeas");
+    String uri = totpService
+        .buildOtpAuthUri(authentication.getSecret(), issuer, sc.getUserDetail().getLogin());
+    request.setAttribute("twoFactorAuthentication", authentication);
+    request.setAttribute("twoFactorOtpAuthUri", uri);
+    request.setAttribute("twoFactorPending", true);
+    request.setAttribute("twoFactorEnabled", false);
+  }
+
+  private void confirmTwoFactor(HttpServletRequest request, MyProfilSessionController sc) {
+    if (!isTwoFactorAvailable()) {
+      throwHttpForbiddenError();
+    }
+    String code = request.getParameter("twoFactorCode");
+    if (twoFactorService.confirmEnrollment(Integer.parseInt(sc.getUserId()), code)) {
+      request.setAttribute("twoFactorMessage", "myProfile.twoFactor.confirmed");
+    } else {
+      request.setAttribute("twoFactorError", "myProfile.twoFactor.invalidCode");
+    }
+  }
+
+  private void disableTwoFactor(HttpServletRequest request, MyProfilSessionController sc) {
+    if (!isTwoFactorAvailable()) {
+      throwHttpForbiddenError();
+    }
+    twoFactorService
+        .disable(Integer.parseInt(sc.getUserId()));
+    request.setAttribute("twoFactorMessage", "myProfile.twoFactor.disabled");
+  }
+
+  private void generateRecoveryCodes(HttpServletRequest request, MyProfilSessionController sc) {
+    if (!isTwoFactorAvailable()) {
+      throwHttpForbiddenError();
+    }
+    List<String> recoveryCodes = twoFactorService
+        .generateRecoveryCodes(Integer.parseInt(sc.getUserId()));
+    request.setAttribute("twoFactorRecoveryCodes", recoveryCodes);
+  }
+
+  private boolean isTwoFactorMandatory() {
+    return ResourceLocator.getSettingBundle(
+        "org.silverpeas.authentication.settings.authenticationSettings")
+        .getBoolean("twoFactorTotpMandatory", false);
+  }
+
+  private boolean isTwoFactorAvailable() {
+    return ResourceLocator.getSettingBundle(
+        "org.silverpeas.authentication.settings.authenticationSettings")
+        .getBoolean("twoFactorTotpEnabled", false);
   }
 
   private boolean isUserSelfDeletionAccountEnabled() {
