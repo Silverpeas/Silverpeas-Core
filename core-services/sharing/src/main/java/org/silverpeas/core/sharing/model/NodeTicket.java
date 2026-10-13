@@ -53,7 +53,7 @@ public class NodeTicket extends Ticket {
   /**
    * @deprecated use {@link #builder()} instead.
    */
-  @Deprecated
+  @Deprecated(since = "6.5")
   public NodeTicket(int sharedObjectId, String componentId, String creatorId,
       Date creationDate, Date endDate, int nbAccessMax) {
     this(TicketDetail.builder()

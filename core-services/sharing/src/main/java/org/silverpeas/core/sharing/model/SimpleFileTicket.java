@@ -57,7 +57,7 @@ public class SimpleFileTicket extends Ticket {
   /**
    * @deprecated use {@link #builder()} instead.
    */
-  @Deprecated
+  @Deprecated(since = "6.5")
   public SimpleFileTicket(int sharedObjectId, String componentId, String creatorId,
       Date creationDate, Date endDate, int nbAccessMax) {
     this(TicketDetail.builder()
@@ -73,7 +73,7 @@ public class SimpleFileTicket extends Ticket {
   /**
    * @deprecated use {@link #builder()} instead.
    */
-  @Deprecated
+  @Deprecated(since = "6.5")
   public SimpleFileTicket(int sharedObjectId, String componentId, UserDetail creator,
       Date creationDate, Date endDate, int nbAccessMax) {
     this(TicketDetail.builder()
@@ -89,7 +89,7 @@ public class SimpleFileTicket extends Ticket {
   /**
    * @deprecated use {@link #builder()} instead.
    */
-  @Deprecated
+  @Deprecated(since = "6.5")
   public SimpleFileTicket(String key, int sharedObjectId, String componentId, UserDetail creator,
       Date creationDate, Date endDate, int nbAccessMax) {
     this(sharedObjectId, componentId, creator, creationDate, endDate, nbAccessMax);

@@ -71,11 +71,7 @@ public final class SharingCodeVerifier {
         locked[0] = true;
         return attempts;
       }
-      if (attempts.lockedUntil != 0) {
-        attempts.failures.clear();
-        attempts.lockedUntil = 0;
-      }
-      attempts.failures.removeIf(time -> time <= now - window);
+      attempts.expireFailures(now, window);
       if (ticket.checkSecurityCode(code)) {
         accepted[0] = true;
         return null;
@@ -114,5 +110,13 @@ public final class SharingCodeVerifier {
   private static final class Attempts {
     private final Deque<Long> failures = new ArrayDeque<>();
     private long lockedUntil;
+
+    private void expireFailures(long now, long window) {
+      if (lockedUntil != 0) {
+        failures.clear();
+        lockedUntil = 0;
+      }
+      failures.removeIf(time -> time <= now - window);
+    }
   }
 }

@@ -101,7 +101,7 @@ public class GetLinkFileServletTest {
   private void assertSuccessfulDownload(String requiredCode) throws Exception {
     Path file = Files.createTempFile("silverpeas-sharing-", ".txt");
     byte[] content = "shared content".getBytes(java.nio.charset.StandardCharsets.UTF_8);
-    try {
+    try (ByteArrayOutputStream downloaded = new ByteArrayOutputStream()) {
       Files.write(file, content);
       SimpleFileTicket ticket = mock(SimpleFileTicket.class);
       @SuppressWarnings("unchecked")
@@ -118,7 +118,6 @@ public class GetLinkFileServletTest {
       when(document.getSize()).thenReturn((long) content.length);
       when(request.getHeader("X-Verification-Code")).thenReturn(requiredCode);
       when(request.getRemoteAddr()).thenReturn("127.0.0.1");
-      ByteArrayOutputStream downloaded = new ByteArrayOutputStream();
       when(response.getOutputStream()).thenReturn(new ServletOutputStream() {
         @Override
         public void write(int value) {
@@ -132,6 +131,7 @@ public class GetLinkFileServletTest {
 
         @Override
         public void setWriteListener(WriteListener listener) {
+          // This synchronous test stream does not support asynchronous writes.
         }
       });
 
