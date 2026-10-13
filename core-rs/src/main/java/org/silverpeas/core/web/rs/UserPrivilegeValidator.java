@@ -7,9 +7,9 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Lib
- * Open Source Software ("FLOSS") applications as described in Silverpeas
- * FLOSS exception. You should have received a copy of the text describing
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
@@ -18,11 +18,11 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public Licence
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *
  */
 package org.silverpeas.core.web.rs;
+
 
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -122,20 +122,9 @@ public class UserPrivilegeValidator implements UserPrivilegeValidation {
       userSession = validateUserSession(sessionValidationContext);
       response.setHeader(HTTP_SESSIONKEY, userSession.getSessionId());
     }
-    if(!userSession.isDefined()) {
-      org.silverpeas.kernel.logging.SilverLogger.getLogger(this)
-          .info("REST authentication: no valid session, invoking HTTPAuthentication");
-      try {
-        userSession = authentication.authenticate(
-            new HTTPAuthentication.AuthenticationContext(request, response));
-        org.silverpeas.kernel.logging.SilverLogger.getLogger(this)
-            .info("REST authentication: HTTPAuthentication returned session defined={0}, anonymous={1}",
-                userSession.isDefined(), userSession.isAnonymous());
-      } catch (RuntimeException e) {
-        org.silverpeas.kernel.logging.SilverLogger.getLogger(this)
-            .error("REST authentication: HTTPAuthentication threw exception", e);
-        throw e;
-      }
+    if (!userSession.isDefined()) {
+      userSession = authentication.authenticate(
+          new HTTPAuthentication.AuthenticationContext(request, response));
     }
 
     // Returning the user session

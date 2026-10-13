@@ -9,7 +9,9 @@
   ~ As a special exception to the terms and conditions of version 3.0 of
   ~ the GPL, you may redistribute this Program in connection with Free/Libre
   ~ Open Source Software ("FLOSS") applications as described in Silverpeas's
-  ~ FLOSS exception.
+  ~ FLOSS exception.  You should have received a copy of the text describing
+  ~ the FLOSS exception, and it is also available here:
+  ~ "https://www.silverpeas.org/legal/floss_exception.html"
   ~
   ~ This program is distributed in the hope that it will be useful,
   ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -31,6 +33,7 @@
   <link rel="icon" href="<c:url value="/favicon.ico"/>" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <link rel="stylesheet" type="text/css" href="<c:url value="/util/styleSheets/twoFactorAuthentication.css"/>"/>
+  <script src="<c:url value="/util/javaScript/twoFactorAuthentication.js"/>" defer></script>
 </view:sp-head-part>
 <view:sp-body-part>
   <form id="formTwoFactor" action="<c:url value="/AuthenticationServlet"/>" method="post"
@@ -57,7 +60,7 @@
             <c:choose>
               <c:when test="${requestScope.twoFactorEnrollment}">
                 <p><fmt:message key="authentication.logon.twoFactor.enrollmentInstructions"/></p>
-                <p class="two-factor-qr-code" style="text-align: center;">
+                <p class="two-factor-qr-code">
                   <img src="data:image/png;base64,${requestScope.twoFactorQrCode}"
                        width="256" height="256" alt="QR Code"/>
                 </p>
@@ -81,7 +84,7 @@
                      maxlength="6" pattern="[0-9]{6}" placeholder="000000" autofocus/>
             </label>
           </p>
-          <p id="recoveryMode" class="two-factor-code-field" style="display:none">
+          <p id="recoveryMode" class="two-factor-code-field is-hidden">
             <label>
               <span><fmt:message key="authentication.logon.twoFactor.recoveryCode"/></span>
               <input type="text" id="RecoveryCode"
@@ -99,8 +102,8 @@
           </c:if>
           <div class="submit">
             <p>
-              <input type="submit" style="width:0; height:0; border:0; padding:0"/>
-              <a href="#" class="submit" onclick="document.getElementById('formTwoFactor').submit(); return false;">
+              <input type="submit" class="two-factor-native-submit"/>
+              <a href="#" class="submit" id="submitTwoFactor">
                 <span><span><fmt:message key="authentication.logon.twoFactor.submit"/></span></span>
               </a>
             </p>
@@ -108,49 +111,13 @@
           <c:if test="${not requestScope.twoFactorEnrollment}">
             <p class="two-factor-switch">
               <a href="#" id="useRecoveryCode"><fmt:message key="authentication.logon.twoFactor.useRecoveryCode"/></a>
-              <a href="#" id="useTotpCode" style="display:none"><fmt:message key="authentication.logon.twoFactor.useTotpCode"/></a>
+              <a href="#" id="useTotpCode" class="is-hidden"><fmt:message key="authentication.logon.twoFactor.useTotpCode"/></a>
             </p>
           </c:if>
         </div>
       </div>
     </div>
   </form>
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      var totpMode = document.getElementById('totpMode');
-      var recoveryMode = document.getElementById('recoveryMode');
-      var totpCode = document.getElementById('TwoFactorCode');
-      var recoveryCode = document.getElementById('RecoveryCode');
-      var useRecoveryCode = document.getElementById('useRecoveryCode');
-      var useTotpCode = document.getElementById('useTotpCode');
-      var introduction = document.getElementById('introduction')
 
-      if (useRecoveryCode && useTotpCode) {
-        useRecoveryCode.addEventListener('click', function (event) {
-          event.preventDefault();
-          introduction.style.display = 'none';
-          totpMode.style.display = 'none';
-          recoveryMode.style.display = '';
-          useRecoveryCode.style.display = 'none';
-          useTotpCode.style.display = '';
-          totpCode.removeAttribute('name');
-          recoveryCode.setAttribute('name', 'TwoFactorCode');
-          recoveryCode.focus();
-        });
-
-        useTotpCode.addEventListener('click', function (event) {
-          event.preventDefault();
-          introduction.style.display = '';
-          recoveryMode.style.display = 'none';
-          totpMode.style.display = '';
-          useTotpCode.style.display = 'none';
-          useRecoveryCode.style.display = '';
-          recoveryCode.removeAttribute('name');
-          totpCode.setAttribute('name', 'TwoFactorCode');
-          totpCode.focus();
-        });
-      }
-    });
-  </script>
 </view:sp-body-part>
 </view:sp-page>

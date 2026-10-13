@@ -3,8 +3,23 @@
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 package org.silverpeas.core.webapi.profile;
 
@@ -23,19 +38,21 @@ import java.util.List;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.security.authentication.AuthenticationResponse;
 import org.silverpeas.core.security.authentication.AuthenticationService;
-import org.silverpeas.core.security.authentication.AuthenticationServiceProvider;
+
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.security.session.SessionInfo;
-import org.silverpeas.core.security.session.SessionManagementProvider;
+import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.token.Token;
-import org.silverpeas.core.web.rs.HTTPAuthentication;
+import org.silverpeas.core.web.rs.RestTwoFactorChallenge;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import java.util.Base64;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.UserPrivilegeValidation;
 import org.silverpeas.core.web.token.SynchronizerTokenService;
 
 import jakarta.inject.Inject;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpSession;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -64,6 +81,14 @@ public class AuthenticationResource extends RESTWebService {
   @Inject
   private UserPrivilegeValidation privilegeValidation;
   @Inject
+  private AuthenticationService authenticationService;
+  @Inject
+  private UserProvider userProvider;
+  @Inject
+  private SessionManagement sessionManagement;
+  @Inject
+  private SynchronizerTokenService synchronizerTokenService;
+  @Inject
   private TwoFactorAuthenticationService twoFactorService;
   @Inject
   private TotpService totpService;
@@ -81,12 +106,14 @@ public class AuthenticationResource extends RESTWebService {
   public Response authenticate() {
     try {
       validateUserAuthentication(privilegeValidation);
-    } catch (RuntimeException e) {
-      throw e;
+    } catch (WebApplicationException e) {
+      if (e.getResponse().getStatus() != Response.Status.UNAUTHORIZED.getStatusCode() ||
+          !RestTwoFactorChallenge.isRequired(getHttpServletRequest())) {
+        throw e;
+      }
     }
 
-    boolean twoFactorRequired = Boolean.TRUE.equals(
-        getHttpServletRequest().getAttribute(HTTPAuthentication.TWO_FACTOR_REQUIRED));
+    boolean twoFactorRequired = RestTwoFactorChallenge.isRequired(getHttpServletRequest());
     if (twoFactorRequired) {
       User pendingUser = getPendingTwoFactorUser();
       if (pendingUser != null && !twoFactorService.getAuthentication(
@@ -125,35 +152,26 @@ public class AuthenticationResource extends RESTWebService {
     }
     final String code = request.getCode();
     final boolean trustDevice = request.isTrustDevice();
-    HttpSession session = getHttpServletRequest().getSession(false);
-    if (session == null) {
+    RestTwoFactorChallenge challenge =
+        RestTwoFactorChallenge.from(getHttpServletRequest()).orElse(null);
+    if (challenge == null) {
       return Response.status(Response.Status.UNAUTHORIZED).build();
     }
+    String login = challenge.getLogin();
+    String domainId = challenge.getDomainId();
 
-    String login = (String) session.getAttribute(HTTPAuthentication.TWO_FACTOR_LOGIN);
-    String domainId = (String) session.getAttribute(HTTPAuthentication.TWO_FACTOR_DOMAIN);
-    Long expiresAt = (Long) session.getAttribute(HTTPAuthentication.TWO_FACTOR_EXPIRES_AT);
-    if (!HTTPAuthentication.isValidTwoFactorChallenge(login, domainId, expiresAt)) {
-      clearRestTwoFactorChallenge(session);
-      return Response.status(Response.Status.UNAUTHORIZED).build();
-    }
-
-    AuthenticationService authenticationService = AuthenticationServiceProvider.getService();
     AuthenticationResponse result = authenticationService.authenticateTwoFactor(login, domainId, code);
     if (!result.getStatus().succeeded()) {
-      int attempts = getTwoFactorAttempts(session) + 1;
-      session.setAttribute(HTTPAuthentication.TWO_FACTOR_ATTEMPTS, attempts);
-      if (attempts >= HTTPAuthentication.getTwoFactorMaxAttempts() ||
-          authenticationService.isTwoFactorLocked(login, domainId)) {
-        clearRestTwoFactorChallenge(session);
+      challenge.recordFailure();
+      if (authenticationService.isTwoFactorLocked(login, domainId)) {
+        challenge.clear();
       }
       return Response.status(Response.Status.UNAUTHORIZED)
           .entity(AuthenticationChallengeEntity.twoFactorRequired())
           .build();
     }
 
-    clearRestTwoFactorChallenge(session);
-    HTTPAuthentication.clearTwoFactorChallenge(session);
+    challenge.clear();
     final User user;
     try {
       user = authenticationService.getUserByAuthToken(result.getToken());
@@ -179,21 +197,15 @@ public class AuthenticationResource extends RESTWebService {
   @Path("trusted-device")
   @Produces(MediaType.APPLICATION_JSON)
   public Response authenticateTrustedDevice() {
-    HttpSession session = getHttpServletRequest().getSession(false);
-    if (session == null) {
+    RestTwoFactorChallenge challenge =
+        RestTwoFactorChallenge.from(getHttpServletRequest()).orElse(null);
+    if (challenge == null) {
       return Response.status(Response.Status.UNAUTHORIZED).build();
     }
-
-    String login = (String) session.getAttribute(HTTPAuthentication.TWO_FACTOR_LOGIN);
-    String domainId = (String) session.getAttribute(HTTPAuthentication.TWO_FACTOR_DOMAIN);
-    Long expiresAt = (Long) session.getAttribute(HTTPAuthentication.TWO_FACTOR_EXPIRES_AT);
-    if (!HTTPAuthentication.isValidTwoFactorChallenge(login, domainId, expiresAt)) {
-      clearRestTwoFactorChallenge(session);
-      return Response.status(Response.Status.UNAUTHORIZED).build();
-    }
+    String login = challenge.getLogin();
+    String domainId = challenge.getDomainId();
 
     String trustedDeviceToken = getTrustedDeviceToken();
-    AuthenticationService authenticationService = AuthenticationServiceProvider.getService();
     AuthenticationResponse result = authenticationService.authenticateTrustedDevice(
         login, domainId, trustedDeviceToken, getHttpServletRequest().getHeader("User-Agent"));
     if (!result.getStatus().succeeded()) {
@@ -202,8 +214,7 @@ public class AuthenticationResource extends RESTWebService {
           .build();
     }
 
-    clearRestTwoFactorChallenge(session);
-    HTTPAuthentication.clearTwoFactorChallenge(session);
+    challenge.clear();
     final User user;
     try {
       user = authenticationService.getUserByAuthToken(result.getToken());
@@ -229,17 +240,9 @@ public class AuthenticationResource extends RESTWebService {
    * Never accept a user identifier from the client during enrollment.
    */
   private User getPendingTwoFactorUser() {
-    HttpSession session = getHttpServletRequest().getSession(false);
-    if (session == null) {
-      return null;
-    }
-    String login = (String) session.getAttribute(HTTPAuthentication.TWO_FACTOR_LOGIN);
-    String domain = (String) session.getAttribute(HTTPAuthentication.TWO_FACTOR_DOMAIN);
-    Long expires = (Long) session.getAttribute(HTTPAuthentication.TWO_FACTOR_EXPIRES_AT);
-    if (!HTTPAuthentication.isValidTwoFactorChallenge(login, domain, expires)) {
-      return null;
-    }
-    return UserProvider.get().getUserByLoginAndDomainId(login, domain);
+    return RestTwoFactorChallenge.from(getHttpServletRequest())
+        .map(challenge -> userProvider.getUserByLoginAndDomainId(
+            challenge.getLogin(), challenge.getDomainId())).orElse(null);
   }
 
   @POST
@@ -260,7 +263,7 @@ public class AuthenticationResource extends RESTWebService {
       pending = twoFactorService.startEnrollment(userId);
     }
     return Response.ok(new EnrollmentEntity(pending.getSecret(),
-        java.util.Base64.getEncoder().encodeToString(qrCodeGenerator.generate(
+        Base64.getEncoder().encodeToString(qrCodeGenerator.generate(
             totpService.buildOtpAuthUri(pending.getSecret(), user.getLogin()), 256))))
         .header("Cache-Control", "no-store").build();
   }
@@ -280,25 +283,21 @@ public class AuthenticationResource extends RESTWebService {
     if (user == null) {
       return Response.status(Response.Status.UNAUTHORIZED).build();
     }
-    HttpSession session = getHttpServletRequest().getSession(false);
-    int attempts = getTwoFactorAttempts(session);
-    if (attempts >= HTTPAuthentication.getTwoFactorMaxAttempts()) {
-      clearRestTwoFactorChallenge(session);
+    RestTwoFactorChallenge challenge =
+        RestTwoFactorChallenge.from(getHttpServletRequest()).orElse(null);
+    if (challenge == null) {
       return Response.status(Response.Status.UNAUTHORIZED).build();
     }
     int userId = Integer.parseInt(user.getId());
     if (!twoFactorService.confirmEnrollment(userId, code)) {
-      session.setAttribute(HTTPAuthentication.TWO_FACTOR_ATTEMPTS, attempts + 1);
-      if (attempts + 1 >= HTTPAuthentication.getTwoFactorMaxAttempts()) {
-        clearRestTwoFactorChallenge(session);
-      }
+      challenge.recordFailure();
       return Response.status(Response.Status.UNAUTHORIZED).build();
     }
     List<String> recoveryCodes = twoFactorService.generateRecoveryCodes(userId);
-    clearRestTwoFactorChallenge(session);
+    challenge.clear();
     openAuthenticatedSession(user);
     if (trustDevice) {
-      String token = AuthenticationServiceProvider.getService().createTrustedDevice(
+      String token = authenticationService.createTrustedDevice(
           user.getLogin(), user.getDomainId(), getHttpServletRequest().getHeader("User-Agent"));
       writeTrustedDeviceCookie(token);
     }
@@ -385,23 +384,14 @@ public class AuthenticationResource extends RESTWebService {
         + (getHttpServletRequest().isSecure() ? "; Secure" : ""));
   }
 
-  private int getTwoFactorAttempts(final HttpSession session) {
-    Object attempts = session.getAttribute(HTTPAuthentication.TWO_FACTOR_ATTEMPTS);
-    return attempts instanceof Integer ? (Integer) attempts : 0;
-  }
-
-  private void clearRestTwoFactorChallenge(final HttpSession session) {
-    HTTPAuthentication.clearTwoFactorChallenge(session);
-  }
-
   private void openAuthenticatedSession(final User user) {
-    SessionInfo session = SessionManagementProvider.getSessionManagement()
+    SessionInfo session = sessionManagement
         .openSession(user, getHttpServletRequest());
     getHttpServletResponse().setHeader(UserPrivilegeValidation.HTTP_SESSIONKEY, session.getSessionId());
     getHttpServletResponse().addHeader("Access-Control-Expose-Headers",
         UserPrivilegeValidation.HTTP_SESSIONKEY + ", " +
             SynchronizerTokenService.SESSION_TOKEN_KEY);
-    SynchronizerTokenService tokenService = SynchronizerTokenService.getInstance();
+    SynchronizerTokenService tokenService = synchronizerTokenService;
     tokenService.setUpSessionTokens(session);
     Token token = tokenService.getSessionToken(session);
     getHttpServletResponse().addHeader(SynchronizerTokenService.SESSION_TOKEN_KEY, token.getValue());
@@ -417,7 +407,7 @@ public class AuthenticationResource extends RESTWebService {
     return null;
   }
 
-  @jakarta.xml.bind.annotation.XmlRootElement
+  @XmlRootElement
   public static class AuthenticationChallengeEntity {
     private String status;
 

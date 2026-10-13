@@ -86,6 +86,7 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
   private static final String TWO_FACTOR_ENROLLMENT = "Silverpeas_TwoFactor_Enrollment";
   private static final String TWO_FACTOR_OTP_URI = "Silverpeas_TwoFactor_OtpUri";
   private static final String TWO_FACTOR_QR_CODE = "Silverpeas_TwoFactor_QrCode";
+  private static final String TWO_FACTOR_SECRET = "Silverpeas_TwoFactor_Secret";
   private static final SettingBundle AUTHENTICATION_SETTINGS = ResourceLocator.getSettingBundle(
       "org.silverpeas.authentication.settings.authenticationSettings");
   private static final String TWO_FACTOR_CODE_PARAMETER = "TwoFactorCode";
@@ -222,8 +223,6 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
         System.currentTimeMillis() + challengeLifetime * 1000L);
     session.setAttribute(TWO_FACTOR_ATTEMPTS, 0);
     session.setAttribute(TWO_FACTOR_ENROLLMENT, enrollmentRequired);
-    request.setAttribute("twoFactorTrustedDeviceEnabled",
-        AUTHENTICATION_SETTINGS.getBoolean("twoFactorTrustedDeviceEnabled", false));
     if (enrollmentRequired) {
       try {
         final TwoFactorAuthentication authentication = authService.startTwoFactorEnrollment(
@@ -232,10 +231,9 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
             authentication.getSecret(),
             AUTHENTICATION_SETTINGS.getString("twoFactorTotpIssuer", "Silverpeas"),
             authenticationParameters.getLogin());
-        request.setAttribute("twoFactorEnrollment", true);
-        request.setAttribute("twoFactorOtpAuthUri", otpUri);
-        request.setAttribute("twoFactorSecret", authentication.getSecret());
-        request.setAttribute("twoFactorQrCode",
+        session.setAttribute(TWO_FACTOR_OTP_URI, otpUri);
+        session.setAttribute(TWO_FACTOR_SECRET, authentication.getSecret());
+        session.setAttribute(TWO_FACTOR_QR_CODE,
             Base64.getEncoder().encodeToString(qrCodeGenerator.generate(otpUri, 256)));
       } catch (AuthenticationException e) {
         logger.error(e.getMessage(), e);
@@ -243,6 +241,20 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
         redirectToLoginForTwoFactorFailure(request, response);
         return;
       }
+    }
+    forwardTwoFactorChallenge(request, response, session);
+  }
+
+  private void forwardTwoFactorChallenge(final HttpServletRequest request,
+      final HttpServletResponse response, final HttpSession session)
+      throws ServletException, IOException {
+    final boolean enrollment = Boolean.TRUE.equals(session.getAttribute(TWO_FACTOR_ENROLLMENT));
+    request.setAttribute("twoFactorEnrollment", enrollment);
+    request.setAttribute("twoFactorTrustedDeviceEnabled", isTrustedDeviceEnabled());
+    if (enrollment) {
+      request.setAttribute("twoFactorOtpAuthUri", session.getAttribute(TWO_FACTOR_OTP_URI));
+      request.setAttribute("twoFactorSecret", session.getAttribute(TWO_FACTOR_SECRET));
+      request.setAttribute("twoFactorQrCode", session.getAttribute(TWO_FACTOR_QR_CODE));
     }
     forward(request, response, TWO_FACTOR_PAGE);
   }
@@ -283,7 +295,7 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
       }
       session.setAttribute(TWO_FACTOR_ATTEMPTS, attempts);
       request.setAttribute("twoFactorError", true);
-      forward(request, response, TWO_FACTOR_PAGE);
+      forwardTwoFactorChallenge(request, response, session);
       return;
     }
 
@@ -326,6 +338,7 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
     session.removeAttribute(TWO_FACTOR_ENROLLMENT);
     session.removeAttribute(TWO_FACTOR_OTP_URI);
     session.removeAttribute(TWO_FACTOR_QR_CODE);
+    session.removeAttribute(TWO_FACTOR_SECRET);
   }
 
   private void redirectToLoginForTwoFactorFailure(final HttpServletRequest request,

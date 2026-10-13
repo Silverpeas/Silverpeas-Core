@@ -3063,8 +3063,28 @@ button.link {
   display: inline-block;
 }
 
-div#publicProfileContenu > div#settings > form > p.twoFA_infos
+div#publicProfileContenu > div#settings > form > p.twoFA_infos {
   padding-top: 1em;
+}
+
+.two-factor-recovery-codes,
+.two-factor-profile-qr-code {
+  margin-top: 15px;
+}
+.two-factor-recovery-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(140px, 1fr));
+  gap: 8px;
+  max-width: 420px;
+}
+.two-factor-otp-uri {
+  word-break: break-all;
+}
+.two-factor-profile-qr-code {
+  text-align: center;
+}
+.two-factor-qr-image {
+  image-rendering: pixelated;
 }
 
 /*- [ myProfile END ] --------------------------- */

@@ -13,7 +13,6 @@
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -23,6 +22,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 package org.silverpeas.core.test.integration.rule;
+
+import java.util.Locale;
 
 import com.ninja_squad.dbsetup.DbSetup;
 import com.ninja_squad.dbsetup.DbSetupTracker;
@@ -255,29 +256,33 @@ public class DbSetupRule implements TestRule {
   }
 
   /**
-   * The default SQL script contains Quartz constraints with an IF NOT EXISTS clause for
-   * databases supporting it. PostgreSQL does not support that syntax. Quartz tables are kept
-   * between tests, so when they already exist we must not replay their constraint statements.
+   * Quartz tables are kept between tests. Skip their constraints when those tables already exist,
+   * independently of the database vendor and identifier case.
    */
   private String[] filterExistingQuartzConstraints(String[] sqlStatements) {
     try (Connection connection = getSafeConnection()) {
-      if (!"PostgreSQL".equalsIgnoreCase(connection.getMetaData().getDatabaseProductName())) {
-        return sqlStatements;
-      }
-      try (PreparedStatement statement = connection.prepareStatement(
-          "SELECT 1 FROM information_schema.tables " +
-              "WHERE table_schema = current_schema() AND table_name LIKE 'qrtz_%' LIMIT 1");
-           ResultSet rs = statement.executeQuery()) {
-        if (!rs.next()) {
-          return sqlStatements;
-        }
-      }
-      return Stream.of(sqlStatements)
-          .filter(sql -> !sql.trim().toUpperCase().startsWith("ALTER TABLE QRTZ_"))
-          .toArray(String[]::new);
+      return filterExistingQuartzConstraints(connection, sqlStatements);
     } catch (SQLException e) {
       throw new SilverpeasRuntimeException(e);
     }
+  }
+
+  static String[] filterExistingQuartzConstraints(final Connection connection,
+      final String[] sqlStatements) throws SQLException {
+    boolean quartzTablesExist = false;
+    try (ResultSet tables = connection.getMetaData().getTables(
+        connection.getCatalog(), connection.getSchema(), null, new String[]{"TABLE"})) {
+      while (tables.next() && !quartzTablesExist) {
+        quartzTablesExist = tables.getString("TABLE_NAME").toUpperCase(Locale.ROOT)
+            .startsWith("QRTZ_");
+      }
+    }
+    if (!quartzTablesExist) {
+      return sqlStatements;
+    }
+    return Stream.of(sqlStatements)
+        .filter(sql -> !sql.trim().toUpperCase(Locale.ROOT).startsWith("ALTER TABLE QRTZ_"))
+        .toArray(String[]::new);
   }
 
   private void cleanUpDataSource(Description description) {
