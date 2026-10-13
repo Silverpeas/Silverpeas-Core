@@ -5,104 +5,85 @@
  * it under the terms of the GNU Affero General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 package org.silverpeas.core.security.authentication.twofactor.repository;
 
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import org.silverpeas.core.annotation.Repository;
-import org.silverpeas.core.security.authentication.twofactor.model.RecoveryCode;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import org.silverpeas.core.persistence.datasource.model.jpa.EntityManagerProvider;
 import java.time.Instant;
-import java.util.ArrayList;
+import org.silverpeas.core.security.authentication.twofactor.model.RecoveryCode;
 import java.util.List;
 
 /**
- * JDBC repository of native two-factor authentication recovery codes.
+ * JPA repository of recovery codes. Consumption is an atomic, user-scoped update.
  */
 @Repository
+@Transactional(Transactional.TxType.SUPPORTS)
 public class RecoveryCodeRepositoryImpl implements RecoveryCodeRepository {
 
-    private static final String TABLE = "ST_User_2FA_Recovery";
+  private final EntityManagerProvider entityManagerProvider;
 
-    @Override
-    public List<RecoveryCode> getUnused(final Connection connection, final int userId)
-            throws SQLException {
-        final String sql = "SELECT id, userId, hash, used, createdAt, usedAt FROM " + TABLE
-                + " WHERE userId = ? AND used = ?";
-        final List<RecoveryCode> codes = new ArrayList<>();
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setInt(1, userId);
-            statement.setBoolean(2, false);
-            try (ResultSet rs = statement.executeQuery()) {
-                while (rs.next()) {
-                    codes.add(map(rs));
-                }
-            }
-        }
-        return codes;
-    }
+  @Inject
+  protected RecoveryCodeRepositoryImpl(final EntityManagerProvider entityManagerProvider) {
+    this.entityManagerProvider = entityManagerProvider;
+  }
 
-    @Override
-    public void save(final Connection connection, final RecoveryCode recoveryCode)
-            throws SQLException {
-        final String sql = "INSERT INTO " + TABLE
-                + " (userId, hash, used, createdAt, usedAt) VALUES (?, ?, ?, ?, ?)";
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setInt(1, recoveryCode.getUserId());
-            statement.setString(2, recoveryCode.getHash());
-            statement.setBoolean(3, recoveryCode.isUsed());
-            statement.setTimestamp(4, Timestamp.from(recoveryCode.getCreatedAt()));
-            setTimestamp(statement, 5, recoveryCode.getUsedAt());
-            statement.executeUpdate();
-        }
-    }
+  @Override
+  public List<RecoveryCode> getUnused(final int userId) {
+    return entityManager().createQuery(
+        "select c from RecoveryCodeEntity c where c.userId = :userId and c.used = false",
+        RecoveryCodeEntity.class).setParameter("userId", userId).getResultList().stream()
+        .map(c -> RecoveryCode.builder(c.userId).id(c.id).hash(c.hash).used(c.used)
+            .createdAt(c.createdAt).usedAt(c.usedAt).build()).toList();
+  }
 
-    @Override
-    public boolean consume(final Connection connection, final int userId, final String hash, final Instant usedAt)
-            throws SQLException {
-        final String sql = "UPDATE " + TABLE
-                + " SET used = ?, usedAt = ? WHERE userId = ? AND hash = ? AND used = ?";
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setBoolean(1, true);
-            statement.setTimestamp(2, Timestamp.from(usedAt));
-            statement.setInt(3, userId);
-            statement.setString(4, hash);
-            statement.setBoolean(5, false);
-            return statement.executeUpdate() == 1;
-        }
-    }
+  @Override
+  @Transactional(Transactional.TxType.REQUIRED)
+  public void save(final RecoveryCode code) {
+    RecoveryCodeEntity entity = new RecoveryCodeEntity();
+    entity.userId = code.getUserId();
+    entity.hash = code.getHash();
+    entity.used = code.isUsed();
+    entity.createdAt = code.getCreatedAt();
+    entity.usedAt = code.getUsedAt();
+    entityManager().persist(entity);
+  }
 
-    @Override
-    public void deleteAll(final Connection connection, final int userId) throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement(
-                "DELETE FROM " + TABLE + " WHERE userId = ?")) {
-            statement.setInt(1, userId);
-            statement.executeUpdate();
-        }
-    }
+  @Override
+  @Transactional(Transactional.TxType.REQUIRED)
+  public boolean consume(final int userId, final String hash, final Instant usedAt) {
+    return entityManager().createQuery("update RecoveryCodeEntity c set c.used = true, " +
+        "c.usedAt = :usedAt where c.userId = :userId and c.hash = :hash and c.used = false")
+        .setParameter("userId", userId).setParameter("hash", hash)
+        .setParameter("usedAt", usedAt).executeUpdate() == 1;
+  }
 
-    private RecoveryCode map(final ResultSet rs) throws SQLException {
-        final Timestamp createdAt = rs.getTimestamp("createdAt");
-        final Timestamp usedAt = rs.getTimestamp("usedAt");
-        return RecoveryCode.builder(rs.getInt("userId"))
-                .id(rs.getLong("id"))
-                .hash(rs.getString("hash"))
-                .used(rs.getBoolean("used"))
-                .createdAt(createdAt.toInstant())
-                .usedAt(usedAt == null ? null : usedAt.toInstant())
-                .build();
-    }
+  @Override
+  @Transactional(Transactional.TxType.REQUIRED)
+  public void deleteAll(final int userId) {
+    entityManager().createQuery("delete from RecoveryCodeEntity c where c.userId = :userId")
+        .setParameter("userId", userId).executeUpdate();
+  }
 
-    private void setTimestamp(final PreparedStatement statement, final int index,
-            final Instant value) throws SQLException {
-        if (value == null) {
-            statement.setTimestamp(index, null);
-        } else {
-            statement.setTimestamp(index, Timestamp.from(value));
-        }
-    }
+  private EntityManager entityManager() {
+    return entityManagerProvider.getEntityManager();
+  }
 }
