@@ -36,6 +36,7 @@ import org.silverpeas.core.workflow.engine.instance.LockingUser;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * A process instance spawned from a given process model. The process model defines the workflow.
@@ -362,9 +363,16 @@ public interface ProcessInstance extends Serializable {
   String getTitle(String role, String lang);
 
   /**
-   * Gets the timeout action to be launched after the given datetime.
-   * @return the asked {@link ActionAndState} or null if no such action is found.
-   * @throws WorkflowException if an error occurs
+   * Gets the timeout action to be launched for the first active state found in timeout at the
+   * given datetime, that is to say for an active state whose timeout date is before the given
+   * datetime.
+   * @param dateRef the datetime of reference at which the timeout of the active states is checked.
+   * @return the asked {@link ActionAndState} or nothing if no active state is in timeout at the
+   * given datetime.
+   * @throws WorkflowException if the process model cannot be loaded or if the process model is
+   * inconsistent with the active states in timeout: an active state isn't anymore defined in the
+   * model, or no timeout action is defined for the expected order, or the action referred by the
+   * timeout action doesn't exist anymore.
    */
-  ActionAndState getTimeOutAction(Date dateRef) throws WorkflowException;
+  Optional<ActionAndState> getTimeOutAction(Date dateRef) throws WorkflowException;
 }
