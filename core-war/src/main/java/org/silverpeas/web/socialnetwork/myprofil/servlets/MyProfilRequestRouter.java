@@ -33,7 +33,9 @@ import org.silverpeas.core.security.authentication.twofactor.model.TwoFactorAuth
 import org.silverpeas.core.security.encryption.cipher.CryptMD5;
 import org.silverpeas.core.socialnetwork.model.SocialInformationType;
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.util.ServiceProvider;
+import jakarta.inject.Inject;
+import org.silverpeas.core.security.totp.TotpService;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileItem;
 import org.silverpeas.core.util.file.FileRepositoryManager;
@@ -66,6 +68,13 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
 
   private static final long serialVersionUID = -9194682447286602180L;
 
+  @Inject
+  private SocialNetworkHelper socialNetworkHelper;
+  @Inject
+  private TwoFactorAuthenticationService twoFactorService;
+  @Inject
+  private TotpService totpService;
+
   @Override
   public String getSessionControlBeanName() {
     return "myProfile";
@@ -86,7 +95,6 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
     String destination = "#";
     SNFullUser snUserFull = new SNFullUser(myProfilSC.getUserId());
     MyProfileRoutes route = MyProfileRoutes.valueOf(function);
-    SocialNetworkHelper socialNetworkHelper = ServiceProvider.getService(SocialNetworkHelper.class);
 
     try {
       if (route == Main || route == MyInfos) {
@@ -222,13 +230,13 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
 
       if (!"gif".equalsIgnoreCase(extension) && !"jpg".equalsIgnoreCase(extension) && !"png".
           equalsIgnoreCase(extension) && !"webp".equalsIgnoreCase(extension)) {
-        throw new org.silverpeas.kernel.SilverpeasRuntimeException(
+        throw new SilverpeasRuntimeException(
             "Bad extension, .gif or .jpg or .png or .webp expected.");
       }
       try (InputStream fis = file.getInputStream()) {
         img.saveImage(fis);
       } catch (IOException e) {
-        throw new org.silverpeas.kernel.SilverpeasRuntimeException("Problem while saving image.");
+        throw new SilverpeasRuntimeException("Problem while saving image.");
       }
     } else if ("yes".equals(removeImageFile)) {// Remove
       img.removeImage();
@@ -335,8 +343,6 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
     request.setAttribute("twoFactorEnabled", false);
     request.setAttribute("twoFactorPending", false);
     if (twoFactorAvailable) {
-      TwoFactorAuthenticationService twoFactorService =
-          ServiceProvider.getService(TwoFactorAuthenticationService.class);
       twoFactorService.getAuthentication(Integer.parseInt(sc.getUserId())).ifPresent(authentication -> {
         request.setAttribute("twoFactorAuthentication", authentication);
         request.setAttribute("twoFactorEnabled", authentication.isEnabled());
@@ -349,13 +355,11 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
     if (!isTwoFactorAvailable()) {
       throwHttpForbiddenError();
     }
-    TwoFactorAuthenticationService service =
-        ServiceProvider.getService(TwoFactorAuthenticationService.class);
-    TwoFactorAuthentication authentication = service.startEnrollment(Integer.parseInt(sc.getUserId()));
+    TwoFactorAuthentication authentication = twoFactorService.startEnrollment(Integer.parseInt(sc.getUserId()));
     String issuer = ResourceLocator.getSettingBundle(
         "org.silverpeas.authentication.settings.authenticationSettings")
         .getString("twoFactorTotpIssuer", "Silverpeas");
-    String uri = ServiceProvider.getService(org.silverpeas.core.security.totp.TotpService.class)
+    String uri = totpService
         .buildOtpAuthUri(authentication.getSecret(), issuer, sc.getUserDetail().getLogin());
     request.setAttribute("twoFactorAuthentication", authentication);
     request.setAttribute("twoFactorOtpAuthUri", uri);
@@ -368,9 +372,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
       throwHttpForbiddenError();
     }
     String code = request.getParameter("twoFactorCode");
-    TwoFactorAuthenticationService service =
-        ServiceProvider.getService(TwoFactorAuthenticationService.class);
-    if (service.confirmEnrollment(Integer.parseInt(sc.getUserId()), code)) {
+    if (twoFactorService.confirmEnrollment(Integer.parseInt(sc.getUserId()), code)) {
       request.setAttribute("twoFactorMessage", "myProfile.twoFactor.confirmed");
     } else {
       request.setAttribute("twoFactorError", "myProfile.twoFactor.invalidCode");
@@ -381,7 +383,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
     if (!isTwoFactorAvailable()) {
       throwHttpForbiddenError();
     }
-    ServiceProvider.getService(TwoFactorAuthenticationService.class)
+    twoFactorService
         .disable(Integer.parseInt(sc.getUserId()));
     request.setAttribute("twoFactorMessage", "myProfile.twoFactor.disabled");
   }
@@ -390,7 +392,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
     if (!isTwoFactorAvailable()) {
       throwHttpForbiddenError();
     }
-    List<String> recoveryCodes = ServiceProvider.getService(TwoFactorAuthenticationService.class)
+    List<String> recoveryCodes = twoFactorService
         .generateRecoveryCodes(Integer.parseInt(sc.getUserId()));
     request.setAttribute("twoFactorRecoveryCodes", recoveryCodes);
   }

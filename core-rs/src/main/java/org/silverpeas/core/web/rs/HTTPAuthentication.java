@@ -7,10 +7,10 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Lib
- * Open Source Software ("FLOSS") applications as described in Silverpeas
- * FLOSS exception. You should have received a copy of the text describing
- * Silverpeas FLOSS exception, and it is also available here:
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
@@ -43,7 +43,6 @@ import org.silverpeas.core.web.token.SynchronizerTokenService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import java.util.EnumMap;
@@ -65,20 +64,6 @@ public class HTTPAuthentication {
   private static final Pattern AUTHENTICATION_PATTERN =
       Pattern.compile("(?i)^\\s*(\\S+)\\s*@domain([0-9]+):(.+)$");
 
-  public static final String TWO_FACTOR_REQUIRED =
-      "org.silverpeas.core.web.rs.HTTPAuthentication.twoFactorRequired";
-  public static final String TWO_FACTOR_LOGIN =
-      "org.silverpeas.core.web.rs.HTTPAuthentication.twoFactorLogin";
-  public static final String TWO_FACTOR_DOMAIN =
-      "org.silverpeas.core.web.rs.HTTPAuthentication.twoFactorDomain";
-  public static final String TWO_FACTOR_EXPIRES_AT =
-      "org.silverpeas.core.web.rs.HTTPAuthentication.twoFactorExpiresAt";
-  public static final String TWO_FACTOR_ATTEMPTS =
-      "org.silverpeas.core.web.rs.HTTPAuthentication.twoFactorAttempts";
-
-  private static final int DEFAULT_TWO_FACTOR_CHALLENGE_LIFETIME = 120;
-  private static final int DEFAULT_TWO_FACTOR_MAX_ATTEMPTS = 5;
-
   private static final Map<AuthenticationScheme, Function<AuthenticationContext, SessionInfo>>
       schemeHandlers = new EnumMap<>(AuthenticationScheme.class);
 
@@ -91,6 +76,54 @@ public class HTTPAuthentication {
   protected HTTPAuthentication() {
   }
 
+  /**
+   * Authenticates the user that sent the incoming HTTP request according to the specified
+   * authentication context.
+   * <p>
+   * The context is defined for the incoming HTTP request and for the HTTP response to send. The
+   * HTTP request contains the elements required to authenticate the user at the source of the
+   * request. The mandatory element is either the {@code Authorization} HTTP header that must be
+   * valued with an authentication scheme and with the credentials of the user, or the
+   * {@code access_token} URI query parameter, or the {@code access_token} form-encoded body
+   * parameter.
+   * </p>
+   * <p>
+   * A {@link WebApplicationException} is thrown with the status
+   * {@link Response.Status#UNAUTHORIZED} in the following cases:
+   * </p>
+   * <ul>
+   *   <li>No {@code Authentication} header and no {@code access_token} parameter;</li>
+   *   <li>The authentication scheme isn't supported;</li>
+   *   <li>The credentials passed in the {@code Authentication} header are invalid;</li>
+   *   <li>The user API token passed in the {@code access_token} parameter is invalid;</li>
+   *   <li>The user account in Silverpeas isn't in a valid state (blocked, deactivated, ...).</li>
+   * </ul>
+   * <p>
+   * If the authentication process succeeds, then a session is created and returned. For a basic
+   * authentication scheme, the session comes from a session opening in Silverpeas by the
+   * {@link org.silverpeas.core.security.session.SessionManagement} subsystem and its unique
+   * identifier is set in the {@link UserPrivilegeValidation#HTTP_SESSIONKEY} header of the
+   * HTTP response; the session life will span over several HTTP requests, and it will be closed
+   * either explicitly or by the default session timeout. For a bearer authentication scheme and for
+   * an authentication from the {@code access_token} parameter, the
+   * session is just created for the specific incoming request and will expire at the end of it;
+   * this is why the session identifier is not sent back to the user with the HTTP response.
+   * </p>
+   * <p>
+   * At the end of the authentication, the context is alimented with the user credentials and with
+   * the authentication scheme that were fetched from the HTTP request. They can then be retrieved
+   * for further operation by the invoker of this method. In the case of an authentication from
+   * the {@code access_token} parameter, the authentication scheme in the context is set as
+   * a bearer authentication scheme.
+   * </p>
+   * A pending second factor also returns UNAUTHORIZED; the authentication resource can then
+   * inspect the pending {@link RestTwoFactorChallenge}.
+   *
+   * @param context the context of the authentication with the HTTP request and with the HTTP
+   * response.
+   * @return the created session for the request if the authentication succeeds or throws a
+   * {@link WebApplicationException} with as status {@link Response.Status#UNAUTHORIZED}.
+   */
   public SessionInfo authenticate(final AuthenticationContext context) {
     try {
       final Mutable<SessionInfo> session = Mutable.empty();
@@ -121,10 +154,8 @@ public class HTTPAuthentication {
           session.set(schemeHandlers.get(AuthenticationScheme.BEARER).apply(context));
         }
       }
-      Object twoFactorRequired =
-          context.getHttpServletRequest().getAttribute(TWO_FACTOR_REQUIRED);
-      if (Boolean.TRUE.equals(twoFactorRequired)) {
-        return SessionInfo.NoneSession;
+      if (RestTwoFactorChallenge.isRequired(context.getHttpServletRequest())) {
+        throw new WebApplicationException(Response.Status.UNAUTHORIZED);
       }
       return session.orElseThrow(() -> new WebApplicationException(Response.Status.UNAUTHORIZED));
     } catch (final AuthenticationInternalException ex) {
@@ -153,7 +184,7 @@ public class HTTPAuthentication {
         Authentication authenticator = Authentication.get();
         AuthenticationResponse result = authenticator.authenticate(credential);
         if (result.getStatus() == AuthenticationResponse.Status.TWO_FACTOR_REQUIRED) {
-          startTwoFactorChallenge(context.getHttpServletRequest(), login, domainId);
+          RestTwoFactorChallenge.start(context.getHttpServletRequest(), login, domainId);
           return SessionInfo.NoneSession;
         }
         if (result.getStatus().succeeded()) {
@@ -181,51 +212,6 @@ public class HTTPAuthentication {
       }
     }
     return null;
-  }
-
-  private static void startTwoFactorChallenge(final HttpServletRequest request,
-      final String login, final String domainId) {
-    HttpSession session = request.getSession(true);
-    String pendingLogin = (String) session.getAttribute(TWO_FACTOR_LOGIN);
-    String pendingDomain = (String) session.getAttribute(TWO_FACTOR_DOMAIN);
-    Long expiresAt = (Long) session.getAttribute(TWO_FACTOR_EXPIRES_AT);
-
-    if (!isValidTwoFactorChallenge(pendingLogin, pendingDomain, expiresAt) ||
-        !login.equals(pendingLogin) || !domainId.equals(pendingDomain)) {
-      session.setAttribute(TWO_FACTOR_LOGIN, login);
-      session.setAttribute(TWO_FACTOR_DOMAIN, domainId);
-      int lifetime = getTwoFactorChallengeLifetime();
-      session.setAttribute(TWO_FACTOR_EXPIRES_AT,
-          System.currentTimeMillis() + lifetime * 1000L);
-      session.setAttribute(TWO_FACTOR_ATTEMPTS, 0);
-    }
-    request.setAttribute(TWO_FACTOR_REQUIRED, Boolean.TRUE);
-  }
-
-  public static boolean isValidTwoFactorChallenge(final String login,
-      final String domainId, final Long expiresAt) {
-    return StringUtil.isDefined(login) && StringUtil.isDefined(domainId) &&
-        expiresAt != null && expiresAt >= System.currentTimeMillis();
-  }
-
-  public static void clearTwoFactorChallenge(final HttpSession session) {
-    session.removeAttribute(TWO_FACTOR_LOGIN);
-    session.removeAttribute(TWO_FACTOR_DOMAIN);
-    session.removeAttribute(TWO_FACTOR_EXPIRES_AT);
-    session.removeAttribute(TWO_FACTOR_ATTEMPTS);
-    session.removeAttribute(TWO_FACTOR_REQUIRED);
-  }
-
-  public static int getTwoFactorMaxAttempts() {
-    return org.silverpeas.kernel.bundle.ResourceLocator
-        .getSettingBundle("org.silverpeas.authentication.settings.authenticationSettings")
-        .getInteger("twoFactorTotpMaxAttempts", DEFAULT_TWO_FACTOR_MAX_ATTEMPTS);
-  }
-
-  private static int getTwoFactorChallengeLifetime() {
-    return org.silverpeas.kernel.bundle.ResourceLocator
-        .getSettingBundle("org.silverpeas.authentication.settings.authenticationSettings")
-        .getInteger("twoFactorTotpChallengeLifetime", DEFAULT_TWO_FACTOR_CHALLENGE_LIFETIME);
   }
 
   private static SessionInfo performTokenBasedAuthentication(final AuthenticationContext context) {
