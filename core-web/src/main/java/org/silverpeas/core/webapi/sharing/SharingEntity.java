@@ -60,8 +60,8 @@ public class SharingEntity implements WebEntity {
       this.expiration = Long.toString(ticket.getEndDate().getTime());
     }
     this.creationDate = Long.toString(ticket.getCreationDate().getTime());
-    User user = User.getById(ticket.getCreatorId());
-    this.user = user != null ? user.getDisplayedName() : "";
+    User creator = User.getById(ticket.getCreatorId());
+    this.user = creator != null ? creator.getDisplayedName() : "";
     this.securityCode = asSecurityCode(ticket);
   }
 

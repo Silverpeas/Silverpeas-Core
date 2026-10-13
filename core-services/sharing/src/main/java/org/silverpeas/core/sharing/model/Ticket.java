@@ -65,6 +65,7 @@ public abstract class Ticket extends BasicJpaEntity<Ticket, UuidIdentifier>
   private static final int CODE_ITERATIONS = 120_000;
   private static final int CODE_SALT_BYTES = 16;
   private static final int CODE_HASH_BITS = 256;
+  private static final SecureRandom CODE_RANDOM = new SecureRandom();
 
   public static final String FILE_TYPE = "Attachment";
   public static final String VERSION_TYPE = "Versionned";
@@ -383,7 +384,7 @@ public abstract class Ticket extends BasicJpaEntity<Ticket, UuidIdentifier>
       return null;
     }
     byte[] salt = new byte[CODE_SALT_BYTES];
-    new SecureRandom().nextBytes(salt);
+    CODE_RANDOM.nextBytes(salt);
     return CODE_PREFIX + Base64.getEncoder().encodeToString(salt) + "$" +
         Base64.getEncoder().encodeToString(deriveSecurityCode(code, salt));
   }

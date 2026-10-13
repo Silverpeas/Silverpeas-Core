@@ -65,7 +65,7 @@
     </div>
 <div id="securityDialog" class="security-dialog">
   <div id="securityCheck">
-    <span><fmt:message key="sharing.security.code"/></span>
+    <label for="securityCode"><fmt:message key="sharing.security.code"/></label>
     <input type="text" id="securityCode" name="securityCode"/>
     <div id="securityCodeError" class="ui-state-error" role="alert" aria-live="polite" hidden></div>
   </div>

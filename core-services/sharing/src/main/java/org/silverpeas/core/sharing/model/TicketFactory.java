@@ -46,7 +46,7 @@ public class TicketFactory {
   /**
    * @deprecated use {@link #aTicket(TicketDetail)} instead.
    */
-  @Deprecated
+  @Deprecated(since = "6.5")
   public static Ticket aTicket(int sharedObjectId, String componentId, String creatorId,
       Date creationDate, Date endDate, int nbAccessMax, String type) {
     return aTicket(TicketDetail.builder()
@@ -63,7 +63,7 @@ public class TicketFactory {
   /**
    * @deprecated use {@link #aTicket(TicketDetail)} instead.
    */
-  @Deprecated
+  @Deprecated(since = "6.5")
   public static Ticket continuousTicket(int sharedObjectId, String componentId, String creatorId,
       Date creationDate, String type) {
     return aTicket(sharedObjectId, componentId, creatorId, creationDate, null, -1, type);
