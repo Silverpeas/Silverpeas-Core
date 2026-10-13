@@ -62,7 +62,6 @@ import org.silverpeas.core.workflow.engine.datarecord.LazyProcessInstanceDataRec
 import org.silverpeas.core.workflow.engine.datarecord.ProcessInstanceDataRecord;
 import org.silverpeas.core.workflow.engine.datarecord.ProcessInstanceRowRecord;
 import org.silverpeas.kernel.logging.SilverLogger;
-import org.silverpeas.kernel.util.Mutable;
 import org.silverpeas.kernel.util.StringUtil;
 
 import jakarta.persistence.AttributeOverride;
@@ -1788,46 +1787,67 @@ public class ProcessInstanceImpl
   }
 
   @Override
-  public ActionAndState getTimeOutAction(Date dateRef) {
-    // Parse active states
-    if (this.activeStates != null && !this.activeStates.isEmpty()) {
-      for (ActiveState activeState : activeStates) {
-        var actionAndState = computeActionAndState(activeState, dateRef);
-        if (actionAndState.isPresent()) {
-          return actionAndState.get();
-        }
+  public Optional<ActionAndState> getTimeOutAction(Date dateRef) throws WorkflowException {
+    if (CollectionUtil.isEmpty(activeStates)) {
+      return Optional.empty();
+    }
+    // the active states in timeout at the given date
+    List<ActiveState> statesInTimeout = activeStates.stream()
+        .filter(s -> s.getTimeoutDate() != null && s.getTimeoutDate().before(dateRef))
+        .toList();
+    // the first resolvable timeout action is returned. If an active state in timeout cannot be
+    // resolved because of an inconsistency with the model, the others are tried; the failure is
+    // reported only if none of them can be resolved.
+    WorkflowException failure = null;
+    for (ActiveState activeState : statesInTimeout) {
+      try {
+        return Optional.of(resolveTimeOutAction(activeState));
+      } catch (WorkflowException e) {
+        SilverLogger.getLogger(this).warn(e.getMessage());
+        failure = e;
       }
     }
-    return null;
-  }
-
-  private Optional<ActionAndState> computeActionAndState(ActiveState activeState, Date dateRef) {
-    try {
-      // Look for an active state with a timeoutDate in the past
-      if (activeState.getTimeoutDate() != null && activeState.getTimeoutDate().before(dateRef)) {
-        // found, now look which timeout is concerned
-        int theTimeoutStatus = activeState.getTimeoutStatus();
-
-        // then parse all timeoutAction to return the right one (the one with order =
-        // timeout status +1)
-        State state = getProcessModel().getState(activeState.getState());
-        SilverLogger.getLogger(this).debug(() -> activeState.getProcessInstance() != null ?
-            "getTimeOutAction - State = " + activeState.getState() +
-            " - instanceId " + activeState.getProcessInstance().getInstanceId() :
-            "No process instance in active state");
-        TimeOutAction[] actions = state.getTimeOutActions();
-        Mutable<ActionAndState> foundActionAndState = Mutable.empty();
-        Stream.of(actions)
-            .filter(a -> a.getOrder() == theTimeoutStatus + 1)
-            .findFirst()
-            .ifPresent(a -> foundActionAndState.set(new ActionAndState(a.getAction(), state)));
-        return Optional.ofNullable(foundActionAndState.get());
-      }
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).error("Unable to getTimeoutAction for this state {0} id={1}",
-          activeState.getState(), activeState.getId());
+    if (failure != null) {
+      throw failure;
     }
     return Optional.empty();
+  }
+
+  /**
+   * Resolves the next timeout action to perform on the specified active state, that is the
+   * timeout action whose order follows the current timeout status of the active state.
+   * @param activeState an active state in timeout.
+   * @return the timeout action to perform with the state in the process model.
+   * @throws WorkflowException if the process model cannot be loaded or if the timeout action
+   * cannot be resolved because the model is inconsistent with the active state.
+   */
+  private ActionAndState resolveTimeOutAction(ActiveState activeState) throws WorkflowException {
+    final String stateName = activeState.getState();
+    final int expectedOrder = activeState.getTimeoutStatus() + 1;
+    State state = getProcessModel().getState(stateName);
+    if (state == null) {
+      throw new WorkflowException("ProcessInstanceImpl.getTimeOutAction", timeoutFailure(
+          stateName, "the state doesn't exist anymore in the process model"));
+    }
+    TimeOutAction timeOutAction = Stream.of(state.getTimeOutActions())
+        .filter(a -> a.getOrder() == expectedOrder)
+        .findFirst()
+        .orElseThrow(() -> new WorkflowException("ProcessInstanceImpl.getTimeOutAction",
+            timeoutFailure(stateName,
+                "no timeout action with order " + expectedOrder + " in the process model")));
+    Action action = timeOutAction.getAction();
+    if (action == null) {
+      throw new WorkflowException("ProcessInstanceImpl.getTimeOutAction", timeoutFailure(
+          stateName, "the action referred by the timeout action with order " + expectedOrder +
+              " doesn't exist anymore in the process model"));
+    }
+    return new ActionAndState(action, state);
+  }
+
+  private String timeoutFailure(String stateName, String reason) {
+    return "Cannot resolve the timeout action of the state " + stateName +
+        " for the process instance " + getInstanceId() + " (workflow " + getModelId() + "): " +
+        reason;
   }
 
   @Override
