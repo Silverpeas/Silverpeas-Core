@@ -160,7 +160,16 @@ public class AuthenticationService implements Authentication {
     AuthenticationResponse result;
     try {
       String token = checkAuthentication(userCredential);
-      result = AuthenticationResponse.succeed(token);
+      if (StringUtil.isNotDefined(token)) {
+        // defensive: a successful authentication must come with a token identifying the user.
+        // Without it, no session can be opened, so treat it as an authentication failure.
+        SilverLogger.getLogger(this)
+            .error("Authentication succeeded without any token for login ''{0}'' in domain {1}",
+            userCredential.getLogin(), userCredential.getDomainId());
+        result = AuthenticationResponse.error(Status.UNKNOWN_FAILURE);
+      } else {
+        result = AuthenticationResponse.succeed(token);
+      }
     } catch (AuthenticationBadCredentialException e) {
       if (isThereMultipleDomainsDefined()) {
         result = AuthenticationResponse.error(Status.BAD_LOGIN_PASSWORD_DOMAIN);
@@ -185,7 +194,7 @@ public class AuthenticationService implements Authentication {
 
     if (!result.getStatus().succeeded()) {
       SilverLogger.getLogger(this)
-          .error("authentication error ({0}) with login ''{1}'' and domain id ''{2}''",
+          .error("Authentication error ({0}) with login ''{1}'' and domain id ''{2}''",
               result.getStatus().toString(), userCredential.getLogin(),
               userCredential.getDomainId());
     }
@@ -247,7 +256,9 @@ public class AuthenticationService implements Authentication {
    * Authenticates the user only by its login and the domain to which he belongs.
    * @param credential an authentication credential with the login and the domain to which the user
    * belongs.
-   * @return an authentication key if the authentication succeed, null otherwise.
+   * @return an authentication key if the authentication succeed.
+   * @throws AuthenticationBadCredentialException if no user matches the login in the domain.
+   * @throws AuthenticationException if the authentication fails for any other reason.
    */
   private String authenticateByLoginAndDomain(AuthenticationCredential credential)
       throws AuthenticationException {
@@ -273,19 +284,21 @@ public class AuthenticationService implements Authentication {
       throw new AuthenticationException(ex);
     }
 
-    if (authenticationOK) {
-      // Verify that the user can log in
-      AuthenticationUserVerifierFactory.getUserCanLoginVerifier(credential).verify();
-
-      // Generate a random key and store it in database
-      try {
-        return getAuthToken(credential);
-      } catch (Exception e) {
-        SilverLogger.getLogger(this).warn(e);
-        throw new AuthenticationException(e);
-      }
+    if (!authenticationOK) {
+      throw new AuthenticationBadCredentialException(
+          "No user with login ''{0}'' in domain {1}", login, domainId);
     }
-    return null;
+
+    // Verify that the user can log in
+    AuthenticationUserVerifierFactory.getUserCanLoginVerifier(credential).verify();
+
+    // Generate a random key and store it in database
+    try {
+      return getAuthToken(credential);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).warn(e);
+      throw new AuthenticationException(e);
+    }
   }
 
   /**

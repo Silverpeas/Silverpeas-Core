@@ -230,7 +230,12 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
       throws ServletException, IOException {
     final String url;
     Status status = error.getStatus();
-    if (status == Status.BAD_LOGIN_PASSWORD ||
+    if ((status == Status.BAD_LOGIN_PASSWORD || status == Status.BAD_LOGIN_PASSWORD_DOMAIN) &&
+        authenticationParameters.isSsoMode()) {
+      // User has been successfully authenticated by SSO, but he has no user account in the
+      // Silverpeas domain the SSO is mapped to -> login / domain id can be stored
+      url = processSsoOnUnexistingUserAccount(response, authenticationParameters);
+    } else if (status == Status.BAD_LOGIN_PASSWORD ||
         status == Status.BAD_LOGIN_PASSWORD_DOMAIN) {
       url = processBadLogin(status, request, response, authenticationParameters,
           userCanTryAgainToLoginVerifier);
@@ -252,15 +257,20 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
       forward(request, response, url);
       return null;
     } else if (authenticationParameters.isSsoMode()) {
-      // User has been successfully authenticated on AD, but he has no user account on Silverpeas
-      // -> login / domain id can be stored
-      storeDomain(response, authenticationParameters);
-      storeLogin(response, authenticationParameters);
-      url = LOGIN_ERROR_PAGE + SSO_NON_EXISTING_USER_ACCOUNT;
+      url = processSsoOnUnexistingUserAccount(response, authenticationParameters);
     } else {
       url = LOGIN_ERROR_PAGE + status.getCode();
     }
     return url;
+  }
+
+  private String processSsoOnUnexistingUserAccount(final HttpServletResponse response,
+      final AuthenticationParameters authenticationParameters) {
+    // User has been successfully authenticated on AD, but he has no user account on Silverpeas
+    // -> login / domain id can be stored
+    storeDomain(response, authenticationParameters);
+    storeLogin(response, authenticationParameters);
+    return LOGIN_ERROR_PAGE + SSO_NON_EXISTING_USER_ACCOUNT;
   }
 
   private String processPasswordExpiration(final AuthenticationParameters authenticationParameters,
