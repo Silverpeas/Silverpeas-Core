@@ -278,10 +278,13 @@ class PdcResourceClassificationUserNotificationTest {
 
     final String image = "data:image/png;base64," + Base64.getEncoder().encodeToString(AN_IMAGE);
     for (final String language : List.of(FR, EN, DE)) {
-      assertThat(metaData.getContent(language), containsString("<img src=\"" + image + "\""));
+      final String message = metaData.getContent(language);
+      assertThat(message, containsString("<img "));
+      assertThat(message, containsString("src=\"" + image + "\""));
       assertThat(metaData.getNotificationResourceData(language).getResourceThumbnail(),
           is(image));
     }
+
   }
 
   @Test

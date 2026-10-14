@@ -1,1 +1,2 @@
-$if(thumbnail)$<img src="$thumbnail$" alt="$contributionName$" height="$thumbnailHeight$"/> $endif$Die Publikation <b>$contributionName$</b> wurde soeben in Ihrem Interessenschwerpunkt <b>$centerOfInterest$</b> klassifiziert.
+$if(thumbnail)$<img style="margin:20px 0;" src="$thumbnail$" alt="$contributionName$" height="$thumbnailHeight$"/> $endif$
+<p>Die Publikation <b>$contributionName$</b> wurde soeben in Ihrem Interessenschwerpunkt <b>$centerOfInterest$</b> klassifiziert.</p>
