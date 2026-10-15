@@ -24,6 +24,7 @@
 package org.silverpeas.core.contribution.publication.service;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.silverpeas.core.ResourceReference;
@@ -32,6 +33,7 @@ import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
@@ -114,6 +116,13 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   private ValidationStepsDAO validationStepsDAO;
   @Inject
   private SeeAlsoDAO seeAlsoDAO;
+  /**
+   * The attachment service is only required to index the aliases of a publication in other
+   * component instances; it is resolved lazily as it isn't available in all the contexts in
+   * which the publications are managed.
+   */
+  @Inject
+  private Instance<AttachmentService> attachmentService;
 
   @Override
   @Transactional
@@ -1205,12 +1214,34 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     if (paths.isEmpty()) {
       IndexEngineProxy.removeIndexEntry(getIndexEntryPK(instanceId, pubPK.getId()));
     } else {
-      FullIndexEntry aliasIndexEntry = mainIndexEntry.getCopy();
-      aliasIndexEntry.setPK(currentIndexEntry);
-      aliasIndexEntry.setPaths(paths);
-      aliasIndexEntry.setAlias(!currentIndexEntry.getComponentId().equals(pubPK.getInstanceId()));
-      IndexEngineProxy.addIndexEntry(aliasIndexEntry);
+      indexPublicationLocations(pubPK, mainIndexEntry, currentIndexEntry, paths);
     }
+  }
+
+  /**
+   * Indexes the specified locations of the given publication by a copy of its main index entry
+   * identified by the given key. If the key is scoped to another component instance than the
+   * one hosting the publication, then the locations are aliases and the index entry is marked as
+   * such. In this case, the index entry is also enriched with the documents attached to the
+   * publication as the indexing engine would look for them in the component instance of the
+   * index entry whereas they are hosted by the component instance of the publication.
+   * @param pubPK the identifier of the publication.
+   * @param mainIndexEntry the index entry of the publication in its main location.
+   * @param key the key of the index entry to add.
+   * @param paths the paths of the locations to index.
+   */
+  private void indexPublicationLocations(final PublicationPK pubPK,
+      final FullIndexEntry mainIndexEntry, final IndexEntryKey key, final List<String> paths) {
+    final FullIndexEntry indexEntry = mainIndexEntry.getCopy();
+    indexEntry.setPK(key);
+    indexEntry.setPaths(paths);
+    final boolean alias = !key.getComponentId().equals(pubPK.getInstanceId());
+    indexEntry.setAlias(alias);
+    if (alias) {
+      attachmentService.get()
+          .updateIndexEntryWithDocuments(indexEntry, new ResourceReference(pubPK));
+    }
+    IndexEngineProxy.addIndexEntry(indexEntry);
   }
 
   /**
@@ -1269,12 +1300,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     });
 
     for (Map.Entry<IndexEntryKey, List<String>> entry : pathsByIndex.entrySet()) {
-      final FullIndexEntry aliasIndexEntry = index.getCopy();
-      final IndexEntryKey indexEntryKey = entry.getKey();
-      aliasIndexEntry.setPK(indexEntryKey);
-      aliasIndexEntry.setPaths(entry.getValue());
-      aliasIndexEntry.setAlias(!indexEntryKey.getComponentId().equals(pubPK.getInstanceId()));
-      IndexEngineProxy.addIndexEntry(aliasIndexEntry);
+      indexPublicationLocations(pubPK, index, entry.getKey(), entry.getValue());
     }
   }
 
