@@ -73,6 +73,7 @@ import org.silverpeas.core.calendar.repository.DefaultCalendarRepository;
 import org.silverpeas.core.contribution.ContributionVisibility;
 import org.silverpeas.core.contribution.ContributionWithVisibility;
 import org.silverpeas.core.contribution.DefaultContributionVisibility;
+import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.repository.JcrContext;
 import org.silverpeas.core.contribution.content.form.FormException;
@@ -531,6 +532,9 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     }
     addPackages(true, "org.silverpeas.core.node");
     addPackages(true, "org.silverpeas.core.contribution.publication.service");
+    // required by the publication service to index the aliases, even if no implementation is
+    // deployed
+    addClasses(AttachmentService.class);
     addPackages(true, "org.silverpeas.core.contribution.publication.model");
     addPackages(true, "org.silverpeas.core.contribution.publication.notification");
     addPackages(true, "org.silverpeas.core.contribution.publication.dao");

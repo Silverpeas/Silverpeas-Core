@@ -489,11 +489,12 @@ public interface AttachmentService extends DocumentIndexing {
   List<SimpleDocument> listDocumentsLockedByUser(String usedId, String language);
 
   /**
-   * Add the documents to the index.
+   * Add the documents of the specified contribution to the index entry.
    * @param indexEntry the entry to be updated with the document indexes.
+   * @param contribution a reference to the contribution to which the documents are attached.
    */
   @Override
-  void updateIndexEntryWithDocuments(FullIndexEntry indexEntry);
+  void updateIndexEntryWithDocuments(FullIndexEntry indexEntry, ResourceReference contribution);
 
   /**
    * Indexes all the documents (whatever their type) of the given resource.

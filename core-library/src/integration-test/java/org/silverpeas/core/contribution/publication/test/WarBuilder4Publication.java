@@ -26,6 +26,7 @@ package org.silverpeas.core.contribution.publication.test;
 import org.silverpeas.core.contribution.ContributionModificationContextHandler;
 import org.silverpeas.core.contribution.ContributionOperationContextPropertyHandler;
 import org.silverpeas.core.contribution.attachment.AttachmentException;
+import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.publication.social.SocialInformationPublication;
@@ -60,6 +61,9 @@ public class WarBuilder4Publication extends WarBuilder4LibCore {
         FormException.class);
     addClasses(ContributionModificationContextHandler.class, AttachmentException.class,
         ContributionOperationContextPropertyHandler.class);
+    // required by the publication service to index the aliases, even if no implementation is
+    // deployed
+    addClasses(AttachmentService.class);
     addPackages(true, "org.silverpeas.core.contribution.rating",
         "org.silverpeas.core.node",
         "org.silverpeas.core.contribution.publication.model",

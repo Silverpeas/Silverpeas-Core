@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.index.indexing.model;
 
+import org.silverpeas.core.ResourceReference;
+
 /**
  * This interface is for services wanting the documents referred by an index entry to be also
  * indexed. Any implementation of this interface has to enrich the index entry with the documents
@@ -38,5 +40,25 @@ package org.silverpeas.core.index.indexing.model;
  */
 public interface DocumentIndexing {
 
-  void updateIndexEntryWithDocuments(FullIndexEntry indexEntry);
+  /**
+   * Enriches the specified index entry with the documents of the contribution it is about. The
+   * contribution is expected to be hosted by the component instance the index entry is scoped
+   * to.
+   * @param indexEntry the index entry of a contribution.
+   */
+  default void updateIndexEntryWithDocuments(FullIndexEntry indexEntry) {
+    updateIndexEntryWithDocuments(indexEntry,
+        new ResourceReference(indexEntry.getObjectId(), indexEntry.getComponent()));
+  }
+
+  /**
+   * Enriches the specified index entry with the documents of the specified contribution. The
+   * contribution can be hosted by another component instance than the one the index entry is
+   * scoped to; this is the case, for example, of a publication referred in another component
+   * instance by an alias: the index entry scoped to the component instance of the alias has to
+   * carry the documents of the publication, hosted by the component instance of this one.
+   * @param indexEntry the index entry of a contribution.
+   * @param contribution a reference to the contribution owning the documents to index.
+   */
+  void updateIndexEntryWithDocuments(FullIndexEntry indexEntry, ResourceReference contribution);
 }
