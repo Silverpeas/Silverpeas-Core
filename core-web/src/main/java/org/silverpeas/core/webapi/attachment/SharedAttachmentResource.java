@@ -25,33 +25,22 @@ package org.silverpeas.core.webapi.attachment;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.sharing.model.Ticket;
+import org.silverpeas.core.webapi.sharing.SharingCodeVerifier;
 import org.silverpeas.core.sharing.security.AccessControlContext;
 import org.silverpeas.core.sharing.services.SharingServiceProvider;
-import org.silverpeas.core.util.MimeTypes;
-import org.silverpeas.core.util.ZipUtil;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileUtil;
 
-import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
-import jakarta.ws.rs.core.UriBuilderException;
 import java.io.*;
-import java.net.URI;
-import java.nio.file.Files;
 import java.util.StringTokenizer;
-import java.util.UUID;
 
 /**
  * A REST Web resource providing access to attachments through sharing mode.
@@ -81,43 +70,43 @@ public class SharedAttachmentResource extends AbstractAttachmentResource {
 
   @Operation(summary = "Gathers into a ZIP archive the attachments shared through the given link.")
   @ApiResponse(responseCode = "200", description = "The archive gathering the shared attachments.",
-      content = @Content(schema = @Schema(implementation = ZipEntity.class)))
+    content = @Content(mediaType = "application/zip"))
   @GET
   @Path("{ids}/zip")
-  @Produces(MediaType.APPLICATION_JSON)
-  public ZipEntity zipFiles(@PathParam("ids") String attachmentIds) {
+  @Produces("application/zip")
+  public Response zipFiles(@PathParam("ids") String attachmentIds) {
+    java.util.List<SimpleDocument> attachments = new java.util.ArrayList<>();
     StringTokenizer tokenizer = new StringTokenizer(attachmentIds, ",");
-    File folderToZip = FileUtils.getFile(
-        FileRepositoryManager.getTemporaryPath(), UUID.randomUUID().toString());
+    if (!tokenizer.hasMoreTokens()) {
+      throw new BadRequestException("No attachments selected");
+    }
     while (tokenizer.hasMoreTokens()) {
-      SimpleDocument attachment = AttachmentServiceProvider.getAttachmentService().
-          searchDocumentById(new SimpleDocumentPK(tokenizer.nextToken()), null)
+      SimpleDocument attachment = AttachmentServiceProvider.getAttachmentService()
+          .searchDocumentById(new SimpleDocumentPK(tokenizer.nextToken()), null)
           .getLastPublicVersion();
-      if (!isFileReadable(attachment)) {
+      if (attachment == null || !isFileReadable(attachment)) {
         throw new WebApplicationException(Status.UNAUTHORIZED);
       }
-      try(OutputStream out =
-              FileUtils.openOutputStream(FileUtils.getFile(folderToZip, attachment.getFilename()))) {
-        AttachmentServiceProvider.getAttachmentService()
-            .getBinaryContent(out, attachment.getPk(), null);
-      } catch (IOException e) {
-        throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+      attachments.add(attachment);
+    }
+    jakarta.ws.rs.core.StreamingOutput stream = output -> {
+      java.util.Set<String> names = new java.util.HashSet<>();
+      try (java.util.zip.ZipOutputStream zip = new java.util.zip.ZipOutputStream(output)) {
+        for (SimpleDocument attachment : attachments) {
+          String name = new File(attachment.getFilename()).getName();
+          if (!names.add(name)) {
+            name = attachment.getPk().getId() + "-" + name;
+          }
+          zip.putNextEntry(new java.util.zip.ZipEntry(name));
+          AttachmentServiceProvider.getAttachmentService()
+              .getBinaryContent(zip, attachment.getPk(), null);
+          zip.closeEntry();
+        }
       }
-    }
-    try {
-      File zipFile = FileUtils.getFile(folderToZip.getPath() + ".zip");
-      URI downloadUri = getUri().getWebResourcePathBuilder()
-          .path(getToken())
-          .path("zipcontent")
-          .path(zipFile.getName())
-          .build();
-      long size = ZipUtil.compressPathToZip(folderToZip, zipFile);
-      return new ZipEntity(getUri().getRequestUri(), downloadUri.toString(), size);
-    } catch (IllegalArgumentException | UriBuilderException | IOException e) {
-      throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
-    }   finally {
-      FileUtils.deleteQuietly(folderToZip);
-    }
+    };
+    return Response.ok(stream)
+        .header("Content-Disposition", "attachment; filename=\"shared-files.zip\"")
+        .build();
   }
 
   @Operation(summary = "Downloads the ZIP archive of the attachments shared through the given " +
@@ -125,43 +114,21 @@ public class SharedAttachmentResource extends AbstractAttachmentResource {
   @ApiResponse(responseCode = "200", description = "The content of the archive.")
   @GET
   @Path("zipcontent/{name}")
-  @Produces(MediaType.APPLICATION_OCTET_STREAM)
   public Response getZipContent(@PathParam("name") String zipFileName) {
-    checkFileName(zipFileName);
-    String zipFilePath = FileRepositoryManager.getTemporaryPath() + zipFileName;
-    File realFile = new File(zipFilePath);
-    if (!Files.exists(realFile.toPath()) && !Files.isRegularFile(realFile.toPath())) {
-      return Response.ok().build();
-    } else {
-      try(ByteArrayOutputStream output = new ByteArrayOutputStream();
-          InputStream in = new FileInputStream(realFile)) {
-        output.write(in);
-        return Response.ok().entity(output.toByteArray()).type(MimeTypes.SHORT_ARCHIVE_MIME_TYPE).
-            build();
-      } catch (IOException e) {
-        throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
-      }
-    }
+    throw new WebApplicationException(Status.NOT_FOUND);
   }
-
 
   @Override
   protected boolean isFileReadable(SimpleDocument attachment) {
     Ticket ticket = SharingServiceProvider.getSharingTicketService().getTicket(getToken());
     var ctx = AccessControlContext.about(attachment);
-    return ticket != null && ticket.getAccessControl().isReadable(ctx);
+    return ticket != null && ticket.isValid() &&
+        SharingCodeVerifier.verify(ticket, getHttpRequest().getHeader("X-Verification-Code")) &&
+        ticket.getAccessControl().isReadable(ctx);
   }
 
   protected String getToken() {
     return token;
-  }
-
-  private void checkFileName(String fileName) {
-    try {
-      FileUtil.checkFileName(fileName);
-    } catch (IllegalArgumentException e) {
-      throw new BadRequestException(e.getMessage());
-    }
   }
 
 }

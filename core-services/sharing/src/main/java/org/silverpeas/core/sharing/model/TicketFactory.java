@@ -36,38 +36,57 @@ import org.silverpeas.core.security.authorization.PublicationAccessControl;
 
 import java.util.Date;
 
+
 /**
  *
  * @author ehugonnet
  */
 public class TicketFactory {
 
+  /**
+   * @deprecated use {@link #aTicket(TicketDetail)} instead.
+   */
+  @Deprecated(since = "6.5")
   public static Ticket aTicket(int sharedObjectId, String componentId, String creatorId,
       Date creationDate, Date endDate, int nbAccessMax, String type) {
-    if (isUserAllowed(sharedObjectId, componentId, creatorId, type)) {
-      if(Ticket.FILE_TYPE.equalsIgnoreCase(type)) {
-        return new SimpleFileTicket(sharedObjectId, componentId, creatorId, creationDate, endDate,
-                nbAccessMax);
-      }
-      if(Ticket.VERSION_TYPE.equalsIgnoreCase(type)) {
-        return new VersionFileTicket(sharedObjectId, componentId, creatorId, creationDate, endDate,
-                nbAccessMax);
-      }
-      if(Ticket.NODE_TYPE.equalsIgnoreCase(type)) {
-        return new NodeTicket(sharedObjectId, componentId, creatorId, creationDate, endDate,
-                nbAccessMax);
-      }
-      if(Ticket.PUBLICATION_TYPE.equalsIgnoreCase(type)) {
-        return new PublicationTicket(sharedObjectId, componentId, creatorId, creationDate, endDate,
-            nbAccessMax);
-      }
-    }
-    return null;
+    return aTicket(TicketDetail.builder()
+        .setSharedObjectId(sharedObjectId)
+        .setComponentId(componentId)
+        .setCreatorId(creatorId)
+        .setCreationDate(creationDate)
+        .setEndDate(endDate)
+        .setNbAccessMax(nbAccessMax)
+        .setSharedObjectType(type)
+        .build());
   }
 
+  /**
+   * @deprecated use {@link #aTicket(TicketDetail)} instead.
+   */
+  @Deprecated(since = "6.5")
   public static Ticket continuousTicket(int sharedObjectId, String componentId, String creatorId,
       Date creationDate, String type) {
     return aTicket(sharedObjectId, componentId, creatorId, creationDate, null, -1, type);
+  }
+
+  public static Ticket aTicket(TicketDetail detail) {
+    if (!isUserAllowed((int) detail.getSharedObjectId(), detail.getComponentId(),
+        detail.getCreatorId(), detail.getSharedObjectType())) {
+      return null;
+    }
+    if (Ticket.FILE_TYPE.equalsIgnoreCase(detail.getSharedObjectType())) {
+      return SimpleFileTicket.builder(detail).build();
+    }
+    if (Ticket.VERSION_TYPE.equalsIgnoreCase(detail.getSharedObjectType())) {
+      return VersionFileTicket.builder(detail).build();
+    }
+    if (Ticket.NODE_TYPE.equalsIgnoreCase(detail.getSharedObjectType())) {
+      return NodeTicket.builder(detail).build();
+    }
+    if (Ticket.PUBLICATION_TYPE.equalsIgnoreCase(detail.getSharedObjectType())) {
+      return PublicationTicket.builder(detail).build();
+    }
+    return null;
   }
 
   private static boolean isUserAllowed(int sharedObjectId, String componentId, String creatorId,

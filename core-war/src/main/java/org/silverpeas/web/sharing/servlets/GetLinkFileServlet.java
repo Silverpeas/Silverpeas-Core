@@ -55,34 +55,45 @@ public class GetLinkFileServlet extends HttpServlet {
       HttpServletResponse response) throws ServletException, IOException {
     RestRequest rest = new RestRequest(request, "myFile");
     String keyFile = rest.getElementValue(PARAM_KEYFILE);
+    String securityCode = request.getHeader("X-Verification-Code");
     Ticket ticket = SharingServiceProvider.getSharingTicketService().getTicket(keyFile);
-    if (ticket != null && ticket.isValid()) {
-      // recherche des infos sur le fichier...
-      SimpleDocument document = null;
-      if (ticket instanceof SimpleFileTicket) {
-        document = ((SimpleFileTicket) ticket).getResource().getAccessedObject();
-      } else if (ticket instanceof VersionFileTicket) {
-        document = ((VersionFileTicket) ticket).getResource().getAccessedObject();
-      }
-      if (document != null) {
-        String filePath = document.getAttachmentPath();
-        String fileType = document.getContentType();
-        String fileName = document.getFilename();
-        long fileSize = document.getSize();
-        OutputStream out = response.getOutputStream();
-        File realFile = new File(filePath);
-        try(BufferedInputStream input =
-                new BufferedInputStream(FileUtils.openInputStream(realFile))) {
-          response.setContentType(fileType);
-          response.setHeader("Content-Disposition", format("inline; filename=\"{0}\"", fileName));
-          response.setHeader("Content-Length", String.valueOf(fileSize));
-          IOUtils.copy(input, out);
-          DownloadDetail download = new DownloadDetail(ticket, new Date(), request.getRemoteAddr());
-          SharingServiceProvider.getSharingTicketService().addDownload(download);
-        } catch (Exception ignored) {
-          sendBackInvalidTicket(request, response);
-        }
-      } else {
+    boolean securityCodeValid = ticket != null && ticket.checkSecurityCode(securityCode);
+    if (ticket != null && ticket.isValid() && securityCodeValid) {
+      downloadFile(ticket, request, response);
+    } else if (ticket != null && securityCodeValid) {
+      sendBackInvalidTicket(request, response);
+    } else if (ticket != null) {
+      sendBackInvalidSecurityCode(request, response);
+    } else {
+      sendBackInvalidTicket(request, response);
+    }
+  }
+
+  private void downloadFile(Ticket ticket, HttpServletRequest request,
+      HttpServletResponse response) throws IOException, ServletException {
+    // recherche des infos sur le fichier...
+    SimpleDocument document = null;
+    if (ticket instanceof SimpleFileTicket fileTicket) {
+      document = fileTicket.getResource().getAccessedObject();
+    } else if (ticket instanceof VersionFileTicket versionTicket) {
+      document = versionTicket.getResource().getAccessedObject();
+    }
+    if (document != null) {
+      String filePath = document.getAttachmentPath();
+      String fileType = document.getContentType();
+      String fileName = document.getFilename();
+      long fileSize = document.getSize();
+      OutputStream out = response.getOutputStream();
+      File realFile = new File(filePath);
+      try(BufferedInputStream input =
+              new BufferedInputStream(FileUtils.openInputStream(realFile))) {
+        response.setContentType(fileType);
+        response.setHeader("Content-Disposition", format("inline; filename=\"{0}\"", fileName));
+        response.setHeader("Content-Length", String.valueOf(fileSize));
+        IOUtils.copy(input, out);
+        DownloadDetail download = new DownloadDetail(ticket, new Date(), request.getRemoteAddr());
+        SharingServiceProvider.getSharingTicketService().addDownload(download);
+      } catch (Exception ignored) {
         sendBackInvalidTicket(request, response);
       }
     } else {
@@ -94,5 +105,10 @@ public class GetLinkFileServlet extends HttpServlet {
       throws IOException, ServletException {
     getServletContext().getRequestDispatcher("/sharing/jsp/invalidTicket.jsp")
         .forward(req, resp);
+  }
+  private void sendBackInvalidSecurityCode(final HttpServletRequest req, final HttpServletResponse resp)
+          throws IOException, ServletException {
+    getServletContext().getRequestDispatcher("/sharing/jsp/invalidSecuriyCode.jsp")
+            .forward(req, resp);
   }
 }

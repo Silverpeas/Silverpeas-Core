@@ -26,6 +26,7 @@ package org.silverpeas.core.webapi.node;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.sharing.model.Ticket;
+import org.silverpeas.core.webapi.sharing.SharingCodeVerifier;
 import org.silverpeas.core.sharing.security.AccessControlContext;
 import org.silverpeas.core.sharing.services.SharingServiceProvider;
 
@@ -53,7 +54,9 @@ public class SharedNodeResource extends AbstractNodeResource {
   protected boolean isNodeReadable(NodeDetail node) {
     Ticket ticket = SharingServiceProvider.getSharingTicketService().getTicket(token);
     var ctx = AccessControlContext.about(node);
-    return ticket != null && ticket.getAccessControl().isReadable(ctx);
+    return ticket != null && ticket.isValid() &&
+        SharingCodeVerifier.verify(ticket, getHttpRequest().getHeader("X-Verification-Code")) &&
+        ticket.getAccessControl().isReadable(ctx);
   }
 
 }
