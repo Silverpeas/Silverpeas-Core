@@ -80,11 +80,13 @@ public class SharedAttachmentResource extends AbstractAttachmentResource {
     if (!tokenizer.hasMoreTokens()) {
       throw new BadRequestException("No attachments selected");
     }
+    Ticket ticket = getVerifiedTicket();
     while (tokenizer.hasMoreTokens()) {
-      SimpleDocument attachment = AttachmentServiceProvider.getAttachmentService()
-          .searchDocumentById(new SimpleDocumentPK(tokenizer.nextToken()), null)
-          .getLastPublicVersion();
-      if (attachment == null || !isFileReadable(attachment)) {
+      SimpleDocument document = AttachmentServiceProvider.getAttachmentService()
+          .searchDocumentById(new SimpleDocumentPK(tokenizer.nextToken()), null);
+      SimpleDocument attachment = document == null ? null : document.getLastPublicVersion();
+      if (attachment == null ||
+          !ticket.getAccessControl().isReadable(AccessControlContext.about(attachment))) {
         throw new WebApplicationException(Status.UNAUTHORIZED);
       }
       attachments.add(attachment);
@@ -120,11 +122,15 @@ public class SharedAttachmentResource extends AbstractAttachmentResource {
 
   @Override
   protected boolean isFileReadable(SimpleDocument attachment) {
+    return getVerifiedTicket().getAccessControl().isReadable(AccessControlContext.about(attachment));
+  }
+
+  private Ticket getVerifiedTicket() {
     Ticket ticket = SharingServiceProvider.getSharingTicketService().getTicket(getToken());
-    var ctx = AccessControlContext.about(attachment);
-    return ticket != null && ticket.isValid() &&
-        SharingCodeVerifier.verify(ticket, getHttpRequest().getHeader("X-Verification-Code")) &&
-        ticket.getAccessControl().isReadable(ctx);
+    if (!SharingCodeVerifier.verify(ticket, getHttpRequest().getHeader("X-Verification-Code"))) {
+      throw new WebApplicationException(Status.UNAUTHORIZED);
+    }
+    return ticket;
   }
 
   protected String getToken() {
