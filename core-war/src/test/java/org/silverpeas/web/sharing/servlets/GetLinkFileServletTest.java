@@ -139,7 +139,7 @@ public class GetLinkFileServletTest {
     }
   }
 
-  private void assertSuccessfulDownload(String requiredCode) throws Exception {
+  private void assertSuccessfulDownload(String requiredCode, String contentType) throws Exception {
     Path file = Files.createTempFile("silverpeas-sharing-", ".txt");
     byte[] content = "shared content".getBytes(java.nio.charset.StandardCharsets.UTF_8);
     try (ByteArrayOutputStream downloaded = new ByteArrayOutputStream()) {
@@ -156,7 +156,7 @@ public class GetLinkFileServletTest {
       when(ticket.getResource()).thenReturn(resource);
       when(resource.getAccessedObject()).thenReturn(document);
       when(document.getAttachmentPath()).thenReturn(file.toString());
-      when(document.getContentType()).thenReturn("text/plain");
+      when(document.getContentType()).thenReturn(contentType);
       when(document.getFilename()).thenReturn("shared.txt");
       when(document.getSize()).thenReturn((long) content.length);
       when(request.getHeader("X-Verification-Code")).thenReturn(requiredCode);
@@ -184,7 +184,7 @@ public class GetLinkFileServletTest {
       }
 
       assertArrayEquals(content, downloaded.toByteArray());
-      verify(response).setContentType("text/plain");
+      verify(response).setContentType(contentType);
       verify(response).setHeader("Content-Length", String.valueOf(content.length));
       verify(response).setHeader("Content-Disposition", "inline; filename=\"shared.txt\"");
       ArgumentCaptor<DownloadDetail> download = ArgumentCaptor.forClass(DownloadDetail.class);
@@ -199,12 +199,17 @@ public class GetLinkFileServletTest {
 
   @Test
   public void downloadWithoutSecurityCodeSucceedsAndIsCounted() throws Exception {
-    assertSuccessfulDownload(null);
+    assertSuccessfulDownload(null, "text/plain");
   }
 
   @Test
   public void downloadWithValidSecurityCodeSucceedsAndIsCounted() throws Exception {
-    assertSuccessfulDownload("correct");
+    assertSuccessfulDownload("correct", "text/plain");
+  }
+
+  @Test
+  public void protectedHtmlFileCanBeDownloaded() throws Exception {
+    assertSuccessfulDownload("correct", "text/html");
   }
 
 }

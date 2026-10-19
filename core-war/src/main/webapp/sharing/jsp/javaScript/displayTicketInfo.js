@@ -44,11 +44,10 @@
                 method: "GET",
                 headers: { "X-Verification-Code": code }
               }).then(function (response) {
-                const contentType = response.headers.get("Content-Type") || "";
                 if (response.status === 429) {
                   throw new Error("SHARING_CODE_LOCKED");
                 }
-                if (!response.ok || contentType.toLowerCase().includes("text/html")) {
+                if (!response.ok) {
                   throw new Error("SHARING_CODE_INVALID");
                 }
                 return response.blob();
