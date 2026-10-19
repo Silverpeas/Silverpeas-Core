@@ -53,7 +53,7 @@
     <div class="tableBoard">
       <strong><view:username userId="${ticket.creatorId}" zoom="false"/></strong>
       <fmt:message key="sharing.shareFile"/><br/><br/>
-      <img alt="image" src="<c:out value='${requestScope.fileIcon}'/>" id="img_44"/>
+      <img alt="" src="<c:out value='${requestScope.fileIcon}'/>" id="img_44"/>
       <a target="_blank" href="<c:url value="/LinkFile/Key/${requestScope.Key}/${ticket.resource.name}" />"><strong><c:out value="${ticket.resource.name}"/> </strong></a><br/>
       <fmt:message key="sharing.sizeFile"/> : <c:out value="${requestScope.fileSize}"/><br/>
       <c:out value="${endDate}"/><br/>

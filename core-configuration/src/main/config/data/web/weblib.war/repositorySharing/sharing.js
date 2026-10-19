@@ -45,7 +45,7 @@ function sharingDownload(url, filename) {
     setTimeout(function() { URL.revokeObjectURL(objectUrl); }, 60000);
   }).catch(function(error) {
     console.error(error);
-    alert("Unable to download file.");
+    alert(window.i18n.prop("sharing.download.error"));
   });
 }
 
@@ -58,7 +58,7 @@ function openSecurityCodeDialog(token, baseURL, onSuccess) {
   const dialog = document.getElementById("securityDialog");
   dialog.innerHTML = '<div id="securityCheck"><span>' + window.i18n.prop("sharing.security.code") +
       '</span><input type="text" id="securityCode" name="securityCode"/>' +
-      '<div id="securityCodeError" class="ui-state-error" role="alert" aria-live="polite" style="display:none"></div></div>';
+      '<div id="securityCodeError" class="ui-state-error" role="alert" aria-live="polite" hidden></div></div>';
   $(dialog).dialog({
     modal: true,
     title: window.i18n.prop("sharing.security.code"),
@@ -71,7 +71,7 @@ function openSecurityCodeDialog(token, baseURL, onSuccess) {
           const code = document.getElementById("securityCode").value;
           const errorElement = document.getElementById("securityCodeError");
           errorElement.textContent = "";
-          $(errorElement).hide();
+          errorElement.hidden = true;
           const uri = baseURL + "/silverpeas/services/sharing/" + token + "/check";
           fetch(uri, {
             method: "GET",
@@ -92,13 +92,13 @@ function openSecurityCodeDialog(token, baseURL, onSuccess) {
             } else {
               document.getElementById("securityCode").value = "";
               errorElement.textContent = window.i18n.prop("sharing.security.invalid");
-              $(errorElement).show();
+              errorElement.hidden = false;
             }
           }).catch(function(error) {
             const locked = error.message === "SHARING_CODE_LOCKED";
             const messageKey = locked ? "sharing.security.locked" : "sharing.security.error";
             errorElement.textContent = window.i18n.prop(messageKey);
-            $(errorElement).show();
+            errorElement.hidden = false;
           });
         }
       },

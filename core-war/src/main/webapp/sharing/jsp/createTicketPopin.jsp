@@ -225,7 +225,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
     <input type="hidden" name="token" value=""/>
     <input type="hidden" name="objectId" size="60" maxlength="150" value="" id="hiddenObjectId"/>
     <input type="hidden" name="type" value="" id="hiddenType"/>
-    <label class="label-ui-dialog" for="langCreate" id="objectName"> </label>
+    <span class="label-ui-dialog" id="objectName"> </span>
     <span class="champ-ui-dialog" id="displayNameId"></span>
 
     <fieldset class="filedset-ui-dialog validity" id="ticketValidity">
@@ -243,24 +243,24 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
       <span class="champ-ui-dialog threshold">
         <input type="text" class="dateToPick" name="endDate" size="12" maxlength="10" value="" id="endDate" /><span class="txtsublibform">(<fmt:message key="GML.dateFormatExemple"/>)</span>
         <input type="hidden" name="endDateFormat" id="endDateFormat" value="<fmt:message key='GML.dateFormat'/>"/>
-        <img src="<c:url value='${mandatoryIcon}'/>" width="5" height="5"/>
+        <img src="<c:url value='${mandatoryIcon}'/>" alt="" width="5" height="5"/>
       </span>
       <div id="nbAccessMaxArea">
         <label class="label-ui-dialog threshold" for="nbAccessMax"><fmt:message key="sharing.nbAccessMax" bundle="${fsBundle}"/></label>
         <span class="champ-ui-dialog threshold">
-          <input id="nbAccessMax" type="text" value="" maxlength="5" size="5" name="nbAccessMax" class="int-5"/> <fmt:message key="sharing.nbAccessMax.info" bundle="${fsBundle}" /> <img border="0" src="<c:url value='${mandatoryIcon}'/>" width="5" height="5"/>
+          <input id="nbAccessMax" type="text" value="" maxlength="5" size="5" name="nbAccessMax" class="int-5"/> <fmt:message key="sharing.nbAccessMax.info" bundle="${fsBundle}" /> <img border="0" src="<c:url value='${mandatoryIcon}'/>" alt="" width="5" height="5"/>
         </span>
       </div>
     </fieldset>
 
     <fieldset class="filedset-ui-dialog security">
-      <legend>Sécurité</legend>
+      <legend><fmt:message key="sharing.security" bundle="${fsBundle}"/></legend>
       <label class="label-ui-dialog" for="securityCode"><fmt:message key="sharing.security.code" bundle="${fsBundle}" /></label>
       <div class="champ-ui-dialog">
         <input type="text" name="securityCode" id="securityCode" size="50" maxlength="50" placeholder='<fmt:message key="sharing.generation.code.help" bundle="${fsBundle}" />' title='<fmt:message key="sharing.generation.code.help" bundle="${fsBundle}" />'/>
-        <a class="sp_button copy-to-clipboard" title='<fmt:message key="sharing.copy.code" bundle="${fsBundle}" />' id="copySharingSecurityCode" href="#" data-copy-message='<fmt:message key="sharing.confirmCopyInClipbloard" bundle="${fsBundle}"/>'>
+        <button type="button" class="sp_button copy-to-clipboard" title='<fmt:message key="sharing.copy.code" bundle="${fsBundle}" />' id="copySharingSecurityCode" data-copy-message='<fmt:message key="sharing.confirmCopyInClipbloard" bundle="${fsBundle}"/>'>
           <span><fmt:message key="sharing.copy.code" bundle="${fsBundle}" /></span>
-        </a>
+        </button>
       </div>
       <button type="button" id="generateSharingSecurityCode" class="simple-button btn-ui-dialog"><fmt:message key="sharing.generation.code" bundle="${fsBundle}" /></button>
     </fieldset>
@@ -287,7 +287,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
   </form>
 </div>
 <div id="sharingticket-message-content" style="display: none">
-  <label class="label-ui-dialog" for=""><fmt:message key="sharing.url" bundle="${fsBundle}"/></label>
+  <span class="label-ui-dialog"><fmt:message key="sharing.url" bundle="${fsBundle}"/></span>
   <span class="champ-ui-dialog" id="message-content-url"></span>
 </div>
 <div id="sharingticket-error-content" style="display: none">
