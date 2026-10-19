@@ -2259,7 +2259,9 @@ public class GlobalPdcManager implements PdcManager {
                 if (localSilverContents != null) {
                   final GlobalSilverContentProcessor processor =
                       getGlobalSilverContentProcessor(processors, componentName);
-                  return processor.asGlobalSilverContent(localSilverContents);
+                  // the contents are collected here so that any failure while converting them
+                  // concerns only the contents of this component
+                  return processor.asGlobalSilverContent(localSilverContents).toList().stream();
                 }
               }
             } catch (Exception ex) {
