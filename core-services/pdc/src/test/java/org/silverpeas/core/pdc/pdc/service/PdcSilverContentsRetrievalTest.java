@@ -48,9 +48,9 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.silverpeas.core.admin.component.model.SilverpeasComponentInstance.getIdentity;
 
 /**
  * Unit tests on the retrieval of the contents classified on the PdC from their identifiers: the
@@ -117,11 +117,41 @@ class PdcSilverContentsRetrievalTest {
     assertThat(contents.stream().map(GlobalSilverContent::getId).toList(), contains("7"));
   }
 
-  private void aContentIn(final String instanceId) throws Exception {
-    final ResourceReference reference = new ResourceReference("7", instanceId);
-    when(contentMgtEngine.getResourceReferencesByContentIds(SILVER_CONTENT_IDS))
-        .thenReturn(List.of(reference));
+  @Test
+  void theContentsOfTheOtherComponentsAreKeptWhenTheConversionOfAComponentContentsFails()
+      throws Exception {
+    aContentIn(ALMANACH_INSTANCE_ID, KMELIA_INSTANCE_ID);
+    final GlobalSilverContent expected = mock(GlobalSilverContent.class);
+    final GlobalSilverContentProcessor kmeliaProcessor = aProcessorFor("kmelia", expected);
+    final GlobalSilverContentProcessor failingProcessor =
+        mock(GlobalSilverContentProcessor.class);
+    when(failingProcessor.relatedToComponent()).thenReturn("default");
+    // the failure occurs while the stream of the converted contents is consumed
+    when(failingProcessor.asGlobalSilverContent(anyList())).thenAnswer(i -> Stream.of("7")
+        .map(id -> {
+          throw new IllegalStateException("Conversion failure of the content " + id);
+        }));
+    whenTheProcessorsAre(kmeliaProcessor, failingProcessor);
 
+    final List<GlobalSilverContent> contents =
+        pdcManager.getSilverContentsByIds(SILVER_CONTENT_IDS, USER_ID);
+
+    assertThat(contents, contains(expected));
+  }
+
+  private void aContentIn(final String... instanceIds) throws Exception {
+    final List<ResourceReference> references = Stream.of(instanceIds)
+        .map(instanceId -> new ResourceReference("7", instanceId))
+        .toList();
+    when(contentMgtEngine.getResourceReferencesByContentIds(SILVER_CONTENT_IDS))
+        .thenReturn(references);
+    for (final ResourceReference reference : references) {
+      aContentManagerFor(reference);
+    }
+  }
+
+  private void aContentManagerFor(final ResourceReference reference) throws Exception {
+    final String instanceId = reference.getComponentInstanceId();
     final User creator = mock(User.class);
     when(creator.getId()).thenReturn(USER_ID);
     final ManagedContribution content = mock(ManagedContribution.class);
@@ -138,7 +168,8 @@ class PdcSilverContentsRetrievalTest {
         .thenReturn(List.of(content));
     final ContentPeas contentPeas = mock(ContentPeas.class);
     when(contentPeas.getContentManager()).thenReturn(contentManager);
-    when(contentMgtEngine.getContentPeasByComponentName(anyString())).thenReturn(contentPeas);
+    when(contentMgtEngine.getContentPeasByComponentName(
+        getIdentity(instanceId).getComponentName())).thenReturn(contentPeas);
   }
 
   private GlobalSilverContentProcessor aProcessorFor(final String componentName,

@@ -23,12 +23,14 @@
  */
 package org.silverpeas.core.contribution.contentcontainer.content;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.i18n.I18n;
 
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Optional;
 
 /**
  * This class represents contribution classified on taxonomy
@@ -71,7 +73,8 @@ public class GlobalSilverContent extends AbstractI18NBean<GlobalSilverContentI18
   public GlobalSilverContent(ManagedContribution sci) {
     Date date = sci.getLastUpdateDate() == null ? sci.getCreationDate() : sci.getLastUpdateDate();
     init(sci.getName(), sci.getDescription(), sci.getId(),
-        sci.getComponentInstanceId(), sci.getCreator().getId());
+        sci.getComponentInstanceId(),
+        Optional.ofNullable(sci.getCreator()).map(User::getId).orElse(null));
     this.updateDate = date;
     this.creationDate = sci.getCreationDate();
     this.type = sci.getContributionType();
