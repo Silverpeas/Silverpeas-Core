@@ -355,7 +355,7 @@ public abstract class Ticket extends BasicJpaEntity<Ticket, UuidIdentifier>
   public abstract <R> ShareableResource<R> getResource();
 
   public boolean checkSecurityCode(String securityCode) {
-    if (!StringUtil.isDefined(this.securityCode)) {
+    if (this.securityCode == null || this.securityCode.isBlank()) {
       return true;
     }
     if (securityCode == null) {
@@ -380,7 +380,7 @@ public abstract class Ticket extends BasicJpaEntity<Ticket, UuidIdentifier>
   }
 
   private static String encodeSecurityCode(String code) {
-    if (!StringUtil.isDefined(code)) {
+    if (code == null || code.isBlank()) {
       return null;
     }
     byte[] salt = new byte[CODE_SALT_BYTES];

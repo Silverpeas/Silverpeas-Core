@@ -99,4 +99,46 @@ public class TicketTest {
     ticket.securityCode = "";
     assertTrue(ticket.checkSecurityCode(null));
   }
+
+  @Test
+  public void literalNullInEveryCaseIsAProtectedCode() {
+    for (String code : nullCodes()) {
+      Ticket ticket = newTicket(code);
+      assertNotNull(ticket.getSecurityCode());
+      assertTrue(ticket.getSecurityCode().startsWith("pbkdf2-sha256$"));
+      assertTrue(ticket.checkSecurityCode(code));
+      assertFalse(ticket.checkSecurityCode(null));
+      assertFalse(ticket.checkSecurityCode(""));
+      assertFalse(ticket.checkSecurityCode("wrong"));
+      ticket.setSecurityCode(code);
+      assertTrue(ticket.checkSecurityCode(code));
+      assertFalse(ticket.checkSecurityCode(null));
+    }
+  }
+
+  @Test
+  public void legacyLiteralNullInEveryCaseRemainsProtected() {
+    for (String code : nullCodes()) {
+      Ticket ticket = newTicket(null);
+      ticket.securityCode = code;
+      assertTrue(ticket.checkSecurityCode(code));
+      assertFalse(ticket.checkSecurityCode(null));
+      assertFalse(ticket.checkSecurityCode(""));
+      assertFalse(ticket.checkSecurityCode("wrong"));
+    }
+  }
+
+  private String[] nullCodes() {
+    return new String[]{"null", "nulL", "nuLl", "nuLL", "nUll", "nUlL", "nULl", "nULL",
+        "Null", "NulL", "NuLl", "NuLL", "NUll", "NUlL", "NULl", "NULL"};
+  }
+
+  @Test
+  public void whitespaceCodesAllowAccessIncludingLegacyValues() {
+    Ticket ticket = newTicket(" \t\n");
+    assertNull(ticket.getSecurityCode());
+    assertTrue(ticket.checkSecurityCode(null));
+    ticket.securityCode = " \t\n";
+    assertTrue(ticket.checkSecurityCode(null));
+  }
 }
