@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.pdc.pdc.service;
 
+import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
@@ -49,7 +50,6 @@ import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.sql.Connection;
@@ -74,6 +74,7 @@ public class GlobalPdcManager implements PdcManager {
   private static final String KMELIA_COMPONENT_NAME = "kmelia";
   private static final String AXIS_TYPE = "AxisType";
   private static final String AXIS_ORDER = "AxisOrder";
+  private static final String DEFAULT_PROCESSOR = "default";
 
   /**
    * SilverpeasBeanDAO is the main link with the SilverPeas persistence. We indicate the Object
@@ -104,6 +105,8 @@ public class GlobalPdcManager implements PdcManager {
   private TreeService treeService;
   @Inject
   private I18n i18n;
+  @Inject
+  private Instance<GlobalSilverContentProcessor> contentProcessors;
 
   private static final Map<String, AxisHeader> axisHeaders =
       Collections.synchronizedMap(new HashMap<>());
@@ -2234,8 +2237,7 @@ public class GlobalPdcManager implements PdcManager {
       return emptyList();
     }
     try {
-      final Map<String, GlobalSilverContentProcessor> processors = ServiceProvider
-          .getAllServices(GlobalSilverContentProcessor.class).stream()
+      final Map<String, GlobalSilverContentProcessor> processors = contentProcessors.stream()
           .collect(toMap(GlobalSilverContentProcessor::relatedToComponent, p -> p));
       return contentMgtEngine.getResourceReferencesByContentIds(silverContentIds).stream()
           .collect(groupingBy(r ->
@@ -2262,7 +2264,7 @@ public class GlobalPdcManager implements PdcManager {
               }
             } catch (Exception ex) {
               SilverLogger.getLogger(this)
-                  .error("Can't retrieve content from taxonomy for component {0}",
+                  .error("Cannot retrieve content from taxonomy for component {0}",
                       new String[]{componentName}, ex);
             }
             return Stream.empty();
@@ -2275,10 +2277,8 @@ public class GlobalPdcManager implements PdcManager {
 
   private GlobalSilverContentProcessor getGlobalSilverContentProcessor(
       final Map<String, GlobalSilverContentProcessor> processors, final String c) {
-    GlobalSilverContentProcessor processor = processors.get(c);
-    if (processor == null) {
-      processor = processors.get("default");
-    }
-    return processor;
+    return Optional.ofNullable(processors.get(c))
+        .or(() -> Optional.ofNullable(processors.get(DEFAULT_PROCESSOR)))
+        .orElseGet(DefaultGlobalSilverContentProcessor::new);
   }
 }

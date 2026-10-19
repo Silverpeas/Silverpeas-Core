@@ -24,9 +24,11 @@
 package org.silverpeas.core.contribution.contentcontainer.content;
 
 import jakarta.inject.Named;
+import org.silverpeas.core.annotation.Bean;
 
 import static org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContentProcessor.Constants.PROCESSOR_NAME_SUFFIX;
 
+@Bean
 @Named("default" + PROCESSOR_NAME_SUFFIX)
 public class DefaultGlobalSilverContentProcessor extends AbstractGlobalSilverContentProcessor {
 
