@@ -805,11 +805,9 @@ class DefaultAdministration implements Administration {
   @Override
   public ComponentInst getComponentInst(String sClientComponentId) throws AdminException {
     try {
-      ComponentInst componentInst =
-          getComponentInst(getDriverComponentId(sClientComponentId));
-      componentInst =
-          checkComponentInstanceById(componentInst, sClientComponentId, nullComponentInstSupplier);
-      Objects.requireNonNull(componentInst);
+      final ComponentInst componentInst = getComponentInst(getDriverComponentId(sClientComponentId))
+          .map(c -> checkComponentInstanceById(c, sClientComponentId, nullComponentInstSupplier))
+          .orElseGet(nullComponentInstSupplier);
       componentInst.setDomainFatherId(getClientSpaceId(componentInst.getDomainFatherId()));
       return componentInst;
     } catch (Exception e) {
@@ -844,29 +842,26 @@ class DefaultAdministration implements Administration {
     return null;
   }
 
+  /**
+   * Supplies the null object returned by the public API when no component instance is found: an
+   * empty component instance whose identifier is "-1".
+   */
   private final Supplier<ComponentInst> nullComponentInstSupplier = () -> {
-    try {
-      return getComponentInst(-1);
-    } catch (AdminException e) {
-      SilverLogger.getLogger(this).error(e);
-      return null;
-    }
+    final ComponentInst nullComponentInst = new ComponentInst();
+    nullComponentInst.setLocalId(-1);
+    return nullComponentInst;
   };
 
-  private ComponentInst getComponentInst(int componentId) throws AdminException {
+  private Optional<ComponentInst> getComponentInst(int componentId) throws AdminException {
     try {
       // Get the component instance
-      Optional<ComponentInst> optionalInstance = cache.getComponentInst(componentId);
-      final ComponentInst componentInst;
-      if (optionalInstance.isEmpty()) {
-        // Get component instance from database
+      Optional<ComponentInst> componentInst = cache.getComponentInst(componentId);
+      if (componentInst.isEmpty()) {
+        // Get component instance from database and store it in cache
         componentInst = componentManager.getComponentInst(componentId);
-        // Store component instance in cache
-        cache.putComponentInst(componentInst);
-      } else {
-        componentInst = optionalInstance.get();
+        componentInst.ifPresent(cache::putComponentInst);
       }
-      return componentManager.copy(componentInst);
+      return componentInst.map(componentManager::copy);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting(COMPONENT, String.valueOf(componentId)), e);
     }
@@ -886,9 +881,9 @@ class DefaultAdministration implements Administration {
   @Override
   public Map<String, Map<String, String>> getParameterValuesByComponentIdThenByParamName(
       final Collection<String> componentIds, final Collection<String> paramNames) {
-    final Map<Integer, String> localComponentIds = new HashMap<>(componentIds.size());
+    final Map<Integer, String> localComponentIds = HashMap.newHashMap(componentIds.size());
     componentIds.forEach(i -> localComponentIds.put(getDriverComponentId(i), i));
-    final Map<String, Map<String, String>> result = new HashMap<>(componentIds.size());
+    final Map<String, Map<String, String>> result = HashMap.newHashMap(componentIds.size());
     try {
       componentManager
           .getParameterValuesByComponentIdThenByParamName(localComponentIds.keySet(), paramNames)
@@ -941,10 +936,10 @@ class DefaultAdministration implements Administration {
       FullIndexEntry indexEntry =
           new FullIndexEntry(new IndexEntryKey(INDEX_COMPONENT_SCOPE, "Component", componentId));
 
-      if (instance instanceof ComponentInst) {
-        setIndexEntry((ComponentInst) instance, indexEntry);
-      } else if (instance instanceof ComponentInstLight) {
-        setIndexEntry((ComponentInstLight) instance, indexEntry);
+      if (instance instanceof ComponentInst componentInst) {
+        setIndexEntry(componentInst, indexEntry);
+      } else if (instance instanceof ComponentInstLight componentInstLight) {
+        setIndexEntry(componentInstLight, indexEntry);
       }
 
       IndexEngineProxy.addIndexEntry(indexEntry);
@@ -1076,10 +1071,10 @@ class DefaultAdministration implements Administration {
       int sDriverComponentId = getDriverComponentId(componentId);
 
       // Get the component to delete
-      ComponentInst componentInst = getComponentInst(sDriverComponentId);
-      componentInst =
-          checkComponentInstanceById(componentInst, componentId, nullComponentInstSupplier);
-      Objects.requireNonNull(componentInst);
+      final ComponentInst componentInst = getComponentInst(sDriverComponentId)
+          .map(c -> checkComponentInstanceById(c, componentId, nullComponentInstSupplier))
+          .orElseThrow(() -> new AdminNotFoundException(
+              "Component instance " + componentId + " not found"));
 
       // Get the father id
       String sFatherClientId = componentInst.getDomainFatherId();
@@ -1733,15 +1728,13 @@ class DefaultAdministration implements Administration {
       profileInst.setId(sProfileId);
 
       if (profileInst.getObjectId().isNotDefined() || profileInst.getObjectId().isRootNode()) {
-        ComponentInst componentInstFather = getComponentInst(driverFatherId);
-        componentInstFather =
-            checkComponentInstanceById(componentInstFather, String.valueOf(driverFatherId),
-                nullComponentInstSupplier);
-        Objects.requireNonNull(componentInstFather);
-        componentInstFather.addProfileInst(profileInst);
-        if (StringUtil.isDefined(userId)) {
-          componentInstFather.setUpdaterUserId(userId);
-          updateComponentInst(componentInstFather);
+        final Optional<ComponentInst> componentInstFather = getComponentInst(driverFatherId);
+        if (componentInstFather.isPresent()) {
+          componentInstFather.get().addProfileInst(profileInst);
+          if (StringUtil.isDefined(userId)) {
+            componentInstFather.get().setUpdaterUserId(userId);
+            updateComponentInst(componentInstFather.get());
+          }
         }
         cache.opAddProfile(profileManager.getProfileInst(sProfileId, false));
       }
@@ -1765,14 +1758,11 @@ class DefaultAdministration implements Administration {
       profileManager.deleteProfileInst(profile);
       if (StringUtil.isDefined(userId) &&
           (profile.getObjectId().isNotDefined() || profile.getObjectId().isRootNode())) {
-        final int driverFatherId = profile.getComponentFatherId();
-        ComponentInst component = getComponentInst(driverFatherId);
-        component = checkComponentInstanceById(component, String.valueOf(driverFatherId),
-            nullComponentInstSupplier);
-        Objects.requireNonNull(component);
-
-        component.setUpdaterUserId(userId);
-        updateComponentInst(component);
+        final Optional<ComponentInst> component = getComponentInst(profile.getComponentFatherId());
+        if (component.isPresent()) {
+          component.get().setUpdaterUserId(userId);
+          updateComponentInst(component.get());
+        }
       }
 
       if (profile.getObjectId().isNotDefined() || profile.getObjectId().isRootNode()) {
@@ -1800,13 +1790,12 @@ class DefaultAdministration implements Administration {
       profileManager.updateProfileInst(newProfile);
       if (StringUtil.isDefined(userId) &&
           (newProfile.getObjectId().isNotDefined() || newProfile.getObjectId().isRootNode())) {
-        final int driverFatherId = newProfile.getComponentFatherId();
-        ComponentInst component = getComponentInst(driverFatherId);
-        component = checkComponentInstanceById(component, String.valueOf(driverFatherId),
-            nullComponentInstSupplier);
-        Objects.requireNonNull(component);
-        component.setUpdaterUserId(userId);
-        updateComponentInst(component);
+        final Optional<ComponentInst> component =
+            getComponentInst(newProfile.getComponentFatherId());
+        if (component.isPresent()) {
+          component.get().setUpdaterUserId(userId);
+          updateComponentInst(component.get());
+        }
       }
       if (newProfile.getObjectId().isNotDefined() || newProfile.getObjectId().isRootNode()) {
         cache.opUpdateProfile(newProfile);
@@ -3220,7 +3209,7 @@ class DefaultAdministration implements Administration {
   @Override
   public List<SpaceInstLight> getUserSpaceTreeview(String userId) throws AdminException {
     final Set<String> componentIds = new HashSet<>(Arrays.asList(getAvailCompoIds(userId)));
-    final Set<Integer> authorizedIds = new HashSet<>(100);
+    final Set<Integer> authorizedIds = HashSet.newHashSet(100);
     while (!componentIds.isEmpty()) {
       String componentId = componentIds.iterator().next();
       componentIds.remove(componentId);
@@ -3815,10 +3804,11 @@ class DefaultAdministration implements Administration {
       final List<Integer> componentIds = componentManager.getComponentIds(param);
       final List<ComponentInstLight> components = new ArrayList<>();
       for (Integer id : componentIds) {
-        ComponentInst component = getComponentInst(id);
         // check TreeCache to know if component is not removed nor is into a removed space
-        Optional<ComponentInstLight> componentLight = treeCache.getComponent(component.getId());
-        componentLight.filter(c -> !c.isRemoved()).ifPresent(components::add);
+        getComponentInst(id)
+            .flatMap(component -> treeCache.getComponent(component.getId()))
+            .filter(c -> !c.isRemoved())
+            .ifPresent(components::add);
       }
       return components;
     } catch (Exception e) {
@@ -3919,12 +3909,12 @@ class DefaultAdministration implements Administration {
     ArrayList<String> alUserIds = new ArrayList<>();
 
     try {
-      ComponentInst componentInst = getComponentInst(getDriverComponentId(sClientComponentId));
-      componentInst =
-          checkComponentInstanceById(componentInst, sClientComponentId, nullComponentInstSupplier);
-      Objects.requireNonNull(componentInst);
+      final List<ProfileInst> profiles = getComponentInst(getDriverComponentId(sClientComponentId))
+          .map(c -> checkComponentInstanceById(c, sClientComponentId, nullComponentInstSupplier))
+          .map(ComponentInst::getAllProfilesInst)
+          .orElseGet(List::of);
 
-      for (ProfileInst profile : componentInst.getAllProfilesInst()) {
+      for (ProfileInst profile : profiles) {
         if (profile != null && (profile.getName().equals(sProfile) || bAllProfiles)) {
           // add direct users
           alUserIds.addAll(profile.getAllUsers());
@@ -4208,7 +4198,7 @@ class DefaultAdministration implements Administration {
   }
 
   private Map<String, String> translateUserIds(String sDomainId, String[] userSpecificIds) {
-    final Map<String, String> userIdMapping = new HashMap<>(userSpecificIds.length);
+    final Map<String, String> userIdMapping = HashMap.newHashMap(userSpecificIds.length);
     String userId = null;
     for (String userSpecificId : userSpecificIds) {
       try {
@@ -4775,7 +4765,8 @@ class DefaultAdministration implements Administration {
 
   @Nonnull
   private Map<String, UserDetail> indexUsersBySpecificIdAndLogin(final UserDetail[] silverpeasUDs) {
-    final Map<String, UserDetail> indexedSilverpeasUsers = new HashMap<>(silverpeasUDs.length * 2);
+    final Map<String, UserDetail> indexedSilverpeasUsers =
+        HashMap.newHashMap(silverpeasUDs.length * 2);
     stream(silverpeasUDs).forEach(u -> {
       indexedSilverpeasUsers.put(u.getSpecificId(), u);
       indexedSilverpeasUsers.put(u.getLogin(), u);
@@ -4786,7 +4777,7 @@ class DefaultAdministration implements Administration {
   @Nonnull
   private Set<String> extractUserSpecificIdAndFallbackLogin(final UserDetail[] users) {
     final Set<String> indexedUsers =
-        new HashSet<>(shouldFallbackUserLogins ? (users.length * 2) : users.length);
+        HashSet.newHashSet(shouldFallbackUserLogins ? (users.length * 2) : users.length);
     stream(users).forEach(u -> {
       indexedUsers.add(u.getSpecificId());
       if (shouldFallbackUserLogins) {
@@ -5723,17 +5714,23 @@ class DefaultAdministration implements Administration {
       final String[] sourceComponentProfileIds) throws AdminException {
     for (String profileId : sourceComponentProfileIds) {
       ProfileInst currentSourceProfile = getProfileInst(profileId);
-      ComponentInst currentComponent =
+      Optional<ComponentInst> currentComponent =
           getComponentInst(currentSourceProfile.getComponentFatherId());
-      String spaceId = currentComponent.getDomainFatherId();
-      SpaceInstLight spaceInst = getSpaceInstLight(getDriverSpaceId(spaceId));
-      if (currentComponent.getStatus() == null && spaceInst != null &&
-          !spaceInst.isPersonalSpace()) {
-        // do not treat the personal space
+      if (currentComponent.isPresent() && areRightsAssignable(currentComponent.get())) {
         addInRightProfile(context, currentSourceProfile);
         doUpdateProfileInst(currentSourceProfile, context.getAuthor());
       }
     }
+  }
+
+  /**
+   * Are the rights on the specified component instance assignable? They are only for the
+   * component instances that are neither in a particular status nor in a personal space.
+   */
+  private boolean areRightsAssignable(final ComponentInst componentInst) throws AdminException {
+    SpaceInstLight spaceInst =
+        getSpaceInstLight(getDriverSpaceId(componentInst.getDomainFatherId()));
+    return componentInst.getStatus() == null && spaceInst != null && !spaceInst.isPersonalSpace();
   }
 
   private void addInRightProfile(final RightAssignationContext context,
@@ -5767,13 +5764,9 @@ class DefaultAdministration implements Administration {
     // component and node rights)
     for (String profileId : componentProfileIdsForTarget) {
       ProfileInst currentTargetProfile = getProfileInst(profileId);
-      ComponentInst currentComponent =
+      Optional<ComponentInst> currentComponent =
           getComponentInst(currentTargetProfile.getComponentFatherId());
-      String spaceId = currentComponent.getDomainFatherId();
-      SpaceInstLight spaceInst = getSpaceInstLight(getDriverSpaceId(spaceId));
-
-      if (currentComponent.getStatus() == null && spaceInst != null &&
-          !spaceInst.isPersonalSpace()) {// do not treat the personal space
+      if (currentComponent.isPresent() && areRightsAssignable(currentComponent.get())) {
         removeFromRightProfile(context, currentTargetProfile);
         doUpdateProfileInst(currentTargetProfile, context.getAuthor());
       }

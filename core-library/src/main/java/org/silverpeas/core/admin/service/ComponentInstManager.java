@@ -208,74 +208,81 @@ public class ComponentInstManager {
   public void restoreComponentFromBasket(int localComponentId) throws AdminException {
     try {
       organizationSchema.instance().restoreComponentFromBasket(localComponentId);
-      ComponentInst compInstance = getComponentInst(localComponentId);
-      notifier.notifyEventOn(RECOVERY, compInstance);
+      getComponentInst(localComponentId)
+          .ifPresent(compInstance -> notifier.notifyEventOn(RECOVERY, compInstance));
     } catch (Exception e) {
       throw new AdminException(failureOnRestoring(COMPONENT, localComponentId), e);
     }
   }
 
   /**
-   * Get component instance with the given id.
+   * Get component instance with the given id. No component instance is returned when there is no
+   * component instance with the given id in the data source. This is always the case with an
+   * undefined identifier (a negative number or zero) that is then not searched in the data source:
+   * such an identifier is the one of anything that isn't a component instance (a personal tool, a
+   * label, and so on).
    * @param componentId the unique component instance id.
-   * @return {@link ComponentInst} instance.
+   * @return optionally the {@link ComponentInst} instance with the given id.
    * @throws AdminException in case of technical error.
    */
-  public ComponentInst getComponentInst(int componentId) throws AdminException {
-    final ComponentInst componentInst = new ComponentInst();
-    componentInst.removeAllProfilesInst();
+  public Optional<ComponentInst> getComponentInst(int componentId) throws AdminException {
+    if (componentId <= 0) {
+      return Optional.empty();
+    }
     try {
       // Load the component detail
       final ComponentInstanceRow instance = organizationSchema.instance()
           .getComponentInstance(componentId);
-      if (instance != null) {
-        // Set the attributes of the component Inst
-        componentInst.setLocalId(instance.id);
-        componentInst.setName(instance.componentName);
-        componentInst.setLabel(instance.name);
-        componentInst.setDescription(instance.description);
-        componentInst.setDomainFatherId(idAsString(instance.spaceId));
-        componentInst.setOrderNum(instance.orderNum);
-        if (instance.createTime != null) {
-          componentInst.setCreationDate(new Date(Long.parseLong(instance.createTime)));
-        }
-        if (instance.updateTime != null) {
-          componentInst.setLastUpdateDate(new Date(Long.parseLong(instance.updateTime)));
-        }
-        if (instance.removeTime != null) {
-          componentInst.setRemovalDate(new Date(Long.parseLong(instance.removeTime)));
-        }
-        componentInst.setCreatorUserId(idAsString(instance.createdBy));
-        componentInst.setUpdaterUserId(idAsString(instance.updatedBy));
-        componentInst.setRemoverUserId(idAsString(instance.removedBy));
-        componentInst.setStatus(instance.status);
-        // Get the parameters if any
-        final List<Parameter> parameters = organizationSchema.instanceData()
-            .getAllParametersInComponent(componentId);
-        componentInst.setParameters(parameters);
-        // Get the profiles
-        final String[] asProfileIds = organizationSchema.userRole()
-            .getAllUserRoleIdsOfInstance(componentInst.getLocalId());
-        // Insert the profileInst in the componentInst
-        for (int nI = 0; asProfileIds != null && nI < asProfileIds.length; nI++) {
-          final ProfileInst profileInst = profileInstManager.getProfileInst(asProfileIds[nI], false);
-          if (profileInst != null) {
-            componentInst.addProfileInst(profileInst);
-          }
-        }
-        componentInst.setLanguage(instance.lang);
-        // translations
-        loadTranslations(componentInst, instance);
-        componentInst.setPublic(instance.publicAccess == 1);
-        componentInst.setHidden(instance.hidden == 1);
-        componentInst.setInheritanceBlocked(instance.inheritanceBlocked == 1);
-      } else {
-        SilverLogger.getLogger(this).error("Component instance " + componentId + " not found!");
+      if (instance == null) {
+        SilverLogger.getLogger(this).warn("Component instance {0} not found!", componentId);
+        return Optional.empty();
       }
+      final ComponentInst componentInst = new ComponentInst();
+      componentInst.removeAllProfilesInst();
+      // Set the attributes of the component Inst
+      componentInst.setLocalId(instance.id);
+      componentInst.setName(instance.componentName);
+      componentInst.setLabel(instance.name);
+      componentInst.setDescription(instance.description);
+      componentInst.setDomainFatherId(idAsString(instance.spaceId));
+      componentInst.setOrderNum(instance.orderNum);
+      if (instance.createTime != null) {
+        componentInst.setCreationDate(new Date(Long.parseLong(instance.createTime)));
+      }
+      if (instance.updateTime != null) {
+        componentInst.setLastUpdateDate(new Date(Long.parseLong(instance.updateTime)));
+      }
+      if (instance.removeTime != null) {
+        componentInst.setRemovalDate(new Date(Long.parseLong(instance.removeTime)));
+      }
+      componentInst.setCreatorUserId(idAsString(instance.createdBy));
+      componentInst.setUpdaterUserId(idAsString(instance.updatedBy));
+      componentInst.setRemoverUserId(idAsString(instance.removedBy));
+      componentInst.setStatus(instance.status);
+      // Get the parameters if any
+      final List<Parameter> parameters = organizationSchema.instanceData()
+          .getAllParametersInComponent(componentId);
+      componentInst.setParameters(parameters);
+      // Get the profiles
+      final String[] asProfileIds = organizationSchema.userRole()
+          .getAllUserRoleIdsOfInstance(componentInst.getLocalId());
+      // Insert the profileInst in the componentInst
+      for (int nI = 0; asProfileIds != null && nI < asProfileIds.length; nI++) {
+        final ProfileInst profileInst = profileInstManager.getProfileInst(asProfileIds[nI], false);
+        if (profileInst != null) {
+          componentInst.addProfileInst(profileInst);
+        }
+      }
+      componentInst.setLanguage(instance.lang);
+      // translations
+      loadTranslations(componentInst, instance);
+      componentInst.setPublic(instance.publicAccess == 1);
+      componentInst.setHidden(instance.hidden == 1);
+      componentInst.setInheritanceBlocked(instance.inheritanceBlocked == 1);
+      return Optional.of(componentInst);
     } catch (SQLException e) {
       throw new AdminException(failureOnUpdate(COMPONENT, componentId), e);
     }
-    return componentInst;
   }
 
   /**
@@ -530,12 +537,12 @@ public class ComponentInstManager {
       Collection<T> instances) throws AdminException {
     if (!instances.isEmpty()) {
       long startTime = System.currentTimeMillis();
-      final Map<Integer, T> instancesByLocalIds = new HashMap<>(instances.size());
+      final Map<Integer, T> instancesByLocalIds = HashMap.newHashMap(instances.size());
       final Map<Integer, AbstractI18NBean<ComponentI18N>> i18nInstancesByLocalIds = instances.stream()
           .map(i -> {
             final int localId;
-            if (i instanceof ComponentInstLight) {
-              localId = ((ComponentInstLight) i).getLocalId();
+            if (i instanceof ComponentInstLight componentInstLight) {
+              localId = componentInstLight.getLocalId();
             } else {
               localId = ((ComponentInst) i).getLocalId();
             }

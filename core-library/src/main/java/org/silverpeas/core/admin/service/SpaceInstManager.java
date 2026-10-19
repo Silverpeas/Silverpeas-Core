@@ -25,7 +25,6 @@ package org.silverpeas.core.admin.service;
 
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.persistence.OrganizationSchema;
 import org.silverpeas.core.admin.persistence.SpaceI18NRow;
@@ -48,7 +47,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 
@@ -210,15 +208,15 @@ public class SpaceInstManager {
           .stream()
           .map(this::spaceRow2SpaceInst)
           .map(SpaceInst::getId)
-          .collect(Collectors.toList());
+          .toList();
       // Get the components
       final String[] asCompoIds = organizationSchema.instance().getAllComponentInstanceIdsInSpace(
           spaceInstLocalId);
       final List<String> componentIds = new ArrayList<>(asCompoIds.length);
       for (String componentId : asCompoIds) {
-        ComponentInst componentInst = componentInstManager.getComponentInst(idAsInt(componentId));
-        WAComponent.getByName(componentInst.getName())
-            .ifPresent(waComponent -> componentIds.add(componentInst.getId()));
+        componentInstManager.getComponentInst(idAsInt(componentId))
+            .filter(componentInst -> WAComponent.getByName(componentInst.getName()).isPresent())
+            .ifPresent(componentInst -> componentIds.add(componentInst.getId()));
       }
       // Get the space profiles
       String[] asProfIds = organizationSchema.spaceUserRole().getAllSpaceUserRoleIdsOfSpace(
