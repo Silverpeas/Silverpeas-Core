@@ -71,15 +71,19 @@ public class GetLinkFileServletTest {
   }
 
   @Test
-  public void incorrectSecurityCodeShowsInvalidCodePage() throws Exception {
+  public void incorrectSecurityCodeReturnsForbidden() throws Exception {
     Ticket ticket = mock(Ticket.class);
     when(sharingService.getTicket("token")).thenReturn(ticket);
     when(request.getHeader("X-Verification-Code")).thenReturn("wrong");
+    when(ticket.isValid()).thenReturn(true);
+    when(ticket.getSecurityCode()).thenReturn("protected");
+    when(ticket.getToken()).thenReturn(java.util.UUID.randomUUID().toString());
     when(ticket.checkSecurityCode("wrong")).thenReturn(false);
     try (MockedStatic<SharingServiceProvider> provider = mockStatic(SharingServiceProvider.class)) {
       provider.when(SharingServiceProvider::getSharingTicketService).thenReturn(sharingService);
       servlet.service(request, response);
-      verify(invalidCode).forward(request, response);
+      verify(response).sendError(HttpServletResponse.SC_FORBIDDEN);
+      verify(invalidCode, never()).forward(request, response);
       verify(invalidTicket, never()).forward(request, response);
     }
   }
@@ -98,6 +102,43 @@ public class GetLinkFileServletTest {
       verify(invalidCode, never()).forward(request, response);
     }
   }
+  @Test
+  public void missingCodeReturnsUnauthorized() throws Exception {
+    Ticket ticket = mock(Ticket.class);
+    when(sharingService.getTicket("token")).thenReturn(ticket);
+    when(ticket.isValid()).thenReturn(true);
+    when(ticket.getSecurityCode()).thenReturn("protected");
+    when(ticket.getToken()).thenReturn(java.util.UUID.randomUUID().toString());
+    try (MockedStatic<SharingServiceProvider> provider = mockStatic(SharingServiceProvider.class)) {
+      provider.when(SharingServiceProvider::getSharingTicketService).thenReturn(sharingService);
+      servlet.service(request, response);
+      verify(response).sendError(HttpServletResponse.SC_UNAUTHORIZED);
+    }
+  }
+
+  @Test
+  public void repeatedFailuresLockEvenCorrectCode() throws Exception {
+    Ticket ticket = mock(Ticket.class);
+    when(sharingService.getTicket("token")).thenReturn(ticket);
+    when(ticket.isValid()).thenReturn(true);
+    when(ticket.getSecurityCode()).thenReturn("protected");
+    when(ticket.getToken()).thenReturn(java.util.UUID.randomUUID().toString());
+    when(request.getHeader("X-Verification-Code")).thenReturn("wrong");
+    try (MockedStatic<SharingServiceProvider> provider = mockStatic(SharingServiceProvider.class)) {
+      provider.when(SharingServiceProvider::getSharingTicketService).thenReturn(sharingService);
+      for (int i = 0; i < 5; i++) {
+        servlet.service(request, response);
+      }
+      when(request.getHeader("X-Verification-Code")).thenReturn("correct");
+      when(ticket.checkSecurityCode("correct")).thenReturn(true);
+      servlet.service(request, response);
+      verify(response, times(4)).sendError(HttpServletResponse.SC_FORBIDDEN);
+      verify(response, times(2)).sendError(429);
+      verify(ticket, never()).checkSecurityCode("correct");
+      verifyNoInteractions(invalidCode);
+    }
+  }
+
   private void assertSuccessfulDownload(String requiredCode) throws Exception {
     Path file = Files.createTempFile("silverpeas-sharing-", ".txt");
     byte[] content = "shared content".getBytes(java.nio.charset.StandardCharsets.UTF_8);
@@ -109,6 +150,8 @@ public class GetLinkFileServletTest {
       SimpleDocument document = mock(SimpleDocument.class);
       when(sharingService.getTicket("token")).thenReturn(ticket);
       when(ticket.isValid()).thenReturn(true);
+      when(ticket.getSecurityCode()).thenReturn(requiredCode);
+      when(ticket.getToken()).thenReturn(java.util.UUID.randomUUID().toString());
       when(ticket.checkSecurityCode(requiredCode)).thenReturn(true);
       when(ticket.getResource()).thenReturn(resource);
       when(resource.getAccessedObject()).thenReturn(document);

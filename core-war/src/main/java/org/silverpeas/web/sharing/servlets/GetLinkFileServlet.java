@@ -29,6 +29,8 @@ import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.sharing.model.VersionFileTicket;
 import org.silverpeas.core.sharing.services.SharingServiceProvider;
 import org.silverpeas.web.servlets.RestRequest;
+import org.silverpeas.core.webapi.sharing.SharingCodeVerifier;
+import jakarta.ws.rs.WebApplicationException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -57,15 +59,19 @@ public class GetLinkFileServlet extends HttpServlet {
     String keyFile = rest.getElementValue(PARAM_KEYFILE);
     String securityCode = request.getHeader("X-Verification-Code");
     Ticket ticket = SharingServiceProvider.getSharingTicketService().getTicket(keyFile);
-    boolean securityCodeValid = ticket != null && ticket.checkSecurityCode(securityCode);
-    if (ticket != null && ticket.isValid() && securityCodeValid) {
-      downloadFile(ticket, request, response);
-    } else if (ticket != null && securityCodeValid) {
+    if (ticket == null || !ticket.isValid()) {
       sendBackInvalidTicket(request, response);
-    } else if (ticket != null) {
-      sendBackInvalidSecurityCode(request, response);
-    } else {
-      sendBackInvalidTicket(request, response);
+      return;
+    }
+    try {
+      if (SharingCodeVerifier.verify(ticket, securityCode)) {
+        downloadFile(ticket, request, response);
+      } else {
+        response.sendError(securityCode == null ? HttpServletResponse.SC_UNAUTHORIZED :
+            HttpServletResponse.SC_FORBIDDEN);
+      }
+    } catch (WebApplicationException e) {
+      response.sendError(e.getResponse().getStatus());
     }
   }
 
@@ -103,12 +109,8 @@ public class GetLinkFileServlet extends HttpServlet {
 
   private void sendBackInvalidTicket(final HttpServletRequest req, final HttpServletResponse resp)
       throws IOException, ServletException {
+    resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
     getServletContext().getRequestDispatcher("/sharing/jsp/invalidTicket.jsp")
         .forward(req, resp);
-  }
-  private void sendBackInvalidSecurityCode(final HttpServletRequest req, final HttpServletResponse resp)
-          throws IOException, ServletException {
-    getServletContext().getRequestDispatcher("/sharing/jsp/invalidSecuriyCode.jsp")
-            .forward(req, resp);
   }
 }
