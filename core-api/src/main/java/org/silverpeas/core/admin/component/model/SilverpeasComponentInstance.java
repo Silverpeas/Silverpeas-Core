@@ -233,6 +233,10 @@ public interface SilverpeasComponentInstance extends Identifiable, Nameable, Ser
    */
   abstract class Identity {
 
+    // local id -1 is a particular and predefined id for undefined component instance
+    // this is a convention in the implementation code of the component instances management!
+    private static final int UNDEFINED_LOCAL_ID = -1;
+
     private String name;
     private int localId;
 
@@ -242,20 +246,33 @@ public interface SilverpeasComponentInstance extends Identifiable, Nameable, Ser
     }
 
     protected Identity(String name, int localId) {
-      // local id -1 is a particular and predefined id for undefined component instance
-      // this is a convention in the implementation code of the component instances management!
-      if ((StringUtil.isNotDefined(name) || localId < 1) && localId != -1) {
-        throw new IllegalArgumentException("The component name '" + name +
-            "' or local instance identifier " + localId + " is invalid!" );
+      // an undefined component instance has no component name: its identifier is then "-1"
+      if (localId != UNDEFINED_LOCAL_ID && StringUtil.isNotDefined(name)) {
+        throw new IllegalArgumentException("The component name '" + name + "' is invalid!");
       }
-      this.name = name;
-      this.localId = localId;
+      setComponentName(name);
+      setInstanceLocalId(localId);
     }
 
     protected abstract void decode(@NonNull String componentInstanceId)
         throws IllegalArgumentException;
 
+    /**
+     * Is the specified local identifier a valid one for the component instance? The value
+     * {@code -1}, predefined for an undefined component instance, isn't passed to this method as
+     * it is always accepted.
+     *
+     * @param localId a local identifier of a component instance.
+     * @return true if the local identifier is valid, false otherwise.
+     */
+    protected abstract boolean isValidLocalId(int localId);
+
     protected final void setInstanceLocalId(int localId) {
+      if (localId != UNDEFINED_LOCAL_ID && !isValidLocalId(localId)) {
+        throw new IllegalArgumentException(
+            "The local instance identifier " + localId + " of the component '" + name +
+                "' is invalid!");
+      }
       this.localId = localId;
     }
 

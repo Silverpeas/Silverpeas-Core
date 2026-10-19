@@ -123,6 +123,19 @@ public interface SilverpeasPersonalComponentInstance extends SilverpeasComponent
     }
 
     /**
+     * The local identifier of a personal component instance is the unique identifier of the user
+     * owning it. As the identifier of the Silverpeas administrator is 0, the local identifier is
+     * a positive number or zero.
+     *
+     * @param localId a local identifier of a component instance.
+     * @return true if the local identifier is greater than or equal to 0, false otherwise.
+     */
+    @Override
+    protected boolean isValidLocalId(int localId) {
+      return localId >= 0;
+    }
+
+    /**
      * Gets the unique identifier of the user owning this component instance.
      * @return a user unique identifier.
      */
