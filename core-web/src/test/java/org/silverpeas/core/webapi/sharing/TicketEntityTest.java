@@ -1,6 +1,8 @@
 package org.silverpeas.core.webapi.sharing;
 
-import org.junit.Test;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.sharing.model.SimpleFileTicket;
 import org.silverpeas.core.sharing.model.Ticket;
@@ -11,10 +13,11 @@ import org.mockito.MockedStatic;
 import java.net.URI;
 import java.util.Date;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class TicketEntityTest {
+@EnableSilverTestEnv(context = JEETestContext.class)
+class TicketEntityTest {
 
   private TicketEntity newTicketEntity(String code) {
     TicketEntity entity = new TicketEntity();
@@ -37,7 +40,7 @@ public class TicketEntityTest {
   }
 
   @Test
-  public void securityCodeIsHashedWhenCreatingTicket() throws Exception {
+  void securityCodeIsHashedWhenCreatingTicket() throws Exception {
     Ticket ticket = createTicket(newTicketEntity("ABC123"));
     assertNotNull(ticket);
     assertNotEquals("ABC123", ticket.getSecurityCode());
@@ -46,14 +49,14 @@ public class TicketEntityTest {
   }
 
   @Test
-  public void noSecurityCodeCreatesUnprotectedTicket() throws Exception {
+  void noSecurityCodeCreatesUnprotectedTicket() throws Exception {
     Ticket ticket = createTicket(newTicketEntity(null));
     assertNotNull(ticket);
     assertTrue(ticket.checkSecurityCode(null));
   }
 
   @Test
-  public void responseEntityNeverExposesSecurityCode() {
+  void responseEntityNeverExposesSecurityCode() {
     Ticket ticket = SimpleFileTicket.builder()
         .setSharedObjectId(12)
         .setComponentId("kmelia1")

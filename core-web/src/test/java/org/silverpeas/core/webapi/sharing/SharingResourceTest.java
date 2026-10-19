@@ -1,16 +1,19 @@
 package org.silverpeas.core.webapi.sharing;
 
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import jakarta.ws.rs.WebApplicationException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.sharing.model.SimpleFileTicket;
 import org.silverpeas.core.sharing.model.Ticket;
 
 import java.util.Date;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class SharingResourceTest {
+@EnableSilverTestEnv(context = JEETestContext.class)
+class SharingResourceTest {
 
   private Ticket ticket(String code) {
     return SimpleFileTicket.builder()
@@ -33,34 +36,34 @@ public class SharingResourceTest {
   }
 
   @Test
-  public void missingTicketReturnsNotFound() {
+  void missingTicketReturnsNotFound() {
     assertNotFound(null);
   }
 
   @Test
-  public void expiredTicketReturnsNotFound() {
+  void expiredTicketReturnsNotFound() {
     Ticket expired = ticket("ABC123");
     expired.setEndDate(new Date(1L));
     assertNotFound(expired);
   }
 
   @Test
-  public void validCodeIsAccepted() {
+  void validCodeIsAccepted() {
     assertTrue(SharingResource.verifySecurityCode(ticket("ABC123"), "ABC123"));
   }
 
   @Test
-  public void invalidCodeIsRejected() {
+  void invalidCodeIsRejected() {
     assertFalse(SharingResource.verifySecurityCode(ticket("ABC123"), "wrong"));
   }
 
   @Test
-  public void missingCodeIsRejectedForProtectedTicket() {
+  void missingCodeIsRejectedForProtectedTicket() {
     assertFalse(SharingResource.verifySecurityCode(ticket("ABC123"), null));
   }
 
   @Test
-  public void unprotectedTicketIsAccepted() {
+  void unprotectedTicketIsAccepted() {
     assertTrue(SharingResource.verifySecurityCode(ticket(null), null));
   }
 }

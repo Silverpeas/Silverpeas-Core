@@ -8,13 +8,15 @@
  */
 package org.silverpeas.web.sharing.servlets;
 
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.sharing.model.SimpleFileTicket;
@@ -27,7 +29,7 @@ import java.io.ByteArrayOutputStream;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.WriteListener;
 import org.mockito.ArgumentCaptor;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import org.silverpeas.core.sharing.services.SharingServiceProvider;
 import org.silverpeas.core.sharing.services.SharingTicketService;
 
@@ -35,7 +37,8 @@ import java.util.Collections;
 
 import static org.mockito.Mockito.*;
 
-public class GetLinkFileServletTest {
+@EnableSilverTestEnv(context = JEETestContext.class)
+class GetLinkFileServletTest {
 
   private final GetLinkFileServlet servlet = new GetLinkFileServlet();
   private final HttpServletRequest request = mock(HttpServletRequest.class);
@@ -45,8 +48,8 @@ public class GetLinkFileServletTest {
   private final RequestDispatcher invalidTicket = mock(RequestDispatcher.class);
   private final RequestDispatcher invalidCode = mock(RequestDispatcher.class);
 
-  @Before
-  public void setUp() throws Exception {
+  @BeforeEach
+  void setUp() throws Exception {
     ServletConfig config = mock(ServletConfig.class);
     when(config.getServletContext()).thenReturn(context);
     servlet.init(config);
@@ -61,7 +64,7 @@ public class GetLinkFileServletTest {
   }
 
   @Test
-  public void missingTicketShowsInvalidTicketPage() throws Exception {
+  void missingTicketShowsInvalidTicketPage() throws Exception {
     try (MockedStatic<SharingServiceProvider> provider = mockStatic(SharingServiceProvider.class)) {
       provider.when(SharingServiceProvider::getSharingTicketService).thenReturn(sharingService);
       servlet.service(request, response);
@@ -71,7 +74,7 @@ public class GetLinkFileServletTest {
   }
 
   @Test
-  public void incorrectSecurityCodeReturnsForbidden() throws Exception {
+  void incorrectSecurityCodeReturnsForbidden() throws Exception {
     Ticket ticket = mock(Ticket.class);
     when(sharingService.getTicket("token")).thenReturn(ticket);
     when(request.getHeader("X-Verification-Code")).thenReturn("wrong");
@@ -89,7 +92,7 @@ public class GetLinkFileServletTest {
   }
 
   @Test
-  public void expiredTicketWithCorrectCodeShowsInvalidTicketPage() throws Exception {
+  void expiredTicketWithCorrectCodeShowsInvalidTicketPage() throws Exception {
     Ticket ticket = mock(Ticket.class);
     when(sharingService.getTicket("token")).thenReturn(ticket);
     when(request.getHeader("X-Verification-Code")).thenReturn("correct");
@@ -103,7 +106,7 @@ public class GetLinkFileServletTest {
     }
   }
   @Test
-  public void missingCodeReturnsUnauthorized() throws Exception {
+  void missingCodeReturnsUnauthorized() throws Exception {
     Ticket ticket = mock(Ticket.class);
     when(sharingService.getTicket("token")).thenReturn(ticket);
     when(ticket.isValid()).thenReturn(true);
@@ -117,7 +120,7 @@ public class GetLinkFileServletTest {
   }
 
   @Test
-  public void repeatedFailuresLockEvenCorrectCode() throws Exception {
+  void repeatedFailuresLockEvenCorrectCode() throws Exception {
     Ticket ticket = mock(Ticket.class);
     when(sharingService.getTicket("token")).thenReturn(ticket);
     when(ticket.isValid()).thenReturn(true);
@@ -163,7 +166,7 @@ public class GetLinkFileServletTest {
       when(request.getRemoteAddr()).thenReturn("127.0.0.1");
       when(response.getOutputStream()).thenReturn(new ServletOutputStream() {
         @Override
-        public void write(int value) {
+        void write(int value) {
           downloaded.write(value);
         }
 
@@ -173,7 +176,7 @@ public class GetLinkFileServletTest {
         }
 
         @Override
-        public void setWriteListener(WriteListener listener) {
+        void setWriteListener(WriteListener listener) {
           // This synchronous test stream does not support asynchronous writes.
         }
       });
@@ -198,17 +201,17 @@ public class GetLinkFileServletTest {
   }
 
   @Test
-  public void downloadWithoutSecurityCodeSucceedsAndIsCounted() throws Exception {
+  void downloadWithoutSecurityCodeSucceedsAndIsCounted() throws Exception {
     assertSuccessfulDownload(null, "text/plain");
   }
 
   @Test
-  public void downloadWithValidSecurityCodeSucceedsAndIsCounted() throws Exception {
+  void downloadWithValidSecurityCodeSucceedsAndIsCounted() throws Exception {
     assertSuccessfulDownload("correct", "text/plain");
   }
 
   @Test
-  public void protectedHtmlFileCanBeDownloaded() throws Exception {
+  void protectedHtmlFileCanBeDownloaded() throws Exception {
     assertSuccessfulDownload("correct", "text/html");
   }
 

@@ -1,7 +1,9 @@
 package org.silverpeas.core.webapi.sharing;
 
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import jakarta.ws.rs.WebApplicationException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.sharing.model.SimpleFileTicket;
 import org.silverpeas.core.sharing.model.Ticket;
 
@@ -9,9 +11,10 @@ import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class SharingCodeVerifierTest {
+@EnableSilverTestEnv(context = JEETestContext.class)
+class SharingCodeVerifierTest {
 
   private static final long MINUTE = TimeUnit.MINUTES.toMillis(1);
   private static final int MAX_ATTEMPTS = 5;
@@ -37,14 +40,14 @@ public class SharingCodeVerifierTest {
   }
 
   @Test
-  public void correctAndIncorrectCodes() {
+  void correctAndIncorrectCodes() {
     Ticket ticket = ticket("ABC123");
     assertFalse(verify(ticket, "wrong", 1000));
     assertTrue(verify(ticket, "ABC123", 1001));
   }
 
   @Test
-  public void fifthFailureLocksEvenCorrectCodes() {
+  void fifthFailureLocksEvenCorrectCodes() {
     Ticket ticket = ticket("ABC123");
     for (int i = 0; i < 4; i++) {
       assertFalse(verify(ticket, "wrong", 1000 + i));
@@ -54,7 +57,7 @@ public class SharingCodeVerifierTest {
   }
 
   @Test
-  public void failuresExpireOutsideAttemptWindow() {
+  void failuresExpireOutsideAttemptWindow() {
     Ticket ticket = ticket("ABC123");
     for (int i = 0; i < 4; i++) {
       assertFalse(verify(ticket, "wrong", 1000 + i));
@@ -64,7 +67,7 @@ public class SharingCodeVerifierTest {
   }
 
   @Test
-  public void lockExpiresAndCounterResets() {
+  void lockExpiresAndCounterResets() {
     Ticket ticket = ticket("ABC123");
     for (int i = 0; i < 4; i++) {
       assertFalse(verify(ticket, "wrong", 1000 + i));
@@ -75,7 +78,7 @@ public class SharingCodeVerifierTest {
   }
 
   @Test
-  public void successfulVerificationClearsPreviousFailures() {
+  void successfulVerificationClearsPreviousFailures() {
     Ticket ticket = ticket("ABC123");
     for (int i = 0; i < 4; i++) {
       assertFalse(verify(ticket, "wrong", 1000 + i));
@@ -87,14 +90,14 @@ public class SharingCodeVerifierTest {
   }
 
   @Test
-  public void ticketsWithoutCodesDoNotGetLocked() {
+  void ticketsWithoutCodesDoNotGetLocked() {
     Ticket ticket = ticket(null);
     for (int i = 0; i < 10; i++) {
       assertTrue(verify(ticket, null, 1000 + i));
     }
   }
   @Test
-  public void cleanupRemovesExpiredFailures() {
+  void cleanupRemovesExpiredFailures() {
     Ticket ticket = ticket("ABC123");
     assertFalse(verify(ticket, "wrong", 1000));
     assertTrue(SharingCodeVerifier.isTracking(ticket.getToken()));
@@ -103,7 +106,7 @@ public class SharingCodeVerifierTest {
   }
 
   @Test
-  public void cleanupPreservesActiveLockUntilItExpires() {
+  void cleanupPreservesActiveLockUntilItExpires() {
     Ticket ticket = ticket("ABC123");
     for (int i = 0; i < 4; i++) {
       assertFalse(verify(ticket, "wrong", 1000 + i));

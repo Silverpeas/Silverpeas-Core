@@ -16,17 +16,20 @@
  */
 package org.silverpeas.core.sharing.model;
 
-import org.junit.Test;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.junit.jupiter.api.Test;
 
 import java.util.Date;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class TicketTest {
+@EnableSilverTestEnv(context = JEETestContext.class)
+class TicketTest {
 
   private Ticket newTicket(String securityCode) {
     return SimpleFileTicket.builder()
@@ -39,24 +42,24 @@ public class TicketTest {
   }
 
   @Test
-  public void noCodeAllowsAccess() {
+  void noCodeAllowsAccess() {
     assertTrue(newTicket(null).checkSecurityCode(null));
   }
 
   @Test
-  public void blankCodeAllowsAccess() {
+  void blankCodeAllowsAccess() {
     Ticket ticket = newTicket("");
     assertNull(ticket.getSecurityCode());
     assertTrue(ticket.checkSecurityCode(null));
   }
 
   @Test
-  public void matchingCodeAllowsAccess() {
+  void matchingCodeAllowsAccess() {
     assertTrue(newTicket("ABC123").checkSecurityCode("ABC123"));
   }
 
   @Test
-  public void newCodesAreSaltedAndNotStoredInPlaintext() {
+  void newCodesAreSaltedAndNotStoredInPlaintext() {
     Ticket first = newTicket("ABC123");
     Ticket second = newTicket("ABC123");
     assertNotNull(first.getSecurityCode());
@@ -68,7 +71,7 @@ public class TicketTest {
   }
 
   @Test
-  public void legacyPlaintextCodeStillWorks() {
+  void legacyPlaintextCodeStillWorks() {
     Ticket ticket = newTicket(null);
     ticket.securityCode = "OLD123";
     assertTrue(ticket.checkSecurityCode("OLD123"));
@@ -76,17 +79,17 @@ public class TicketTest {
   }
 
   @Test
-  public void missingCodeDeniesAccess() {
+  void missingCodeDeniesAccess() {
     assertFalse(newTicket("ABC123").checkSecurityCode(null));
   }
 
   @Test
-  public void wrongCodeDeniesAccess() {
+  void wrongCodeDeniesAccess() {
     assertFalse(newTicket("ABC123").checkSecurityCode("XYZ"));
   }
 
   @Test
-  public void setterNormalizesBlankCode() {
+  void setterNormalizesBlankCode() {
     Ticket ticket = newTicket("ABC123");
     ticket.setSecurityCode("");
     assertNull(ticket.getSecurityCode());
@@ -94,14 +97,14 @@ public class TicketTest {
   }
 
   @Test
-  public void legacyBlankCodeAllowsAccess() {
+  void legacyBlankCodeAllowsAccess() {
     Ticket ticket = newTicket(null);
     ticket.securityCode = "";
     assertTrue(ticket.checkSecurityCode(null));
   }
 
   @Test
-  public void literalNullInEveryCaseIsAProtectedCode() {
+  void literalNullInEveryCaseIsAProtectedCode() {
     for (String code : nullCodes()) {
       Ticket ticket = newTicket(code);
       assertNotNull(ticket.getSecurityCode());
@@ -117,7 +120,7 @@ public class TicketTest {
   }
 
   @Test
-  public void legacyLiteralNullInEveryCaseRemainsProtected() {
+  void legacyLiteralNullInEveryCaseRemainsProtected() {
     for (String code : nullCodes()) {
       Ticket ticket = newTicket(null);
       ticket.securityCode = code;
@@ -134,7 +137,7 @@ public class TicketTest {
   }
 
   @Test
-  public void whitespaceCodesAllowAccessIncludingLegacyValues() {
+  void whitespaceCodesAllowAccessIncludingLegacyValues() {
     Ticket ticket = newTicket(" \t\n");
     assertNull(ticket.getSecurityCode());
     assertTrue(ticket.checkSecurityCode(null));
