@@ -23,11 +23,15 @@
  */
 package org.silverpeas.core.io.media.image.thumbnail.model;
 
+import jakarta.activation.FileDataSource;
+import org.silverpeas.core.contribution.content.LinkUrlDataSource;
+import org.silverpeas.core.contribution.content.LinkUrlDataSourceScanner;
 import org.silverpeas.core.contribution.model.Thumbnail;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.Serial;
@@ -201,10 +205,33 @@ public class ThumbnailDetail implements Thumbnail {
       image = getOriginalFileName();
     }
     if (image.startsWith("/")) {
-      return Optional.empty();
+      // case of an image from 'gallery' app
+      return getPathOfImageAt(image);
     }
     String directory = FileRepositoryManager.getAbsolutePath(getInstanceId()) +
         publicationSettings.getString("imagesSubDirectory");
     return Optional.of(Path.of(directory, image));
+  }
+
+  /**
+   * Gets the path of the image located at the specified URL by asking the scanners of the URLs
+   * in Silverpeas, among which is the one of the images store provided by the media libraries.
+   * @param url the URL of an image served by Silverpeas.
+   * @return the path of the image in the file system or nothing if no file is found for the URL.
+   */
+  private Optional<Path> getPathOfImageAt(final String url) {
+    final String html = "src=\"" + url + "\"";
+    try {
+      return LinkUrlDataSourceScanner.getAll().stream()
+          .flatMap(s -> s.scanHtml(html).stream())
+          .map(LinkUrlDataSource::getDataSource)
+          .filter(FileDataSource.class::isInstance)
+          .map(FileDataSource.class::cast)
+          .map(d -> d.getFile().toPath())
+          .findFirst();
+    } catch (RuntimeException e) {
+      SilverLogger.getLogger(this).warn("No image found at {0}: {1}", url, e.getMessage());
+      return Optional.empty();
+    }
   }
 }
