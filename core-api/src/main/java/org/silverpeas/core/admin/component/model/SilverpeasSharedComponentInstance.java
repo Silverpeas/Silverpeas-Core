@@ -137,6 +137,17 @@ public interface SilverpeasSharedComponentInstance extends SilverpeasComponentIn
       }
     }
 
+    /**
+     * The local identifier of a shared component instance is a strictly positive number.
+     *
+     * @param localId a local identifier of a component instance.
+     * @return true if the local identifier is greater than 0, false otherwise.
+     */
+    @Override
+    protected boolean isValidLocalId(int localId) {
+      return isAValidLocalId(localId);
+    }
+
     @Override
     public String toString() {
       return getComponentName() + getInstanceLocalId();
@@ -144,7 +155,11 @@ public interface SilverpeasSharedComponentInstance extends SilverpeasComponentIn
 
     public static boolean isValid(String componentInstanceId) {
       Matcher matcher = COMPONENT_INSTANCE_IDENTIFIER.matcher(componentInstanceId);
-      return matcher.matches();
+      return matcher.matches() && isAValidLocalId(Integer.parseInt(matcher.group(2)));
+    }
+
+    private static boolean isAValidLocalId(int localId) {
+      return localId > 0;
     }
   }
 }
