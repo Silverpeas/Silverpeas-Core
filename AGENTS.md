@@ -138,6 +138,26 @@ Beans needing startup logic implement `org.silverpeas.core.initialization.Initia
   version (`versions:set`) and the parent-POM version per branch/PR before building, then runs a
   SonarCloud quality gate on PRs. Don't hand-edit versions to match the CI behaviour.
 
+### SonarCloud quality rules
+
+The code is analysed by SonarCloud in the `silverpeas` organization; the key of the project is the
+`sonar.projectKey` of the `Jenkinsfile` (written `<project>` below). The projects are public, so the
+Web API of `https://sonarcloud.io` is read without any token (add `ps=500` and `p=<page>` to page
+through the results):
+
+- **Before writing code**, get the rules activated in the quality profile of the language and
+  follow them while coding. Java code is checked against our own profile, **Silverpeas way**:
+  look up its key with `api/qualityprofiles/search?organization=silverpeas&project=<project>`,
+  then list its rules with
+  `api/rules/search?organization=silverpeas&qprofile=<key>&activation=true&f=name,severity`.
+- **When modifying an existing file**, list its open issues and fix them on the way:
+  `api/issues/search?organization=silverpeas&componentKeys=<project>:<path/from/repo/root>&issueStatuses=OPEN,CONFIRMED`
+  (the `files` parameter is silently ignored).
+- **Once Jenkins has analysed a PR**, get the issues raised by that PR and fix them:
+  `api/issues/search?organization=silverpeas&componentKeys=<project>&pullRequest=<PR number>&issueStatuses=OPEN,CONFIRMED`,
+  and check its quality gate with
+  `api/qualitygates/project_status?projectKey=<project>&pullRequest=<PR number>`.
+
 ## Build & test
 
 - **Full build + unit tests:** `mvn clean install`
