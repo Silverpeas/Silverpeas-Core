@@ -124,8 +124,7 @@ QueryParser.Operator defaultOperand = IndexSearcher.get().getDefaultOperator();
 <view:looknfeel withCheckFormScript="true"/>
 <view:includePlugin name="datepicker"/>
 <view:includePlugin name="pdc" />
-<script type="text/javascript" src="javascript/formUtil.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/thickbox-compressed.js"></script>
+<script type="text/javascript" src="<%=m_context%>/pdcPeas/jsp/javascript/formUtil.js"></script>
 <script type="text/javascript">
 var icWindow = window;
 
