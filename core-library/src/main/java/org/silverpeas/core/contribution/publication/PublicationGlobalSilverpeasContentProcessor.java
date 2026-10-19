@@ -31,7 +31,6 @@ import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
 import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailReference;
 import org.silverpeas.core.io.media.image.thumbnail.service.ThumbnailService;
-import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.List;
@@ -59,7 +58,7 @@ public abstract class PublicationGlobalSilverpeasContentProcessor extends
     final Map<String, ThumbnailDetail> thumbnailsByPubId = thumbnailService.getByReference(thumbnailReferences).stream()
         .collect(toMap(t -> t.getReference().getId(), t -> t));
     return super.asGlobalSilverContent(silverContents)
-        .peek(g ->  {
+        .map(g ->  {
           final String pubId = g.getId();
           g.setType("Publication");
           final ThumbnailDetail thumbnail = thumbnailsByPubId.get(pubId);
@@ -67,11 +66,10 @@ public abstract class PublicationGlobalSilverpeasContentProcessor extends
             final PublicationDetail pub = indexedPublications.get(pubId);
             pub.setThumbnail(thumbnail);
             if (StringUtil.isDefined(pub.getImage())) {
-              final String imageURL = FileServerUtils.getUrl(pub.getPK().
-                  getComponentName(), "vignette", pub.getImage(), pub.getImageMimeType(), "images");
-              g.setThumbnailURL(imageURL);
+              g.setThumbnailURL(thumbnail.getURL());
             }
           }
+          return g;
         });
   }
 }
