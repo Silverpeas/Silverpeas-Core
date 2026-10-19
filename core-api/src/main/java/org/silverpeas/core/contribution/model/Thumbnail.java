@@ -104,10 +104,12 @@ public interface Thumbnail extends Serializable {
   String getNonCroppedURL();
 
   /**
-   * Gets the absolute path of this thumbnail in the file system. If no path is defined for this
-   * image (for example the image comes from an hyperlink), then nothing is returned.
-   * @return the path of the thumbnail in the file system or nothing if the image is provided by an
-   * hyperlink.
+   * Gets the absolute path of this thumbnail in the file system. The thumbnail can be an image
+   * uploaded with the contribution or an image picked up in the images store of Silverpeas (the
+   * media libraries sharing their images). If no path is defined for this image (for example the
+   * image comes from an hyperlink or it doesn't exist anymore), then nothing is returned.
+   * @return the path of the thumbnail in the file system or nothing if the image isn't found in
+   * the file system.
    */
   Optional<Path> getPath();
 }
