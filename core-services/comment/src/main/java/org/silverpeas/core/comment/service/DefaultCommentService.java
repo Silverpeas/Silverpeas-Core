@@ -51,8 +51,8 @@ import java.util.Map;
 /**
  * A service that provide the features to handle the comments in Silverpeas. Such features are, for
  * example, retrieving comments on a given content, creating a comment into the business layer,
- * indexing them, notifying components interested in the creation or the deletion of a comment, and
- * so on. A comment is text written by users about a content published in Silverpeas. Such comment,
+ * indexing them, notifying components interested in the creation, update or deletion of a comment,
+ * and so on. A comment is text written by users about a content published in Silverpeas. Such comment,
  * as any other contents in Silverpeas, can be indexed in order to be found by the Silverpeas search
  * engine. This service is managed by an IoC container and this be retrieved by dependency
  * injection.
@@ -143,7 +143,9 @@ public class DefaultCommentService implements CommentService, ComponentInstanceD
   @Transactional
   @Override
   public void updateComment(final Comment cmt) {
+    Comment previous = getCommentDAO().getComment(cmt.getIdentifier());
     getCommentDAO().updateComment(cmt);
+    notifier.notifyEventOn(ResourceEvent.Type.UPDATE, previous, cmt);
   }
 
   @Transactional
