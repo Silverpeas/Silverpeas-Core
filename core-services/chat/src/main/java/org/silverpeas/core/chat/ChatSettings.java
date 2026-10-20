@@ -62,7 +62,7 @@ public class ChatSettings {
    * @return a string representing an identifier.
    */
   public String getSilverpeasChatClientId() {
-    return settings.getString("chat.client.spid", "jsxc");
+    return settings.getString("chat.client.spid", "conversejs");
   }
 
   /**

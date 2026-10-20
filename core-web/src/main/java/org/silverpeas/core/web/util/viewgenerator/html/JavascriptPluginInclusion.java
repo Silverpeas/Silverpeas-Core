@@ -1045,41 +1045,28 @@ public class JavascriptPluginInclusion {
     final JavascriptSettingProducer settingBundle = settingVariableName("SilverChatSettings");
     final String chatDir = getApplicationURL() + "/chat/";
     final ChatSettings chatSettings = ChatSettings.get();
-    final String silverpeasChatClientId = chatSettings.getSilverpeasChatClientId();
-    if (silverpeasChatClientId.equals("jsxc")) {
-      final String jsxcDir = chatDir + "jsxc/";
-      xhtml.addElement(script(jsxcDir + "lib/jquery.fullscreen.js"));
-      xhtml.addElement(script(jsxcDir + "lib/jquery.slimscroll.js"));
-      xhtml.addElement(script(jsxcDir + "lib/jsxc.dep.min.js"));
-      xhtml.addElement(script(jsxcDir + "jsxc.min.js"));
-      xhtml.addElement(script(JAVASCRIPT_PATH + "silverpeas-chat-resizable.js"));
-      xhtml.addElement(script(chatDir + "js/silverchat.min.js"));
-      xhtml.addElement(link(jsxcDir + "css/jsxc.css"));
-      xhtml.addElement(link(jsxcDir + "css/magnific-popup.css"));
-    } else if (silverpeasChatClientId.equals("conversejs")) {
-      final String converseDir = chatDir + "converse/";
-      xhtml.addElement(script(converseDir + "converse.min.js"));
-      xhtml.addElement(script(chatDir + "converse-plugins/silverpeas-commons.min.js"));
-      xhtml.addElement(script(chatDir + "converse-plugins/silverpeas-muc-invitations.min.js"));
-      xhtml.addElement(script(chatDir + "converse-plugins/silverpeas-muc-destroy.min.js"));
-      xhtml.addElement(script(chatDir + "converse-plugins/silverpeas-sp-permalink.min.js"));
-      if (chatSettings.isReplyToEnabled() || chatSettings.isReactionToEnabled()) {
-        xhtml.addElement(script(chatDir + "converse-plugins/actions.min.js"));
-      }
-      if (chatSettings.isVisioEnabled()) {
-        settingBundle.add("v.u", chatSettings.getVisioUrl());
-        xhtml.addElement(script(chatDir + "converse-plugins/jitsimeet.min.js"));
-      }
-      if (chatSettings.isScreencastEnabled()) {
-        xhtml.addElement(script(chatDir + "converse-plugins/screencast.min.js"));
-      }
-      final Element link = link(converseDir + "converse.min.css");
-      if (link instanceof link) {
-        ((link) link).setMedia("screen");
-        xhtml.addElement(link);
-      }
-      xhtml.addElement(script(chatDir + "js/silverpeas-converse.js"));
+    final String converseDir = chatDir + "converse/";
+    xhtml.addElement(script(converseDir + "converse.min.js"));
+    xhtml.addElement(script(chatDir + "converse-plugins/silverpeas-commons.min.js"));
+    xhtml.addElement(script(chatDir + "converse-plugins/silverpeas-muc-invitations.min.js"));
+    xhtml.addElement(script(chatDir + "converse-plugins/silverpeas-muc-destroy.min.js"));
+    xhtml.addElement(script(chatDir + "converse-plugins/silverpeas-sp-permalink.min.js"));
+    if (chatSettings.isReplyToEnabled() || chatSettings.isReactionToEnabled()) {
+      xhtml.addElement(script(chatDir + "converse-plugins/actions.min.js"));
     }
+    if (chatSettings.isVisioEnabled()) {
+      settingBundle.add("v.u", chatSettings.getVisioUrl());
+      xhtml.addElement(script(chatDir + "converse-plugins/jitsimeet.min.js"));
+    }
+    if (chatSettings.isScreencastEnabled()) {
+      xhtml.addElement(script(chatDir + "converse-plugins/screencast.min.js"));
+    }
+    final Element link = link(converseDir + "converse.min.css");
+    if (link instanceof link) {
+      ((link) link).setMedia("screen");
+      xhtml.addElement(link);
+    }
+    xhtml.addElement(script(chatDir + "js/silverpeas-converse.js"));
     xhtml.addElement(link(chatDir + "css/silverchat.css"));
     xhtml.addElement(link(chatDir + "css/silverpeas-converse.css"));
     xhtml.addElement(scriptContent(settingBundle
