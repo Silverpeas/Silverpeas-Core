@@ -80,6 +80,7 @@
   <properties>
     <!-- property used by the CI to both deploy a build version and release the next stable version -->
     <next.release>6.5</next.release>
+    <kernel.version>2.0-build261020</kernel.version>
   </properties>
 
   <dependencies>

@@ -52,7 +52,7 @@
     <dependency>
       <groupId>org.silverpeas.kernel</groupId>
       <artifactId>silverpeas-kernel-test</artifactId>
-      <version>2.0-SNAPSHOT</version>
+      <version>${kernel.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
