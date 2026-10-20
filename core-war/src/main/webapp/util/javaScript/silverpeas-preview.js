@@ -217,7 +217,7 @@
           allDocumentPreviews[nextIndex]);
       $baseContainer.append($previousButton);
       $baseContainer.append($nextButton);
-      $UI(docUI).bind('keydown', __previousOrNextPreview);
+      $UI(docUI).on('keydown', __previousOrNextPreview);
     }
     this.refresh = function() {
       // Final event/UI configurations (that need the dialog opened)
@@ -228,7 +228,7 @@
     };
     this.destroy = function() {
       if (previousIndex >= 0) {
-        $UI(docUI).unbind('keydown', __previousOrNextPreview);
+        $UI(docUI).off('keydown', __previousOrNextPreview);
       }
     };
   }
@@ -258,21 +258,21 @@
     const $button = __configureVisualButtonAspect(type, false);
     $buttonContainer.html($button);
     // Setting onclick result
-    $buttonContainer.click(function() {
+    $buttonContainer.on('click', function() {
       $UI(nextDomObjectPreview).click();
     });
     // Setting onmouseover/onmouseout button event
-    $buttonContainer.mouseenter(function() {
+    $buttonContainer.on('mouseenter', function() {
       __configureVisualButtonAspect(type, true, $button);
     });
-    $buttonContainer.mouseleave(function() {
+    $buttonContainer.on('mouseleave', function() {
       __configureVisualButtonAspect(type, false, $button);
     });
     // Setting baseContainer event (print buttons)
-    $baseContainer.mouseenter(function() {
+    $baseContainer.on('mouseenter', function() {
       $buttonContainer.fadeIn(200);
     });
-    $baseContainer.mouseleave(function() {
+    $baseContainer.on('mouseleave', function() {
       $buttonContainer.fadeOut(400);
     });
     return $buttonContainer;

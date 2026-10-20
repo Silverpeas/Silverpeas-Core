@@ -551,6 +551,15 @@
     }.bind(this);
 
     /**
+     * Reports to the calendar the changes performed on the given event. Since FullCalendar 3.5,
+     * the events given by forEachEvent are copies: a change on them must be explicitly reported.
+     * @param event an event previously obtained from forEachEvent.
+     */
+    this.updateEvent = function(event) {
+      this.$fc.fullCalendar('updateEvent', event);
+    }.bind(this);
+
+    /**
      * Silverpeas Event sources manager
      */
     var SpEventSources = new function() {
@@ -733,7 +742,7 @@
           displayEventEnd : $window.CalendarSettings.get('c.v.m.e')
         },
         week : {
-          columnFormat : 'ddd DD',
+          columnHeaderFormat : 'ddd DD',
           displayEventEnd : $window.CalendarSettings.get('c.v.w.e')
         },
         day : {

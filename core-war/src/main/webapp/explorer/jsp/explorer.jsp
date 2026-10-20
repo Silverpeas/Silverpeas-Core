@@ -234,7 +234,7 @@ $(function () {
     initTree(firstComponentId);
   <% } %>
 
-  $("select").change(function() {
+  $("select").on('change', function() {
     initTree($(this).val());
   });
 

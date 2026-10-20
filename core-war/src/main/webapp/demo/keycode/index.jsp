@@ -31,7 +31,7 @@
   <title>Demo keycodes</title>
   <view:looknfeel/>
   <script type="text/javascript">
-    $(document).ready(function() {
+    $(function() {
       $('#keycode').on('keydown', function(e) {
         e.preventDefault();
         var keyCode = (e.which) ? e.which : e.keyCode;

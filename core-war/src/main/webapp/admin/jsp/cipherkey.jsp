@@ -108,9 +108,9 @@
       }
     }
 
-    $(document).ready(function() {
+    $(function() {
       var enterKey = 13;
-      $("#cipherKey").keypress(function(event) {
+      $("#cipherKey").on('keypress', function(event) {
         if ( event.which === enterKey ) {
           event.preventDefault();
           importCipherKey();

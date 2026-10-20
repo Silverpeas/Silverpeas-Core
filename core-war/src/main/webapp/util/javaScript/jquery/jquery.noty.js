@@ -71,7 +71,7 @@
                         .attr('title', button.title)
                         .appendTo(self.$bar.find('.noty_buttons'))
                         .on('click', function(event) {
-                            if($.isFunction(button.onClick)) {
+                            if(typeof button.onClick === 'function') {
                                 button.onClick.call($button, self, event);
                             }
                         });
@@ -96,7 +96,7 @@
             if(self.options.theme && self.options.theme.style)
                 self.options.theme.style.apply(self);
 
-            ($.type(self.options.layout.css) === 'function') ? this.options.layout.css.apply(self.$bar) : self.$bar.css(this.options.layout.css || {});
+            (typeof self.options.layout.css === 'function') ? this.options.layout.css.apply(self.$bar) : self.$bar.css(this.options.layout.css || {});
 
             self.$bar.addClass(self.options.layout.addClass);
 
@@ -346,7 +346,7 @@
 
         var instance = $.noty.queue[0];
 
-        if($.type(instance) === 'object') {
+        if(instance !== null && typeof instance === 'object') {
             if(instance.options.dismissQueue) {
                 if(instance.options.maxVisible > 0) {
                     if($(instance.options.layout.container.selector + ' > li').length < instance.options.maxVisible) {

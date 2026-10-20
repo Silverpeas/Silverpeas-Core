@@ -37,7 +37,7 @@
  * @returns {JustGage}
  */
 function createGauge(options) {
-  jQuery(document).ready(function() {
+  jQuery(function() {
     var params = {};
     params.id = !options.containerId ? 'gauge' : options.containerId;
     params.title = !options.title ? '' : options.title;
@@ -50,7 +50,7 @@ function createGauge(options) {
     var gauge = new JustGage(params);
 
     // Adding refresh callback if any
-    if (jQuery.isFunction(options.refreshCallback)) {
+    if (typeof options.refreshCallback === "function") {
       var refreshTime = !options.refreshTime ? 5000 : options.refreshTime;
       setInterval(function() {
         gauge.refresh(options.refreshCallback.call(this));

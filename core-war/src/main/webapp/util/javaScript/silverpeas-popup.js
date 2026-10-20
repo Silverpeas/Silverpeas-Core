@@ -71,7 +71,7 @@
                 'display: none; border: 0; padding: 0; text-align: center; overflow: hidden;');
         $(document.body).append($waiting);
         $waiting.popup("waiting");
-        $waiting.dialog("widget").keydown(__preventEscape);
+        $waiting.dialog("widget").on('keydown', __preventEscape);
       }
       $waiting.dialog("open");
     },
@@ -675,7 +675,7 @@
         modal: true,
         resizable: false,
         height: options.height,
-        dialogClass: options.dialogClass
+        classes: {'ui-dialog': ('ui-corner-all ' + (options.dialogClass || '')).trim()}
       });
 
       // Removing the title if requested
@@ -858,7 +858,7 @@
     };
     this.removeLast = function() {
       __debug("removing last");
-      removeContainers(this.getContainers().filter(':last'));
+      removeContainers(this.getContainers().last());
       this.refreshBackgroundState();
     };
     this.getContainers = function() {
@@ -904,7 +904,7 @@
     var forms = dialogInstanceElement.querySelectorAll("form");
     var __lastRegisteredHandler = dialogInstanceElement.__lastRegisteredHandler;
     if (__lastRegisteredHandler) {
-      $forms.unbind('submit', __lastRegisteredHandler);
+      $forms.off('submit', __lastRegisteredHandler);
       [].slice.call(forms, 0).forEach(function(form) {
         form.removeEventListener('submit', __lastRegisteredHandler);
       });
@@ -919,7 +919,7 @@
       }
       return true;
     };
-    $forms.bind('submit', dialogInstanceElement.__lastRegisteredHandler);
+    $forms.on('submit', dialogInstanceElement.__lastRegisteredHandler);
     [].slice.call(forms, 0).forEach(function(form) {
       form.addEventListener('submit', dialogInstanceElement.__lastRegisteredHandler);
     });

@@ -307,7 +307,7 @@ function showExplorer() {
 	SP_openWindow('<%=URLUtil.getApplicationURL()%>/explorer/jsp/explorer.jsp?elementHidden=<%=QueryParameters.PARAM_FOLDER %>&elementVisible=pathAsString&resultType=path&scope='+componentId,'explorer',400,600,'scrollbars=yes');
 }
 
- $(document).ready(function(){
+ $(function(){
     <% if(resource.getSetting("enableAutocompletion", false)){ %>
 		//used for keywords autocompletion
 	    $("#query").autocomplete({

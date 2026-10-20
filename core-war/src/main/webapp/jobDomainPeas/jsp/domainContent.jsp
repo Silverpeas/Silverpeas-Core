@@ -201,7 +201,7 @@
 <script type="text/javascript">
 function ConfirmAndSend(textToDisplay, targetURL) {
   jQuery.popup.confirm(textToDisplay, function() {
-    jQuery('#deletionForm').attr('action', targetURL).submit();
+    jQuery('#deletionForm').attr('action', targetURL).trigger('submit');
   });
 }
 
@@ -480,9 +480,9 @@ out.println(window.printBefore());
           ajaxRequest.send().then(arrayPaneAjaxControl.refreshFromRequestResponse);
         }
 
-        $("#selectedState").change(function() {
+        $("#selectedState").on('change', function() {
           filterByUserState(this);
-        }).bind();
+        });
 
         whenSilverpeasReady(function() {
           arrayPaneAjaxControl = sp.arrayPane.ajaxControls('#dynamic-user-container', {

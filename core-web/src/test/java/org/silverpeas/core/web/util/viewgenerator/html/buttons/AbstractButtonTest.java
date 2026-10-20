@@ -93,7 +93,7 @@ public class AbstractButtonTest {
     String expectedScript =
         "<script type='text/javascript' language='Javascript'>function handleButtonAction() " +
             "{\nif(componentId!==null){jQuery('<form>', {'method':'GET', " +
-            "'action':'/silverpeas/service/resource/id'}).submit();}else{return false;" +
+            "'action':'/silverpeas/service/resource/id'}).trigger('submit');}else{return false;" +
             "}\n}</script>\n";
     assertThat(printResult,
         is(expectedScript + "<ACTION>javascript:onClick=handleButtonAction();</ACTION>"));

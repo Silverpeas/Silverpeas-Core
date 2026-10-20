@@ -594,7 +594,7 @@
     })).
             append($('<span>').html(settings.canBeModified)).appendTo(frame);
 
-    $('.field input:radio').change(function() {
+    $('.field input:radio').on('change', function() {
       var classification = $this.data('classification');
       classification.modifiable = $('.field input:radio:checked').val();
       submitClassification($this, settings.defaultClassificationURI);

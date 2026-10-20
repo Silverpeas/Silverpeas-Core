@@ -128,7 +128,7 @@
           }, 'json');
     }
 
-    $(document).ready(function() {
+    $(function() {
       getTools();
       getComponents();
     });

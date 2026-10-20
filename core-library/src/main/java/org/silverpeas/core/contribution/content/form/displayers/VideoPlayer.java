@@ -46,7 +46,7 @@ public class VideoPlayer {
   private static final int DEFAULT_HEIGHT = 300;
   private static final Random RANDOM_GENERATOR = new Random();
   private static final String TEMPLATE_SCRIPT =
-      "jQuery(document).ready(function() '{'" +
+      "jQuery(function() '{'" +
         "jQuery(''{0}'').embedPlayer('{'" +
           "url : ''{1}''," +
           "width : {2}, " +

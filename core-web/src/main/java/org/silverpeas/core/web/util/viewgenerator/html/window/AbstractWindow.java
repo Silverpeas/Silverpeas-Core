@@ -283,7 +283,7 @@ public abstract class AbstractWindow implements Window {
     sb.append("modal: true,\n");
     sb.append("resizable: false,\n");
     sb.append("width: 400,\n");
-    sb.append("dialogClass: 'help-modal-message',\n");
+    sb.append("classes: {'ui-dialog': 'ui-corner-all help-modal-message'},\n");
     sb.append("buttons: {\n");
     sb.append("\"").append(getGEF().getMultilang().getString("GEF.welcome.button.ok"))
         .append("\": function() {\n");

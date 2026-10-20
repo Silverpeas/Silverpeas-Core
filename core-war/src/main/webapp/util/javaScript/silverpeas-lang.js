@@ -97,6 +97,6 @@ function displayLanguageSelection() {
   $.lang.displayLanguageSelection();
 }
 
-jQuery(document).ready(function() {
+jQuery(function() {
   displayLanguageSelection();
 });

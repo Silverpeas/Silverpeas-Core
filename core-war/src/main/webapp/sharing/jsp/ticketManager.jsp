@@ -83,7 +83,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
     <view:includePlugin name="tags"/>
     <script type="text/javascript">
 let continuousTicket = !<c:out value="${ticket.unlimited}" />;
-$(window).load(function () {
+$(window).on("load", function () {
   toggleContinuous();
 });
 

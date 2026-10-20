@@ -57,12 +57,10 @@ import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.util.SystemWrapper;
 
 import java.text.MessageFormat;
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.stream;
-import static org.silverpeas.core.cache.service.CacheAccessorProvider.getApplicationCacheAccessor;
 import static org.silverpeas.core.cache.service.CacheAccessorProvider.getThreadCacheAccessor;
 import static org.silverpeas.core.chart.ChartSettings.getDefaultPieChartColorsAsJson;
 import static org.silverpeas.core.chart.ChartSettings.getThresholdOfPieCombination;
@@ -103,6 +101,10 @@ public class JavascriptPluginInclusion {
   private static final String PDF_VIEWER_BASE = getApplicationURL() + "/media/jsp/pdf";
   private static final String JQUERY_PATH = JAVASCRIPT_PATH + "jquery/";
   private static final String JQUERY_CSS_PATH = STYLESHEET_PATH + "jquery/";
+  static final String JQUERY_JS = "jquery-3.7.1.min.js";
+  static final String JQUERY_MIGRATE_DEV_JS = "jquery-migrate-3.6.0.js";
+  static final String JQUERY_MIGRATE_MIN_JS = "jquery-migrate-3.6.0.min.js";
+  static final String JQUERY_UI_JS = "jquery-ui-1.14.2.min.js";
   private static final String ANGULARJS_PATH = JAVASCRIPT_PATH + "angularjs/";
   private static final String ANGULARJS_I18N_PATH = ANGULARJS_PATH + "i18n/";
   private static final String ANGULARJS_SERVICES_PATH = ANGULARJS_PATH + SERVICES_PATH_PART;
@@ -296,7 +298,7 @@ public class JavascriptPluginInclusion {
     if (cache.get(key) == null) {
       cache.put(key, true);
       StringBuilder sb = new StringBuilder();
-      sb.append("jQuery(document).ready(function() {");
+      sb.append("jQuery(function() {");
       sb.append("  if (typeof jQuery.").append(jqPluginName).append(" === 'undefined' &&");
       sb.append("      typeof window.").append(jqPluginName).append(" === 'undefined') {");
       sb.append("    jQuery.ajax({type:'GET',url:'").append(normalizeWebResourceUrl(src))
@@ -907,21 +909,29 @@ public class JavascriptPluginInclusion {
     return xhtml;
   }
 
+  /**
+   * Includes jQuery, jQuery Migrate and jQuery UI.
+   * <p>
+   * Only the development build of jQuery Migrate reports in the web browser console the usages of
+   * the deprecated or removed jQuery APIs; its minified build is silent. So, the development
+   * build is served, and not muted, only when the minified version of the JavaScript resources
+   * isn't served (setting {@code web.resource.js.get.minified.enabled}), that is to say in
+   * development.
+   * </p>
+   * @param xhtml the container of the HTML elements to render.
+   * @return the given container.
+   */
   static ElementContainer includeJQuery(final ElementContainer xhtml) {
     includeJQueryCss(xhtml);
-    final String spJQueryScriptName = "silverpeas-jquery.js";
-    final Element spJQueryScript = script(JAVASCRIPT_PATH + spJQueryScriptName);
-    final boolean minifiedVersion = Objects.requireNonNull(getApplicationCacheAccessor().getCache()
-        .computeIfAbsent(spJQueryScriptName, Boolean.class,
-            () -> !spJQueryScript.toString().contains(spJQueryScriptName)));
-    xhtml.addElement(script(JQUERY_PATH + "jquery-3.3.1.min.js"));
-    xhtml.addElement(scriptContent("jQuery.migrateTrace = " + minifiedVersion + ";"));
-    xhtml.addElement(scriptContent("jQuery.migrateMute = " + minifiedVersion + ";"));
-    xhtml.addElement(script(JQUERY_PATH + "jquery-migrate-3.0.1.min.js"));
-    xhtml.addElement(script(JQUERY_PATH + "jquery-ui.min.js"));
+    final boolean minified = URLUtil.isMinifiedWebResourceEnabled("js");
+    xhtml.addElement(script(JQUERY_PATH + JQUERY_JS));
+    xhtml.addElement(scriptContent("jQuery.migrateMute = " + minified + ";"));
+    xhtml.addElement(
+        script(JQUERY_PATH + (minified ? JQUERY_MIGRATE_MIN_JS : JQUERY_MIGRATE_DEV_JS)));
+    xhtml.addElement(script(JQUERY_PATH + JQUERY_UI_JS));
     xhtml.addElement(script(JQUERY_PATH + "jquery.json-2.3.min.js"));
     xhtml.addElement(script(JAVASCRIPT_PATH + "i18n.properties.js"));
-    xhtml.addElement(spJQueryScript);
+    xhtml.addElement(script(JAVASCRIPT_PATH + "silverpeas-jquery.js"));
     return xhtml;
   }
 

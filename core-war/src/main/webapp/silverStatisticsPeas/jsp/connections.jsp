@@ -76,7 +76,7 @@ UserAccessLevel userProfile = (UserAccessLevel)request.getAttribute("UserProfile
 
   function ConfirmAndSend(targetURL,textToDisplay) {
     jQuery.popup.confirm(textToDisplay, function() {
-      jQuery('#genericForm').attr('action', targetURL).submit();
+      jQuery('#genericForm').attr('action', targetURL).trigger('submit');
     });
   }
 

@@ -193,6 +193,7 @@
             <exclude>**/*-min.*</exclude>
             <exclude>**/*.min-*</exclude>
             <exclude>**/*-min-*</exclude>
+            <exclude>**/jquery/jquery-migrate-*.js</exclude>
             <exclude>**/chat/converse/**/*</exclude>
             <exclude>**/util/yui/**/*</exclude>
             <exclude>**/ckeditor*/**/*</exclude>

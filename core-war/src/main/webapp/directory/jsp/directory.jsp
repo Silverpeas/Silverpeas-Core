@@ -121,7 +121,7 @@
         $("#dialog-message").dialog("open");
       } else {
         spProgressMessage.show();
-        $(document.search).submit();
+        $(document.search).trigger('submit');
       }
     }
 
@@ -150,7 +150,7 @@
           modal : true,
           resizable : false,
           width : 570,
-          dialogClass : 'help-modal-message',
+          classes : {'ui-dialog' : 'ui-corner-all help-modal-message'},
           buttons : {
             "<fmt:message key="GML.help.cookie.buttons.ok" />" : function() {
               $.cookie(helpCookieName, "IKnowIt", { expires : 3650, path : '/', secure: ${pageContext.request.secure} });
@@ -204,7 +204,7 @@
         }
       });
 
-      $("#indexAndSearch").keypress(function(e) {
+      $("#indexAndSearch").on('keypress', function(e) {
         if (e.which === 13) {
           e.preventDefault();
           search();
@@ -213,14 +213,14 @@
         return true;
       });
 
-      $("#sources select").change(function() {
+      $("#sources select").on('change', function() {
         spProgressMessage.show();
         location.href = "LimitTo?SourceId="+$(this).val();
       });
 
       let flip = 0;
 
-      $(document).ready(function() {
+      $(function() {
         <c:if test="${showHelp}">
           whenSilverpeasEntirelyLoaded().then(function() {
             setTimeout(showAutoHelp, 0);
@@ -235,7 +235,7 @@
           callbackShowExtraFields();
         } catch (e) {}
         // hide/show other fields
-        $("#advanced").click(function() {
+        $("#advanced").on('click', function() {
           if (flip%2 === 1){
             $("#extraForm li").not(".alwaysShown").hide();
             $("#extraForm .sp_button").hide();

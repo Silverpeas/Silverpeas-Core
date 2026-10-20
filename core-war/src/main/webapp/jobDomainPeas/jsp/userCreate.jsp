@@ -82,7 +82,7 @@
 <script type="text/javascript">
 
   // Password
-  $(document).ready(function(){
+  $(function(){
     $('#userPasswordId').password();
 
     <c:if test="${currentUser.accessAdmin and USER_MANUAL_NOTIFICATION_MAX_RECIPIENT_LIMITATION_ENABLED}">
@@ -170,7 +170,7 @@ function ifCorrectBasicFormExecute(callback) {
 
   <c:if test="${currentUser.accessAdmin and USER_MANUAL_NOTIFICATION_MAX_RECIPIENT_LIMITATION_ENABLED}">
   const rightAccess = $("input[name='userAccessLevel']:checked").val();
-  const limitValue = $.trim($(document.userForm.userManualNotifReceiverLimitValue).val());
+  const limitValue = ($(document.userForm.userManualNotifReceiverLimitValue).val() || "").trim();
   if ((rightAccess === 'USER' || rightAccess === 'GUEST')
       && $(document.userForm.userManualNotifReceiverLimitEnabled).is(":checked")
       && (!isInteger(limitValue) || (limitValue.length > 0 && eval(limitValue) <= 0))) {

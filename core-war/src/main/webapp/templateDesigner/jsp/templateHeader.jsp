@@ -208,14 +208,14 @@
             <% } else { %>
             $(".applicableToDirectory").hide();
             <% } %>
-            $("#DirectoryUsage").click(function() {
+            $("#DirectoryUsage").on('click', function() {
                 $(".notApplicableToDirectory").toggle();
                 $(".applicableToDirectory").toggle();
             });
 
             <c:if test="${not creationMode and template.locked}">
-            $("input").attr("disabled", true);
-            $("input", $(document.DuplicateForm)).attr("disabled", false);
+            $("input").prop("disabled", true);
+            $("input", $(document.DuplicateForm)).prop("disabled", false);
             $(".layer-delete").css("display", "none");
             </c:if>
 

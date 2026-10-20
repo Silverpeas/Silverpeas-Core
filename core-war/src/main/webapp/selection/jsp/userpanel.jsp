@@ -735,7 +735,7 @@
         <c:otherwise>
               $("input#group-selection").val(selectedGroupIds);
               $("input#user-selection").val(selectedUserIds);
-              $("#selection").submit();
+              $("#selection").trigger('submit');
         </c:otherwise>
       </c:choose>
             };
@@ -749,7 +749,7 @@
         <c:otherwise>
             $('input[name="UserOrGroupSelection"]').val('false');
             $("#selection").attr("action", "<c:out value='${cancelationURL}'/>");
-            $("#selection").submit();
+            $("#selection").trigger('submit');
         </c:otherwise>
       </c:choose>
             };
@@ -808,7 +808,7 @@
           $('.listing_groups_filter').css('height', new_height_listing_groups + 'px');
         }
 
-        $(document).ready(function() {
+        $(function() {
           try {
             const documentWidth = 1090;
             if ($(window).width() < documentWidth) {
@@ -818,25 +818,25 @@
             // to prevent errors according to cross browser compatibility
           }
 
-          $(window).resize(function() {
+          $(window).on('resize', function() {
             autoresizeUserGroupFilters();
           });
 
-          $('.add').focusin(function() {
+          $('.add').on('focusin', function() {
             $(this).parent('li').addClass('focus');
           });
-          $('.add').focusout(function() {
+          $('.add').on('focusout', function() {
             $(this).parent('li').removeClass('focus');
           });
-          $('.remove').focusin(function() {
+          $('.remove').on('focusin', function() {
             $(this).parent('li').addClass('focus');
           });
-          $('.remove').focusout(function() {
+          $('.remove').on('focusout', function() {
             $(this).parent('li').removeClass('focus');
           });
-          $('.line').hover(function() {
+          $('.line').on('mouseenter', function() {
             $(this).addClass('focus');
-          }, function() {
+          }).on('mouseleave', function() {
             $(this).removeClass('focus');
           });
 

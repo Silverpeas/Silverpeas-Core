@@ -100,7 +100,7 @@
         <div class="submit">
           <p>
             <input type="submit" style="width:0; height:0; border:0; padding:0"/>
-            <a href="#" class="submit" onclick="$('#changePwdForm').submit()"><span><span><%=authenticationBundle
+            <a href="#" class="submit" onclick="$('#changePwdForm').trigger('submit')"><span><span><%=authenticationBundle
                 .getString("authentication.password.change") %></span></span></a>
             <a href="<%=m_context%>/Main/<%=gef.getLookFrame() %>" class="submit"><span><span><%=authenticationBundle
                 .getString("authentication.password.remindMeLater") %></span></span></a>
@@ -108,7 +108,7 @@
           </p>
 
           <p>
-          <span class="passwordRules"><a href="#" onclick="$('#newPassword').focus()">
+          <span class="passwordRules"><a href="#" onclick="$('#newPassword').trigger('focus')">
             <%=authenticationBundle.getString("authentication.password.showRules") %>
           </a></span>
           </p>
@@ -121,7 +121,7 @@
 <script type="text/javascript">
   loadingPromise.then(function() {
     setTimeout(function() {
-      $('#oldPassword').focus();
+      $('#oldPassword').trigger('focus');
       handlePasswordForm({
         passwordFormId : 'changePwdForm',
         passwordFormAction : '<c:url value="/CredentialsServlet/EffectiveChangePasswordBeforeExpiration"/>',

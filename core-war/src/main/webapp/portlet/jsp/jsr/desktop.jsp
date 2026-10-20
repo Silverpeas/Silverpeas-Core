@@ -131,7 +131,7 @@
     $('#title').val($('#portletList option:selected').text());
   }
 
-  $(document).ready(function() {
+  $(function() {
     selectPortlet();
   });
 

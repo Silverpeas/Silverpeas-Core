@@ -1040,7 +1040,7 @@ const dragAndDropUploadEnabled = window.File;
  */
 function initDragAndDropUploadAndReload(options) {
   if (!dragAndDropUploadEnabled) {
-    jQuery(document).ready(function() {
+    jQuery(function() {
       jQuery('.dragAndDropUploadCheck').remove();
     });
     return false;

@@ -142,7 +142,7 @@
     $(function() {
 
       // change displayers list according to selected type
-      $("select[name='item']").change(function() {
+      $("select[name='item']").on('change', function() {
         changeDisplayersList();
       });
 
