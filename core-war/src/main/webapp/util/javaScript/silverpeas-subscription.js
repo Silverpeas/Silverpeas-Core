@@ -170,7 +170,7 @@
       let error;
       const __componentInstanceIdIsMissing = function(item) {
         const componentInstanceId = item.subscription.componentInstanceId;
-        return typeof componentInstanceId !== 'string' || $.trim(componentInstanceId) === 0
+        return typeof componentInstanceId !== 'string' || componentInstanceId.trim().length === 0
       };
       if (settings.items.verifyAtLeastOne(__componentInstanceIdIsMissing)) {
         error = "Silverpeas Subscription JQuery Plugin - ERROR - subscription.componentInstanceId parameter must be set";
@@ -180,7 +180,7 @@
       const __resourceIdIsMissing = function(item) {
         const resourceId = item.subscription.resourceId;
         return item.subscription.type !== $.subscription.subscriptionType.COMPONENT &&
-            (typeof resourceId !== 'string' || $.trim(resourceId) === 0)
+            (typeof resourceId !== 'string' || resourceId.trim().length === 0)
       };
       if (settings.items.verifyAtLeastOne(__resourceIdIsMissing)) {
         error = "Silverpeas Subscription JQuery Plugin - ERROR - subscription.resourceId parameter must be set";

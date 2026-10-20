@@ -116,7 +116,7 @@
     }, plotChart.options));
 
     if (params.onItemClick) {
-      jQuery(params.chartSelector).bind("plotclick", function(event, pos, item) {
+      jQuery(params.chartSelector).on("plotclick", function(event, pos, item) {
         if (item) {
           params.onItemClick.call(this, item.series);
         }

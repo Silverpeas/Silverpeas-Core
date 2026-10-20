@@ -321,7 +321,7 @@
       }
     }
 
-    $(document).ready(function() {
+    $(function() {
       // Use the each() method to gain access to each elements attributes
       $('a[rel]', $('.qTipCompliant')).each(function() {
         $(this).qtip({

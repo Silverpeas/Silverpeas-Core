@@ -222,13 +222,13 @@
   </view:frame>
 </view:window>
 <script type="application/javascript">
-  $(document).ready(function() {
+  $(function() {
     function updateDefaultLevelState(logger) {
       var $parentOptions = $('#level').find('option[value="PARENT"]');
       if (logger === 'silverpeas') {
         $parentOptions.attr('disabled', 'disabled');
       } else {
-        $parentOptions.removeAttr('disabled');
+        $parentOptions.prop('disabled', false);
       }
     }
 
@@ -240,17 +240,17 @@
     $('#level').val(loggerConfigurations.configurationOf(namespace).level);
     updateDefaultLevelState(namespace);
 
-    $logger.change(function() {
+    $logger.on('change', function() {
       var namespace = $(this).val();
       $('#level').val(loggerConfigurations.configurationOf(namespace).level);
       updateDefaultLevelState(namespace);
     });
 
-    $('#logger-level-setting').submit(function() {
+    $('#logger-level-setting').on('submit', function() {
       changeLoggingLevel();
       return false;
     });
-    $('#logging-content').submit(function() {
+    $('#logging-content').on('submit', function() {
       fetchLastLogRecords();
       return false;
     });

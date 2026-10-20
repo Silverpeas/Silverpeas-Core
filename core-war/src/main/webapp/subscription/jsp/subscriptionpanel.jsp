@@ -419,7 +419,7 @@
                 subscription.subscriber.id == '${currentUserId}')) {
           const unsuncribeAction = $('<a>');
           $subscription.append(unsuncribeAction.attr('title',
-                  '${unsubscribeLabel}').addClass('action unsubscribe').text('${unsubscribeLabel}').click(function() {
+                  '${unsubscribeLabel}').addClass('action unsubscribe').text('${unsubscribeLabel}').on('click', function() {
                 __confirmSubscriptionDeletion(subscription, function() {
                   $.ajax({
                     url : context.unsubscribeStartUrl + '/' + subscription.ws.subscriberType + '/' +
@@ -548,7 +548,7 @@
     /**
      * Initialization.
      */
-    jQuery(document).ready(function() {
+    jQuery(function() {
       jQuery.subscription();
     });
   </script>

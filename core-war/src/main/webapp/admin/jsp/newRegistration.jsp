@@ -168,7 +168,7 @@
                 }
             }
 
-            $(document).ready(function () {
+            $(function () {
                 var captcha = sliderCaptcha({
                     id: 'captcha',
                     width: 600,

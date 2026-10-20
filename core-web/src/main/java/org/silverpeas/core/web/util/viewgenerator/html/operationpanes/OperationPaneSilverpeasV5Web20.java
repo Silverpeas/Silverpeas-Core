@@ -153,7 +153,7 @@ public class OperationPaneSilverpeasV5Web20 extends AbstractOperationPane {
     result
         .append(
             "if (('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0)) ")
-        .append("$($whatNextMenu).bind('touchstart', function() { oMenu.show(); });");
+        .append("$($whatNextMenu).on('touchstart', function() { oMenu.show(); });");
 
     if (highlightCreationItems()) {
       result.append(

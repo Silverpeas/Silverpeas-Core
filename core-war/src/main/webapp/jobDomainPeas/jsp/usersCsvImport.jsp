@@ -89,7 +89,7 @@ function SubmitWithVerif() {
   }
 }
 
-$(document).ready(function(){
+$(function(){
   <c:if test="${not empty personalizedFieldLabels}">
   $('.yesno').each(function() {
     const $yesno = $(this);

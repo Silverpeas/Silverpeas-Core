@@ -22,7 +22,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-$(document).ready(function() {
+$(function() {
   // By suppling no content attribute, the library uses each elements title attribute by default
   $('img[title]').each(function() {
     $(this).qtip({

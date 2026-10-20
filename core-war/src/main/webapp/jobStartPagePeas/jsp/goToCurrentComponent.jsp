@@ -28,7 +28,7 @@
 <view:sp-page>
     <view:sp-head-part>
         <script type="text/javascript">
-          $(document).ready(function() {
+          $(function() {
             const componentId = '${requestScope.ComponentId == null ? param.ComponentId :
                 requestScope.ComponentId}';
             spAdminWindow.loadComponent(componentId);

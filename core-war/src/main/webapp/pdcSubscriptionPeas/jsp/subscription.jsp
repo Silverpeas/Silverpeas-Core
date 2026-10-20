@@ -149,7 +149,7 @@
       <c:if test="${!isNewSubscription}">
         $('#PdcSubscription').attr('action', 'updateSubscription');
       </c:if>
-        $('#PdcSubscription').submit();
+        $('#PdcSubscription').trigger('submit');
       }
 
       <c:if test="${isForced}">
@@ -159,13 +159,13 @@
         // subscribers can be designated at any moment of the edition.
         collectPositions();
         $('#PdcSubscription').attr('action', 'ToUserPanel');
-        $('#PdcSubscription').submit();
+        $('#PdcSubscription').trigger('submit');
       }
       </c:if>
 
       function goBack() {
         $('#PdcSubscription').attr('action', 'ViewSubscriptionTaxonomy');
-        $('#PdcSubscription').submit();
+        $('#PdcSubscription').trigger('submit');
       }
     </script>
   </view:sp-body-part>

@@ -85,7 +85,7 @@
     }
 
     function checkForm() {
-      $("form").submit();
+      $("form").trigger('submit');
     }
 
     function welcome() {
@@ -118,7 +118,7 @@
       form.submit();
     }
 
-    $(document).ready(function() {
+    $(function() {
       $("#DomainId").on("keypress", function(event) {
         if (event.keyCode === 13) {
           checkForm();

@@ -191,7 +191,7 @@
    * @private
    */
   function __prepareRoleResponsibles($target, userId, dataOfUsers) {
-    if ($.isArray(dataOfUsers) && dataOfUsers.length > 0) {
+    if (Array.isArray(dataOfUsers) && dataOfUsers.length > 0) {
       const $users = $('<ul>', {'class': 'list-responsible-user'});
       $.each(dataOfUsers, function (index, user) {
         const $user = $('<span>').append(' ' + user.fullName);
@@ -209,7 +209,7 @@
               {
                 href: '#',
                 'class': 'link notification'
-              }).append($.responsibles.labels.sendMessage)).click(function () {
+              }).append($.responsibles.labels.sendMessage)).on('click', function () {
             sp.messager.open(null, {recipientUsers: user.id, recipientEdition: false});
           });
         } else {

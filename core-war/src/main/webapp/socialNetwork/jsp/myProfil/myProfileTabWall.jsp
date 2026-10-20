@@ -51,7 +51,7 @@ function getFeedURL() {
 	return '<%=urlServlet%>';
 }
 
-$(document).ready(function(){
+$(function(){
 	init('<%=SocialInformationType.ALL %>');
 });
 </script>

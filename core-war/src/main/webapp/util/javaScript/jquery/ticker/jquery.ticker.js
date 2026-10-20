@@ -118,7 +118,7 @@
 				// add the controls to the DOM if required
 				if (opts.controls) {
 					// add related events - set functions to run on given event
-					$(settings.dom.controlsID).live('click mouseover mousedown mouseout mouseup', function (e) {
+					$(document).on('click mouseover mousedown mouseout mouseup', settings.dom.controlsID, function (e) {
 						var button = e.target.id;
 						if (e.type == 'click') {
 							switch (button) {
@@ -167,11 +167,11 @@
 				}
 				if (opts.displayType != 'fade') {
 			// add mouse over on the content
-			$(settings.dom.contentID).mouseover(function () {
+			$(settings.dom.contentID).on("mouseover", function () {
 				if (settings.paused == false) {
 					pauseTicker();
 				}
-			}).mouseout(function () {
+			}).on("mouseout", function () {
 				if (settings.paused == false) {
 					restartTicker();
 				}

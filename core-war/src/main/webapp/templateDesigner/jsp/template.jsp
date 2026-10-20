@@ -45,7 +45,7 @@ context.setDesignMode(true);
 <script type="text/javascript">
 function deleteField(fieldName) {
   $("#templateForm #fieldName").val(fieldName);
-  $("#templateForm").submit();
+  $("#templateForm").trigger('submit');
 }
 
 function editField(fieldName,displayer) {
@@ -70,7 +70,7 @@ function openFieldWindow(url, displayer) {
 }
 
 <% if (context.isDesignMode()) { %>
-$(document).ready(function(){
+$(function(){
 	$(".fields").sortable({
 		opacity: 0.4,
 		handle: 'label',

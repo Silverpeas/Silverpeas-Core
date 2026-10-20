@@ -134,11 +134,11 @@
                   // setting titles over stars and reset buttons
                   $rating.find(".rateit-reset").attr('title',
                           label_RatingVoteDelete + ' : ' + label_RatingTooltips[raterRating - 1]);
-                  $rating.bind('over', function(event, value) {
+                  $rating.on('over', function(event, value) {
                     $(this).attr('title', label_RatingTooltips[value - 1]);
                   });
 
-                  $rating.bind('rated reset', function(e) {
+                  $rating.on('rated reset', function(e) {
                     var ri = $(this);
 
                     // if the use pressed reset, it will get value: 0 (to be compatible with the HTML range control),

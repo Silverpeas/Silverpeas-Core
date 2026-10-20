@@ -56,7 +56,7 @@
 
             testSubject.insertAfter(input);
 
-            $(this).bind('keyup keydown blur update', check);
+            $(this).on('keyup keydown blur update', check);
 
         });
 
@@ -168,7 +168,7 @@
             this.input = this.element.find(".tagit-input");
             this.input.autoGrowInput();
             //setup click handler
-            $(this.element).click(function (e) {
+            $(this.element).on('click', function (e) {
                 if ($(e.target).hasClass('tagit-close')) {
                     // Removes a tag when the little 'x' is clicked.
                     var parent = $(e.target).parent();
@@ -180,7 +180,7 @@
                 }
                 else {
                     if (!self._isEditing) { //focus default input if we're not editing existing tag at the moment
-                        self.input.focus();
+                        self.input.trigger('focus');
                     }
                     if (self.options.emptySearch && $(e.target).hasClass('tagit-input') && self.input.val() == '' && self.input.autocomplete != undefined) {
                         self.input.autocomplete('search');
@@ -223,27 +223,27 @@
             this.options.select = os;
 
             self.isKeyEventProcessed = false;
-            this.input.keyup(function(e) {
+            this.input.on('keyup', function(e) {
                 self.isKeyEventProcessed = false;
             });
 
-            this.input.keydown(function (e) {
+            this.input.on('keydown', function (e) {
                 self._processKeyEvent(e);
             });
             //setup keydown handler
-            this.input.keypress(function (e) {
+            this.input.on('keypress', function (e) {
                 self._processKeyEvent(e);
             });
 
-            this.input.bind("paste", function (e) {
+            this.input.on("paste", function (e) {
                 if (self.options.blurOnPaste) {
                     var input = $(this);
-                    self.timer = setTimeout(function () { input.blur(); }, 0);
+                    self.timer = setTimeout(function () { input.trigger('blur'); }, 0);
                 }
             });
 
             //setup blur handler
-            this.input.blur(function (e) {
+            this.input.on('blur', function (e) {
                 self.currentLabel = $(this).val();
                 self.currentValue = $(this).data('value');
                 if (self.options.allowNewTags) {
@@ -311,7 +311,7 @@
 
             var pressedKey = e.which || e.keyCode || e.charCode;
             // console.log("processKeyEvent:" + pressedKey);
-            var lastLi = this.element.children(".tagit-choice:last");
+            var lastLi = this.element.children(".tagit-choice").last();
 
             this.isKeyEventProcessed = true;
 
@@ -343,12 +343,12 @@
         },
 
 		_postEdit: function(element, editInput, initialValue) {
-            var finishEditing = $.proxy(function() {
+            var finishEditing = function() {
                 editInput.remove();
                 $(element).removeClass('hidden');
                 $(element).parent().removeClass('edited');
                 this._isEditing = false;
-            }, this);
+            }.bind(this);
 
             return function() {
                 var initialTagIndex = $(element).parent().index();
@@ -389,25 +389,25 @@
             editInput.addClass('tagit-edit');
             editInput.css('width', $(element).outerWidth());
             $(element).addClass('hidden');
-            editInput.blur($.proxy(this._postEdit(element, editInput, initialValue), this));
-            editInput.keypress($.proxy(function(e) {
+            editInput.on('blur', this._postEdit(element, editInput, initialValue).bind(this));
+            editInput.on('keypress', function(e) {
                 var pressedKey = e.which || e.keyCode || e.charCode;
                 if (this._isInitKey(pressedKey)) {
-                    editInput.blur();
+                    editInput.trigger('blur');
                 }
-            }, this));
+            }.bind(this));
             $(element).before(editInput);
             editInput[0].select();
         },
 
         _popSelect:function (tag) {
-            $('option:eq(' + tag.index + ')', this.select).remove();
-            this.select.change();
+            $('option', this.select).eq(tag.index).remove();
+            this.select.trigger('change');
         },
 
         _addSelect:function (tag) {
             this.select.append('<option selected="selected" value="' + tag.value + '">' + tag.label + '</option>');
-            this.select.change();
+            this.select.trigger('change');
         },
 
         _popTag:function (tag) {
@@ -526,7 +526,7 @@
 
         _removeTag:function () {
             this._popTag();
-            this.element.children(".tagit-choice:last").remove();
+            this.element.children(".tagit-choice").last().remove();
         },
 
         _backspace:function (li) {
@@ -580,7 +580,7 @@
                 this.tagsArray[ind].index = ind;
 
             if(this.options.select){
-                $('option:eq(' + old_index + ')', this.select).insertBefore($('option:eq(' + new_index + ')', this.select));
+                $('option', this.select).eq(old_index).insertBefore($('option', this.select).eq(new_index));
             }
         },
         tags:function () {
@@ -598,7 +598,7 @@
             this.tagsArray = [];
             if (this.options.select) {
                 this.select.children().remove();
-                this.select.change();
+                this.select.trigger('change');
             }
             this._initialTags();
             if (this.options.tagsChanged)

@@ -2970,8 +2970,8 @@ if (typeof window.sp === 'undefined') {
                   e.stopPropagation();
                   e.preventDefault();
                 };
-                jQuery(elt).bind('mousedown', muteEvent);
-                jQuery(elt).bind('mouseup', muteEvent);
+                jQuery(elt).on('mousedown', muteEvent);
+                jQuery(elt).on('mouseup', muteEvent);
                 $help.spSearchHelpApi = spSearchHelpApi;
               }));
         }

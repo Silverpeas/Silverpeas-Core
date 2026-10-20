@@ -29,9 +29,9 @@
   <link type="text/css" rel="stylesheet" href="repositorySharing.css"/>
   <link href="ui-lightness/jquery-ui.min.css" rel="stylesheet" type="text/css"/>
   <link href="themes/default/style.min.css" rel="stylesheet" type="text/css"/>
-  <script type="text/javascript" src="jquery-3.3.1.min.js"></script>
-  <script type="text/javascript" src="jquery-migrate-3.0.1.min.js"></script>
-  <script type="text/javascript" src="jquery-ui.min.js"></script>
+  <script type="text/javascript" src="jquery-3.7.1.min.js"></script>
+  <script type="text/javascript" src="jquery-migrate-3.6.0.min.js"></script>
+  <script type="text/javascript" src="jquery-ui-1.14.2.min.js"></script>
   <script type="text/javascript" src="i18n.properties.js"></script>
   <script type="text/javascript" src="jstree.min.js"></script>
   <script type="text/javascript" src="smartpaginator.js"></script>
@@ -231,7 +231,7 @@ $(function () {
 		$("#empty-folder").html(window.i18n.prop("folder.empty"));
 	}
 
-	$('#download-link').click(function processZip() {
+	$('#download-link').on('click', function processZip() {
 		// get ids of files checked
 		var ids = $(':checkbox:checked').map(function() {
 			return $(this).val();

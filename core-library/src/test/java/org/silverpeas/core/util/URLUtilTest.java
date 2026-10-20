@@ -85,6 +85,44 @@ class URLUtilTest {
   }
 
   @Test
+  void verifyMinifiedWebResourceUrlWhenMinificationEnabled() throws Exception {
+    final SettingBundleStub generalSettings = new SettingBundleStub("org.silverpeas.general")
+        .put("web.resource.js.get.minified.enabled", "true")
+        .put("web.resource.css.get.minified.enabled", "true");
+    generalSettings.beforeEach(null);
+    try {
+      assertThat(isMinifiedWebResourceEnabled("js"), is(true));
+      assertThat(isMinifiedWebResourceEnabled("css"), is(true));
+      assertThat(getMinifiedWebResourceUrl("/silverpeas/util/javaScript/silverpeas.js"),
+          is("/silverpeas/util/javaScript/silverpeas-min.js"));
+      assertThat(getMinifiedWebResourceUrl("/silverpeas/util/styleSheets/silverpeas.css"),
+          is("/silverpeas/util/styleSheets/silverpeas-min.css"));
+      assertThat(getMinifiedWebResourceUrl("/silverpeas/util/javaScript/jquery/jquery-3.7.1.min.js"),
+          is("/silverpeas/util/javaScript/jquery/jquery-3.7.1.min.js"));
+    } finally {
+      generalSettings.afterEach(null);
+    }
+  }
+
+  @Test
+  void verifyMinifiedWebResourceUrlWhenMinificationDisabled() throws Exception {
+    final SettingBundleStub generalSettings = new SettingBundleStub("org.silverpeas.general")
+        .put("web.resource.js.get.minified.enabled", "false")
+        .put("web.resource.css.get.minified.enabled", "false");
+    generalSettings.beforeEach(null);
+    try {
+      assertThat(isMinifiedWebResourceEnabled("js"), is(false));
+      assertThat(isMinifiedWebResourceEnabled("css"), is(false));
+      assertThat(getMinifiedWebResourceUrl("/silverpeas/util/javaScript/silverpeas.js"),
+          is("/silverpeas/util/javaScript/silverpeas.js"));
+      assertThat(getMinifiedWebResourceUrl("/silverpeas/util/styleSheets/silverpeas.css"),
+          is("/silverpeas/util/styleSheets/silverpeas.css"));
+    } finally {
+      generalSettings.afterEach(null);
+    }
+  }
+
+  @Test
   void verifyAddFingerprintVersionOn() {
     setSilverpeasVersion(SILVERPEAS_VERSION);
     assertVariousResourceURLs("611");

@@ -184,7 +184,7 @@ function __noty(data) {
  * @param registredKey
  */
 function notyRegistredMessages(registredKey) {
-  jQuery(document).ready(function() {
+  jQuery(function() {
     const url = webContext + '/services/messages/' + registredKey;
 
     // Ajax request
@@ -204,7 +204,7 @@ function notyRegistredMessages(registredKey) {
               timeout: false,
               layout: 'topCenter'
             };
-            if (jQuery.isNumeric(message.displayLiveTime) && message.displayLiveTime > 0) {
+            if (Number.isFinite(Number(message.displayLiveTime)) && message.displayLiveTime > 0) {
               messageOptions.timeout = message.displayLiveTime;
             } else {
               messageOptions.closeWith = ['button']; // ['click', 'button', 'hover']
@@ -259,7 +259,7 @@ function notySetupRequestComplete(request) {
 function notySetupAjaxMessages() {
   const error = function (jqXHR, errorThrown) {
     let errorMsg = jqXHR.responseText;
-    if (!jQuery.trim(errorMsg)) {
+    if (!String(errorMsg || "").trim()) {
       errorMsg = errorThrown;
     }
     window.console && window.console.error('Silverpeas JQuery Ajax - ERROR - ' + errorMsg);
@@ -272,10 +272,10 @@ function notySetupAjaxMessages() {
       notySetupRequestComplete.call(this, jqXHR);
     }
   });
-  jQuery(document).ajaxError(function(event, jqXHR, settings, errorThrown) {
+  jQuery(document).on("ajaxError", function(event, jqXHR, settings, errorThrown) {
     error.call(this, jqXHR, errorThrown);
   });
-  jQuery(document).ajaxComplete(function(event, jqXHR, settings) {
+  jQuery(document).on("ajaxComplete", function(event, jqXHR, settings) {
     notySetupRequestComplete.call(this, jqXHR);
   });
 }

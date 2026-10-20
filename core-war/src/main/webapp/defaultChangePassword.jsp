@@ -112,11 +112,11 @@
         <div class="submit">
           <p>
             <input type="submit" style="width:0; height:0; border:0; padding:0"/>
-            <a href="#" style="cursor: pointer" class="<%=submitClass%>" onclick="$('#changePwdForm').submit()"><span><span>LOGIN</span></span></a>
+            <a href="#" style="cursor: pointer" class="<%=submitClass%>" onclick="$('#changePwdForm').trigger('submit')"><span><span>LOGIN</span></span></a>
           </p>
 
           <p>
-          <span class="passwordRules"><a href="#" onclick="$('#newPassword').focus()">
+          <span class="passwordRules"><a href="#" onclick="$('#newPassword').trigger('focus')">
             <fmt:message key="authentication.password.showRules" bundle="${authenticationBundle}"/>
           </a></span>
           </p>
@@ -136,14 +136,14 @@
       var extraValidations;
       <c:if test="${isEmailAddress}">
       extraValidations = function(errorStack) {
-        if (!$.trim($('#emailAddress').val())) {
+        if (!($('#emailAddress').val() || '').trim()) {
           errorStack.push(
               '<fmt:message key="authentication.email.error" bundle="${authenticationBundle}"/>');
         }
         return sp.promise.resolveDirectlyWith();
       };
       var $emailMessage = $('#emailAddressMessage');
-      if ($emailMessage.length > 0 && $.trim($emailMessage.html())) {
+      if ($emailMessage.length > 0 && $emailMessage.html().trim()) {
         var $emailAddress = $('#emailAddress');
         $emailAddress.qtip({
           content : $emailMessage,

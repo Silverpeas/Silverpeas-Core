@@ -59,14 +59,14 @@
     </style>
     <![endif]-->
     <script type="text/javascript">
-      $(document).ready(function() {
+      $(function() {
         $('#termsOfServiceAcceptance').on("submit", function() {
           this.action = '<c:url value="/CredentialsServlet/TermsOfServiceResponse"/>';
           return true;
         });
       });
       function submit() {
-        $('#termsOfServiceAcceptance').submit();
+        $('#termsOfServiceAcceptance').trigger('submit');
       }
       function userAccept() {
         $('#tosAccepted').val('true');

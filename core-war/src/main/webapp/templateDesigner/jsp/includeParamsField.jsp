@@ -184,9 +184,9 @@ if (field != null) {
 	  }
 	}
 
-	$(document).ready(
+	$(
 		function () {
-			$( "#multivaluableChk" ).change(function() {
+			$( "#multivaluableChk" ).on('change', function() {
 			  checkMultivaluedVisibility();
 			});
 

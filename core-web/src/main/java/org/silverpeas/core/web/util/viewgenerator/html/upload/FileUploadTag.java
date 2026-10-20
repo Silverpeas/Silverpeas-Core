@@ -165,7 +165,7 @@ public class FileUploadTag extends TagSupport {
       final Element jsPlugin = script(
           URLUtil.getApplicationURL() + "/util/javaScript/silverpeas-fileUpload.js");
       xhtmlcontainer.addElement(jsPlugin);
-      String jQueryStart = "jQuery(document).ready(function(){jQuery('.fileUpload-tag').fileUpload({" +
+      String jQueryStart = "jQuery(function(){jQuery('.fileUpload-tag').fileUpload({" +
                            "multiple:" + isMultiple() +
                            ",infoInputs:" + isInfoInputs() +
                            ",dragAndDropDisplay:" + isDragAndDropDisplay() +

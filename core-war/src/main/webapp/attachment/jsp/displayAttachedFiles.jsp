@@ -414,7 +414,7 @@ if (!window.attachmentEventManager) {
     return this.replace(/\{(\d+)\}/g, function(m, n) { return args[n]; });
   };
 
-  jQuery(document).ajaxError(function(event, jqXHR, settings, errorThrown) {
+  jQuery(document).on('ajaxError', function(event, jqXHR, settings, errorThrown) {
     $.closeProgressMessage();
   });
 
@@ -488,7 +488,7 @@ const _afManager${domIdSuffix} = new function() {
   }
 
   // Create the tooltips only on document load
-  $(document).ready(function() {
+  $(function() {
 
     jQuery.fn.extend({
       findByName : function(name) {
@@ -726,7 +726,7 @@ const _afManager${domIdSuffix} = new function() {
       }
     </c:if>
 
-    $(document).ready(function() {
+    $(function() {
 
       _self.addAttachment = function(foreignId) {
         window.attachmentApp.manager.addToResource(extendsObject({
@@ -1011,7 +1011,7 @@ const _afManager${domIdSuffix} = new function() {
             const $updateAttachmentForm = _self_ui.get$updateAttachment().find('form');
             let submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' +
                 $(this).data('attachmentId');
-            const filename = $.trim($updateAttachmentForm.findByName("file_upload").val().split('\\').pop());
+            const filename = $updateAttachmentForm.findByName("file_upload").val().split('\\').pop().trim();
             if (filename !== '') {
               submitUrl = submitUrl + '/' + encodeURIComponent(filename);
             } else {
@@ -1172,7 +1172,7 @@ const _afManager${domIdSuffix} = new function() {
         title: "<fmt:message key="attachment.dialog.onlineEditing.customProtocol.title"/>",
         height: 'auto',
         width: 550,
-        dialogClass: 'help-modal-message',
+        classes: {'ui-dialog': 'ui-corner-all help-modal-message'},
         modal: true,
         buttons: {
           "<fmt:message key="attachment.dialog.onlineEditing.customProtocol.button.edit"/>": function() {
@@ -1186,7 +1186,7 @@ const _afManager${domIdSuffix} = new function() {
         }
       });
 
-      get$containerEl().bind('sortupdate', function(event, ui) {
+      get$containerEl().on('sortupdate', function(event, ui) {
         const sortedIds = get$containerEl().sortable('toArray').map(function(id) {
           return id.replace('attachment_', '');
         });

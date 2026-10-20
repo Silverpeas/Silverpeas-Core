@@ -174,7 +174,7 @@ if (action != null) {
 <view:looknfeel/>
 <script language="JavaScript">
 <% if (action != null && isIndexationProcessRunning) { %>
-$(document).ready(function() {
+$(function() {
   notyError("<%=indexMessage%>");
 });
 <% } %>

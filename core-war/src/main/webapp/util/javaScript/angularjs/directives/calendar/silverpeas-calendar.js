@@ -399,7 +399,7 @@
                     qTipOptions.events = {
                       hidden : function() {
                         if ($markerOfListView.$tip$ && $markerOfListView.$tip$shown) {
-                          $scrollContainer.unbind("scroll", $markerOfListView.$tip$listener);
+                          $scrollContainer.off("scroll", $markerOfListView.$tip$listener);
                           $markerOfListView.$tip$.destroy();
                           $markerOfListView.$tip$ = undefined;
                           $markerOfListView.$tip$listener = undefined;
@@ -436,7 +436,7 @@
                     };
                     $markerOfListView.$tip$ = $tipApi;
                     $markerOfListView.$tip$listener = __listener;
-                    $scrollContainer.bind("scroll", __listener);
+                    $scrollContainer.on("scroll", __listener);
                   }
                   resolve();
                 }.bind(this));
@@ -786,10 +786,11 @@
                           if (occurrenceToRefresh.occurrenceId === occurrence.occurrenceId) {
                             extendsObject(occurrenceToRefresh, occurrence);
                             occurrenceToRefresh._sp_ui_version = _sp_ui_version;
+                            this.spCalendar.updateEvent(occurrenceToRefresh);
                             break;
                           }
                         }
-                      });
+                      }.bind(this));
                     }.bind(this));
               }.bind(this),
               /**

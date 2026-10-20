@@ -213,7 +213,7 @@ public abstract class AbstractForm implements Form {
           .append("\n\n");
 
       out.append("function showOneMoreField(fieldName) {\n");
-      out.append("$('.field_'+fieldName+' ." + REPEATED_FIELD_CSS_HIDE + ":first').removeClass('" +
+      out.append("$('.field_'+fieldName+' ." + REPEATED_FIELD_CSS_HIDE + "').first().removeClass('" +
           REPEATED_FIELD_CSS_HIDE + "').addClass('" + REPEATED_FIELD_CSS_SHOW + "');\n");
       out.append("if ($('.field_'+fieldName+' ." + REPEATED_FIELD_CSS_HIDE + "').length == 0) {\n");
       out.append(" $('#form-row-'+fieldName+' #moreField-'+fieldName).hide();\n");

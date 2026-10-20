@@ -64,10 +64,25 @@
    */
   function __handleFormSubmit($form, options) {
     const _self = $form[0];
-    $form.submit(function() {
+    $form.on('submit', function() {
       let iframeAjaxTransportOptions = {
         iframe : true,
-        files : $(":file", $form)
+        files : $(":file", $form),
+        // the complete setting is invoked with the jqXHR whatever the outcome of the request
+        complete : function(uploadedFiles) {
+          const jsonObject = typeof uploadedFiles.responseText === 'string'
+              ? JSON.parse(uploadedFiles.responseText)
+              : uploadedFiles;
+          if (jsonObject && typeof jsonObject.iframeMessageKey === 'string' &&
+              jsonObject.iframeMessageKey.length > 0) {
+            notyRegistredMessages(jsonObject.iframeMessageKey);
+            if (options.error) {
+              options.error.call(_self, "");
+            }
+          } else if (options.complete) {
+            options.complete.call(_self, jsonObject);
+          }
+        }
       };
       if (!options.sendFilesOnly) {
         const data = $(":not(:file)", $form).serializeArray();
@@ -76,20 +91,7 @@
           processData : false
         });
       }
-      $.ajax($form.attr('action'), iframeAjaxTransportOptions).complete(function(uploadedFiles) {
-        const jsonObject = typeof uploadedFiles.responseText === 'string'
-            ? $.parseJSON(uploadedFiles.responseText)
-            : uploadedFiles;
-        if (jsonObject && typeof jsonObject.iframeMessageKey === 'string' &&
-            jsonObject.iframeMessageKey.length > 0) {
-          notyRegistredMessages(jsonObject.iframeMessageKey);
-          if (options.error) {
-            options.error.call(_self, "");
-          }
-        } else if (options.complete) {
-          options.complete.call(_self, jsonObject);
-        }
-      }).error(function(jqXHR, textStatus, errorThrown) {
+      $.ajax($form.attr('action'), iframeAjaxTransportOptions).fail(function(jqXHR, textStatus, errorThrown) {
             if (options.error) {
               options.error.call(_self, errorThrown);
             }

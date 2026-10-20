@@ -238,7 +238,7 @@
    */
   function __handleFormSubmits(params) {
     if (params.options.jqueryFormSelector.length > 0) {
-      $(document).ready(function() {
+      $(function() {
         $(params.options.jqueryFormSelector).on("submit", function() {
           if (__getNbFilesBeingTransfer(params) > 0) {
             notyInfo(params.options.labels.sendingWaitingWarning);
@@ -417,15 +417,15 @@
         $img.addClass('dng');
       }
       $uploadBloc.addClass('dng');
-      const $browseLink = $('<a>', {href : '#'}).append(params.options.labels.browse).click(function() {
+      const $browseLink = $('<a>', {href : '#'}).append(params.options.labels.browse).on('click', function() {
         $fileInput.click();
         return false;
       });
       const $buttonInput = $('<div>').addClass('sp_button').addClass('button').append($browseLink);
       const $areaInput = $('<div>').addClass('droparea').append($('<span>').append((
               params.options.multiple ? params.options.labels.dragAndDropFiles :
-              params.options.labels.dragAndDropFile))).click(function() {
-        $('a', $buttonInput).click();
+              params.options.labels.dragAndDropFile))).on('click', function() {
+        $('a', $buttonInput).trigger('click');
         return false;
       });
       $fileInputs.append($areaInput, $buttonInput);
@@ -726,7 +726,7 @@
       xhr.onload = function() {
         notySetupRequestComplete.call(this, xhr);
         try {
-          const uploadedFilesData = $.parseJSON($(this.responseText).html());
+          const uploadedFilesData = JSON.parse($(this.responseText).html());
           self.sendComplete(uploadedFilesData);
           __triggerUploadedListChanged(uploadContext);
         } catch (e) {
@@ -866,7 +866,7 @@
       title : params.options.labels.deleteFile,
       alt : params.options.labels.deleteFile,
       src : webContext + '/util/icons/cross.png'
-    })).click(function() {
+    })).on('click', function() {
       $file.trigger(EVENT.DELETE_FILE);
       return false;
     });

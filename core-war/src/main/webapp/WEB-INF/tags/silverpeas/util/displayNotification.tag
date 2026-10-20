@@ -68,7 +68,7 @@
 
   <plugins:includeNotifier/>
   <script type="text/javascript">
-    jQuery(document).ready(function() {
+    jQuery(function() {
 
       <%--On page ending load, UI notifications are displayed--%>
       jQuery(".notyError").each(function() {

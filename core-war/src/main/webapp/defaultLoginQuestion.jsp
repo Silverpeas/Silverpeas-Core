@@ -61,8 +61,8 @@
   </style>
   <![endif]-->
   <script type="text/javascript">
-    $(document).ready(function() {
-      $('#questionForm').submit(function() {
+    $(function() {
+      $('#questionForm').on('submit', function() {
         var answer = $(this).find('#answer').val();
         if (!answer || answer.length === 0) {
           SilverpeasError.add("<%=authenticationBundle.getString("authentication.reminder.answer.empty") %>");
@@ -73,7 +73,7 @@
         this.action = '<c:url value="/CredentialsServlet/ValidateAnswer"/>';
         return true;
       });
-      $('#answer').focus();
+      $('#answer').trigger('focus');
     });
   </script>
 </view:sp-head-part>
@@ -104,7 +104,7 @@
         <div class="submit">
           <p>
             <input type="submit" style="width:0; height:0; border:0; padding:0"/>
-            <a href="#" class="submit" onclick="$('#questionForm').submit()"><span><span>LOGIN</span></span></a>
+            <a href="#" class="submit" onclick="$('#questionForm').trigger('submit')"><span><span>LOGIN</span></span></a>
           </p>
         </div>
       </div>

@@ -154,13 +154,13 @@
                   $('#spaceForm').attr('action', 'DeleteSpace');
                   $('#Id').val('${space.id}');
                   $.progressMessage();
-                  setTimeout("jQuery('#spaceForm').submit();", 500);
+                  setTimeout("jQuery('#spaceForm').trigger('submit');", 500);
                 });
           }
         </c:if>
         function updateSpace() {
           $('#Translation').val(currentLanguage);
-          $('#spaceForm').attr('action', 'UpdateSpace').submit();
+          $('#spaceForm').attr('action', 'UpdateSpace').trigger('submit');
         }
       </c:if>
 
@@ -179,7 +179,7 @@
       function recoverRights() {
         $.progressMessage();
         $('#Id').val('${space.id}');
-        $('#spaceForm').attr('action', 'RecoverSpaceRights').submit();
+        $('#spaceForm').attr('action', 'RecoverSpaceRights').trigger('submit');
       }
 
       function showPasteOptions() {

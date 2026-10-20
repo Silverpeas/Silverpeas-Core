@@ -375,7 +375,7 @@ function markAsRead(id) {
 		location.href = "<%=m_context%>/Rprofil/jsp/Main?userId="+userId;
 	}
 
-	$(document).ready(function(){
+	$(function(){
 		//used for keywords autocompletion
 	    <%  if(autoCompletion){ %>
 			        $("#query").autocomplete({
@@ -384,7 +384,7 @@ function markAsRead(id) {
       });
 	    <%}%>
 
-    $("#query").keypress(function(e) {
+    $("#query").on('keypress', function(e) {
       if (e.which == 13) {
         e.preventDefault();
         sendQuery();

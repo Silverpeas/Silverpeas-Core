@@ -125,7 +125,7 @@
         }
 
         var phvList;
-        if (arguments.length == 2 && $.isArray(arguments[1])) {
+        if (arguments.length == 2 && Array.isArray(arguments[1])) {
             // An array was passed as the only parameter, so assume it is the list of place holder values.
             phvList = arguments[1];
         }

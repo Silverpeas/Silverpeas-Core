@@ -90,11 +90,11 @@
 
         <div class="submit">
           <p><input type="submit" style="width:0; height:0; border:0; padding:0"/>
-            <a href="#" class="submit" onclick="$('#changePwdForm').submit()"><span><span>OK</span></span></a>
+            <a href="#" class="submit" onclick="$('#changePwdForm').trigger('submit')"><span><span>OK</span></span></a>
           </p>
 
           <p>
-          <span class="passwordRules"><a href="#" onclick="$('#password').focus()">
+          <span class="passwordRules"><a href="#" onclick="$('#password').trigger('focus')">
             <%=authenticationBundle.getString("authentication.password.showRules") %>
           </a></span>
           </p>
@@ -111,7 +111,7 @@
 <script type="text/javascript">
   loadingPromise.then(function() {
     setTimeout(function() {
-      $('#password').focus();
+      $('#password').trigger('focus');
       handlePasswordForm({
         passwordFormId : 'changePwdForm',
         passwordFormAction : '<c:url value="/CredentialsServlet/ChangePassword"/>',

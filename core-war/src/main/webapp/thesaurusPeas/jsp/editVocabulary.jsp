@@ -69,7 +69,7 @@ function save() {
 }
 function Deletes() {
   jQuery.popup.confirm("<%=resource.getString("thesaurus.MessageSuppressionVoca")%>", function() {
-    jQuery('#genericForm').attr('action', "DeleteVoca").submit();
+    jQuery('#genericForm').attr('action', "DeleteVoca").trigger('submit');
   });
 }
 //-->

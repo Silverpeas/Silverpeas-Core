@@ -58,8 +58,8 @@
   </style>
   <![endif]-->
   <script type="text/javascript">
-    $(document).ready(function() {
-      $('#question').focus();
+    $(function() {
+      $('#question').trigger('focus');
       $('#questionForm').on("submit", function() {
         if (this.elements["answer"].value.length === 0) {
           SilverpeasError.add("<%=authenticationBundle.getString("authentication.reminder.answer.empty") %>");
@@ -120,7 +120,7 @@
 
         <div class="submit">
           <p><input type="submit" style="width:0; height:0; border:0; padding:0"/>
-            <a href="#" class="submit" onclick="$('#questionForm').submit()"><span><span>OK</span></span></a>
+            <a href="#" class="submit" onclick="$('#questionForm').trigger('submit')"><span><span>OK</span></span></a>
           </p>
         </div>
       </div>

@@ -77,8 +77,8 @@
         }
         </c:if>
 
-        $(document).ready(function() {
-          $('#messageAux').focus();
+        $(function() {
+          $('#messageAux').trigger('focus');
         });
       </script>
     </head>

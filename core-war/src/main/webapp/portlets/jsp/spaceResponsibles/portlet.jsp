@@ -43,7 +43,7 @@
   <c:choose>
     <c:when test="${not empty requestScope.spaceId}">
       <script type="text/javascript">
-        jQuery(document).ready(function() {
+        jQuery(function() {
           renderSpaceResponsibles($('#responsibles-container'), '${requestScope.currentUserId}',
               '${requestScope.spaceId}', ${requestScope.displayOnlySpaceManagers});
         });

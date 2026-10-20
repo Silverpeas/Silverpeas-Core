@@ -231,7 +231,7 @@
   window.oListText = undefined;
   window.oListValue = undefined;
 
-  $(document).ready(function(){
+  $(function(){
     oListText	= document.getElementById( 'cmbText' ) ;
     oListValue	= document.getElementById( 'cmbValue' ) ;
 

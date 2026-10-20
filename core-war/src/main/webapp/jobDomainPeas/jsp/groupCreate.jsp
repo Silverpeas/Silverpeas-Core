@@ -119,7 +119,7 @@ function SubmitWithVerif(verifParams)
     }
 }
 
-$(document).ready(function()
+$(function()
 {
    $('#rule-info').qtip({
 	content: {

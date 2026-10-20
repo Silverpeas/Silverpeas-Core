@@ -104,7 +104,7 @@
   };
 
   function __handleInvitation(target, options) {
-    target.click(function() {
+    target.on('click', function() {
       var displayDialog = function(user) {
         $.relationShip.user = user;
         $.relationShip.currentElement = target;
@@ -123,13 +123,13 @@
   }
 
   function __handleInvitationView(target, options) {
-    target.click(function() {
+    target.on('click', function() {
       silverpeasFormSubmit(sp.formConfig(webContext + '/RMyProfil/jsp/MyInvitations'));
     });
   }
 
   function __handleInvitationCancel(target, options) {
-    target.click(function() {
+    target.on('click', function() {
       __loadInvitation(options).then(function(invitation) {
         var isCurrentUserSender = invitation.senderId == currentUserId;
         var userId = isCurrentUserSender ? invitation.receiverId : invitation.senderId;
@@ -150,7 +150,7 @@
   }
 
   function __handleInvitationAccept(target, options) {
-    target.click(function() {
+    target.on('click', function() {
       __loadInvitation(options).then(function(invitation) {
         User.get(invitation.senderId).then(function(theUser) {
           invitation._user = theUser;
@@ -166,7 +166,7 @@
   }
 
   function __handleRelationDelete(target, options) {
-    target.click(function() {
+    target.on('click', function() {
       var displayDialog = function(user) {
         $.relationShip.user = user;
         $.relationShip.currentElement = target;
@@ -404,7 +404,7 @@
 })(jQuery);
 
 function activateRelationShip() {
-  jQuery(document).ready(function() {
+  jQuery(function() {
     jQuery('.invitation, .delete-relation').each(function(i, element) {
       var params = jQuery(element).attr('rel');
       if (params && params.length > 1) {

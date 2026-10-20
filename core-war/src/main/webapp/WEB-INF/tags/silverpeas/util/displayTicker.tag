@@ -140,7 +140,7 @@ var tickerNews = [];
 
   var _tickerPromiseDepencies = [window.TICKER_PROMISE, window.USERNOTIFICATION_PROMISE];
   sp.promise.whenAllResolved(_tickerPromiseDepencies).then(function() {
-    $(document).ready(function() {
+    $(function() {
       var __removeDesktopNotificationUserRequest = function() {
         $("#desktop-notifications-permission").remove();
       };
