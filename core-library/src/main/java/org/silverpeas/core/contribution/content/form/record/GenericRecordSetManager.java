@@ -203,7 +203,8 @@ public class GenericRecordSetManager {
         if (template == null) {
           SilverLogger.getLogger(this).error("Unknown template: externalId = " + externalId);
         } else {
-          references = selectRecordReferences(con, "r.templateId", template.getInternalId());
+          references = selectRecordReferences(con, SELECT_RECORD_REFERENCES_BY_TEMPLATE,
+              template.getInternalId());
           deleteFieldRows(con, template);
           deleteRecordRows(con, template);
           deleteTemplateFieldRows(con, template);
@@ -365,7 +366,8 @@ public class GenericRecordSetManager {
       GenericDataRecord record = (GenericDataRecord) deletedRecord;
       List<FormRecordReference> references;
       try (final Connection con = getConnection()) {
-        references = selectRecordReferences(con, "r.recordId", record.getInternalId());
+        references = selectRecordReferences(con, SELECT_RECORD_REFERENCES_BY_ID,
+            record.getInternalId());
         deleteFieldRows(con, record);
         deleteRecordRows(con, record);
       }
@@ -400,14 +402,10 @@ public class GenericRecordSetManager {
     }
   }
 
-  private List<FormRecordReference> selectRecordReferences(Connection con, String column, int id)
+  private List<FormRecordReference> selectRecordReferences(Connection con, String query, int id)
       throws SQLException {
     List<FormRecordReference> references = new ArrayList<>();
-    try (PreparedStatement select = con.prepareStatement("""
-        SELECT t.externalId, r.externalId, r.lang
-        FROM SB_FormTemplate_Record r
-        JOIN SB_FormTemplate_Template t ON t.templateId = r.templateId
-        """ + " WHERE " + column + " = ?")) {
+    try (PreparedStatement select = con.prepareStatement(query)) {
       select.setInt(1, id);
       try (ResultSet rows = select.executeQuery()) {
         while (rows.next()) {
@@ -1068,6 +1066,20 @@ public class GenericRecordSetManager {
       DELETE_FROM + TEMPLATE_FIELDS_TABLE + WHERE_TEMPLATE_ID_EQUAL_GIVEN_VALUE;
 
   /* Record table */
+
+  private static final String SELECT_RECORD_REFERENCES_BY_TEMPLATE = """
+      SELECT t.externalId, r.externalId, r.lang
+      FROM SB_FormTemplate_Record r
+      JOIN SB_FormTemplate_Template t ON t.templateId = r.templateId
+      WHERE r.templateId = ?
+      """;
+
+  private static final String SELECT_RECORD_REFERENCES_BY_ID = """
+      SELECT t.externalId, r.externalId, r.lang
+      FROM SB_FormTemplate_Record r
+      JOIN SB_FormTemplate_Template t ON t.templateId = r.templateId
+      WHERE r.recordId = ?
+      """;
 
   private static final String RECORD_TABLE = "SB_FormTemplate_Record";
 

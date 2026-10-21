@@ -181,11 +181,12 @@ class GenericRecordSetManagerNotificationTest {
   }
 
   @Test
-  void failedWriteDoesNotPublishAnEvent() throws Exception {
+  void failedWriteDoesNotPublishAnEvent() throws FormException {
+    var record = record("en");
     database.when(DBUtil::openConnection).thenThrow(new SQLException("Unavailable database"));
-    assertThrows(FormException.class, () -> manager.insertRecord(template, record("en")));
-    assertThrows(FormException.class, () -> manager.updateRecord(template, record("en")));
-    assertThrows(FormException.class, () -> manager.deleteRecord(record("en")));
+    assertThrows(FormException.class, () -> manager.insertRecord(template, record));
+    assertThrows(FormException.class, () -> manager.updateRecord(template, record));
+    assertThrows(FormException.class, () -> manager.deleteRecord(record));
     assertThrows(FormException.class, () -> manager.removeRecordSet(TEMPLATE_ID));
     verifyNoInteractions(notifier);
   }
