@@ -1034,7 +1034,7 @@ const _afManager${domIdSuffix} = new function() {
                 });
               } else {
                 $updateAttachmentForm.attr('action', submitUrl);
-                $updateAttachmentForm.submit();
+                $updateAttachmentForm.trigger('submit');
               }
             }, {
               versionTypeDomRadioSelector : '#dialog-attachment-update${domIdSuffix} input[name="versionType"]'

@@ -182,7 +182,7 @@
         } else {
           $deletionForm.attr("action", "groupRemove");
         }
-        $deletionForm.submit();
+        $deletionForm.trigger('submit');
       }
     });
   }

@@ -273,8 +273,8 @@ public class PaginationSP extends AbstractPagination {
     result.append("var $jumperInput = jQuery('#").append(jumperName).append("');");
     result.append("if ($jumperInput.css('visibility') !== 'visible') {");
     result.append("$jumperInput.css('visibility', 'visible');");
-    result.append("$jumperInput.hide();$jumperInput.focus();");
-    result.append("$jumperInput.show();$jumperInput.focus();");
+    result.append("$jumperInput.hide();$jumperInput.trigger('focus');");
+    result.append("$jumperInput.show();$jumperInput.trigger('focus');");
     result.append("} else {");
     result.append("$jumperInput.css('visibility', 'hidden');");
     result.append("}");

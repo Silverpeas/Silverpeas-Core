@@ -318,7 +318,7 @@
           } else {
             const $form = $('#add-attachment-form');
             $form.attr('action', submitUrl);
-            $form.submit();
+            $form.trigger('submit');
           }
         }, '<fmt:message key="GML.cancel"/>' : function() {
           $(this).dialog("close");
@@ -360,7 +360,7 @@
           } else {
             const $form = $('#add-attachment-form');
             $form.attr('action', submitUrl);
-            $form.submit();
+            $form.trigger('submit');
           }
         },
         '<fmt:message key="GML.delete"/>' : function() {

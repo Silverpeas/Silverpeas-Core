@@ -418,7 +418,7 @@
       }
       $uploadBloc.addClass('dng');
       const $browseLink = $('<a>', {href : '#'}).append(params.options.labels.browse).on('click', function() {
-        $fileInput.click();
+        $fileInput.trigger('click');
         return false;
       });
       const $buttonInput = $('<div>').addClass('sp_button').addClass('button').append($browseLink);
