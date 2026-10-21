@@ -201,6 +201,7 @@
                 if (typeof onClose === 'function') {
                   onClose.call(arg);
                 }
+                __destroyEditorsIn($popup);
                 $popup.remove();
               };
               const openPromise = options.openPromise;
@@ -632,6 +633,22 @@
       $.extend(settings, options);
     }
     return settings;
+  }
+
+  /**
+   * Destroys the CKEditor instances rendered into the given container before this one is
+   * removed from the DOM: a removed editor otherwise goes on handling the load events of its
+   * frame.
+   */
+  function __destroyEditorsIn($container) {
+    if (!window.CKEDITOR) {
+      return;
+    }
+    Object.values(CKEDITOR.instances).forEach(function(editor) {
+      if (editor.container && $.contains($container[0], editor.container.$)) {
+        editor.destroy(true);
+      }
+    });
   }
 
   /**

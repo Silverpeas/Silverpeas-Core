@@ -41,10 +41,14 @@ CKEDITOR.plugins.add('identitycard', {
   lang : 'en,fr',
 
   beforeInit : function(editor) {
-    $.get("/weblib/ckeditor/identitycard/template.html", function(data) {
+    // the custom template is optional: its absence must not be reported as an error
+    $.ajax({
+      url : "/weblib/ckeditor/identitycard/template.html",
+      dataType : "html",
+      global : false
+    }).done(function(data) {
       customTemplate = data;
       editor.widgets.registered.identitycard.template.source = data;
-
     });
   },
 
