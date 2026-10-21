@@ -91,15 +91,15 @@ public class MsgMailExtractorIT {
     MAPIMessage msg = new MAPIMessage(getDocumentFromName(FILENAME_MAIL_WITH_ATTACHMENTS).getPath());
     msg.setReturnNullOnMissingChunk(true);
 
-    assertThat(msg.getDisplayFrom(), is("Nicolas Eysseric"));
+    assertThat(msg.getDisplayFrom(), is("Thibaut Vasseron"));
     assertThat(msg.getRecipientDetailsChunks(), is(notNullValue()));
     assertThat(msg.getRecipientDetailsChunks().length, is(2));
-    assertThat(msg.getRecipientDetailsChunks()[0].getRecipientName(), is("Aurore ADR. DELISSNYDER"));
+    assertThat(msg.getRecipientDetailsChunks()[0].getRecipientName(), is("Agathe ADR. VALLONCOURT"));
     assertThat(msg.getRecipientDetailsChunks()[0].getRecipientEmailAddress(), is(
-        "Aurore.DELISSNYDER@hydrostadium.fr"));
-    assertThat(msg.getRecipientDetailsChunks()[1].getRecipientName(), is("Ludovic BERTIN"));
+        "Agathe.VALLONCOURT@hydroexemple.fr"));
+    assertThat(msg.getRecipientDetailsChunks()[1].getRecipientName(), is("Mathieu RENAUD"));
     assertThat(msg.getRecipientDetailsChunks()[1].getRecipientEmailAddress(), is(
-        "ludovic.bertin@oosphere.com"));
+        "mathieu.renaud@exemplis.com"));
     AttachmentChunks[] attachments = msg.getAttachmentFiles();
     assertThat(attachments, is(notNullValue()));
     assertThat(attachments.length, is(2));

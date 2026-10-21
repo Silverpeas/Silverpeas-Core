@@ -24,8 +24,8 @@ LAST-MODIFIED:20170509T140659Z
 DTSTAMP:20170509T140659Z
 UID:bee203f0-a0a7-473b-9a08-4faca1145fdc
 SUMMARY:Déjeuner d'affaire louche
-ORGANIZER;RSVP=TRUE;CN=Miguel Moquillon;PARTSTAT=ACCEPTED;ROLE=CHAIR:mailt
- o:miguel.moquillon@silverpeas.com
+ORGANIZER;RSVP=TRUE;CN=John Doe;PARTSTAT=ACCEPTED;ROLE=CHAIR:mailto:john.d
+ oe@example.org
 ATTENDEE;RSVP=TRUE;CN=Thomas Louffoque;PARTSTAT=NEEDS-ACTION;ROLE=REQ-PART
  ICIPANT:mailto:thomas.louffoque@tartempion.fr
 DTSTART;TZID=Europe/Paris:20170518T120000

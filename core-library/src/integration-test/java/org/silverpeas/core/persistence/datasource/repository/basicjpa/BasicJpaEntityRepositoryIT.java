@@ -58,9 +58,9 @@ public class BasicJpaEntityRepositoryIT {
       "/org/silverpeas/core/persistence/datasource/basicjpa/create_table.sql";
   public static final Operation PERSON_SET_UP = Operations.insertInto("test_persons")
       .columns("id", "firstName", "lastName")
-      .values("person_1", "Yohann", "Chastagnier")
-      .values("person_2", "Nicolas", "Eysseric")
-      .values("person_3", "Miguel", "Moquillon")
+      .values("person_1", "Hugo", "Lambert")
+      .values("person_2", "Thibaut", "Vasseron")
+      .values("person_3", "Paul", "Martin")
       .values("person_1000", "firstName", "lastName")
       .values("person_1001", "firstName", "lastName")
       .build();
@@ -118,8 +118,8 @@ public class BasicJpaEntityRepositoryIT {
     assertThat(personBasicEntity,
         not(sameInstance(basicJpaEntityServiceTest.getPersonById("person_1"))));
     assertThat(personBasicEntity, notNullValue());
-    assertThat(personBasicEntity.getFirstName(), is("Yohann"));
-    assertThat(personBasicEntity.getLastName(), is("Chastagnier"));
+    assertThat(personBasicEntity.getFirstName(), is("Hugo"));
+    assertThat(personBasicEntity.getLastName(), is("Lambert"));
     assertThat(personBasicEntity.getAnimals(), hasSize(1));
     AnimalBasicEntity personAnimalBasicEntity = personBasicEntity.getAnimals().get(0);
     assertThat(personAnimalBasicEntity.getId(), is("1"));
@@ -128,14 +128,14 @@ public class BasicJpaEntityRepositoryIT {
 
     personBasicEntity = basicJpaEntityServiceTest.getPersonById("person_2");
     assertThat(personBasicEntity, notNullValue());
-    assertThat(personBasicEntity.getFirstName(), is("Nicolas"));
-    assertThat(personBasicEntity.getLastName(), is("Eysseric"));
+    assertThat(personBasicEntity.getFirstName(), is("Thibaut"));
+    assertThat(personBasicEntity.getLastName(), is("Vasseron"));
     assertThat(personBasicEntity.getAnimals(), hasSize(2));
 
     personBasicEntity = basicJpaEntityServiceTest.getPersonById("person_3");
     assertThat(personBasicEntity, notNullValue());
-    assertThat(personBasicEntity.getFirstName(), is("Miguel"));
-    assertThat(personBasicEntity.getLastName(), is("Moquillon"));
+    assertThat(personBasicEntity.getFirstName(), is("Paul"));
+    assertThat(personBasicEntity.getLastName(), is("Martin"));
     assertThat(personBasicEntity.getAnimals(), empty());
 
     assertThat(basicJpaEntityServiceTest.getPersonById("person_that_doesnt_exist"), nullValue());
@@ -158,8 +158,8 @@ public class BasicJpaEntityRepositoryIT {
     assertThat(animalBasicEntity.getName(), is("Blacky"));
     assertThat(animalBasicEntity.getPerson(), notNullValue());
     assertThat(animalBasicEntity.getPerson().getId(), is("person_1"));
-    assertThat(animalBasicEntity.getPerson().getFirstName(), is("Yohann"));
-    assertThat(animalBasicEntity.getPerson().getLastName(), is("Chastagnier"));
+    assertThat(animalBasicEntity.getPerson().getFirstName(), is("Hugo"));
+    assertThat(animalBasicEntity.getPerson().getLastName(), is("Lambert"));
     assertThat(animalBasicEntity.getPerson().getAnimals(), hasSize(1));
 
     animalBasicEntity = basicJpaEntityServiceTest.getAnimalById("2");
@@ -168,8 +168,8 @@ public class BasicJpaEntityRepositoryIT {
     assertThat(animalBasicEntity.getName(), is("Bagels"));
     assertThat(animalBasicEntity.getPerson(), notNullValue());
     assertThat(animalBasicEntity.getPerson().getId(), is("person_2"));
-    assertThat(animalBasicEntity.getPerson().getFirstName(), is("Nicolas"));
-    assertThat(animalBasicEntity.getPerson().getLastName(), is("Eysseric"));
+    assertThat(animalBasicEntity.getPerson().getFirstName(), is("Thibaut"));
+    assertThat(animalBasicEntity.getPerson().getLastName(), is("Vasseron"));
     assertThat(animalBasicEntity.getPerson().getAnimals(), hasSize(2));
 
     animalBasicEntity = basicJpaEntityServiceTest.getAnimalById("3");
@@ -178,8 +178,8 @@ public class BasicJpaEntityRepositoryIT {
     assertThat(animalBasicEntity.getName(), is("Titi"));
     assertThat(animalBasicEntity.getPerson(), notNullValue());
     assertThat(animalBasicEntity.getPerson().getId(), is("person_2"));
-    assertThat(animalBasicEntity.getPerson().getFirstName(), is("Nicolas"));
-    assertThat(animalBasicEntity.getPerson().getLastName(), is("Eysseric"));
+    assertThat(animalBasicEntity.getPerson().getFirstName(), is("Thibaut"));
+    assertThat(animalBasicEntity.getPerson().getLastName(), is("Vasseron"));
     assertThat(animalBasicEntity.getPerson().getAnimals(), hasSize(2));
 
     // Animal doesn't exist
@@ -199,7 +199,7 @@ public class BasicJpaEntityRepositoryIT {
   @Test(expected = Exception.class)
   public void savePersonBadlyInsert() {
     PersonBasicEntity newPersonBasicEntity =
-        new PersonBasicEntity().setFirstName("Aurore").setLastName("Allibe");
+        new PersonBasicEntity().setFirstName("Emma").setLastName("Girard");
     basicJpaEntityServiceTest.save(null, newPersonBasicEntity);
   }
 
@@ -256,7 +256,7 @@ public class BasicJpaEntityRepositoryIT {
   @Test
   public void savePerson() {
     PersonBasicEntity newPersonBasicEntity =
-        new PersonBasicEntity().setFirstName("Aurore").setLastName("Allibe");
+        new PersonBasicEntity().setFirstName("Emma").setLastName("Girard");
     assertThat(newPersonBasicEntity.getId(), nullValue());
     PersonBasicEntity personBasicEntitySaveResult =
         basicJpaEntityServiceTest.save(newPersonBasicEntity);
@@ -280,8 +280,8 @@ public class BasicJpaEntityRepositoryIT {
   @Test
   public void savePersonWithIdSetManually() {
     PersonBasicEntity newPersonBasicEntity =
-        new PersonBasicEntity().setId("id_that_will_be_changed").setFirstName("Aurore")
-            .setLastName("Allibe");
+        new PersonBasicEntity().setId("id_that_will_be_changed").setFirstName("Emma")
+            .setLastName("Girard");
     assertThat(newPersonBasicEntity.getId(), is("id_that_will_be_changed"));
     PersonBasicEntity personBasicEntitySaveResult =
         basicJpaEntityServiceTest.save(newPersonBasicEntity);
@@ -399,14 +399,14 @@ public class BasicJpaEntityRepositoryIT {
 
   @Test
   public void getPersonsByLastName() {
-    assertThat(basicJpaEntityServiceTest.getPersonsByLastName("Eysseric"), hasSize(1));
-    assertThat(basicJpaEntityServiceTest.getPersonsByLastName("Nicolas"), hasSize(0));
+    assertThat(basicJpaEntityServiceTest.getPersonsByLastName("Vasseron"), hasSize(1));
+    assertThat(basicJpaEntityServiceTest.getPersonsByLastName("Thibaut"), hasSize(0));
   }
 
   @Test
   public void getPersonsByFirstName() {
-    assertThat(basicJpaEntityServiceTest.getPersonsByFirstName("Nicolas"), notNullValue());
-    assertThat(basicJpaEntityServiceTest.getPersonsByFirstName("Eysseric"), nullValue());
+    assertThat(basicJpaEntityServiceTest.getPersonsByFirstName("Thibaut"), notNullValue());
+    assertThat(basicJpaEntityServiceTest.getPersonsByFirstName("Vasseron"), nullValue());
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -416,10 +416,10 @@ public class BasicJpaEntityRepositoryIT {
 
   @Test
   public void getAnimalsOfPersonByLastName() {
-    assertThat(basicJpaEntityServiceTest.getAnimalsByLastNameOfPerson("Eysseric"), hasSize(2));
-    assertThat(basicJpaEntityServiceTest.getAnimalsByLastNameOfPerson("eysseric"), hasSize(0));
-    assertThat(basicJpaEntityServiceTest.getPersonsByLastName("Moquillon"), hasSize(1));
-    assertThat(basicJpaEntityServiceTest.getAnimalsByLastNameOfPerson("Moquillon"), hasSize(0));
+    assertThat(basicJpaEntityServiceTest.getAnimalsByLastNameOfPerson("Vasseron"), hasSize(2));
+    assertThat(basicJpaEntityServiceTest.getAnimalsByLastNameOfPerson("vasseron"), hasSize(0));
+    assertThat(basicJpaEntityServiceTest.getPersonsByLastName("Martin"), hasSize(1));
+    assertThat(basicJpaEntityServiceTest.getAnimalsByLastNameOfPerson("Martin"), hasSize(0));
   }
 
   @Test

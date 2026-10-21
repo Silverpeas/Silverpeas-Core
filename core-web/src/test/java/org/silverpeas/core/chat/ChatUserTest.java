@@ -57,14 +57,14 @@ class ChatUserTest {
 
   @Test
   void emailLoginShouldWork() throws Exception {
-    final ChatUser user = createChatUserWithLogin("yohann.chastagnier@silverpeas.org");
-    assertThat(user.getChatLogin(), is("yohann.chastagnier"));
+    final ChatUser user = createChatUserWithLogin("hugo.lambert@silverpeas.org");
+    assertThat(user.getChatLogin(), is("hugo.lambert"));
   }
 
   @Test
   void chatLoginShouldAlwaysBeLowercase() throws Exception {
-    final ChatUser user = createChatUserWithLogin("yohann26.cHastaGNier@silverpeas.org");
-    assertThat(user.getChatLogin(), is("yohann26.chastagnier"));
+    final ChatUser user = createChatUserWithLogin("hugo26.lamBert@silverpeas.org");
+    assertThat(user.getChatLogin(), is("hugo26.lambert"));
   }
 
   @Test
