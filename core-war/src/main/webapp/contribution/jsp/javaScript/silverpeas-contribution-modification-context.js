@@ -63,7 +63,8 @@
 
   sp.i18n.load({
     bundle : 'org.silverpeas.contribution.multilang.contribution',
-    language : currentUser.language
+    language : currentUser.language,
+    async : true
   });
 
   /**
