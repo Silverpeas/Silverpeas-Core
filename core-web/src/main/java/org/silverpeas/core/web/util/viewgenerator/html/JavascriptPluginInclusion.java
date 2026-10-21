@@ -725,7 +725,10 @@ public class JavascriptPluginInclusion {
   }
 
   static ElementContainer includePdfViewer(final ElementContainer xhtml) {
-    xhtml.addElement(link(PDF_VIEWER_BASE + "/locale/locale.json", l -> l.setType("application/l10n")));
+    // the viewer looks for the l10n resource by its type; the stylesheet relation set by default
+    // would make the browser try to load it as a CSS
+    xhtml.addElement(link(PDF_VIEWER_BASE + "/locale/locale.json",
+        l -> l.setRel("resource").setType("application/l10n")));
     final LocalizationBundle bundle = ResourceLocator.getLocalizationBundle("org.silverpeas.viewer.multilang.viewerBundle", "fr");
     xhtml.addElement(scriptContent(bundleVariableName("PdfViewerBundle")
         .add(bundle, bundle.specificKeySet().toArray(new String[0]))
