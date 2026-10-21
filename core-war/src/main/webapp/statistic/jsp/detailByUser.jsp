@@ -97,6 +97,7 @@
 %>
 <c:set var="readingState" value="<%=readingState%>"/>
 
+<!DOCTYPE html>
 <html>
 <head>
   <title>${popupLabel}</title>

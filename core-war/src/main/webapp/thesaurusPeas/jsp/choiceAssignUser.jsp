@@ -32,6 +32,7 @@
 	String nomVoca = Encode.javaStringToHtmlString(voca.getName());
 %>
 
+<!DOCTYPE html>
 <HTML>
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>

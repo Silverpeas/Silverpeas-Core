@@ -49,6 +49,7 @@
 		String beginFont = "<font style=\"font-size : 10px; font-weight : bold; background-color : Navy; color : White; text-decoration : none; border:0 solid  rgb(255,150,0);\">&nbsp;&nbsp;&nbsp;";
 		String endFont = "&nbsp;&nbsp;&nbsp;</font>";
 %>
+<!DOCTYPE html>
 <html>
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>

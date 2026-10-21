@@ -49,6 +49,7 @@ UserAccessLevel userProfile = (UserAccessLevel)request.getAttribute("UserProfile
 %>
 
 
+<!DOCTYPE html>
 <html>
 <head>
 <title><%=resources.getString("GML.popupTitle")%></title>

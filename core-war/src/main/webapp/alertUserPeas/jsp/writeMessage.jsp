@@ -42,6 +42,7 @@
 <%@ include file="check.jsp" %>
 
 
+<!DOCTYPE html>
 <html>
   <head>
     <title><%=resource.getString("GML.popupTitle")%></title>

@@ -64,6 +64,7 @@ private String displayUnexpectedError() {
 }
 
 %>
+<!DOCTYPE html>
 <html>
 <head>
 <title><%=message.getString("Erreur")%></title>

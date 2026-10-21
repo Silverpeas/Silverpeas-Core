@@ -36,6 +36,7 @@
       response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 <%@ include file="check.jsp" %>
+<!DOCTYPE html>
 <html>
   <head>
     <title><%=resource.getString("GML.popupTitle")%></title>

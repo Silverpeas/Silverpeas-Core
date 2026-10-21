@@ -85,6 +85,7 @@ if (field != null) {
 %>
 
 <% if (shownInNewWindow) { %>
+<!DOCTYPE html>
 <html>
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>

@@ -30,6 +30,7 @@
 	Collection vocas = (Collection) request.getAttribute("listVoca");
 	Iterator itVoca = vocas.iterator();
 %>
+<!DOCTYPE html>
 <HTML>
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>

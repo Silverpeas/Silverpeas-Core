@@ -49,6 +49,7 @@
 
 %>
 
+<!DOCTYPE html>
 <HTML>
 <HEAD>
 <TITLE></TITLE>

@@ -44,6 +44,7 @@ Value 			value 			= (Value) request.getAttribute("Value");
 String 			displayLanguage = (String) request.getAttribute("DisplayLanguage");
 %>
 
+<!DOCTYPE html>
 <HTML>
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>

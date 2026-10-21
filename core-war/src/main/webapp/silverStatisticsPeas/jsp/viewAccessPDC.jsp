@@ -77,6 +77,7 @@ List vStatsData = (List)request.getAttribute("StatsData");
 %>
 
 
+<!DOCTYPE html>
 <html>
 <head>
 <title><fmt:message key="GML.popupTitle" /></title>

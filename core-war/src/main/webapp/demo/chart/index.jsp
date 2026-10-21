@@ -87,6 +87,7 @@
 <c:set var="periodBarChart" value="<%=periodBarChart%>"/>
 <c:set var="pieChart" value="<%=pieChart%>"/>
 
+<!DOCTYPE html>
 <html>
 <head>
   <title>Demo charts</title>

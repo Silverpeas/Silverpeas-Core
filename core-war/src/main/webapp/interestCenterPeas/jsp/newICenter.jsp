@@ -36,6 +36,7 @@ icName=(icName==null)?"":icName;
 Button cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "javascript:onClick=window.close();", false);
 Button okButton		= gef.getFormButton(resource.getString("GML.ok"), "javascript:onClick=sendData()", false);
 %>
+<!DOCTYPE html>
   <HTML>
     <HEAD>
     <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>

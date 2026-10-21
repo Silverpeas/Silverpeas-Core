@@ -55,6 +55,7 @@
   start = System.currentTimeMillis();
 %>
 
+<!DOCTYPE html>
 <html>
 <head>
   <title>Array panes Demo</title>
