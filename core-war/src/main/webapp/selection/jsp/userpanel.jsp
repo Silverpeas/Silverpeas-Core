@@ -104,8 +104,8 @@
 <fmt:message key="selection.searchUserGroups" var="defaultGroupSearchText"/>
 <fmt:message key="selection.searchUsers" var="defaultUserSearchText"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.userSelector" xml:lang="${sessionScope['SilverSessionController'].favoriteLanguage}">
+<!DOCTYPE html>
+<html id="ng-app" ng-app="silverpeas.userSelector" lang="${sessionScope['SilverSessionController'].favoriteLanguage}">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <view:looknfeel />

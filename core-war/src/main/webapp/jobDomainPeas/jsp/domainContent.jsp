@@ -192,8 +192,8 @@
 <c:set var="appGroupList" value="<%=Arrays.asList(appGroups)%>"/>
 <c:set var="ldapDomain" value="<%=isDomainLdap%>"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 <head>
 <title></title>
 <view:looknfeel withFieldsetStyle="true"/>

@@ -46,9 +46,7 @@ import jakarta.servlet.jsp.JspException;
  */
 public class HtmlLayoutTag extends SilverpeasLayout {
   private static final long serialVersionUID = 6951194048886306279L;
-  private static final String DOCTYPE = "<!DOCTYPE html PUBLIC " +
-      "\"-//W3C//DTD XHTML 1.0 Transitional//EN\" " +
-      "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">";
+  private static final String DOCTYPE = "<!DOCTYPE html>";
 
   private String angularJsAppName;
 
@@ -96,7 +94,9 @@ public class HtmlLayoutTag extends SilverpeasLayout {
     final ElementContainer elements = new ElementContainer();
     elements.addElement(DOCTYPE);
     final html html = new html();
-    html.addAttribute("xml:lang", getUserLanguage());
+    // the XHTML namespace set by ECS has no meaning in HTML5
+    html.removeAttribute("xmlns");
+    html.addAttribute("lang", getUserLanguage());
     renderAngularJs(html);
     html.addElement(getBodyContent().getString());
     elements.addElement(html);
