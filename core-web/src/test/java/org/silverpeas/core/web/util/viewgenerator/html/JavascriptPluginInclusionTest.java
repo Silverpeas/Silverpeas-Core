@@ -86,6 +86,18 @@ class JavascriptPluginInclusionTest {
     assertThat(html, containsString(withoutExtension(JQUERY_UI_JS)));
   }
 
+  @Test
+  void includePdfViewerDeclaresItsLocaleAsAResourceAndNotAsAStylesheet() {
+    generalSettings.put("web.resource.js.get.minified.enabled", "true");
+
+    String html = JavascriptPluginInclusion.includePdfViewer(new ElementContainer()).toString();
+
+    assertThat(html, containsString("rel='resource'"));
+    assertThat(html, containsString("type='application/l10n'"));
+    assertThat(html, containsString("/media/jsp/pdf/locale/locale"));
+    assertThat(html, not(containsString("rel='stylesheet' href='/silverpeas/media/jsp/pdf/locale")));
+  }
+
   /**
    * The cache-busting fingerprint is inserted before the extension of the resource name, so only
    * the part before the extension can be matched.
