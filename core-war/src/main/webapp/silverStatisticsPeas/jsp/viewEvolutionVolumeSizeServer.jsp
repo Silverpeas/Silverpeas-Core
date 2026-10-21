@@ -88,6 +88,7 @@
 
 <c:set var="periodChart" value="${requestScope.Chart}"/>
 
+<!DOCTYPE html>
 <html>
 <head>
 <title><%=resources.getString("GML.popupTitle")%></title>

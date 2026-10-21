@@ -37,6 +37,7 @@
                                        + "parameter=" + URLEncoder.encode(parameter.getName(), StandardCharsets.UTF_8);
     ArrayPane       parameterPane = gef.getArrayPane( "parameterName", strCurrentScreen, request, session );
 %>
+<!DOCTYPE html>
 <HTML>
 <HEAD>
 <view:looknfeel withCheckFormScript="true"/>

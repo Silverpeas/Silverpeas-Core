@@ -35,6 +35,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ include file="checkClipboard.jsp" %>
 
+<!DOCTYPE html>
 <html>
 <HEAD>
 <Script language="JavaScript">

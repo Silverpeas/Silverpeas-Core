@@ -32,6 +32,7 @@
 	String nomVoca = Encode.javaStringToHtmlString(voca.getName());
 	Iterator it = jargons.iterator();
 %>
+<!DOCTYPE html>
 <html>
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>

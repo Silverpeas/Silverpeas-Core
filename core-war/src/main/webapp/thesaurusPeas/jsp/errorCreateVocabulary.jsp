@@ -27,6 +27,7 @@
 <%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
 <%@ include file="checkThesaurus.jsp"%>
 
+<!DOCTYPE html>
 <HTML>
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>

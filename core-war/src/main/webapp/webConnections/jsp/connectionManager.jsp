@@ -60,6 +60,7 @@
   window.setPopup(isPopup);
 %>
 
+<!DOCTYPE html>
 <html>
 <head>
 <view:looknfeel withCheckFormScript="true" withFieldsetStyle="true"/>

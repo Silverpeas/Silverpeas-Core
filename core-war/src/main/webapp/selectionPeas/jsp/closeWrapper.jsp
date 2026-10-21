@@ -71,6 +71,7 @@ name += group.getName()+"\\n";
    }
 %>
 
+<!DOCTYPE html>
 <HTML>
 <HEAD>
 <TITLE></TITLE>

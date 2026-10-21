@@ -29,6 +29,7 @@
 <%
 	String idVoca = (String) request.getAttribute("idVoca");
 %>
+<!DOCTYPE html>
 <HTML>
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>

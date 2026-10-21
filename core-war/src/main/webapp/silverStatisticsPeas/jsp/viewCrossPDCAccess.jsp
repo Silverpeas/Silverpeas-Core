@@ -53,6 +53,7 @@ browseBar.setPath(resources.getString("silverStatisticsPeas.pdc.axis"));
 %>
 
 
+<!DOCTYPE html>
 <html>
 <head>
 <title><fmt:message key="GML.popupTitle" /></title>

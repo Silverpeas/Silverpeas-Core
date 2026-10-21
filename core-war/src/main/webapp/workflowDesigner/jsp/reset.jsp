@@ -29,6 +29,7 @@
 <%
 WorkflowHub.getProcessModelManager().clearProcessModelCache();
 %>
+<!DOCTYPE html>
 <html>
 <head>
 </head>
