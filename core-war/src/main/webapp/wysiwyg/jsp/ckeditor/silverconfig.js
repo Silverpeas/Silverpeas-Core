@@ -14,6 +14,8 @@ CKEDITOR.editorConfig = function( config )
   config.filebrowserBrowseUrl = config.baseHref+'uploadFile.jsp';
   config.imageUploadUrl = 'activated';
   config.extraPlugins = 'userzoom,identitycard,autolink,video,html5audio,imageresizerowandcolumn,variables,listblock,floatpanel,richcombo,mediaofcontribution,imagebank,filebank,emoji';
+  // Export to PDF relies on the CKEditor cloud services, which Silverpeas doesn't use
+  config.removePlugins = 'exportpdf';
   config.allowedContent = true;
   config.toolbarCanCollapse = true;
   config.disableNativeSpellChecker = false;
