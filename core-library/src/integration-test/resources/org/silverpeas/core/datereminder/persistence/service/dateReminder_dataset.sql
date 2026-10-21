@@ -24,5 +24,5 @@ VALUES (0, 'domainSilverpeas', 'default domain for Silverpeas',
         'org.silverpeas.core.admin.domain.driver.SilverpeasDomainDriver', 'autDomainSP');
 
 INSERT INTO st_user (id, domainid, specificid, firstname, lastname, email, login, loginmail, accesslevel, state, stateSaveDate)
-VALUES (0, 0, '0', '', 'Administrateur', 'cecile.bonin@silverpeas.com', 'SilverAdmin', '', 'A', 'VALID',
+VALUES (0, 0, '0', '', 'Administrateur', 'admin@silverpeas.org', 'SilverAdmin', '', 'A', 'VALID',
         '2012-01-01 00:00:00.0');

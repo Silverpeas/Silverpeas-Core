@@ -50,7 +50,7 @@ import static org.hamcrest.Matchers.*;
 @EnableSilverTestEnv(context = JEETestContext.class)
 class MetadataExtractorTest {
 
-  private static final File docFile = getDocumentNamed("/Liste_ECCA.doc");
+  private static final File docFile = getDocumentNamed("/Liste_taches.doc");
   private static final File docxFile = getDocumentNamed("/Test.docx");
   private static final File ooFile = getDocumentNamed("/LibreOffice.odt");
   private static final File tifFile = getDocumentNamed("/logo-silverpeas-2010.tif");
@@ -96,7 +96,7 @@ class MetadataExtractorTest {
     MetaData result = instance.extractMetadata(file);
     assertThat(result, is(notNullValue()));
     assertThat(result.getTitle(), is("Liste de taches"));
-    assertThat(result.getSubject(), is("Modif sur WF ECCA"));
+    assertThat(result.getSubject(), is("Modif sur WF TEST"));
     assertThat(result.getAuthor(), is("Administrateur"));
     assertThat(result.getComments(), is(nullValue()));
     assertThat(result.getKeywords()[0], is("test formation SA"));

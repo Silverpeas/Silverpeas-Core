@@ -18,10 +18,10 @@ VALUES (1, 'SILVERPEAS', 'Zimbra Silverpeas', 'org.silverpeas.domains.domainSILV
 
 /* Users */
 INSERT INTO st_user (id, domainid, specificid, firstname, lastname, email, login, loginmail, accesslevel, state, stateSaveDate)
-VALUES (0, 0, '0', '', 'Administrateur', 'ehu@silverpeas.com', 'SilverAdmin', '', 'A', 'VALID',
+VALUES (0, 0, '0', '', 'Administrateur', 'admin@silverpeas.org', 'SilverAdmin', '', 'A', 'VALID',
         '2012-01-01 00:00:00.0');
 INSERT INTO st_user (id, domainid, specificid, firstname, lastname, email, login, loginmail, accesslevel, loginquestion, loginanswer, state, stateSaveDate)
-VALUES (1, 0, '1', 'Bart', 'Simpson', 'ehu@silverpeas.com', 'user_a', '', 'U', '', '', 'VALID',
+VALUES (1, 0, '1', 'Bart', 'Simpson', 'admin@silverpeas.org', 'user_a', '', 'U', '', '', 'VALID',
         '2012-01-01 00:00:00.0');
 INSERT INTO st_user (id, domainid, specificid, firstname, lastname, email, login, loginmail, accesslevel, loginquestion, loginanswer, state, stateSaveDate)
 VALUES (2, 0, '2', 'Homer', 'Simpson', 'homer@simpson.com', 'user_b', '', 'U', '', '', 'VALID',

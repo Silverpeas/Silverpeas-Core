@@ -64,11 +64,11 @@ public class TransactionIT {
   private static final Operation PERSON_SET_UP = Operations.insertInto("test_persons")
       .columns("id", "firstName", "lastName", "birthday", "createDate", "createdBy",
           "lastUpdateDate", "lastUpdatedBy", "version")
-      .values("person_1", "Yohann", "Chastagnier", "1980-01-01", "2013-11-21 09:57:30.003", "1",
+      .values("person_1", "Hugo", "Lambert", "1980-01-01", "2013-11-21 09:57:30.003", "1",
           "2013-11-21 09:57:30.003", "1", 0L)
-      .values("person_2", "Nicolas", "Eysseric", "1980-01-01", "2013-11-21 09:57:30.003", "1",
+      .values("person_2", "Thibaut", "Vasseron", "1980-01-01", "2013-11-21 09:57:30.003", "1",
           "2013-11-21 09:57:30.003", "1", 0L)
-      .values("person_3", "Miguel", "Moquillon", "1971-11-30", "2013-11-21 09:57:30.003", "2",
+      .values("person_3", "Paul", "Martin", "1985-06-15", "2013-11-21 09:57:30.003", "2",
           "2013-11-22 22:00:50.006", "10", 3L)
       .values("person_1000", "firstName", "lastName", "1980-01-01", "2013-11-21 09:57:30.003", "1",
           "2013-11-21 09:57:30.003", "1", 0L)
@@ -138,7 +138,7 @@ public class TransactionIT {
       int index = getTableIndexForId(table, person.getId());
       assertThat(table.getValue(index, "id"), is("person_1"));
       assertThat(table.getValue(index, "id"), is(person.getId()));
-      assertThat(table.getValue(index, "firstName"), is("Yohann"));
+      assertThat(table.getValue(index, "firstName"), is("Hugo"));
       assertThat(table.getValue(index, "firstName"), is(person.getFirstName()));
       assertThat(table.getValue(index, "lastUpdatedBy"), is("1"));
       assertThat(table.getValue(index, "lastUpdatedBy"), is(person.getLastUpdaterId()));
@@ -175,7 +175,7 @@ public class TransactionIT {
       int index = getTableIndexForId(table, person.getId());
       assertThat(table.getValue(index, "id"), is("person_1"));
       assertThat(table.getValue(index, "id"), is(person.getId()));
-      assertThat(table.getValue(index, "firstName"), is("Yohann"));
+      assertThat(table.getValue(index, "firstName"), is("Hugo"));
       assertThat(table.getValue(index, "firstName"), is(person.getFirstName()));
       assertThat(table.getValue(index, "lastUpdatedBy"), is("1"));
       assertThat(table.getValue(index, "lastUpdatedBy"), is(person.getLastUpdaterId()));
@@ -204,7 +204,7 @@ public class TransactionIT {
       ITable table = actualDataSet.getTable("test_persons");
       int index = getTableIndexForId(table, person.getId());
       assertThat(table.getValue(index, "id"), is("person_1"));
-      assertThat(table.getValue(index, "firstName"), is("Yohann"));
+      assertThat(table.getValue(index, "firstName"), is("Hugo"));
       assertThat(table.getValue(index, "lastUpdatedBy"), is("1"));
     }
   }

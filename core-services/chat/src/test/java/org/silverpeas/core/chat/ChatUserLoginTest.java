@@ -47,8 +47,8 @@ class ChatUserLoginTest {
   void domainPartShouldBeRemovedFromAnEmailAslogin() {
     when(chatSettings.getJidFormatPolicy()).thenReturn(ChatSettings.JidFormatPolicy.REMOVED);
 
-    final ChatUser user = getChatUserWithLogin("miguel.moquillon@silverpeas.org");
-    assertThat(user.getChatLogin(), is("miguel.moquillon"));
+    final ChatUser user = getChatUserWithLogin("paul.martin@silverpeas.org");
+    assertThat(user.getChatLogin(), is("paul.martin"));
   }
 
   @Test
@@ -57,29 +57,29 @@ class ChatUserLoginTest {
   void specialCharactersShouldBeEncodedInAnEmailAslogin() {
     when(chatSettings.getJidFormatPolicy()).thenReturn(ChatSettings.JidFormatPolicy.SPECIFIC_CODE);
 
-    final ChatUser user = getChatUserWithLogin("miguel.moquillon@silverpeas.org");
-    assertThat(user.getChatLogin(), is("miguel.moquillon0x40silverpeas.org"));
+    final ChatUser user = getChatUserWithLogin("paul.martin@silverpeas.org");
+    assertThat(user.getChatLogin(), is("paul.martin0x40silverpeas.org"));
   }
 
   @Test
   @DisplayName("The login of a Silverpeas user should be taken as such for the chat login")
   void chatLoginShouldBeUserLoginByDefault() {
-    final ChatUser user = getChatUserWithLogin("miguel.moquillon");
-    assertThat(user.getChatLogin(), is("miguel.moquillon"));
+    final ChatUser user = getChatUserWithLogin("paul.martin");
+    assertThat(user.getChatLogin(), is("paul.martin"));
   }
 
   @Test
   @DisplayName("Any blanks in the login of a Silverpeas user should be removed")
   void chatLoginShouldBeWithoutAnySpaces() {
-    final ChatUser user = getChatUserWithLogin("miguel  moquillon");
-    assertThat(user.getChatLogin(), is("miguelmoquillon"));
+    final ChatUser user = getChatUserWithLogin("paul  martin");
+    assertThat(user.getChatLogin(), is("paulmartin"));
   }
 
   @Test
   @DisplayName("The chat login of a user should be in lower case")
   void chatLoginShouldBeAlwaysInLowerCaseByDefault() {
-    final ChatUser user = getChatUserWithLogin("Miguel.Moquillon");
-    assertThat(user.getChatLogin(), is("miguel.moquillon"));
+    final ChatUser user = getChatUserWithLogin("Paul.Martin");
+    assertThat(user.getChatLogin(), is("paul.martin"));
   }
 
   @Test
@@ -94,8 +94,8 @@ class ChatUserLoginTest {
   void chatLoginShouldBeAlwaysInLowerCaseInAnyCircumstances() {
     when(chatSettings.getJidFormatPolicy()).thenReturn(ChatSettings.JidFormatPolicy.REMOVED);
 
-    final ChatUser user = getChatUserWithLogin("Miguel.Moquillon@silverpeas.com");
-    assertThat(user.getChatLogin(), is("miguel.moquillon"));
+    final ChatUser user = getChatUserWithLogin("Paul.Martin@silverpeas.com");
+    assertThat(user.getChatLogin(), is("paul.martin"));
   }
 
   private ChatUser getChatUserWithLogin(final String login) {

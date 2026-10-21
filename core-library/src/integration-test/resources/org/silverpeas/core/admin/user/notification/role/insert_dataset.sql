@@ -6,8 +6,8 @@ INSERT INTO st_accesslevel (id, name) VALUES ('D', 'DomainManager');
 
 INSERT INTO st_user (id, domainid, specificid, firstname, lastname, email, login, loginmail, accesslevel, state, stateSaveDate)
 VALUES
-    (0, 0, '0', '', 'Administrateur', 'ehu@silverpeas.com', 'SilverAdmin', '', 'A', 'VALID', '2012-01-01 00:00:00.0'),
-    (1, 0, '1', 'Bart', 'Simpson', 'ehu@silverpeas.com', 'user_a', '', 'U', 'VALID', '2012-01-01 00:00:00.0'),
+    (0, 0, '0', '', 'Administrateur', 'admin@silverpeas.org', 'SilverAdmin', '', 'A', 'VALID', '2012-01-01 00:00:00.0'),
+    (1, 0, '1', 'Bart', 'Simpson', 'admin@silverpeas.org', 'user_a', '', 'U', 'VALID', '2012-01-01 00:00:00.0'),
     (2, 0, '2', 'Homer', 'Simpson', 'homer@simpson.com', 'user_b', '', 'U', 'VALID', '2012-01-01 00:00:00.0'),
     (10, 0, '10', 'Marge', 'Simpson', '', 'user_c', '', 'U', 'VALID', '2012-01-01 00:00:00.0'),
     (11, 0, '11', 'Lisa', 'Simpson', 'lisa@simpson.com', 'user_d','', 'U', 'VALID', '2012-01-01 00:00:00.0');

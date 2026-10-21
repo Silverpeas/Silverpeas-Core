@@ -49,9 +49,9 @@ public class MyJpaIT {
       "/org/silverpeas/core/persistence/datasource/create_table.sql";
   public static final Operation PERSON_SET_UP = Operations.insertInto("persons")
       .columns("id", "firstName", "lastName")
-      .values(1L, "Yohann", "Chastagnier")
-      .values(2L, "Nicolas", "Eysseric")
-      .values(3L, "Miguel", "Moquillon")
+      .values(1L, "Hugo", "Lambert")
+      .values(2L, "Thibaut", "Vasseron")
+      .values(3L, "Paul", "Martin")
       .build();
 
   @Rule
@@ -75,13 +75,13 @@ public class MyJpaIT {
     assertThat(mayBePerson.isPresent(), is(true));
 
     var person = mayBePerson.get();
-    assertThat(person.getFirstName(), is("Yohann"));
-    assertThat(person.getLastName(), is("Chastagnier"));
+    assertThat(person.getFirstName(), is("Hugo"));
+    assertThat(person.getLastName(), is("Lambert"));
   }
 
   @Test
   public void saveANewPerson() {
-    MyPerson person = new MyPerson("Aurore", "Allibe");
+    MyPerson person = new MyPerson("Emma", "Girard");
     var saved = repository.save(person);
     assertThat(saved.isPersisted(), is(true));
     assertThat(saved.getId(), is(person.getId()));
@@ -103,7 +103,7 @@ public class MyJpaIT {
     assertThat(mayBePerson.isPresent(), is(true));
     var person = mayBePerson.get();
     assertThat(person.getFirstName(), is("Laurence"));
-    assertThat(person.getLastName(), is("Moquillon"));
+    assertThat(person.getLastName(), is("Martin"));
   }
 }
   

@@ -36,11 +36,11 @@ public class JdbcSqlQueryUseIT {
   private static final Operation PERSON_SET_UP = Operations.insertInto("test_persons")
       .columns("id", "firstName", "lastName", "birthday", "createDate", "createdBy",
           "lastUpdateDate", "lastUpdatedBy", "version")
-      .values("person_1", "Yohann", "Chastagnier", "1980-01-01", "2013-11-21 09:57:30.003", "1",
+      .values("person_1", "Hugo", "Lambert", "1980-01-01", "2013-11-21 09:57:30.003", "1",
           "2013-11-21 09:57:30.003", "1", 0L)
-      .values("person_2", "Nicolas", "Eysseric", "1980-01-01", "2013-11-21 09:57:30.003", "1",
+      .values("person_2", "Thibaut", "Vasseron", "1980-01-01", "2013-11-21 09:57:30.003", "1",
           "2013-11-21 09:57:30.003", "1", 0L)
-      .values("person_3", "Miguel", "Moquillon", "1971-11-30", "2013-11-21 09:57:30.003", "2",
+      .values("person_3", "Paul", "Martin", "1985-06-15", "2013-11-21 09:57:30.003", "2",
           "2013-11-22 22:00:50.006", "10", 3L)
       .values("person_1000", "firstName", "lastName", "1980-01-01", "2013-11-21 09:57:30.003", "1",
           "2013-11-21 09:57:30.003", "1", 0L)
@@ -84,12 +84,12 @@ public class JdbcSqlQueryUseIT {
   }
 
   @Test
-  public void getYohannChastagnier() throws SQLException {
+  public void getHugoLambert() throws SQLException {
     final String id = "person_1";
     assertPersistedPerson(id, p -> {
       assertThat(p.get("id"), is(id));
-      assertThat(p.get("firstName"), is("Yohann"));
-      assertThat(p.get("lastName"), is("Chastagnier"));
+      assertThat(p.get("firstName"), is("Hugo"));
+      assertThat(p.get("lastName"), is("Lambert"));
       assertThat(p.get("birthday"), is(java.sql.Date.valueOf(LocalDate.parse("1980-01-01"))));
       assertThat(p.get("createDate"), is(Timestamp.valueOf("2013-11-21 09:57:30.003")));
       assertThat(p.get("lastUpdateDate"), is(Timestamp.valueOf("2013-11-21 09:57:30.003")));
@@ -103,14 +103,14 @@ public class JdbcSqlQueryUseIT {
   public void saveNewPerson() throws SQLException {
     final String id = "person_42";
     final Timestamp now = new Timestamp(new Date().getTime());
-    final java.sql.Date birthday = java.sql.Date.valueOf("1971-11-30");
+    final java.sql.Date birthday = java.sql.Date.valueOf("1985-06-15");
 
     // save new person
     Transaction.performInOne(() -> {
       long insertCount = JdbcSqlQuery.insertInto("test_persons")
           .withInsertParam("id", id)
-          .withInsertParam("firstName", "Miguel")
-          .withInsertParam("lastName", "Moquillon")
+          .withInsertParam("firstName", "Paul")
+          .withInsertParam("lastName", "Martin")
           .withInsertParam("birthday", birthday)
           .withInsertParam("createDate", now)
           .withInsertParam("lastUpdateDate", now)
@@ -125,8 +125,8 @@ public class JdbcSqlQueryUseIT {
     // check the new person was correctly saved
     assertPersistedPerson(id, p -> {
       assertThat(p.get("id"), is(id));
-      assertThat(p.get("firstName"), is("Miguel"));
-      assertThat(p.get("lastName"), is("Moquillon"));
+      assertThat(p.get("firstName"), is("Paul"));
+      assertThat(p.get("lastName"), is("Martin"));
       assertThat(p.get("birthday"), is(birthday));
       assertThat(p.get("createDate"), is(now));
       assertThat(p.get("lastUpdateDate"), is(now));

@@ -48,15 +48,15 @@ class ImageProfileTest {
 
   @Test
   void testIsImage() {
-    ImageProfile imageProfile = new ImageProfile("nidale.jpg");
+    ImageProfile imageProfile = new ImageProfile("jeanne.jpg");
     assertEquals(true, imageProfile.isImage());
-    imageProfile = new ImageProfile("nidale.bmp");
+    imageProfile = new ImageProfile("jeanne.bmp");
     assertEquals(true, imageProfile.isImage());
-    imageProfile = new ImageProfile("nidale.jpeg");
+    imageProfile = new ImageProfile("jeanne.jpeg");
     assertEquals(true, imageProfile.isImage());
-    imageProfile = new ImageProfile("nidale.gif");
+    imageProfile = new ImageProfile("jeanne.gif");
     assertEquals(true, imageProfile.isImage());
-    imageProfile = new ImageProfile("nidale.txt");
+    imageProfile = new ImageProfile("jeanne.txt");
     assertEquals(false, imageProfile.isImage());
   }
 

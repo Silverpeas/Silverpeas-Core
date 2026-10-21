@@ -61,7 +61,7 @@ class MailExtractorTest {
     assertThat(mail.getSubject(), is("Silverpeas : test archivage 1/3 (brut)"));
     // check date of transmission
     assertThat(mail.getDate().toInstant(), is(mailDateTime.toInstant()));    // check from
-    assertThat(mail.getFrom().getAddress(), is("nicolas.eysseric@silverpeas.com"));
+    assertThat(mail.getFrom().getAddress(), is("thibaut.vasseron@silverpeas.com"));
     // check to
     assertThat(mail.getTo().length, is(2));
     assertThat(mail.getCc().length, is(1));
@@ -96,7 +96,7 @@ class MailExtractorTest {
     // check date of transmission
     assertThat(mail.getDate().toInstant(), is(mailDateTime.toInstant()));
     // check from
-    assertThat(mail.getFrom().getAddress(), is("nicolas.eysseric@silverpeas.com"));
+    assertThat(mail.getFrom().getAddress(), is("thibaut.vasseron@silverpeas.com"));
     // check to
     assertThat(mail.getTo().length, is(2));
     assertThat(mail.getCc(), is(nullValue()));
@@ -118,11 +118,11 @@ class MailExtractorTest {
         + "quelques fantaisies</u>.</div><div>Le glisser/d&eacute;poser des mails dans la GED est "
         + "une&nbsp;<b>nouvelle fonction tr&egrave;s int&eacute;ressante</b>.</div><div><br></div>"
         + "<div>\n\nR&eacute;alis&eacute;e &agrave; la demande d&#39;"
-        + "<a href=\"http://www.hydrostadium.com/\" target=\"_blank\">Hydrostadium</a>, elle va "
+        + "<a href=\"http://www.hydroexemple.com/\" target=\"_blank\">Hydroexemple</a>, elle va "
         + "&ecirc;tre certainement utilis&eacute;e par d&#39;autres clients de la communaut&eacute;."
-        + "</div><div><br></div>-- <br>Nicolas EYSSERIC<br>\n\n<span style=\"color:rgb(102,102,102)\">"
+        + "</div><div><br></div>-- <br>Thibaut VASSERON<br>\n\n<span style=\"color:rgb(102,102,102)\">"
         + "Directeur produit</span><br style=\"color:rgb(102,102,102)\">"
-        + "<span style=\"color:rgb(102,102,102)\">06 59 55 18 25 <b>(Attention nouveau "
+        + "<span style=\"color:rgb(102,102,102)\">06 12 34 56 78 <b>(Attention nouveau "
         + "num&eacute;ro)</b></span><br>\n-----------------------------<br>Silverpeas<br>1, "
         + "place Firmin Gautier<br>38000 Grenoble<br>\n";
     testHTMLWithFiles(fileName, mailDateTime, body);
@@ -135,9 +135,9 @@ class MailExtractorTest {
     String body = "Bonjour,<br/><br/>Ce mail est au format html est permet quelques fantaisies."
         + "<br/>Le glisser/d&eacute;poser des mails dans la GED est une nouvelle fonction "
         + "tr&egrave;s<br/>int&eacute;ressante.<br/><br/>R&eacute;alis&eacute;e &agrave; "
-        + "la demande d'Hydrostadium &lt;http://www.hydrostadium.com/&gt; ,<br/>elle va &ecirc;tre "
+        + "la demande d'Hydroexemple &lt;http://www.hydroexemple.com/&gt; ,<br/>elle va &ecirc;tre "
         + "certainement utilis&eacute;e par d'autres clients de la<br/>communaut&eacute;.<br/><br/>"
-        + "-- <br/>Nicolas EYSSERIC<br/>Directeur produit<br/>06 59 55 18 25 (Attention nouveau "
+        + "-- <br/>Thibaut VASSERON<br/>Directeur produit<br/>06 12 34 56 78 (Attention nouveau "
         + "num&eacute;ro)<br/>-----------------------------<br/>Silverpeas<br/>1, place Firmin "
         + "Gautier<br/>38000 Grenoble<br/><br/>";
     testHTMLWithFiles(fileName, mailDateTime, body);
@@ -154,7 +154,7 @@ class MailExtractorTest {
     // check date of transmission
     assertThat(mail.getDate().toInstant(), is(mailDateTime.toInstant()));
     // check from
-    assertThat(mail.getFrom().getAddress(), is("nicolas.eysseric@silverpeas.com"));
+    assertThat(mail.getFrom().getAddress(), is("thibaut.vasseron@silverpeas.com"));
     // check to
     assertThat(mail.getTo().length, is(1));
     assertThat(mail.getCc().length, is(1));

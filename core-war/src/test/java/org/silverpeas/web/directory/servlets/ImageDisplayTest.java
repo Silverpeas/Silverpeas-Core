@@ -38,10 +38,10 @@ public class ImageDisplayTest {
   @Test
   public void getAvatarName() {
     HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-    Mockito.when(request.getPathInfo()).thenReturn("nbourakbi.jpg");
+    Mockito.when(request.getPathInfo()).thenReturn("jbarbier.jpg");
     ImageDisplay display = new ImageDisplay();
     String result = display.getAvatar(request);
-    String expectedResult = "nbourakbi.jpg";
+    String expectedResult = "jbarbier.jpg";
     assertEquals(expectedResult, result, "Verifying avatar name");
   }
 }

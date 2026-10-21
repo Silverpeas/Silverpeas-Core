@@ -120,7 +120,7 @@ public class LDAPDriverIT {
   @Test
   public void getAllUsers() throws Exception {
     List<String> userNames = Arrays.asList(
-        "Nicolas", "Aaren", "Aarika", "Aaron", "Aartjan", "Abagael", "Abagail",
+        "Thibaut", "Aaren", "Aarika", "Aaron", "Aartjan", "Abagael", "Abagail",
         "Abahri", "Abbas", "Abbe");
     UserDetail[] users = driver.getAllUsers();
     assertThat(users, notNullValue());

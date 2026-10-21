@@ -64,12 +64,12 @@ public class SPUserRepositoryIT {
           "phone", "email", "address", "title", "position")
       .values(0, "Toto", "Chez-les-Papoos", "toto", "toto", "Silverpeas", "Y", null, null, null,
           null, null)
-      .values(1000, "bart", "simpson", "bart.simpson", "bart", "Simpson's family", "Y", "047669084",
-          "bart.simpson@silverpeas.org", "18 rue des aiguinards", "student", "elder")
-      .values(1001, "lisa", "simpson", "lisa.simpson", "lisa", "Simpson's family", "Y", "047669084",
-          "lisa.simpson@silverpeas.org", "18 rue des aiguinards", "saxo player", "benjamin")
+      .values(1000, "bart", "simpson", "bart.simpson", "bart", "Simpson's family", "Y", "0102030405",
+          "bart.simpson@silverpeas.org", "742 Evergreen Terrace", "student", "elder")
+      .values(1001, "lisa", "simpson", "lisa.simpson", "lisa", "Simpson's family", "Y", "0102030405",
+          "lisa.simpson@silverpeas.org", "742 Evergreen Terrace", "saxo player", "benjamin")
       .values(1010, "krusty", "theklown", "krusty.theklown", "krusty", "Krusty Show", "Y",
-          "0146221498", "krusty.theklown@silverpeas.org", "18 rue des aiguinards", "Klown",
+          "0607080910", "krusty.theklown@silverpeas.org", "742 Evergreen Terrace", "Klown",
           "benjamin").build();
 
   public static final Operation SPGROUP_INSERTION =
@@ -158,8 +158,8 @@ public class SPUserRepositoryIT {
       assertThat(bart.getFirstname(), is("bart"));
       assertThat(bart.getLastname(), is("simpson"));
       assertThat(bart.getId(), is("1000"));
-      assertThat(bart.getPhone(), is("047669084"));
-      assertThat(bart.getAddress(), is("18 rue des aiguinards"));
+      assertThat(bart.getPhone(), is("0102030405"));
+      assertThat(bart.getAddress(), is("742 Evergreen Terrace"));
       assertThat(bart.getTitle(), is("student"));
       assertThat(bart.getCompany(), is("Simpson's family"));
       assertThat(bart.getEmail(), is("bart.simpson@silverpeas.org"));
@@ -221,14 +221,14 @@ public class SPUserRepositoryIT {
 
   @Test
   public void getExistingSPUsersByPhoneNumber() {
-    List<SPUser> users = userManager.findByPhone("0146221498");
+    List<SPUser> users = userManager.findByPhone("0607080910");
     assertThat(users.isEmpty(), is(false));
 
     SPUser actual =
         entityManager.find(SPUser.class, UniqueIntegerIdentifier.from(users.get(0).getId()));
     assertThat(actual.getFirstname(), is("krusty"));
     assertThat(actual.getId(), is("1010"));
-    assertThat(actual.getPhone(), is("0146221498"));
+    assertThat(actual.getPhone(), is("0607080910"));
     assertThat(actual.getLastname(), is("theklown"));
     assertThat(actual.getCompany(), is("Krusty Show"));
     assertThat(actual.getLogin(), is("krusty.theklown"));
@@ -251,8 +251,8 @@ public class SPUserRepositoryIT {
     tartempion.setFirstname("toto");
     tartempion.setLastname("tartempion");
     tartempion.setPosition("elder");
-    tartempion.setPhone("047669084");
-    tartempion.setAddress("18 rue des aiguinards");
+    tartempion.setPhone("0102030405");
+    tartempion.setAddress("742 Evergreen Terrace");
     tartempion.setTitle("student");
     tartempion.setCompany("Tartempion's family");
     tartempion.setEmail("toto.tartempion@silverpeas.org");

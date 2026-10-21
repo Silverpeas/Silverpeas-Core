@@ -108,10 +108,10 @@ public class UsersAndGroupsIT {
     UserDetail user = new UserDetail();
     user.setAccessLevel(UserAccessLevel.ADMINISTRATOR);
     user.setDomainId("0");
-    user.setEmailAddress("nicolas.eysseric@silverpeas.com");
-    user.setFirstName("Nicolas");
-    user.setLastName("EYSSERIC");
-    user.setLogin("neysseri");
+    user.setEmailAddress("thibaut.vasseron@silverpeas.com");
+    user.setFirstName("Thibaut");
+    user.setLastName("VASSERON");
+    user.setLogin("tvassero");
     user.setTosAcceptanceDate(tosAcceptanceDate);
     user.setLastLoginDate(lastLoginDate);
     user.setNbSuccessfulLoginAttempts(7);
@@ -169,7 +169,7 @@ public class UsersAndGroupsIT {
 
     awaitUntil(1, MILLISECONDS); // to ensure the save date is greater than now with an accuracy
     // of one second
-    String newEmail = "ney@silverpeas.com";
+    String newEmail = "tva@silverpeas.com";
     user.setEmailAddress(newEmail);
     user.setAccessLevel(UserAccessLevel.USER);
     user.setTosAcceptanceDate(tosAcceptanceDate);
