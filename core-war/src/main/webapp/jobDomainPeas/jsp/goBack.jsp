@@ -28,7 +28,7 @@
 <%@ taglib uri="silverpeas.tags.silverFunctions" prefix="silfn" %>
 
 <%@ include file="check.jsp" %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html>
 <head>
   <script type='text/javascript'>

@@ -41,8 +41,8 @@
 <% response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); %>
 
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 <head>
   <title><fmt:message key="GML.error"/>&nbsp;500</title>
   <link href="<c:url value="/style.css" />" rel="stylesheet" type="text/css"/>

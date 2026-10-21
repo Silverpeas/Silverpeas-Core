@@ -66,7 +66,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <c:set var="sentUserNotifications" value="${requestScope.SentNotifs}"/>
 <jsp:useBean id="sentUserNotifications" type="java.util.List<org.silverpeas.web.notificationserver.channel.silvermail.SentUserNotificationItem>"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html>
 <head>
   <title></title>
