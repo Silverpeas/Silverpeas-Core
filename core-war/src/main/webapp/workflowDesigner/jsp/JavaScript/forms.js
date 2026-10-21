@@ -8,7 +8,7 @@ function confirmRemove(action, params, strQuestion) {
     }
     jQuery('body').append($div);
     setTokens('#Form-Removal');
-    $form.submit();
+    $form.trigger('submit');
     $div.remove();
   });
 }

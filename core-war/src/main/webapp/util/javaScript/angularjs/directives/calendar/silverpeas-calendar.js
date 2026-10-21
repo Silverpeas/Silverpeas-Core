@@ -1072,13 +1072,13 @@
                 });
                 sp.navigation.previousNextOn(document, function(isPrevious) {
                   if (isPrevious) {
-                    this.$previousButton.click();
+                    this.$previousButton.trigger('click');
                   } else {
-                    this.$nextButton.click();
+                    this.$nextButton.trigger('click');
                   }
                 }.bind(this));
                 Mousetrap.bind(['escape escape', 'shift+up', 'shift+down'], function() {
-                  this.$todayButton.click();
+                  this.$todayButton.trigger('click');
                 }.bind(this));
                 function __viewNavigation(buttons) {
                   let selected;
