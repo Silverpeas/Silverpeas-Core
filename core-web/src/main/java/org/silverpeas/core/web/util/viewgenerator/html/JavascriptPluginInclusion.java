@@ -133,7 +133,7 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_PAGINATOR = "silverpeas-pagination.js";
   private static final String JQUERY_DATEPICKER = "jquery.ui.datepicker-{0}.js";
   private static final String SILVERPEAS_DATECHECKER = "silverpeas-datechecker.js";
-  private static final String JQUERY_CALENDAR = "fullcalendar.min.js";
+  private static final String JQUERY_CALENDAR = "fullcalendar.js";
   private static final String SILVERPEAS_CALENDAR = "silverpeas-calendar.js";
   private static final String STYLESHEET_JQUERY_CALENDAR = "fullcalendar.min.css";
   private static final String PRINT_STYLESHEET_JQUERY_CALENDAR = "fullcalendar.print.min.css";
@@ -455,7 +455,7 @@ public class JavascriptPluginInclusion {
 
   static ElementContainer includeQTip(final ElementContainer xhtml, final String language) {
     xhtml.addElement(link(JQUERY_CSS_PATH + JQUERY_QTIP + ".min.css"));
-    xhtml.addElement(script(JQUERY_PATH + JQUERY_QTIP + ".min.js"));
+    xhtml.addElement(script(JQUERY_PATH + JQUERY_QTIP + ".js"));
     final LocalizationBundle bundle = ResourceLocator.getGeneralLocalizationBundle(language);
     final JavascriptBundleProducer bundleProducer = bundleVariableName("TipBundle");
     bundleProducer.add("tip.c", bundle.getString("GML.close"));

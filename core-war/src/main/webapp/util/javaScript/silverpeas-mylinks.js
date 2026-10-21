@@ -30,6 +30,7 @@
   sp.i18n.load({
     bundle: 'org.silverpeas.mylinks.multilang.myLinksBundle',
     language: currentUser.language,
+    async: true
   });
 
   function __showProgressMessage() {
