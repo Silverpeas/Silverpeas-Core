@@ -92,7 +92,9 @@ public class WysiwygEditor {
         return o;
       }) + ");\n";
     }
-    if (componentInstanceId != null &&
+    // the dropped files are attached to the edited resource: no file can be uploaded for a
+    // resource not yet created
+    if (componentInstanceId != null && StringUtil.isDefined(resourceId) &&
         !(componentInstanceId.startsWith(WysiwygController.WYSIWYG_WEBSITES) && isLong(resourceId))) {
       js += format(DD_UPLOAD_TEMPLATE_SCRIPT, componentInstanceId, resourceId, false);
     }
