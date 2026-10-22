@@ -58,26 +58,33 @@ class LoadScriptTagTest {
   }
 
   @Test
-  void theScriptIsLoadedOncePerDocumentByAScriptElement() {
-    String js = generateDynamicScriptLoading(SCRIPT, null, null);
+  void theScriptIsLoadedAtEachRenderingByAScriptElementByDefault() {
+    String js = generateDynamicScriptLoading(SCRIPT, null, null, false);
 
-    assertThat(js, startsWith("sp.loadScriptOnce('/silverpeas/util/javaScript/checkForm."));
+    assertThat(js, startsWith("sp.loadScript('/silverpeas/util/javaScript/checkForm."));
     assertThat(js, endsWith(".js');"));
     assertThat(js, not(containsString("jQuery.ajax")));
   }
 
   @Test
+  void aLibraryIsLoadedOncePerDocument() {
+    String js = generateDynamicScriptLoading(SCRIPT, null, null, true);
+
+    assertThat(js, startsWith("sp.loadScriptOnce('/silverpeas/util/javaScript/checkForm."));
+  }
+
+  @Test
   void theLoadingCanBeExposedAsANamedPromise() {
-    String js = generateDynamicScriptLoading(SCRIPT, "checkFormLoaded", "window");
+    String js = generateDynamicScriptLoading(SCRIPT, "checkFormLoaded", "window", true);
 
     assertThat(js, startsWith("window.checkFormLoaded=sp.loadScriptOnce('"));
-    assertThat(generateDynamicScriptLoading(SCRIPT + "?other", "checkFormLoaded", null),
-        startsWith("var checkFormLoaded=sp.loadScriptOnce('"));
+    assertThat(generateDynamicScriptLoading(SCRIPT + "?other", "checkFormLoaded", null, false),
+        startsWith("var checkFormLoaded=sp.loadScript('"));
   }
 
   @Test
   void theSameScriptIsEmittedOnceInAPage() {
-    assertThat(generateDynamicScriptLoading(SCRIPT, null, null), not(emptyString()));
-    assertThat(generateDynamicScriptLoading(SCRIPT, null, null), is(emptyString()));
+    assertThat(generateDynamicScriptLoading(SCRIPT, null, null, false), not(emptyString()));
+    assertThat(generateDynamicScriptLoading(SCRIPT, null, null, true), is(emptyString()));
   }
 }

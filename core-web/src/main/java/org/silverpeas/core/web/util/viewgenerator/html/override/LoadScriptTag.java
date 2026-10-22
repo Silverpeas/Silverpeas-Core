@@ -41,6 +41,7 @@ public class LoadScriptTag extends TagSupport {
   private String src;
   private String jsPromiseScope;
   private String jsPromiseName;
+  private boolean once = false;
 
   public void setWebContext(final String webContext) {
     this.webContext = webContext;
@@ -70,6 +71,21 @@ public class LoadScriptTag extends TagSupport {
     return jsPromiseName;
   }
 
+  /**
+   * Should the script be loaded only once per document? By default, the script is loaded and
+   * executed at each rendering of the tag, as expected by the scripts initializing a part of
+   * the page each time this part is loaded. The libraries, which must not be executed twice,
+   * have to be loaded once.
+   * @param once true to load the script once per document, false to load it at each rendering.
+   */
+  public void setOnce(final boolean once) {
+    this.once = once;
+  }
+
+  public boolean isOnce() {
+    return once;
+  }
+
   public void setJsPromiseName(final String jsPromiseName) {
     this.jsPromiseName = jsPromiseName;
   }
@@ -78,7 +94,7 @@ public class LoadScriptTag extends TagSupport {
   public int doEndTag() throws JspException {
     String source = src.startsWith("/") && !src.startsWith(webContext) ? webContext + src : src;
     script dynamicLoading = new script().setType("text/javascript")
-        .addElement(generateDynamicScriptLoading(source, jsPromiseName, jsPromiseScope));
+        .addElement(generateDynamicScriptLoading(source, jsPromiseName, jsPromiseScope, once));
     dynamicLoading.output(pageContext.getOut());
     return EVAL_PAGE;
   }
@@ -89,16 +105,19 @@ public class LoadScriptTag extends TagSupport {
    * @param src the script src.
    * @param jsPromiseName the name of a promise.
    * @param jsPromiseScope the scope of the promise.
+   * @param once true to load the script once per document, false to load it at each call.
    * @return the loading treatment.
    */
   public static String generateDynamicScriptLoading(final String src, final String jsPromiseName,
-      final String jsPromiseScope) {
+      final String jsPromiseScope, final boolean once) {
     String key = "$jsDynamic$script$" + src;
     if (getThreadCacheAccessor().getCache().get(key) == null) {
       getThreadCacheAccessor().getCache().put(key, true);
-      // the script is loaded by a script element, once per document: jQuery would otherwise
-      // evaluate it again at each loading of the content (a popup opened twice for example)
-      final String loading = "sp.loadScriptOnce('" + normalizeWebResourceUrl(src) + "')";
+      // the script is loaded by a script element: jQuery would otherwise fetch and evaluate it
+      // as anonymous code. Once per document for a library, at each call for an initialization
+      // script (the navigation part of the layout for example).
+      final String loader = once ? "sp.loadScriptOnce" : "sp.loadScript";
+      final String loading = loader + "('" + normalizeWebResourceUrl(src) + "')";
       if (StringUtil.isNotDefined(jsPromiseName)) {
         return loading + ";";
       }
