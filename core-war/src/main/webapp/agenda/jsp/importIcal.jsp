@@ -35,11 +35,6 @@
 	if (StringUtil.isDefined((String) request.getAttribute("ImportReturnCode")))
 	{
 		importDone = true;
-		%>
-		<script type="text/javascript">>
-				window.opener.location.href = "<%=agenda.getCurrentViewType()%>";
-		</script>
-		<%
 		String returnCode = (String) request.getAttribute("ImportReturnCode");
 		if (AgendaSessionController.IMPORT_SUCCEEDED.equals(returnCode))
 		{
@@ -56,6 +51,11 @@
 <head>
 <title><%=resources.getString("agenda.ImportIcalCalendar") %></title>
 <view:looknfeel/>
+<% if (importDone) { %>
+<script type="text/javascript">
+  window.opener.location.href = "<%=agenda.getCurrentViewType()%>";
+</script>
+<% } %>
 <script type="text/javascript">
 function importIcal() {
 	if (document.importIcalForm.fileCalendar.value != "") {
