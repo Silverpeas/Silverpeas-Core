@@ -2070,6 +2070,25 @@ if (typeof window.sp === 'undefined') {
       });
     },
     /**
+     * Loads the script at the given source once into the current document: a script already
+     * loaded, by this method or by a script element, is not loaded again. Loading again a script
+     * would otherwise execute it again, which is forbidden for those declaring top-level
+     * constants.
+     * @param src the source of the script.
+     * @return a promise resolved once the script is loaded.
+     */
+    loadScriptOnce : function(src) {
+      const registry = window.__sp_loadedScripts = window.__sp_loadedScripts || {};
+      const key = new URL(src, document.baseURI).href;
+      if (!registry[key]) {
+        const alreadyIn = Array.from(document.scripts).some(function(script) {
+          return script.src === key;
+        });
+        registry[key] = alreadyIn ? Promise.resolve() : sp.loadScript(src);
+      }
+      return registry[key];
+    },
+    /**
      * @deprecated use instead sp.ajaxRequest(...).loadTarget(...)
      */
     load : function(targetOrArrayOfTargets, ajaxRequest, isGettingFullHtmlContent) {
