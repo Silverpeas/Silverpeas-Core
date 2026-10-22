@@ -398,10 +398,9 @@
       action : '#'
     });
     const $fileInput = $('<input>', {
-      multiple : params.options.multiple,
       type : 'file',
       length : 40
-    }).addClass('dragAndDrop');
+    }).prop('multiple', !!params.options.multiple).addClass('dragAndDrop');
     $form.append($fileInput);
     $fileInputs.append($form);
     if (isFileAPI && params.options.dragAndDropDisplay) {
