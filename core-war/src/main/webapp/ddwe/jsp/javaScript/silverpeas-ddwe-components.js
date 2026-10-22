@@ -512,7 +512,9 @@
         components : {
           type : 'link',
           attributes: {
-            'href': 'javascript:void(0)',
+            // a scripting scheme is refused by the protection against the XSS injections of
+            // Silverpeas: the content couldn't be stored anymore
+            'href': '#',
             'title': '',
             'class': 'link-image',
             'target': '_blank',
@@ -567,6 +569,12 @@
               highlightable : false
             });
             initOptions.tools.updateToolbar(model);
+            // a link created with a scripting scheme by a previous version of the block would
+            // prevent the content from being stored
+            const href = model.getAttributes().href;
+            if (href && href.trim().toLowerCase().startsWith('javascript:')) {
+              model.addAttributes({href : '#'});
+            }
             ['href', 'target'].forEach(function(name) {
               props[name] = model.getAttributes()[name];
             });

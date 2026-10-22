@@ -487,16 +487,31 @@
     };
   }
 
+  /**
+   * Creates the deferred about a storing of the content. It is rejected when the storing fails or
+   * is replaced by a new one; this rejection matters only to the user leaving the editor (see
+   * whenStoreProcessHasFinished), so it isn't reported as unhandled when nobody is leaving.
+   * @returns {*} a deferred.
+   * @private
+   */
+  function __newStoreDeferred() {
+    const deferred = sp.promise.deferred();
+    deferred.promise.catch(function() {
+      // handled by whenStoreProcessHasFinished when the user leaves the editor
+    });
+    return deferred;
+  }
+
   function __setupLeavingPage(editor, completedOptions) {
     editor.on('storage:start:store', function(data) {
       if (completedOptions.store.deferred) {
         completedOptions.store.deferred.reject();
       }
-      completedOptions.store.deferred = sp.promise.deferred();
+      completedOptions.store.deferred = __newStoreDeferred();
     });
     editor.on('storage:end:store', function(data) {
       if (!completedOptions.store.deferred) {
-        completedOptions.store.deferred = sp.promise.deferred();
+        completedOptions.store.deferred = __newStoreDeferred();
       }
       if (data && StringUtil.isDefined(data['gjs-inlinedHtml'])) {
         completedOptions.store.error = false;
