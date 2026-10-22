@@ -100,5 +100,3 @@ String boardEnd   = "</td></tr></table>";
 String openBorder = "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"50%\" class=\"line\"><tr><td><table cellpadding=\"2\" cellspacing=\"1\" border=\"0\" width=\"100%\" ><tr><td class=\"intfdcolor\" align=\"center\" nowrap width=\"100%\" height=\"22\">";
 String closeBorder = "</td></tr></table></td></tr></table>";
 %>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
-<view:script src="/util/javaScript/checkForm.js"/>

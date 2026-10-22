@@ -39,7 +39,7 @@
 <HTML>
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
-<view:looknfeel/>
+<view:looknfeel withCheckFormScript="true"/>
 <SCRIPT LANGUAGE="JavaScript">
 <!--
 function save() {
