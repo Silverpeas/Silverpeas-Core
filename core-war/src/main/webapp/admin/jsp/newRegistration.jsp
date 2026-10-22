@@ -109,12 +109,12 @@
                 if ($("#identity-template").length) {
                     checkForm(function () {
                         ifCorrectFormExecute(function () {
-                            get$form().submit();
+                            get$form().trigger('submit');
                         });
                     });
                 } else {
                     checkForm(function () {
-                        get$form().submit();
+                        get$form().trigger('submit');
                     });
                 }
             }

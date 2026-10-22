@@ -201,7 +201,7 @@
           // Down
           previousOrNextPreviewTarget = allDocumentPreviews[nextIndex];
         }
-        $Src(previousOrNextPreviewTarget).click();
+        $Src(previousOrNextPreviewTarget).trigger('click');
         return false;
       }
       return true;
@@ -259,7 +259,7 @@
     $buttonContainer.html($button);
     // Setting onclick result
     $buttonContainer.on('click', function() {
-      $UI(nextDomObjectPreview).click();
+      $UI(nextDomObjectPreview).trigger('click');
     });
     // Setting onmouseover/onmouseout button event
     $buttonContainer.on('mouseenter', function() {

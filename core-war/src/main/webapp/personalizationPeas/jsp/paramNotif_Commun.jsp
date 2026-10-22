@@ -38,7 +38,7 @@
       var $form = jQuery('#genericFormParamNotif');
       jQuery('#id', $form).val(id);
       jQuery('#Action', $form).val('delete');
-      $form.attr('action', "paramNotif.jsp").submit();
+      $form.attr('action', "paramNotif.jsp").trigger('submit');
     });
   }
 </script>

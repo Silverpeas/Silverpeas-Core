@@ -184,7 +184,7 @@ function deleteInstance() {
       function() {
         var $form = jQuery('#infoInstance');
         jQuery('#ComponentNum', $form).val('<%=compoInst.getId()%>');
-        $form.attr('action', 'DeleteInstance').submit();
+        $form.attr('action', 'DeleteInstance').trigger('submit');
       });
 }
 
@@ -192,7 +192,7 @@ function updateInstance() {
   var $form = jQuery('#infoInstance');
   jQuery('#ComponentNum', $form).val('<%=compoInst.getId()%>');
   jQuery('#Translation', $form).val(currentLanguage);
-  $form.attr('action', 'UpdateInstance').submit();
+  $form.attr('action', 'UpdateInstance').trigger('submit');
 }
 
 function clipboardCopy() {
