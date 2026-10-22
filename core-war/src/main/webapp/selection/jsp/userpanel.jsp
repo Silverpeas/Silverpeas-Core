@@ -719,16 +719,21 @@
               const selectionIdField = '<c:out value="${selection.htmlFormElementId}"/>';
               const selectionNameField = '<c:out value="${selection.htmlFormElementName}"/>';
               const selectionTypeField = '<c:out value="${selection.htmlFormElementType}"/>';
-              __triggerChange(window.opener.$('#' + selectionIdField).val((selectedUserIds.length > 0 ? selectedUserIds : selectedGroupIds)));
-              __triggerChange(window.opener.$('#' + selectionNameField).val((selectedUserNames.length > 0 ? selectedUserNames : selectedGroupNames)));
+              // a caller can provide only some of the fields (the notification sender has no name
+              // field): an undefined field matches no element instead of the invalid selector '#'
+              const __openerField = function(fieldId, suffix) {
+                return fieldId ? window.opener.$('#' + fieldId + (suffix || '')) : window.opener.$();
+              };
+              __triggerChange(__openerField(selectionIdField).val((selectedUserIds.length > 0 ? selectedUserIds : selectedGroupIds)));
+              __triggerChange(__openerField(selectionNameField).val((selectedUserNames.length > 0 ? selectedUserNames : selectedGroupNames)));
               if(selectionTypeField != null && selectionTypeField.length > 0) {
-		window.opener.$('#' + selectionTypeField).val((selectedUserIds.length > 0 ? '<%=Selection.TYPE_SELECTED_ELEMENT%>' : '<%=Selection.TYPE_SELECTED_SET%>'));
+                __openerField(selectionTypeField).val((selectedUserIds.length > 0 ? '<%=Selection.TYPE_SELECTED_ELEMENT%>' : '<%=Selection.TYPE_SELECTED_SET%>'));
               }
 
-              window.opener.$('#' + selectionIdField + "-userIds").val(selectedUserIds);
-              window.opener.$('#' + selectionIdField + "-groupIds").val(selectedGroupIds);
-              __triggerChange(window.opener.$('#' + selectionIdField + "-userIds"));
-              __triggerChange(window.opener.$('#' + selectionIdField + "-groupIds"));
+              __openerField(selectionIdField, '-userIds').val(selectedUserIds);
+              __openerField(selectionIdField, '-groupIds').val(selectedGroupIds);
+              __triggerChange(__openerField(selectionIdField, '-userIds'));
+              __triggerChange(__openerField(selectionIdField, '-groupIds'));
 
               window.close();
         </c:when>
