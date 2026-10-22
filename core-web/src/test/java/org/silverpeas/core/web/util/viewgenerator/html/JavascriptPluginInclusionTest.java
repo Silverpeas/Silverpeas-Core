@@ -39,6 +39,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.stringContainsInOrder;
 import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.JQUERY_JS;
 import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.JQUERY_MIGRATE_DEV_JS;
 import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.JQUERY_MIGRATE_MIN_JS;
@@ -114,6 +115,24 @@ class JavascriptPluginInclusionTest {
 
     assertThat(html, containsString("src='/silverpeas/util/javaScript/progressMessage"));
     assertThat(again, is(emptyString()));
+  }
+
+  /**
+   * The attachment pane inserted by AngularJS into the calendar event form includes the scripts
+   * of its operation menu: they have to be already in the page, otherwise jQuery fetches them
+   * synchronously. YUI requires its scripts in the order of their dependencies.
+   */
+  @Test
+  void includeAttachmentOperationMenuLoadsTheYuiMenuInOrderAndTheCookiePlugin() {
+    generalSettings.put("web.resource.js.get.minified.enabled", "false");
+
+    String html =
+        JavascriptPluginInclusion.includeAttachmentOperationMenu(new ElementContainer()).toString();
+
+    assertThat(html, stringContainsInOrder("/util/yui/yahoo-dom-event/yahoo-dom-event",
+        "/util/yui/container/container_core-min", "/util/yui/animation/animation-min",
+        "/util/yui/menu/menu-min", "/util/javaScript/jquery/jquery.cookie",
+        "/util/yui/menu/assets/menu"));
   }
 
   /**
