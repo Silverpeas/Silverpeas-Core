@@ -805,6 +805,9 @@ public class JavascriptPluginInclusion {
     includeDragAndDropUpload(xhtml, language);
     includeWysiwygEditor(xhtml, language);
     includeContributionReminder(xhtml, language);
+    // the progress message is used by the calendar management template: loaded here, it is not
+    // fetched again synchronously when the template is inserted by AngularJS
+    includeProgressMessage(xhtml);
     includeBasketSelection(xhtml);
 
     SettingBundle calendarSettings = ResourceLocator
@@ -1497,6 +1500,17 @@ public class JavascriptPluginInclusion {
 
   static ElementContainer includePanes(final ElementContainer xhtml) {
     xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + "util/silverpeas-panes.js"));
+    return xhtml;
+  }
+
+  /**
+   * Includes the script of the progress message widget. As for any other script, it is emitted
+   * once per rendered page.
+   * @param xhtml the container of the HTML elements to which the script is added.
+   * @return the container itself.
+   */
+  public static ElementContainer includeProgressMessage(final ElementContainer xhtml) {
+    xhtml.addElement(script(JAVASCRIPT_PATH + "progressMessage.js"));
     return xhtml;
   }
 

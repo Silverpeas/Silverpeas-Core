@@ -36,6 +36,8 @@ import org.silverpeas.kernel.test.extension.SettingBundleStub;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.emptyString;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.JQUERY_JS;
 import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.JQUERY_MIGRATE_DEV_JS;
@@ -96,6 +98,22 @@ class JavascriptPluginInclusionTest {
     assertThat(html, containsString("type='application/l10n'"));
     assertThat(html, containsString("/media/jsp/pdf/locale/locale"));
     assertThat(html, not(containsString("rel='stylesheet' href='/silverpeas/media/jsp/pdf/locale")));
+  }
+
+  /**
+   * The calendar management template of AngularJS uses the progress message: the script has to be
+   * already in the page, otherwise jQuery fetches it synchronously when the template is inserted.
+   * Both the calendar plugin and the progress message tag include it, so it is emitted only once.
+   */
+  @Test
+  void includeProgressMessageEmitsItsScriptOnceInAPage() {
+    generalSettings.put("web.resource.js.get.minified.enabled", "true");
+
+    String html = JavascriptPluginInclusion.includeProgressMessage(new ElementContainer()).toString();
+    String again = JavascriptPluginInclusion.includeProgressMessage(new ElementContainer()).toString();
+
+    assertThat(html, containsString("src='/silverpeas/util/javaScript/progressMessage"));
+    assertThat(again, is(emptyString()));
   }
 
   /**
