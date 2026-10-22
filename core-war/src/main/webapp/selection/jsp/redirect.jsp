@@ -25,6 +25,7 @@
 --%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <c:set var="url" value="${requestScope.RedirectionURL}"/>
@@ -34,11 +35,8 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <view:looknfeel />
-    <script type="text/javascript">
-      window.opener.location.href="${url}";
-      window.close();
-    </script>
   </head>
-  <body>
+  <body data-redirection-url="${fn:escapeXml(url)}">
+    <view:script src="/selection/jsp/javaScript/redirect.js"/>
   </body>
 </html>
