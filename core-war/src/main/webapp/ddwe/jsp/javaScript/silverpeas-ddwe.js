@@ -220,10 +220,11 @@
                     initialization : _context.initialization
                   },
                   onLoad : function(data) {
+                    const temporaryInlinedHtml = data['tmp-inlinedHtml'];
                     if (_context.initialization) {
                       _context.initialization = false;
                       gEditor.StorageManager.getConfig().options.remote.headers.initialization = false;
-                      if (data['tmp-inlinedHtml']) {
+                      if (temporaryInlinedHtml) {
                         const confirmationUrl = webContext + '/wysiwyg/jsp/confirmUnvalidatedContentExistence.jsp';
                         const url = sp.url.format(confirmationUrl);
                         const deferredOpen = sp.promise.deferred();
@@ -240,12 +241,12 @@
                             }, 0);
                           }
                         }).then(function() {
-                          document.querySelector('#unvalidated-wysiwyg-content-container').innerHTML = data['tmp-inlinedHtml'];
+                          document.querySelector('#unvalidated-wysiwyg-content-container').innerHTML = temporaryInlinedHtml;
                           deferredOpen.resolve();
                         }.bind(this));
                       }
                     }
-                    return sp.promise.resolveDirectlyWith(data);
+                    return sp.promise.resolveDirectlyWith(__projectDataOf(data));
                   },
                   onStore : function(data) {
                     data['gjs-inlinedHtml'] = gEditor.runCommand('gjs-get-inlined-html');
@@ -355,6 +356,24 @@
           self.notifyReady();
         });
   };
+
+  /**
+   * Gets the GrapesJS project data from the data loaded from the server. GrapesJS clears all its
+   * modules before loading any non-empty data: the data has then to be either a project with at
+   * least one page or nothing, otherwise the editor ends up without any page. This is the case of
+   * a content that was never validated, for which the server sends only the content being edited
+   * and not yet validated (the tmp-inlinedHtml data, which isn't a GrapesJS one).
+   * @param data the data loaded from the server.
+   * @returns {object} the project data to load into GrapesJS, or an empty object to keep the
+   * default empty project of the editor.
+   * @private
+   */
+  function __projectDataOf(data) {
+    const projectData = Object.assign({}, data);
+    delete projectData['tmp-inlinedHtml'];
+    const hasPages = Array.isArray(projectData.pages) && projectData.pages.length > 0;
+    return hasPages ? projectData : {};
+  }
 
   function __adjustRichTextEditor(editor) {
     const rte = editor.RichTextEditor;
