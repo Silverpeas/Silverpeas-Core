@@ -73,15 +73,22 @@
         <view:arrayCellText>
           <c:set var="nameTarget" value=""/>
           <c:set var="nameClass" value=""/>
+          <c:set var="nameRel" value=""/>
+          <c:set var="opening" value="${requestScope.LinkOpenings[link.linkId]}"/>
           <c:choose>
-            <c:when test="${link.popup}">
+            <c:when test="${link.popup or opening eq 'IN_NEW_WINDOW'}">
               <c:set var="nameTarget" value="_blank"/>
+              <c:set var="nameRel" value="noopener noreferrer"/>
+            </c:when>
+            <c:when test="${opening eq 'IN_SANDBOXED_FRAME'}">
+              <%-- an external page is isolated from Silverpeas within a sandboxed frame --%>
+              <c:url var="linkUrl" value="/RmyLinksPeas/jsp/links/${id}/frame"/>
             </c:when>
             <c:when test="${fn:startsWith(linkUrl, silfn:applicationURL())}">
               <c:set var="nameClass" value="sp-link"/>
             </c:when>
           </c:choose>
-          <a href="${linkUrl}" class="${nameClass}" target="${nameTarget}">${silfn:escapeHtml(name)}</a>
+          <a href="${linkUrl}" class="${nameClass}" target="${nameTarget}" rel="${nameRel}">${silfn:escapeHtml(name)}</a>
         </view:arrayCellText>
         <view:arrayCellText text="${silfn:escapeHtml(link.description)}"/>
         <view:arrayCellText>
