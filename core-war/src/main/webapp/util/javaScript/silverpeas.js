@@ -2809,11 +2809,35 @@ if (typeof window.sp === 'undefined') {
           });
           return deferred.promise;
         },
+        /**
+         * Gets a promise of the editor instance identified by the specified value once it is ready.
+         * As CKEDITOR.replace, the instance is identified either by its name or by the identifier
+         * or the name of the replaced element (the instance being named after the identifier of
+         * the element if any, otherwise after its name).
+         * @param id the name of the editor instance, or the identifier or the name of the element
+         * replaced by the editor.
+         * @returns {Promise} the promise of the editor instance.
+         */
         promiseEditorInstanceById : function(id) {
           let deferred = sp.promise.deferred();
+          const isTheEditor = function(editor) {
+            const element = editor.element;
+            return editor.name === id ||
+                (element && (element.getId() === id || element.getNameAtt() === id));
+          };
           whenSilverpeasReady(function() {
-            CKEDITOR.on('instanceReady', function() {
-              deferred.resolve(CKEDITOR.instances[id]);
+            const readyEditor = Object.values(CKEDITOR.instances).find(function(editor) {
+              return editor.status === 'ready' && isTheEditor(editor);
+            });
+            if (readyEditor) {
+              deferred.resolve(readyEditor);
+              return;
+            }
+            const listener = CKEDITOR.on('instanceReady', function(event) {
+              if (isTheEditor(event.editor)) {
+                listener.removeListener();
+                deferred.resolve(event.editor);
+              }
             });
           });
           return deferred.promise;
