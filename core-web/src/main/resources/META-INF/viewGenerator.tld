@@ -2736,6 +2736,18 @@
       <type>java.lang.String</type>
     </attribute>
     <attribute>
+      <description>
+        Should the script be loaded only once per document? By default (false), the script is
+        loaded and executed at each rendering of the tag, as expected by the scripts initializing
+        a part of the page each time it is loaded. Set it to true for a library, which must not
+        be executed twice (a popup opened several times for example).
+      </description>
+      <name>once</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>boolean</type>
+    </attribute>
+    <attribute>
       <name>applicationContext</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>

@@ -81,7 +81,7 @@ int autocompletionMinChars = resourceSearchEngine.getInteger("autocompletion.min
 <view:link href="/util/styleSheets/jquery.loadmask.css"/>
 
 <!-- Add jQuery javascript library -->
-<view:loadScript src="/util/javaScript/jquery/jquery.loadmask.js"/>
+<view:loadScript src="/util/javaScript/jquery/jquery.loadmask.js" once="true"/>
 
 <script type="text/javascript">
 

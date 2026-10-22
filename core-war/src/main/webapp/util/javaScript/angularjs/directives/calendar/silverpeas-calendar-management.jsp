@@ -52,7 +52,7 @@
 <c:set var="nbMaxMessage"><b>@name@</b> <fmt:message key='GML.data.error.message.string.limit'><fmt:param value="@length@"/></fmt:message></c:set>
 
 <div style="display: none">
-  <view:loadScript src="/util/javaScript/checkForm.js"/>
+  <view:loadScript src="/util/javaScript/checkForm.js" once="true"/>
   <span ng-init="$ctrl.messages.mandatory = '${silfn:escapeJs(mandatoryMessage)}'"></span>
   <span ng-init="$ctrl.messages.nbMax = '${silfn:escapeJs(nbMaxMessage)}'"></span>
   <span ng-init="$ctrl.messages.create= '${silfn:escapeJs(createCalendarLabel)}'"></span>
