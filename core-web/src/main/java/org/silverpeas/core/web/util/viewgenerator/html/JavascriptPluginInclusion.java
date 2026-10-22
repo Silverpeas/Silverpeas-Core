@@ -785,9 +785,29 @@ public class JavascriptPluginInclusion {
     includePreview(xhtml);
     includeFileManager(xhtml);
     includeDragAndDropUpload(xhtml, language);
+    includeAttachmentOperationMenu(xhtml);
     xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + "util/silverpeas-attachment.js"));
     xhtml.addElement(link(VUEJS_COMPONENT_PATH + "content/silverpeas-attachment.css"));
     xhtml.addElement(script(VUEJS_COMPONENT_PATH + "content/silverpeas-attachment.js"));
+    return xhtml;
+  }
+
+  /**
+   * Includes the scripts of the operation menu of the attached files (a YUI menu whose state is
+   * kept in a cookie). The attachment pane includes them itself, but when it is inserted by
+   * AngularJS into a page, jQuery would fetch them synchronously if they weren't already in the
+   * page.
+   * @param xhtml the container of the HTML elements to which the scripts are added.
+   * @return the container itself.
+   */
+  public static ElementContainer includeAttachmentOperationMenu(final ElementContainer xhtml) {
+    final String yuiPath = getApplicationURL() + "/util/yui/";
+    xhtml.addElement(script(yuiPath + "yahoo-dom-event/yahoo-dom-event.js"));
+    xhtml.addElement(script(yuiPath + "container/container_core-min.js"));
+    xhtml.addElement(script(yuiPath + "animation/animation-min.js"));
+    xhtml.addElement(script(yuiPath + "menu/menu-min.js"));
+    xhtml.addElement(script(JAVASCRIPT_PATH + "jquery/jquery.cookie.js"));
+    xhtml.addElement(link(yuiPath + "menu/assets/menu.css"));
     return xhtml;
   }
 
