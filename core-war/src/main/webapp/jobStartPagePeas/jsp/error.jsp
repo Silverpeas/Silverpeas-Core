@@ -57,6 +57,7 @@ if (when.equals("ComponentUpdate")) {
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
 <view:looknfeel/>
+<adminTags:refreshSpaceNavigation/>
 </HEAD>
 <BODY class="page_content_admin">
 <%

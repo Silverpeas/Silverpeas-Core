@@ -151,6 +151,7 @@
 <head>
   <title><%=resource.getString("GML.popupTitle")%></title>
   <view:looknfeel withCheckFormScript="true"/>
+  <adminTags:refreshSpaceNavigation/>
   <c:if test="<%=m_SpaceExtraInfos.isAdmin()%>">
     <view:includePlugin name="adminspacehomepage"/>
   </c:if>

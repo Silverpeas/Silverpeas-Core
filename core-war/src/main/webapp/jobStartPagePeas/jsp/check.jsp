@@ -76,6 +76,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/admin" prefix="adminTags" %>
 
 <%
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
@@ -84,7 +85,6 @@ JobStartPagePeasSessionController jobStartPageSC = (JobStartPagePeasSessionContr
 String iconsPath = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 String m_context = iconsPath;
 
-Boolean haveToRefreshNavBar = (Boolean)request.getAttribute("haveToRefreshNavBar");
 
 MultiSilverpeasBundle resource = (MultiSilverpeasBundle)request.getAttribute("resources");
 Window window = gef.getWindow();
@@ -95,24 +95,3 @@ OperationPane operationPane = window.getOperationPane();
 Frame frame = gef.getFrame();
 Board board = gef.getBoard();
 %>
-<% if (haveToRefreshNavBar != null && haveToRefreshNavBar) {
-  boolean isRoot = true;
-  String currentSpaceId = "undefined";
-  SpaceInst currentSpace = jobStartPageSC.getSpaceInstById();
-  if (currentSpace != null) {
-    isRoot = currentSpace.isRoot();
-    currentSpaceId = "'" + currentSpace.getId() + "'";
-  }
-%>
-<script type="text/javascript">
-  if (top.window.spAdminWindow) {
-    const isRoot = <%=isRoot%>;
-    const currentSpaceId = <%=currentSpaceId%>;
-    if (isRoot) {
-      top.window.spAdminWindow.loadSpace(currentSpaceId);
-    } else {
-      top.window.spAdminWindow.loadSubSpace(currentSpaceId);
-    }
-  }
-</script>
-<% } %>

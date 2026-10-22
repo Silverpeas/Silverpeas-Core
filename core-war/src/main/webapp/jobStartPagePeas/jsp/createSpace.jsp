@@ -51,6 +51,7 @@ boolean isInHeritanceEnable = JobStartPagePeasSettings.isInheritanceEnable;
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel withCheckFormScript="true"/>
+<adminTags:refreshSpaceNavigation/>
 <script type="text/javascript">
 /*****************************************************************************/
 function B_VALIDER_ONCLICK() {

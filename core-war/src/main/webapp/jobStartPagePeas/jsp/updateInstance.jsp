@@ -155,6 +155,7 @@ for (ProfileInst theProfile : m_Profiles) {
 
 <view:sp-page>
 <view:sp-head-part withFieldsetStyle="true" withCheckFormScript="true">
+<adminTags:refreshSpaceNavigation/>
 <view:link href="/jobStartPagePeas/jsp/stylesheet/component.css"/>
 <view:includePlugin name="qtip"/>
 <view:includePlugin name="popup"/>

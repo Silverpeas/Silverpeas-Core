@@ -24,6 +24,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <%@ include file="check.jsp" %>
+<adminTags:refreshSpaceNavigation/>
 
 <style type="text/css">
   #sp-admin-layout-body-part-layout {

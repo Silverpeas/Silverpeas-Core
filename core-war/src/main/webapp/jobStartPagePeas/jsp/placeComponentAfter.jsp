@@ -41,6 +41,7 @@
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
 <view:looknfeel withCheckFormScript="true"/>
+<adminTags:refreshSpaceNavigation/>
 <script language="JavaScript">
 function B_ANNULER_ONCLICK() {
 	window.close();

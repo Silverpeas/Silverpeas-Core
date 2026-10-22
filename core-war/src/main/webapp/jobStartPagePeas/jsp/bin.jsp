@@ -59,6 +59,7 @@ boolean emptyBin = true;
 
 <view:sp-page>
 <view:sp-head-part withCheckFormScript="true">
+<adminTags:refreshSpaceNavigation/>
 <view:includePlugin name="qtip"/>
 <view:includePlugin name="popup"/>
 <script type="text/javascript">
