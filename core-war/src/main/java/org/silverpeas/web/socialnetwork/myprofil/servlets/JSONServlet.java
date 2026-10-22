@@ -49,6 +49,8 @@ public class JSONServlet extends SilverpeasHttpServlet {
           MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
       StatusEntity status = new StatusEntity();
       if (mainSessionCtrl == null) {
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
         PrintWriter out = response.getWriter();
         status.setStatus("silverpeastimeout");
         out.println(JSONCodec.encode(status));
@@ -68,6 +70,8 @@ public class JSONServlet extends SilverpeasHttpServlet {
         String lastStatus = Encode.forHtml(socialNetworkService.getLastStatus());
         status.setStatus(lastStatus);
       }
+      response.setContentType("application/json");
+      response.setCharacterEncoding("UTF-8");
       PrintWriter out = response.getWriter();
       out.println(JSONCodec.encode(status));
     } catch (IOException e) {

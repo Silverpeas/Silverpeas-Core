@@ -92,6 +92,8 @@ public class AjaxActionServlet extends HttpServlet {
 
     // Send response
     try {
+      res.setContentType("application/json");
+      res.setCharacterEncoding("UTF-8");
       Writer writer = res.getWriter();
       writer.write(result);
     } catch (IOException e) {
