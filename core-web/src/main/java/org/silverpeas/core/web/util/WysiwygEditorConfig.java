@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.web.util;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.util.JSONCodec;
@@ -103,6 +104,10 @@ public class WysiwygEditorConfig {
           .put("toolbar", getToolbar())
           .put("imagebank", true)
           .put("filebank", true)
+          .putJSONArray("imagebankApps", a -> addBanks(a,
+              WysiwygBanks.imageBanksFor(User.getCurrentRequester(), getLanguage())))
+          .putJSONArray("filebankApps", a -> addBanks(a,
+              WysiwygBanks.fileBanksFor(User.getCurrentRequester(), getLanguage())))
           .put("silverpeasObjectId", getObjectId())
           .put("silverpeasComponentId", getComponentId());
       object = putFileBrowserUrls(object);
@@ -110,6 +115,14 @@ public class WysiwygEditorConfig {
       object = putCustomStylesheets(object);
       return object;
     });
+  }
+
+  private static JSONCodec.JSONArray addBanks(final JSONCodec.JSONArray array,
+      final List<WysiwygBanks.Bank> banks) {
+    banks.forEach(b -> array.addJSONObject(o -> o.put("name", b.name())
+        .put("id", b.id())
+        .put("label", b.label())));
+    return array;
   }
 
   private JSONCodec.JSONObject putCustomStylesheets(JSONCodec.JSONObject object) {

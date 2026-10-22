@@ -40,15 +40,19 @@ CKEDITOR.plugins.add( 'imagebank', {
         imageBankEnabled = editor.config.imagebank;
       }
 	    if (imageBankEnabled) {
-        var apps;
-        var url = webContext + "/services/components?filter=imagebanks";
-        $.ajax({
-          url : url,
-          cache: false,
-          async : false
-        }).done(function(result) {
-          apps = result;
-        });
+        // the banks are given with the configuration of the editor by Silverpeas; otherwise, they
+        // have to be known before the toolbar of the editor is built, so synchronously
+        var apps = editor.config.imagebankApps;
+        if (!Array.isArray(apps)) {
+          var url = webContext + "/services/components?filter=imagebanks";
+          $.ajax({
+            url : url,
+            cache: false,
+            async : false
+          }).done(function(result) {
+            apps = result;
+          });
+        }
 
         if (apps && apps.length > 0) {
           if (apps.length === 1) {
