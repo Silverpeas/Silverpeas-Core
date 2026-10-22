@@ -302,15 +302,16 @@ public class JavascriptPluginInclusion {
       sb.append("jQuery(function() {");
       sb.append("  if (typeof jQuery.").append(jqPluginName).append(" === 'undefined' &&");
       sb.append("      typeof window.").append(jqPluginName).append(" === 'undefined') {");
-      sb.append("    jQuery.ajax({type:'GET',url:'").append(normalizeWebResourceUrl(src))
-          .append("',dataType:'script',cache:true,success:function() {");
+      // loaded by a script element, once per document (see LoadScriptTag)
+      sb.append("    sp.loadScriptOnce('").append(normalizeWebResourceUrl(src))
+          .append("').then(function() {");
       if (StringUtil.isDefined(jsCallbackContentOnSuccessfulLoad)) {
         sb.append("    ").append(jsCallbackContentOnSuccessfulLoad);
       }
       if (StringUtil.isDefined(jsCallback)) {
         sb.append("    ").append(jsCallback);
       }
-      sb.append("    }})");
+      sb.append("    });");
       sb.append("  } else {");
       if (StringUtil.isDefined(jsCallback)) {
         sb.append("    ").append(jsCallback);

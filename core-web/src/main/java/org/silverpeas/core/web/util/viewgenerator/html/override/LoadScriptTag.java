@@ -96,14 +96,14 @@ public class LoadScriptTag extends TagSupport {
     String key = "$jsDynamic$script$" + src;
     if (getThreadCacheAccessor().getCache().get(key) == null) {
       getThreadCacheAccessor().getCache().put(key, true);
+      // the script is loaded by a script element, once per document: jQuery would otherwise
+      // evaluate it again at each loading of the content (a popup opened twice for example)
+      final String loading = "sp.loadScriptOnce('" + normalizeWebResourceUrl(src) + "')";
       if (StringUtil.isNotDefined(jsPromiseName)) {
-        return "jQuery.ajax({type:'GET',url:'" + normalizeWebResourceUrl(src) + "',dataType:'script',cache:true});";
+        return loading + ";";
       }
       final String scope = StringUtil.isDefined(jsPromiseScope) ? (jsPromiseScope + ".") : "var ";
-      return scope + jsPromiseName + "=" +
-          "new Promise(function(resolve, reject){" +
-          "jQuery.ajax({type:'GET',url:'" + normalizeWebResourceUrl(src) + "',dataType:'script',cache:true,success:function(){resolve();}});" +
-          "});";
+      return scope + jsPromiseName + "=" + loading + ";";
     } else {
       return "";
     }
