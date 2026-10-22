@@ -110,7 +110,7 @@
     function viewToDo(todoId) {
       sp.navRequest('todoEdit.jsp')
         .withParam('ToDoId', todoId)
-        .withParam('Action', 'Update')
+        .withParam('Action', 'Edit')
         .go();
     }
 
