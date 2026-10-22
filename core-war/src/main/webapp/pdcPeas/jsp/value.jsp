@@ -45,7 +45,7 @@ String valueName 		= value.getName(displayLanguage);
 String valueDescription = value.getDescription(displayLanguage);
 int valueNbDoc 			= value.getNbObjects();
 
-String completPath = buildCompletPath((ArrayList)list, false, 1, displayLanguage);
+String completPath = buildCompletPath(list, false, 1, displayLanguage);
 
 %>
 
