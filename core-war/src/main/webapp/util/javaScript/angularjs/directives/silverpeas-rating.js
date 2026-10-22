@@ -31,7 +31,9 @@
    * @property {string} componentid - the app id of the resource
    * @property {string} resourcetype - the type of the resource
    * @property {string} resourceid - the id of the resource
-   * @property {string} readonly - [optional] if true, user is not able to rate associated resource
+   * @property {string} readonlymode - [optional] if true, user is not able to rate associated
+   * resource. The former readonly attribute is still supported, but as it is named as the readonly
+   * boolean attribute of HTML, it makes jQuery (through AngularJS) reports a deprecation warning.
    * @property {string} starsize - [optional] use 'small' to display smaller stars
    * @property {string} shownbraterratings - [optional] if false, number of ratings is not display (true by default)
    * @property {string} rating - [optional] a JSON representation of an existing rating object (ie RatingEntity.java).
@@ -47,6 +49,7 @@
             componentid : '@',
             contributiontype : '@',
             contributionid : '@',
+            readonlymode : '@',
             readonly : '@',
             forcedisplaywhennorating : '@',
             canuserrating : '@',
@@ -97,10 +100,8 @@
                 starHeight = 12;
               }
               var canuserrating = (scope.canuserrating === "true") && !param_userAnonymous;
-              if (!canuserrating) {
-                scope.readonly = "true";
-              }
-              var readonly = scope.readonly === "true";
+              var readonly = !canuserrating || scope.readonlymode === "true" ||
+                  scope.readonly === "true";
               var forceDisplayWhenNoRating = scope.forcedisplaywhennorating === "true";
               if (scope.shownbraterratings === "false") {
                 angular.element(".rating-contribution", element).hide();
