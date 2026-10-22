@@ -194,7 +194,7 @@ function notyRegistredMessages(registredKey) {
       dataType: 'json',
       cache: false,
       success: function(result) {
-        if (result && result.messages) {
+        if (result?.messages) {
           jQuery.each(result.messages, function(index, message) {
 
             // Default options
@@ -225,9 +225,8 @@ function notyRegistredMessages(registredKey) {
                 break;
               default :
                 // Message is not supported
-                window.console &&
-                        window.console.log('Silverpeas Messages JQuery Plugin - WARNING - Message not displayed, type : ' +
-                                messageOptions.type + ', message : ' + messageOptions.content);
+                window.console?.log('Silverpeas Messages JQuery Plugin - WARNING - Message not displayed, type : ' +
+                    messageOptions.type + ', message : ' + messageOptions.content);
                 return;
             }
 
@@ -244,7 +243,7 @@ function notySetupRequestComplete(request) {
   if (!request.notySetupAjaxMessagesCompleteDone) {
     request.notySetupAjaxMessagesCompleteDone = true;
     const allHeaders = request.getAllResponseHeaders();
-    if (allHeaders && allHeaders.toLowerCase().indexOf('x-silverpeas-messagekey') > -1) {
+    if (allHeaders?.toLowerCase().includes('x-silverpeas-messagekey')) {
       const registeredKeyOfMessages = request.getResponseHeader('X-Silverpeas-MessageKey');
       if (registeredKeyOfMessages) {
         notyRegistredMessages(registeredKeyOfMessages);
@@ -262,7 +261,7 @@ function notySetupAjaxMessages() {
     if (!String(errorMsg || "").trim()) {
       errorMsg = errorThrown;
     }
-    window.console && window.console.error('Silverpeas JQuery Ajax - ERROR - ' + errorMsg);
+    window.console?.error('Silverpeas JQuery Ajax - ERROR - ' + errorMsg);
   };
   jQuery.ajaxSetup({
     error: function(jqXHR, textStatus, errorThrown) {

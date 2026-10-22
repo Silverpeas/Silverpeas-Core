@@ -186,11 +186,12 @@
               var data = request.responseText;
               var $popup = $('#popupHelperContainer');
               if ($popup.length !== 0) {
+                __destroyEditorsIn($popup);
                 $popup.remove();
               }
               $popup = $('<div>', {id: 'popupHelperContainer', 'style' : 'display:none'});
               $popup.appendTo(document.body);
-              $popup.append(data);
+              return __insertHtmlLoadingResourcesOnce($popup, data).then(function() {
               if (typeof params === 'function') {
                 options = {
                   callback: params
@@ -223,6 +224,7 @@
               } else {
                 jQuery.popup.hideWaiting();
               }
+              });
             }, function(request) {
               notyError(request.responseText);
               reject();
@@ -633,6 +635,75 @@
       $.extend(settings, options);
     }
     return settings;
+  }
+
+  /**
+   * Inserts the given HTML into the given container and loads the scripts and the stylesheets
+   * it declares, in order, without loading again those already present in the document.
+   * jQuery would otherwise evaluate again every script of the HTML, the external ones included,
+   * which breaks the scripts declaring top-level constants when a popup is opened again.
+   * The inline scripts are executed once the DOM of the content is inserted.
+   * @param $container the jQuery container into which the HTML is inserted.
+   * @param html the HTML content to insert.
+   * @return a promise resolved once the scripts are loaded and executed.
+   */
+  function __insertHtmlLoadingResourcesOnce($container, html) {
+    const container = $container[0];
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const resources = Array.from(doc.querySelectorAll('script, link[rel="stylesheet"]'));
+    resources.forEach(function(node) {
+      node.parentNode.removeChild(node);
+    });
+    Array.from(doc.body.childNodes).forEach(function(node) {
+      container.appendChild(document.adoptNode(node));
+    });
+    const alreadyLoaded = function(elements, attribute, node) {
+      const value = node.getAttribute(attribute);
+      return Array.from(elements).some(function(element) {
+        return element.getAttribute(attribute) === value || element[attribute] === node[attribute];
+      });
+    };
+    return resources.reduce(function(promise, node) {
+      return promise.then(function() {
+        return new Promise(function(resolve) {
+          if (node.nodeName === 'LINK') {
+            if (!alreadyLoaded(document.querySelectorAll('link[rel="stylesheet"]'), 'href', node)) {
+              const link = document.createElement('link');
+              link.rel = 'stylesheet';
+              link.type = node.type || 'text/css';
+              link.href = node.getAttribute('href');
+              link.onload = resolve;
+              link.onerror = resolve;
+              document.head.appendChild(link);
+              return;
+            }
+          } else if (node.getAttribute('src')) {
+            if (!alreadyLoaded(document.scripts, 'src', node)) {
+              const script = document.createElement('script');
+              if (node.type) {
+                script.type = node.type;
+              }
+              script.src = node.getAttribute('src');
+              script.onload = resolve;
+              script.onerror = function() {
+                sp.log.error('popup - cannot load script ' + script.src);
+                resolve();
+              };
+              document.head.appendChild(script);
+              return;
+            }
+          } else {
+            const script = document.createElement('script');
+            if (node.type) {
+              script.type = node.type;
+            }
+            script.text = node.textContent;
+            container.appendChild(script);
+          }
+          resolve();
+        });
+      });
+    }, Promise.resolve());
   }
 
   /**
