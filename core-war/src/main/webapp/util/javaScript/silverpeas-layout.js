@@ -311,8 +311,12 @@
               try {
                 const contentWindow = this.contentFrame.contentWindow;
                 const frameContentDocument = contentWindow.document;
-                frameContentDocument.body.setAttribute('tabindex', '-1');
-                frameContentDocument.body.focus();
+                if (frameContentDocument.URL !== 'about:blank') {
+                  // the blank document has no doctype: touching its layout would only make the
+                  // browser report it as rendered in quirks mode
+                  frameContentDocument.body.setAttribute('tabindex', '-1');
+                  frameContentDocument.body.focus();
+                }
                 contentWindow.addEventListener('blur', function() {
                   this.dispatchEvent("blur");
                 }.bind(this));
@@ -654,8 +658,10 @@
         }
 
         var frameContentDocument = this.contentFrame.contentWindow.document;
-        frameContentDocument.body.setAttribute('tabindex', '-1');
-        frameContentDocument.body.focus();
+        if (frameContentDocument.URL !== 'about:blank') {
+          frameContentDocument.body.setAttribute('tabindex', '-1');
+          frameContentDocument.body.focus();
+        }
 
         this.dispatchEvent("load");
         spLayout.getBody().hideProgressMessage();
