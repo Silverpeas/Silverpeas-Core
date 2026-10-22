@@ -1113,7 +1113,7 @@ PROTOTYPE.toggle = function(state, event) {
 
 			// Autofocus elements if enabled
 			if('string' === typeof opts.autofocus) {
-				$(this.options.show.autofocus, tooltip).focus();
+				$(this.options.show.autofocus, tooltip).trigger('focus');
 			}
 
 			// If set, hide tooltip when inactive for delay period
@@ -1261,7 +1261,7 @@ PROTOTYPE.enable = function() { return this.disable(FALSE); };
 	// Create button and setup attributes
 	elements.button.appendTo(elements.titlebar || tooltip)
 		.attr('role', 'button')
-		.click(function(event) {
+		.on('click', function(event) {
 			if(!tooltip.hasClass(CLASS_DISABLED)) { self.hide(event); }
 			return FALSE;
 		});
@@ -2700,10 +2700,10 @@ OVERLAY = function()
 	// Focus inputs using cached focusable elements (see update())
 	function focusInputs(blurElems) {
 		// Blurring body element in IE causes window.open windows to unfocus!
-		if(focusableElems.length < 1 && blurElems.length) { blurElems.not('body').blur(); }
+		if(focusableElems.length < 1 && blurElems.length) { blurElems.not('body').trigger('blur'); }
 
 		// Focus the inputs
-		else { focusableElems.first().focus(); }
+		else { focusableElems.first().trigger('focus'); }
 	}
 
 	// Steal focus from elements outside tooltip
