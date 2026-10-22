@@ -85,7 +85,7 @@
                                     .append($('<a>').attr('id', (i + 1)).addClass(settings.theme).addClass('normal')
                                     .attr('href', 'javascript:void(0)')
                                     .text(i + 1))
-                                    .click(clickFunc));
+                                    .on('click', clickFunc));
                     }
                     showLabels(aStartPage);
                     inputPage.val((aStartPage + 1));

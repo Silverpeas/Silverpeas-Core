@@ -75,7 +75,7 @@
                 $(".sp-personal-not-used-menu-root").menu('personalNotUsed',
                     personalMenuOptions);
 
-                $("#componentIdOK").click(function() {
+                $("#componentIdOK").on('click', function() {
                   $.menu.reverseExpand($('#componentId').val());
                 });
 
