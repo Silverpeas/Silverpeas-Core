@@ -44,7 +44,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <c:set var="clipboardScc" value="${requestScope.clipboardScc}"/>
 <jsp:useBean id="clipboardScc"
              type="org.silverpeas.web.clipboard.control.ClipboardSessionController"/>
-<!DOCTYPE>
+<!DOCTYPE html>
 <html lang="${requestScope.resources.language}">
 <head>
     <title>Clipboard</title>
