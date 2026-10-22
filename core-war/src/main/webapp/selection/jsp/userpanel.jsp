@@ -221,7 +221,7 @@
               <p class="nb_results" id="user_selected_count">{{ selectedUsers.length }} ${selectedUserText}</p>
               <a href="#" ng-show="selectedUsers.multipleSelection" ng-click="deselectAllUsers()" title="${removeAllUsersFromSelectionText}" class="remove_all"><fmt:message key="selection.Empty"/></a>
               <ul id="selected_user_list">
-                <li ng-repeat="user in selectedUsers.currentpage() track by user.uri" ng-class="userItemCss()" ng-class-odd="'line odd'" ng-class-even="'line even'">
+                <li ng-repeat="user in selectedUsers.currentpage() track by user.uri" ng-class="userItemCss(user)" ng-class-odd="'line odd'" ng-class-even="'line even'">
                   <div class="avatar"><img ng-src="{{ user.avatar }}" alt="avatar"/></div>
                   <span class="name_user">{{ userFullName(user) }}
                     <span ng-show="user.expiredState"> (${EXPIRED_SHORT_LABEL})</span>
