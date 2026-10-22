@@ -376,7 +376,7 @@
               $timeout(function() {
                 const focusSelector = !this.data.title ? '#sp_cal_event_form_main_title' :
                     '#sp_cal_event_form_main_sd';
-                angular.element(focusSelector, $element).focus();
+                angular.element(focusSelector, $element).trigger('focus');
               }.bind(this), 0);
             }.bind(this);
           }]
