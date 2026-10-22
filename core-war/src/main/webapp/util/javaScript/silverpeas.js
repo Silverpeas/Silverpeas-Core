@@ -1072,8 +1072,15 @@ if (typeof window.silverpeasAjax === 'undefined') {
     let navLink = document.createElement('a');
     navLink.setAttribute('href', silverpeasNavConfig.getUrl());
     navLink.setAttribute('target', silverpeasNavConfig.getTarget());
-    navLink.style.display = 'none';
-    document.body.appendChild(navLink);
+    let navLinkContainer = document.createElement('div');
+    navLinkContainer.style.display = 'none';
+    navLinkContainer.appendChild(navLink);
+    document.body.appendChild(navLinkContainer);
+    // as for the links of the pages, the URL of a protected resource (an action of saving,
+    // updating, ...) is stamped with the security tokens, otherwise the request is rejected
+    if (typeof applyTokenSecurity === 'function') {
+      applyTokenSecurity(navLinkContainer);
+    }
     navLink.click();
   };
 
