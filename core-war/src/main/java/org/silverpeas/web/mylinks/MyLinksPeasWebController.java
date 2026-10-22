@@ -53,8 +53,10 @@ import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.*;
 import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
 import static jakarta.ws.rs.core.Response.Status.UNAUTHORIZED;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.kernel.util.StringUtil.isDefined;
 import static org.silverpeas.core.util.URLUtil.getApplicationURL;
+import static org.silverpeas.core.util.URLUtil.getServerURL;
 import static org.silverpeas.core.util.URLUtil.getURL;
 import static org.silverpeas.core.webapi.mylinks.CategoryEntity.fromCategoryDetail;
 import static org.silverpeas.core.webapi.mylinks.MyLinkEntity.fromLinkDetail;
@@ -218,6 +220,12 @@ public class MyLinksPeasWebController extends
       final Map<CategoryDetail, List<LinkDetail>> linksByCategory = categories.stream()
           .collect(toMap(c -> c, c -> realLinksByCategory.getOrDefault(c, emptyList()), (l, o) -> l, LinkedHashMap::new));
       context.getRequest().setAttribute("LinksByCategory", linksByCategory);
+      final String serverUrl = getServerURL(context.getRequest());
+      final Map<Integer, LinkOpening> linkOpenings = links.stream()
+          .collect(toMap(LinkDetail::getLinkId,
+              l -> LinkOpening.of(defaultStringIfNotDefined(l.getUrl()), l.isPopup(), serverUrl),
+              (l, o) -> l));
+      context.getRequest().setAttribute("LinkOpenings", linkOpenings);
       context.getRequest().setAttribute(URL_RETURN_PARAM, url);
       context.getRequest().setAttribute(INSTANCE_ID_PARAM, instanceId);
       context.getRequest().setAttribute(OBJECT_ID_PARAM, objectId);
@@ -262,6 +270,25 @@ public class MyLinksPeasWebController extends
     final LinkDetail link = getManager().getAuthorizedLink(linkId);
     context.getRequest().setAttribute("Link", fromLinkDetail(link, context.uri().ofLink(link)));
     setAllUserCategoriesAttribute(context);
+  }
+
+  /**
+   * Displays an external web page referred by a link within a sandboxed frame, so that the page
+   * is isolated from Silverpeas.
+   * @param context the context of the incoming request.
+   */
+  @GET
+  @Path("links/{" + LINK_ID_PARAM + "}/frame")
+  @RedirectToInternalJsp("linkFrame.jsp")
+  public void viewLinkInFrame(MyLinksPeasWebRequestContext context) {
+    final String linkId = context.getPathVariables().get(LINK_ID_PARAM);
+    final LinkDetail link = getManager().getAuthorizedLink(linkId);
+    final LinkOpening opening =
+        LinkOpening.of(defaultStringIfNotDefined(link.getUrl()), false, getServerURL(context.getRequest()));
+    if (opening != LinkOpening.IN_SANDBOXED_FRAME) {
+      throw new WebApplicationException("The link can't be displayed in a frame", BAD_REQUEST);
+    }
+    context.getRequest().setAttribute("Link", link);
   }
 
   /**

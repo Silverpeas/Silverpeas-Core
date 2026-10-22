@@ -1,0 +1,59 @@
+/*
+ * Copyright (C) 2000 - 2026 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/* The page displaying an external web page within a sandboxed frame: the frame fills the whole
+   height of the content area under a thin bar. */
+html, body.link-frame-page {
+  height: 100%;
+  margin: 0;
+}
+
+body.link-frame-page {
+  display: flex;
+  flex-direction: column;
+}
+
+.link-frame-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5em 1em;
+  padding: 0.4em 0.8em;
+  border-bottom: 1px solid #ccc;
+}
+
+.link-frame-name {
+  font-weight: bold;
+}
+
+.link-frame-info {
+  flex: 1;
+  color: #666;
+}
+
+.link-frame {
+  flex: 1;
+  width: 100%;
+  border: 0;
+}
