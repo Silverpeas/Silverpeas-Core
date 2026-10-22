@@ -49,11 +49,6 @@
 	if (StringUtil.isDefined((String) request.getAttribute("SynchroReturnCode")))
 	{
 		synchroDone = true;
-		%>
-		<script type="text/javascript">
-				window.opener.location.href = "<%=agenda.getCurrentViewType()%>";
-		</script>
-		<%
 
 		String returnCode = (String) request.getAttribute("SynchroReturnCode");
 		if (agenda.SYNCHRO_SUCCEEDED.equals(returnCode))
@@ -71,6 +66,11 @@
 <head>
 <title><%=resources.getString("agenda.SynchroIcalCalendar") %></title>
 <view:looknfeel/>
+<% if (synchroDone) { %>
+<script type="text/javascript">
+  window.opener.location.href = "<%=agenda.getCurrentViewType()%>";
+</script>
+<% } %>
 <script type="text/javascript">
 function synchroIcal() {
 	if (document.synchroIcalForm.UrlIcalendar.value.indexOf("http") == 0) {

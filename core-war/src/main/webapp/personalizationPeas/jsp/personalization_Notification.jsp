@@ -53,9 +53,9 @@
 <fmt:message key="GML.validate" var="buttonValidationLabel"/>
 <fmt:message key="notifications.channel.none.warning" var="noChannelWarning"/>
 
-<view:script src="/util/javaScript/checkForm.js"/>
 <view:sp-page>
   <view:sp-head-part>
+    <view:script src="/util/javaScript/checkForm.js"/>
     <%
       String channelId = "" ;
     %>
