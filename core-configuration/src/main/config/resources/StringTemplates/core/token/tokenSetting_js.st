@@ -6,6 +6,18 @@ function enrichXMLHttpRequest() {
     XMLHttpRequest.prototype._open = XMLHttpRequest.prototype.open;
     XMLHttpRequest.prototype.open = function(method, url, async, user, pass) {
       this.url = url;
+      // the browser reports the deprecated synchronous requests against this method, hiding the
+      // real caller: it is traced when the flag is set in the local storage of the browser, which
+      // survives the reloads and applies to all the frames (localStorage.setItem('sp.debug.syncXhr', 'true'))
+      if (async === false) {
+        try {
+          if (window.localStorage && localStorage.getItem('sp.debug.syncXhr') === 'true') {
+            console.trace('SP - DEBUG - synchronous XMLHttpRequest on ' + url);
+          }
+        } catch (ignore) {
+          // the local storage is not reachable
+        }
+      }
       this._open.apply(this, arguments);
     };
     
