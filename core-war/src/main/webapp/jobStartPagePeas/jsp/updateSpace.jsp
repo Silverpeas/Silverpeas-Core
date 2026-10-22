@@ -62,6 +62,7 @@ browseBar.setPath(resource.getString("JSPP.updateSpace"));
 
 <view:sp-page>
 <view:sp-head-part withCheckFormScript="true">
+<adminTags:refreshSpaceNavigation/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
 <script type="text/javascript">
 function B_VALIDER_ONCLICK() {

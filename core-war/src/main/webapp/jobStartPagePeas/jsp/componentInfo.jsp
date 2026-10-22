@@ -143,6 +143,7 @@ window.setPopup(popupMode);
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
+<adminTags:refreshSpaceNavigation/>
 <link type="text/css" href="stylesheet/component.css" rel="stylesheet" />
 <view:includePlugin name="qtip"/>
 <view:includePlugin name="popup"/>

@@ -128,6 +128,7 @@
 
 <view:sp-page>
   <view:sp-head-part title="${pageTitle}">
+    <adminTags:refreshSpaceNavigation/>
     <c:if test="${m_SpaceExtraInfos.admin}">
       <view:includePlugin name="adminspacehomepage"/>
     </c:if>

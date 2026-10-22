@@ -88,6 +88,7 @@
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel withFieldsetStyle="true"/>
+<adminTags:refreshSpaceNavigation/>
 </head>
 <body id="admin-role" class="page_content_admin">
 <%

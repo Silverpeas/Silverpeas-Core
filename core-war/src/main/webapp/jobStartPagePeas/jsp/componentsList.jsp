@@ -40,6 +40,7 @@
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
+<adminTags:refreshSpaceNavigation/>
 <script type="text/javascript">
   $(document).ready(function()
   {

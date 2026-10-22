@@ -44,6 +44,7 @@
 <fmt:message var="backToMainSpaceLabel" key="JSPP.BackToMainSpacePage"/>
 
 <%@ include file="check.jsp" %>
+<adminTags:refreshSpaceNavigation/>
 
 <view:script src="/jobStartPagePeas/jsp/javascript/vuejs/admin-navigation.js"/>
 

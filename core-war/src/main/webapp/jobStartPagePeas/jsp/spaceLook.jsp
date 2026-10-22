@@ -61,6 +61,7 @@ browseBar.setExtraInformation(resource.getString("JSPP.SpaceAppearance"));
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
+<adminTags:refreshSpaceNavigation/>
 <script type="text/javascript">
 function B_VALIDER_ONCLICK() {
 	document.lookSpace.submit();
