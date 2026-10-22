@@ -34,7 +34,6 @@ package org.silverpeas.core.web.util.viewgenerator.html.progressmessage;
 
 import org.apache.ecs.ElementContainer;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
-import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion;
 
 import java.util.List;
@@ -54,8 +53,7 @@ public abstract class AbstractProgressMessage implements ProgressMessage {
   @Override
   public void init(List<String> messages) {
     this.messages = messages;
-    xhtmlRenderer.addElement(JavascriptPluginInclusion
-        .script(URLUtil.getApplicationURL() + "/util/javaScript/progressMessage.js"));
+    JavascriptPluginInclusion.includeProgressMessage(xhtmlRenderer);
   }
 
   @Override
