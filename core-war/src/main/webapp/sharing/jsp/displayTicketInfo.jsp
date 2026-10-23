@@ -36,21 +36,24 @@
   <c:set var="key" value="${requestScope.Key}"/>
   <c:set var="wallpaper" value="${requestScope.wallpaper}"/>
   <c:set var="ticket" value="${requestScope.attTicket}"/>
+  <c:set var="noCode" value="${empty ticket.securityCode}"/>
+
   <jsp:useBean id="ticket" type="org.silverpeas.core.sharing.model.Ticket"/>
   <c:set var="endDate" value=""/>
   <c:if test="${not ticket.unlimited}">
     <c:set var="endDate"><fmt:message key="sharing.endDate"/>:
       <view:formatDate value="${ticket.endDate}"/></c:set>
   </c:if>
-  <view:sp-head-part noLookAndFeel="true">
+  <view:sp-head-part noLookAndFeel="false">
     <link href="<c:url value='/util/styleSheets/silverpeas-main.css'/>" type="text/css" rel="stylesheet"/>
     <link href="<c:url value='/sharing/jsp/styleSheets/sharing.css'/>" type="text/css" rel="stylesheet"/>
+    <view:script src="/sharing/jsp/javaScript/displayTicketInfo.js"/>
   </view:sp-head-part>
   <view:sp-body-part id="fileSharingTicket">
     <div class="tableBoard">
       <strong><view:username userId="${ticket.creatorId}" zoom="false"/></strong>
       <fmt:message key="sharing.shareFile"/><br/><br/>
-      <img alt="image" src="<c:out value='${requestScope.fileIcon}'/>" id="img_44"/>
+      <img alt="" src="<c:out value='${requestScope.fileIcon}'/>" id="img_44"/>
       <a target="_blank" href="<c:url value="/LinkFile/Key/${requestScope.Key}/${ticket.resource.name}" />"><strong><c:out value="${ticket.resource.name}"/> </strong></a><br/>
       <fmt:message key="sharing.sizeFile"/> : <c:out value="${requestScope.fileSize}"/><br/>
       <c:out value="${endDate}"/><br/>
@@ -58,7 +61,14 @@
       <em><fmt:message key="sharing.downloadFileHelp"/></em>
     </div>
     <div class="sp_buttonPane">
-      <a class="sp_button" target="_blank" href="<c:url value="/LinkFile/Key/${requestScope.Key}/${ticket.resource.name}" />"><fmt:message key="sharing.downloadLink"/></a>
+      <a id="downloadLink" class="sp_button" target="_blank" data-no-code="${noCode}" data-filename="<c:out value='${ticket.resource.name}'/>" data-download-error="<fmt:message key='sharing.invalideSecurityCode'/>" data-security-title="<fmt:message key='sharing.security.code'/>" data-locked-error="<fmt:message key='sharing.security.locked'/>" data-confirm-label="OK" data-cancel-label="<fmt:message key='sharing.security.cancel'/>" data-verification-error="<fmt:message key='sharing.security.error'/>" href="<c:url value="/LinkFile/Key/${requestScope.Key}/${ticket.resource.name}" />"><fmt:message key="sharing.downloadLink"/></a>
     </div>
+<div id="securityDialog" class="security-dialog">
+  <div id="securityCheck">
+    <label for="securityCode"><fmt:message key="sharing.security.code"/></label>
+    <input type="text" id="securityCode" name="securityCode"/>
+    <div id="securityCodeError" class="ui-state-error" role="alert" aria-live="polite" hidden></div>
+  </div>
+</div>
   </view:sp-body-part>
 </view:sp-page>

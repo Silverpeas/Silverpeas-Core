@@ -35,6 +35,13 @@ import org.silverpeas.kernel.util.StringUtil;
 import jakarta.persistence.*;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.SecureRandom;
+import java.security.GeneralSecurityException;
+import java.util.Base64;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 import java.util.Date;
 import java.util.Objects;
 
@@ -54,6 +61,11 @@ public abstract class Ticket extends BasicJpaEntity<Ticket, UuidIdentifier>
     implements Serializable {
 
   private static final long serialVersionUID = -612174156104966079L;
+  private static final String CODE_PREFIX = "pbkdf2-sha256$";
+  private static final int CODE_ITERATIONS = 120_000;
+  private static final int CODE_SALT_BYTES = 16;
+  private static final int CODE_HASH_BITS = 256;
+  private static final SecureRandom CODE_RANDOM = new SecureRandom();
 
   public static final String FILE_TYPE = "Attachment";
   public static final String VERSION_TYPE = "Versionned";
@@ -80,25 +92,84 @@ public abstract class Ticket extends BasicJpaEntity<Ticket, UuidIdentifier>
   protected int nbAccessMax;
   @Column(name = "nbaccess")
   protected int nbAccess;
-
+  @Column(name = "securitycode")
+  protected String securityCode;
   protected Ticket() {
   }
 
-  protected Ticket(int sharedObjectId, String componentId, UserDetail creator, Date creationDate,
-      Date endDate, int nbAccessMax) {
-    this(sharedObjectId, componentId, creator.getId(), creationDate, endDate, nbAccessMax);
+  protected Ticket(TicketDetail detail) {
+    this.sharedObjectId = detail.getSharedObjectId();
+    this.componentId = detail.getComponentId();
+    this.creatorId = detail.getCreatorId();
+    this.creationDate = detail.getCreationDate().getTime();
+    if (detail.getEndDate() != null) {
+      this.endDate = detail.getEndDate().getTime();
+    }
+    this.nbAccessMax = detail.getNbAccessMax();
+    this.securityCode = encodeSecurityCode(detail.getSecurityCode());
+    if (StringUtil.isDefined(detail.getToken())) {
+      setId(detail.getToken());
+    }
   }
 
-  protected Ticket(int sharedObjectId, String componentId, String creatorId, Date creationDate,
-      Date endDate, int nbAccessMax) {
-    this.sharedObjectId = sharedObjectId;
-    this.componentId = componentId;
-    this.creatorId = creatorId;
-    this.creationDate = creationDate.getTime();
-    if (endDate != null) {
-      this.endDate = endDate.getTime();
+  public abstract static class Builder<B extends Builder<B>> {
+    protected final TicketDetail.Builder detail;
+
+    protected Builder() {
+      this.detail = TicketDetail.builder();
     }
-    this.nbAccessMax = nbAccessMax;
+
+    protected Builder(TicketDetail detail) {
+      this.detail = TicketDetail.builder(detail);
+    }
+
+    protected abstract B self();
+
+    public B setSharedObjectId(long sharedObjectId) {
+      detail.setSharedObjectId(sharedObjectId);
+      return self();
+    }
+
+    public B setComponentId(String componentId) {
+      detail.setComponentId(componentId);
+      return self();
+    }
+
+    public B setCreatorId(String creatorId) {
+      detail.setCreatorId(creatorId);
+      return self();
+    }
+
+    public B setCreationDate(Date creationDate) {
+      detail.setCreationDate(creationDate);
+      return self();
+    }
+
+    public B setEndDate(Date endDate) {
+      detail.setEndDate(endDate);
+      return self();
+    }
+
+    public B setNbAccessMax(int nbAccessMax) {
+      detail.setNbAccessMax(nbAccessMax);
+      return self();
+    }
+
+    public B setSecurityCode(String securityCode) {
+      detail.setSecurityCode(securityCode);
+      return self();
+    }
+
+    public B setToken(String token) {
+      detail.setToken(token);
+      return self();
+    }
+
+    protected TicketDetail buildDetail(String type) {
+      return detail.setSharedObjectType(type).build();
+    }
+
+    public abstract Ticket build();
   }
 
   public long getSharedObjectId() {
@@ -158,6 +229,14 @@ public abstract class Ticket extends BasicJpaEntity<Ticket, UuidIdentifier>
     } else {
       this.endDate = null;
     }
+  }
+
+  public String getSecurityCode() {
+    return securityCode;
+  }
+
+  public void setSecurityCode(String securityCode) {
+    this.securityCode = encodeSecurityCode(securityCode);
   }
 
   public int getNbAccessMax() {
@@ -275,6 +354,52 @@ public abstract class Ticket extends BasicJpaEntity<Ticket, UuidIdentifier>
 
   public abstract <R> ShareableResource<R> getResource();
 
+  public boolean checkSecurityCode(String securityCode) {
+    if (this.securityCode == null || this.securityCode.isBlank()) {
+      return true;
+    }
+    if (securityCode == null) {
+      return false;
+    }
+    if (this.securityCode.startsWith(CODE_PREFIX)) {
+      String[] parts = this.securityCode.split("\\$", -1);
+      if (parts.length != 3) {
+        return false;
+      }
+      try {
+        byte[] salt = Base64.getDecoder().decode(parts[1]);
+        byte[] expected = Base64.getDecoder().decode(parts[2]);
+        return MessageDigest.isEqual(expected, deriveSecurityCode(securityCode, salt));
+      } catch (IllegalArgumentException e) {
+        return false;
+      }
+    }
+    // Tickets created before secure code storage retain their original plaintext value.
+    return MessageDigest.isEqual(this.securityCode.getBytes(StandardCharsets.UTF_8),
+        securityCode.getBytes(StandardCharsets.UTF_8));
+  }
+
+  private static String encodeSecurityCode(String code) {
+    if (code == null || code.isBlank()) {
+      return null;
+    }
+    byte[] salt = new byte[CODE_SALT_BYTES];
+    CODE_RANDOM.nextBytes(salt);
+    return CODE_PREFIX + Base64.getEncoder().encodeToString(salt) + "$" +
+        Base64.getEncoder().encodeToString(deriveSecurityCode(code, salt));
+  }
+
+  private static byte[] deriveSecurityCode(String code, byte[] salt) {
+    PBEKeySpec spec = new PBEKeySpec(code.toCharArray(), salt, CODE_ITERATIONS, CODE_HASH_BITS);
+    try {
+      return SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256").generateSecret(spec)
+          .getEncoded();
+    } catch (GeneralSecurityException e) {
+      throw new IllegalStateException("Unable to derive sharing verification code", e);
+    } finally {
+      spec.clearPassword();
+    }
+  }
   public enum QUERY_ORDER_BY {
 
     CREATION_DATE_ASC(asc("creationDate")), CREATION_DATE_DESC(desc("creationDate")),

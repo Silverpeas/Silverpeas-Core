@@ -11,3 +11,103 @@ function bytesToSize(bytes, precision) {
   }
   return bytes.toFixed(precision) + " " + sizes[posttxt];
 }
+let sharingVerificationCode = null;
+
+function sharingAjax(url, onSuccess) {
+  return $.ajax({
+    url: url,
+    dataType: "json",
+    headers: sharingVerificationCode === null ? {} : {"X-Verification-Code": sharingVerificationCode},
+    success: onSuccess
+  });
+}
+
+function sharingFetch(url) {
+  return fetch(url, {
+    headers: sharingVerificationCode === null ? {} : {"X-Verification-Code": sharingVerificationCode}
+  });
+}
+
+function sharingDownload(url, filename) {
+  return sharingFetch(url).then(function(response) {
+    if (!response.ok) {
+      throw new Error("Download failed: " + response.status);
+    }
+    return response.blob();
+  }).then(function(blob) {
+    const objectUrl = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = objectUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(function() { URL.revokeObjectURL(objectUrl); }, 60000);
+  }).catch(function(error) {
+    console.error(error);
+    alert(window.i18n.prop("sharing.download.error"));
+  });
+}
+
+function sharingDownloadLink(event, url, filename) {
+  event.preventDefault();
+  sharingDownload(url, filename);
+}
+
+function openSecurityCodeDialog(token, baseURL, onSuccess) {
+  const dialog = document.getElementById("securityDialog");
+  dialog.innerHTML = '<div id="securityCheck"><span>' + window.i18n.prop("sharing.security.code") +
+      '</span><input type="text" id="securityCode" name="securityCode"/>' +
+      '<div id="securityCodeError" class="ui-state-error" role="alert" aria-live="polite" hidden></div></div>';
+  $(dialog).dialog({
+    modal: true,
+    title: window.i18n.prop("sharing.security.code"),
+    width: 400,
+    buttons: [
+      {
+        text: window.i18n.prop("sharing.security.ok"),
+        click: function() {
+          const currentDialog = this;
+          const code = document.getElementById("securityCode").value;
+          const errorElement = document.getElementById("securityCodeError");
+          errorElement.textContent = "";
+          errorElement.hidden = true;
+          const uri = baseURL + "/silverpeas/services/sharing/" + token + "/check";
+          fetch(uri, {
+            method: "GET",
+            headers: { "X-Verification-Code": code }
+          }).then(function(response) {
+            if (response.status === 429) {
+              throw new Error("SHARING_CODE_LOCKED");
+            }
+            if (!response.ok) {
+              throw new Error("SHARING_CODE_ERROR");
+            }
+            return response.json();
+          }).then(function(result) {
+            if (result) {
+              sharingVerificationCode = code;
+              $(currentDialog).dialog("close");
+              onSuccess();
+            } else {
+              document.getElementById("securityCode").value = "";
+              errorElement.textContent = window.i18n.prop("sharing.security.invalid");
+              errorElement.hidden = false;
+            }
+          }).catch(function(error) {
+            const locked = error.message === "SHARING_CODE_LOCKED";
+            const messageKey = locked ? "sharing.security.locked" : "sharing.security.error";
+            errorElement.textContent = window.i18n.prop(messageKey);
+            errorElement.hidden = false;
+          });
+        }
+      },
+      {
+        text: window.i18n.prop("sharing.security.cancel"),
+        click: function() {
+          $(this).dialog("close");
+        }
+      }
+    ]
+  });
+}
