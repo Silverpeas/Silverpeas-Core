@@ -107,6 +107,11 @@
             sp.log.warning('${silfn:escapeJs(chatBundle.getString("chat.client.notAvailable"))}');
             return;
           }
+          // the header is reloaded when leaving the administration: the chat client is then
+          // already started
+          if (SilverChat.isStarted()) {
+            return;
+          }
           SilverChat.init(chatOptions).start();
           spUserSession.addLogoutPromise(new Promise(function(resolve, reject) {
             spUserSession.addEventListener('current-user-logout', function() {
