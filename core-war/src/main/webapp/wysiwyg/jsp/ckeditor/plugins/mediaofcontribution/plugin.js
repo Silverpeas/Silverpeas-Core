@@ -32,7 +32,11 @@ CKEDITOR.plugins.add('mediaofcontribution', {
   // The plugin initialization logic goes inside this method.
   init : function(editor) {
     if (!editor.config.silverpeasComponentId || !editor.config.silverpeasObjectId) {
-      setEditorName(editor.name);
+      // the toolbar functions of the WYSIWYG editor aren't loaded by every page (the template
+      // designer for example): an error here would prevent the editor from being initialized
+      if (typeof setEditorName === 'function') {
+        setEditorName(editor.name);
+      }
       return;
     }
     let images;
