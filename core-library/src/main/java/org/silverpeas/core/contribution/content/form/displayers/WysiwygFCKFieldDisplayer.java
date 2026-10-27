@@ -80,6 +80,11 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
   private static final SettingBundle settings = ResourceLocator.getSettingBundle(
       "org.silverpeas.wysiwyg.settings.wysiwygSettings");
 
+  /**
+   * The component instance identifier given to the forms displayed outside any component
+   * instance, as the preview of a form in the template designer.
+   */
+  private static final String NO_COMPONENT_INSTANCE = "useless";
   private static final int DEFAULT_WIDTH = 600;
   private static final int DEFAULT_HEIGHT = 300;
 
@@ -219,13 +224,26 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
     if (StringUtil.isDefined(skin)) {
       stringBuilder.append("skin : '").append(skin).append("',\n");
     }
-    stringBuilder.append("filebank : ").append(showFileStorages).append(",\n");
-    stringBuilder.append("imagebank : ").append(showGalleries).append(",\n");
-    stringBuilder.append("silverpeasObjectId : '").append(pageContext.getObjectId()).append("',\n");
-    stringBuilder.append("silverpeasComponentId : '").append(pageContext.getComponentId()).append("'\n");
-    stringBuilder.append("});\n");
+    stringBuilder.append("filebank : ").append(showFileStorages);
+    // without any contribution (as in the preview of a form in the template designer), the editor
+    // has neither to look for the media of a contribution nor to accept dropped files
+    final String componentId = pageContext.getComponentId();
+    final String objectId = pageContext.getObjectId();
+    final boolean componentDefined = StringUtil.isDefined(componentId) &&
+        !NO_COMPONENT_INSTANCE.equals(componentId);
+    final boolean contributionDefined = componentDefined && StringUtil.isDefined(objectId);
+    stringBuilder.append(",\nimagebank : ").append(showGalleries);
+    if (contributionDefined) {
+      stringBuilder.append(",\nsilverpeasObjectId : '").append(objectId).append("'");
+    }
+    if (componentDefined) {
+      stringBuilder.append(",\nsilverpeasComponentId : '").append(componentId).append("'");
+    }
+    stringBuilder.append("\n});\n");
 
-    stringBuilder.append(format(DD_UPLOAD_TEMPLATE_SCRIPT, pageContext.getComponentId(), pageContext.getObjectId(), false));
+    if (contributionDefined) {
+      stringBuilder.append(format(DD_UPLOAD_TEMPLATE_SCRIPT, componentId, objectId, false));
+    }
 
     out.println(stringBuilder);
 
