@@ -24,6 +24,7 @@
 package org.silverpeas.core.web.util;
 
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.contribution.content.wysiwyg.WysiwygBanks;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.util.JSONCodec;

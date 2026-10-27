@@ -27,6 +27,7 @@ import net.htmlparser.jericho.Source;
 import org.apache.commons.io.FileUtils;
 import org.owasp.encoder.Encode;
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -39,6 +40,7 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.TextField;
+import org.silverpeas.core.contribution.content.wysiwyg.WysiwygBanks;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformer;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.i18n.I18n;
@@ -227,6 +229,17 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
       stringBuilder.append("skin : '").append(skin).append("',\n");
     }
     stringBuilder.append("filebank : ").append(showFileStorages);
+    // the banks are given with the configuration, otherwise the plugins request them synchronously
+    final User user = User.getCurrentRequester();
+    final String language = pageContext.getLanguage();
+    if (showFileStorages) {
+      stringBuilder.append(",\nfilebankApps : ")
+          .append(WysiwygBanks.toJSON(WysiwygBanks.fileBanksFor(user, language)));
+    }
+    if (showGalleries) {
+      stringBuilder.append(",\nimagebankApps : ")
+          .append(WysiwygBanks.toJSON(WysiwygBanks.imageBanksFor(user, language)));
+    }
     // without any contribution (as in the preview of a form in the template designer), the editor
     // has neither to look for the media of a contribution nor to accept dropped files
     final String componentId = pageContext.getComponentId();

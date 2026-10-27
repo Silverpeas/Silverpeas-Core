@@ -21,12 +21,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.web.util;
+package org.silverpeas.core.contribution.content.wysiwyg;
 
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
+import org.silverpeas.core.util.JSONCodec;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -76,6 +77,21 @@ public final class WysiwygBanks {
    */
   public static List<Bank> fileBanksFor(final User user, final String language) {
     return banksFor(FILE_BANK_PARAMETER, user, language);
+  }
+
+  /**
+   * Encodes the specified banks as a JSON array, ready to be given with the configuration of an
+   * editor.
+   * @param banks the banks to encode.
+   * @return a JSON array of the banks, each one with its name, its identifier and its label.
+   */
+  public static String toJSON(final List<Bank> banks) {
+    return JSONCodec.encodeArray(a -> {
+      banks.forEach(b -> a.addJSONObject(o -> o.put("name", b.name())
+          .put("id", b.id())
+          .put("label", b.label())));
+      return a;
+    });
   }
 
   private static List<Bank> banksFor(final String parameter, final User user,

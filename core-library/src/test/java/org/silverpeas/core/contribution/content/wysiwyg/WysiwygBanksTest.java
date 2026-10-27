@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.web.util;
+package org.silverpeas.core.contribution.content.wysiwyg;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,6 +39,7 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -92,6 +93,13 @@ class WysiwygBanksTest {
   void thereIsNoBankWithoutAnyUser() {
     assertThat(WysiwygBanks.imageBanksFor(null, "fr"), empty());
     assertThat(WysiwygBanks.fileBanksFor(null, "fr"), empty());
+  }
+
+  @Test
+  void theBanksAreGivenToTheEditorAsAJsonArray() {
+    assertThat(WysiwygBanks.toJSON(List.of(new WysiwygBanks.Bank("kmelia", "5", "Documents"))),
+        is("[{\"name\":\"kmelia\",\"id\":\"5\",\"label\":\"Documents\"}]"));
+    assertThat(WysiwygBanks.toJSON(List.of()), is("[]"));
   }
 
   @SuppressWarnings("unchecked")
