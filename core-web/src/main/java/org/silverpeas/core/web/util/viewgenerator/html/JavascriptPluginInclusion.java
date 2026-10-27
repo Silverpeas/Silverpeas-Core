@@ -197,12 +197,12 @@ public class JavascriptPluginInclusion {
   private static final String VIRTUAL_KEYBOARD_PATH = getApplicationURL() + "/silverkeyboard";
   private static final String A11Y_PATH = getApplicationURL() + "/a11y";
 
-  private static final String CHART_JS = "flot/jquery.flot.min.js";
-  private static final String CHART_PIE_JS = "flot/jquery.flot.pie.min.js";
-  private static final String CHART_TIME_JS = "flot/jquery.flot.time.min.js";
-  private static final String CHART_CATEGORIES_JS = "flot/jquery.flot.categories.min.js";
+  private static final String CHART_JS = "flot/jquery.flot.js";
+  private static final String CHART_PIE_JS = "flot/jquery.flot.pie.js";
+  private static final String CHART_TIME_JS = "flot/jquery.flot.time.js";
+  private static final String CHART_CATEGORIES_JS = "flot/jquery.flot.categories.js";
   private static final String CHART_AXISLABEL_JS = "flot/jquery.flot.axislabels.js";
-  private static final String CHART_TOOLTIP_JS = "flot/jquery.flot.tooltip.min.js";
+  private static final String CHART_TOOLTIP_JS = "flot/jquery.flot.tooltip.js";
   private static final String SILVERPEAS_CHART_JS = "silverpeas-chart.js";
   private static final String SILVERPEAS_CHART_I18N_ST = "chartBundle";
   private static final String SILVERPEAS_LIST_OF_USERS_AND_GROUPS_JS =
@@ -1048,16 +1048,27 @@ public class JavascriptPluginInclusion {
     return xhtml;
   }
 
-  static ElementContainer includeChart(final ElementContainer xhtml, final String language) {
-    includeHtml2CanvasAndDownload(xhtml);
-    includeDatePicker(xhtml, language);
-    includeQTip(xhtml, language);
+  /**
+   * Includes the Flot plotting library and the plugins used by the charts of Silverpeas. They are
+   * bundled as patched official sources, minified by the build.
+   * @param xhtml the container of the HTML elements to which the scripts are added.
+   * @return the container itself.
+   */
+  static ElementContainer includeFlot(final ElementContainer xhtml) {
     xhtml.addElement(script(JQUERY_PATH + CHART_JS));
     xhtml.addElement(script(JQUERY_PATH + CHART_PIE_JS));
     xhtml.addElement(script(JQUERY_PATH + CHART_TIME_JS));
     xhtml.addElement(script(JQUERY_PATH + CHART_CATEGORIES_JS));
     xhtml.addElement(script(JQUERY_PATH + CHART_AXISLABEL_JS));
     xhtml.addElement(script(JQUERY_PATH + CHART_TOOLTIP_JS));
+    return xhtml;
+  }
+
+  static ElementContainer includeChart(final ElementContainer xhtml, final String language) {
+    includeHtml2CanvasAndDownload(xhtml);
+    includeDatePicker(xhtml, language);
+    includeQTip(xhtml, language);
+    includeFlot(xhtml);
     xhtml.addElement(scriptContent("var defaultChartColors = " + getDefaultPieChartColorsAsJson() +
         "; var chartPieCombinationThreshold = " + getThresholdOfPieCombination() +
         ";"));

@@ -136,6 +136,23 @@ class JavascriptPluginInclusionTest {
   }
 
   /**
+   * Flot and its plugins are bundled as patched official sources (minified by the build) so that
+   * they don't use the jQuery API deprecated or removed by jQuery 3 and 4.
+   */
+  @Test
+  void includeFlotLoadsThePatchedSourcesOfFlotAndOfItsPluginsInOrder() {
+    generalSettings.put("web.resource.js.get.minified.enabled", "false");
+
+    String html = JavascriptPluginInclusion.includeFlot(new ElementContainer()).toString();
+
+    assertThat(html, stringContainsInOrder("/jquery/flot/jquery.flot.",
+        "/jquery/flot/jquery.flot.pie.", "/jquery/flot/jquery.flot.time.",
+        "/jquery/flot/jquery.flot.categories.", "/jquery/flot/jquery.flot.axislabels.",
+        "/jquery/flot/jquery.flot.tooltip."));
+    assertThat(html, not(containsString(".min.")));
+  }
+
+  /**
    * The cache-busting fingerprint is inserted before the extension of the resource name, so only
    * the part before the extension can be matched.
    */
