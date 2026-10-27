@@ -28,6 +28,7 @@ import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.core.util.ScriptInclusionRegistry;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileServerUtils;
@@ -92,6 +93,11 @@ public class Util {
   }
 
   private static void addSilverpeasScript(StringBuilder includes, String script) {
+    // a script already included into the page (by the look and feel for example) isn't included
+    // twice
+    if (!ScriptInclusionRegistry.register(path + script)) {
+      return;
+    }
     String normalizedUrl = getMinifiedWebResourceUrl(path + script);
     includes.append("<script type=\"text/javascript\" src=\"")
         .append(addFingerprintVersionOn(normalizedUrl)).append("\"></script>\n");
@@ -105,6 +111,9 @@ public class Util {
   }
 
   private static void addExternalScript(StringBuilder includes, String webContext, String script) {
+    if (!ScriptInclusionRegistry.register(webContext + script)) {
+      return;
+    }
     String normalizedUrl = getMinifiedWebResourceUrl(webContext + script);
     includes.append("<script type=\"text/javascript\" src=\"")
         .append(addFingerprintVersionOn(normalizedUrl)).append("\"></script>\n");

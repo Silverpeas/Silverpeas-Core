@@ -40,6 +40,7 @@ import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
 import org.silverpeas.core.subscription.SubscriptionFactory;
 import org.silverpeas.core.subscription.SubscriptionResourceType;
 import org.silverpeas.core.util.JSONCodec;
+import org.silverpeas.core.util.ScriptInclusionRegistry;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.security.SecuritySettings;
 import org.silverpeas.core.web.look.LayoutConfiguration;
@@ -233,9 +234,7 @@ public class JavascriptPluginInclusion {
   }
 
   public static Element script(String src, Consumer<script> consumer) {
-    String key = "$jsPlugin$script$" + src;
-    if (getThreadCacheAccessor().getCache().get(key) == null) {
-      getThreadCacheAccessor().getCache().put(key, true);
+    if (ScriptInclusionRegistry.register(src)) {
       var script = new script().setType(JAVASCRIPT_TYPE).setSrc(normalizeWebResourceUrl(src));
       if (consumer != null) {
         consumer.accept(script);
