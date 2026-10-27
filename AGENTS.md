@@ -99,6 +99,17 @@ programmatic lookup costs more than an injection. When a dependency has to be re
 `jakarta.enterprise.inject.Instance<T>` and call `get()` where it is needed, as
 `ICalendarEventSynchronization` does with its `Scheduler` in Silverpeas Core.
 
+**Even in the unmanaged objects, call `ServiceProvider` sparingly**: each call is a programmatic
+lookup in the bean container, which is costly. When a bean is needed frequently (in a loop, in a
+method called many times, on each rendering of a page…), either:
+- get it once through `ServiceProvider` at the construction of the object and keep it in an
+  instance field, or
+- annotate the class of the managed bean returned by `ServiceProvider` with
+  `org.silverpeas.kernel.annotation.Cacheable` or `jakarta.inject.Singleton`: the
+  `ManagedBeanProvider` then caches its instance and serves it without any lookup. As a single
+  instance is cached, the bean has to be stateless, and only the `@ApplicationScoped` beans should
+  be annotated with `@Cacheable`: caching a bean of a shorter scope would bypass its lifecycle.
+
 Beans needing startup logic implement `org.silverpeas.core.initialization.Initialization`.
 
 ### Code conventions
