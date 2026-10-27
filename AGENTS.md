@@ -116,6 +116,10 @@ Beans needing startup logic implement `org.silverpeas.core.initialization.Initia
   namespace in `properties/org/silverpeas/util/logging/<name>Logging.properties`.
 - Javadoc must satisfy the Java 21 doclint.
 - LF line endings for all text and source files (enforced by `.gitattributes`).
+- The code is indented with two spaces, never with tabs, in every language (Java, JSP, JavaScript,
+  CSS, XML…). A file still indented otherwise is reindented as a whole as soon as its code is
+  modified, in a dedicated commit containing only the reindentation, so that the actual changes
+  aren't hidden by the reformatting in the diff.
 
 ### Web front-end conventions
 
