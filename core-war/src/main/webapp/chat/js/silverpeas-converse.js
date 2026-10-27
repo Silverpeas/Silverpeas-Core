@@ -394,7 +394,22 @@
     let __settings = {
       'whitelisted_plugins' : []
     };
+    // the chat client is initialized and started once per window: Converse refuses to register
+    // twice its plugins, and the chat UI is kept while the parts of the layout are reloaded
+    let __initialized = false;
+    let __started = false;
+    /**
+     * Is the chat client started in the current window?
+     * @returns {boolean} true if started, false otherwise.
+     */
+    this.isStarted = function() {
+      return __started;
+    };
     this.init = function(chatOptions) {
+      if (__initialized) {
+        return this;
+      }
+      __initialized = true;
       __settings = extendsObject(__settings, chatOptions);
       __settings.whitelisted_plugins.push('silverpeas-commons');
       __settings.whitelisted_plugins.push('silverpeas-muc-invitations');
@@ -422,6 +437,10 @@
       return this;
     };
     this.start = function() {
+      if (__started) {
+        return;
+      }
+      __started = true;
       sp.i18n.load({
         bundle : 'org.silverpeas.chat.multilang.chat',
         async : true
