@@ -23,12 +23,14 @@
  */
 package org.silverpeas.core.contribution.content.form.notification;
 
+import jakarta.inject.Singleton;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
 
 /** Publishes form-record changes within the transaction that persists them. */
 @Bean
+@Singleton
 public class FormRecordEventNotifier
     extends CDIResourceEventNotifier<FormRecordReference, FormRecordEvent> {
 
