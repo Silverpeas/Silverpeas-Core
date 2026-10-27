@@ -26,7 +26,6 @@ package org.silverpeas.core.contribution.content.form;
 import org.apache.ecs.xhtml.script;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
-import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.ScriptInclusionRegistry;
 import org.silverpeas.core.util.URLUtil;
@@ -40,10 +39,10 @@ import static org.silverpeas.core.util.URLUtil.*;
 
 public class Util {
 
-  private static final SettingBundle formIcons = ResourceLocator.getSettingBundle(
-      "org.silverpeas.form.settings.formIcons");
-  private static final SettingBundle settings = ResourceLocator.getSettingBundle(
-      "org.silverpeas.form.settings.form");
+  // the bundles are got at each use (they are cached by ResourceLocator) so that their actual
+  // content is always used
+  private static final String FORM_ICONS = "org.silverpeas.form.settings.formIcons";
+  private static final String FORM_SETTINGS = "org.silverpeas.form.settings.form";
   private static final String path = URLUtil.getApplicationURL();
   private static LocalizationBundle message;
   private static String language;
@@ -53,11 +52,11 @@ public class Util {
   }
 
   public static String getSetting(String setting) {
-    return settings.getString(setting);
+    return ResourceLocator.getSettingBundle(FORM_SETTINGS).getString(setting);
   }
 
   public static String getIcon(String icon) {
-    return path + formIcons.getString(icon);
+    return path + ResourceLocator.getSettingBundle(FORM_ICONS).getString(icon);
   }
 
   public static String getString(String msg, String language) {
