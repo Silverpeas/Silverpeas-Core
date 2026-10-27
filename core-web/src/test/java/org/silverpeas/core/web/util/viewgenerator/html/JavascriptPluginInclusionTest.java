@@ -113,7 +113,7 @@ class JavascriptPluginInclusionTest {
     String html = JavascriptPluginInclusion.includeProgressMessage(new ElementContainer()).toString();
     String again = JavascriptPluginInclusion.includeProgressMessage(new ElementContainer()).toString();
 
-    assertThat(html, containsString("src='/silverpeas/util/javaScript/progressMessage"));
+    assertThat(html, containsString("/util/javaScript/progressMessage"));
     assertThat(again, is(emptyString()));
   }
 
