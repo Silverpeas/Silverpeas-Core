@@ -60,6 +60,7 @@ import org.silverpeas.web.jobdomain.UserRequestData;
 import org.silverpeas.web.jobdomain.control.JobDomainPeasSessionController;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.NotAllowedException;
 import java.util.*;
 
 import static java.util.Collections.emptySet;
@@ -336,6 +337,9 @@ public class JobDomainPeasRequestRouter extends
           jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN),
               () -> jobDomainSC.activateUser(userId));
         } else if (function.startsWith("userResetTwoFactor")) {
+          if (!"POST".equals(request.getMethod())) {
+            throw new NotAllowedException("POST");
+          }
           jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN),
               () -> jobDomainSC.resetTwoFactorAuthentication(userId));
           destination = USER_CONTENT_DEST;

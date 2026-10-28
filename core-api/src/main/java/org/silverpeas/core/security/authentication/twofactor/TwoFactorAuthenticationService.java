@@ -33,88 +33,88 @@ import java.util.Optional;
  */
 public interface TwoFactorAuthenticationService {
 
-    /**
-     * Gets the two-factor authentication configuration of a user.
-     *
-     * @param userId the Silverpeas user identifier.
-     * @return the configuration if it exists.
-     */
-    Optional<TwoFactorAuthentication> getAuthentication(int userId);
+  /**
+   * Gets the two-factor authentication configuration of a user.
+   *
+   * @param userId the Silverpeas user identifier.
+   * @return the configuration if it exists.
+   */
+  Optional<TwoFactorAuthentication> getAuthentication(int userId);
 
-    /**
-     * Starts the enrollment of a user's authenticator.
-     *
-     * <p>The generated configuration is stored in {@link
-     * TwoFactorAuthentication.Status#PENDING} state until the user confirms
-     * possession of the authenticator with a valid TOTP code.</p>
-     *
-     * @param userId the Silverpeas user identifier.
-     * @return the pending two-factor authentication configuration.
-     * @throws IllegalStateException if two-factor authentication is already enabled.
-     */
-    TwoFactorAuthentication startEnrollment(int userId);
+  /**
+   * Starts the enrollment of a user's authenticator.
+   *
+   * <p>The generated configuration is stored in {@link
+   * TwoFactorAuthentication.Status#PENDING} state until the user confirms
+   * possession of the authenticator with a valid TOTP code.</p>
+   *
+   * @param userId the Silverpeas user identifier.
+   * @return the pending two-factor authentication configuration.
+   * @throws IllegalStateException if two-factor authentication is already enabled.
+   */
+  TwoFactorAuthentication startEnrollment(int userId);
 
-    /**
-     * Confirms a pending enrollment with a valid TOTP code.
-     *
-     * @param userId the Silverpeas user identifier.
-     * @param code the TOTP code entered by the user.
-     * @return true if the enrollment has been enabled, false otherwise.
-     */
-    boolean confirmEnrollment(int userId, String code);
+  /**
+   * Confirms a pending enrollment with a valid TOTP code.
+   *
+   * @param userId the Silverpeas user identifier.
+   * @param code the TOTP code entered by the user.
+   * @return true if the enrollment has been enabled, false otherwise.
+   */
+  boolean confirmEnrollment(int userId, String code);
 
-    /**
-     * Validates a TOTP code for an enabled user.
-     *
-     * <p>A successful validation updates the last-used date of the second
-     * factor.</p>
-     *
-     * @param userId the Silverpeas user identifier.
-     * @param code the TOTP code entered by the user.
-     * @return true if the code is valid for the enabled configuration.
-     */
-    boolean validate(int userId, String code);
+  /**
+   * Validates a TOTP code for an enabled user.
+   *
+   * <p>A successful validation updates the last-used date of the second
+   * factor.</p>
+   *
+   * @param userId the Silverpeas user identifier.
+   * @param code the TOTP code entered by the user.
+   * @return true if the code is valid for the enabled configuration.
+   */
+  boolean validate(int userId, String code);
 
-    /**
-     * Generates a new set of recovery codes for an enabled user.
-     *
-     * <p>The returned clear-text codes are only available at generation time.
-     * Their hashes are persisted instead.</p>
-     *
-     * @param userId the Silverpeas user identifier.
-     * @return the generated recovery codes.
-     */
-    List<String> generateRecoveryCodes(int userId);
+  /**
+   * Generates a new set of recovery codes for an enabled user.
+   *
+   * <p>The returned clear-text codes are only available at generation time.
+   * Their hashes are persisted instead.</p>
+   *
+   * @param userId the Silverpeas user identifier.
+   * @return the generated recovery codes.
+   */
+  List<String> generateRecoveryCodes(int userId);
 
-    /**
-     * Validates and consumes one recovery code for an enabled user.
-     *
-     * @param userId the Silverpeas user identifier.
-     * @param code the recovery code entered by the user.
-     * @return true if the code was valid and has been consumed.
-     */
-    boolean validateRecoveryCode(int userId, String code);
+  /**
+   * Validates and consumes one recovery code for an enabled user.
+   *
+   * @param userId the Silverpeas user identifier.
+   * @param code the recovery code entered by the user.
+   * @return true if the code was valid and has been consumed.
+   */
+  boolean validateRecoveryCode(int userId, String code);
 
-    /**
-     * Disables two-factor authentication for a user.
-     *
-     * @param userId the Silverpeas user identifier.
-     */
-    /**
-     * Resets the two-factor authentication enrollment of an enabled user.
-     *
-     * <p>The current recovery codes are invalidated and a new authenticator
-     * configuration is created in {@link TwoFactorAuthentication.Status#PENDING}
-     * state.</p>
-     *
-     * @param userId the Silverpeas user identifier.
-     */
-    void resetEnrollment(int userId);
+  /**
+   * Disables two-factor authentication for a user.
+   *
+   * @param userId the Silverpeas user identifier.
+   */
+  /**
+   * Resets the two-factor authentication enrollment of an enabled user.
+   *
+   * <p>The current recovery codes are invalidated and a new authenticator
+   * configuration is created in {@link TwoFactorAuthentication.Status#PENDING}
+   * state.</p>
+   *
+   * @param userId the Silverpeas user identifier.
+   */
+  void resetEnrollment(int userId);
 
-    /**
-     * Disables two-factor authentication for a user.
-     *
-     * @param userId the Silverpeas user identifier.
-     */
-    void disable(int userId);
+  /**
+   * Disables two-factor authentication for a user.
+   *
+   * @param userId the Silverpeas user identifier.
+   */
+  void disable(int userId);
 }

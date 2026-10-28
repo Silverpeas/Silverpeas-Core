@@ -34,132 +34,211 @@ import java.util.Objects;
  */
 public final class RecoveryCode implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    private final long id;
+  private final long id;
+  private final int userId;
+  private final String hash;
+  private final boolean used;
+  private final Instant createdAt;
+  private final Instant usedAt;
+
+  private RecoveryCode(Builder builder) {
+    this.id = builder.id;
+    this.userId = builder.userId;
+    this.hash = builder.hash;
+    this.used = builder.used;
+    this.createdAt = builder.createdAt;
+    this.usedAt = builder.usedAt;
+  }
+
+  /**
+   * Gets the database identifier.
+   *
+   * @return the database identifier.
+   */
+  public long getId() {
+    return id;
+  }
+
+  /**
+   * Gets the Silverpeas identifier of the owner.
+   *
+   * @return the Silverpeas identifier of the owner.
+   */
+  public int getUserId() {
+    return userId;
+  }
+
+  /**
+   * Gets the hash of the recovery code; the clear-text code is never persisted.
+   *
+   * @return the hash of the recovery code; the clear-text code is never persisted.
+   */
+  public String getHash() {
+    return hash;
+  }
+
+  /**
+   * Indicates whether this recovery code has already been consumed.
+   *
+   * @return {@code true} if the code has been consumed.
+   */
+  public boolean isUsed() {
+    return used;
+  }
+
+  /**
+   * Gets the creation instant.
+   *
+   * @return the creation instant.
+   */
+  public Instant getCreatedAt() {
+    return createdAt;
+  }
+
+  /**
+   * Gets the consumption instant, or {@code null} while unused.
+   *
+   * @return the consumption instant, or {@code null} while unused.
+   */
+  public Instant getUsedAt() {
+    return usedAt;
+  }
+
+  /**
+   * Creates a builder initialized with every value of this configuration.
+   *
+   * @return a builder for a modified copy.
+   */
+  public Builder toBuilder() {
+    return builder(userId)
+        .id(id)
+        .hash(hash)
+        .used(used)
+        .createdAt(createdAt)
+        .usedAt(usedAt);
+  }
+
+  /**
+   * Creates a builder for the specified user.
+   *
+   * @param userId the Silverpeas identifier of the owner.
+   * @return a new builder.
+   */
+  public static Builder builder(int userId) {
+    return new Builder(userId);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof RecoveryCode)) {
+      return false;
+    }
+    RecoveryCode that = (RecoveryCode) o;
+    return id == that.id
+        && userId == that.userId
+        && used == that.used
+        && Objects.equals(hash, that.hash)
+        && Objects.equals(createdAt, that.createdAt)
+        && Objects.equals(usedAt, that.usedAt);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, userId, hash, used, createdAt, usedAt);
+  }
+
+  @Override
+  public String toString() {
+    return "RecoveryCode{" +
+        "id=" + id +
+        ", userId=" + userId +
+        ", used=" + used +
+        '}';
+  }
+
+  /**
+   * Builds an immutable recovery-code entry.
+   */
+  public static final class Builder {
+
     private final int userId;
-    private final String hash;
-    private final boolean used;
-    private final Instant createdAt;
-    private final Instant usedAt;
+    private long id;
+    private String hash;
+    private boolean used;
+    private Instant createdAt;
+    private Instant usedAt;
 
-    private RecoveryCode(Builder builder) {
-        this.id = builder.id;
-        this.userId = builder.userId;
-        this.hash = builder.hash;
-        this.used = builder.used;
-        this.createdAt = builder.createdAt;
-        this.usedAt = builder.usedAt;
+    private Builder(int userId) {
+      this.userId = userId;
     }
 
-    public long getId() {
-        return id;
+    /**
+     * Sets the database identifier.
+     *
+     * @param id the database identifier.
+     * @return this builder.
+     */
+    public Builder id(long id) {
+      this.id = id;
+      return this;
     }
 
-    public int getUserId() {
-        return userId;
+    /**
+     * Sets the hash of the recovery code; the clear-text code is never persisted.
+     *
+     * @param hash the hash of the recovery code; the clear-text code is never persisted.
+     * @return this builder.
+     */
+    public Builder hash(String hash) {
+      this.hash = hash;
+      return this;
     }
 
-    public String getHash() {
-        return hash;
+    /**
+     * Sets the whether this recovery code has been consumed.
+     *
+     * @param used the whether this recovery code has been consumed.
+     * @return this builder.
+     */
+    public Builder used(boolean used) {
+      this.used = used;
+      return this;
     }
 
-    public boolean isUsed() {
-        return used;
+    /**
+     * Sets the creation instant.
+     *
+     * @param createdAt the creation instant.
+     * @return this builder.
+     */
+    public Builder createdAt(Instant createdAt) {
+      this.createdAt = createdAt;
+      return this;
     }
 
-    public Instant getCreatedAt() {
-        return createdAt;
+    /**
+     * Sets the consumption instant, or {@code null} while unused.
+     *
+     * @param usedAt the consumption instant, or {@code null} while unused.
+     * @return this builder.
+     */
+    public Builder usedAt(Instant usedAt) {
+      this.usedAt = usedAt;
+      return this;
     }
 
-    public Instant getUsedAt() {
-        return usedAt;
+    /**
+     * Creates the immutable configuration from the builder values.
+     *
+     * @return the resulting configuration.
+     */
+    public RecoveryCode build() {
+      return new RecoveryCode(this);
     }
-
-    public Builder toBuilder() {
-        return builder(userId)
-                .id(id)
-                .hash(hash)
-                .used(used)
-                .createdAt(createdAt)
-                .usedAt(usedAt);
-    }
-
-    public static Builder builder(int userId) {
-        return new Builder(userId);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof RecoveryCode)) {
-            return false;
-        }
-        RecoveryCode that = (RecoveryCode) o;
-        return id == that.id
-                && userId == that.userId
-                && used == that.used
-                && Objects.equals(hash, that.hash)
-                && Objects.equals(createdAt, that.createdAt)
-                && Objects.equals(usedAt, that.usedAt);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, userId, hash, used, createdAt, usedAt);
-    }
-
-    @Override
-    public String toString() {
-        return "RecoveryCode{" +
-                "id=" + id +
-                ", userId=" + userId +
-                ", used=" + used +
-                '}';
-    }
-
-    public static final class Builder {
-
-        private final int userId;
-        private long id;
-        private String hash;
-        private boolean used;
-        private Instant createdAt;
-        private Instant usedAt;
-
-        private Builder(int userId) {
-            this.userId = userId;
-        }
-
-        public Builder id(long id) {
-            this.id = id;
-            return this;
-        }
-
-        public Builder hash(String hash) {
-            this.hash = hash;
-            return this;
-        }
-
-        public Builder used(boolean used) {
-            this.used = used;
-            return this;
-        }
-
-        public Builder createdAt(Instant createdAt) {
-            this.createdAt = createdAt;
-            return this;
-        }
-
-        public Builder usedAt(Instant usedAt) {
-            this.usedAt = usedAt;
-            return this;
-        }
-
-        public RecoveryCode build() {
-            return new RecoveryCode(this);
-        }
-    }
+  }
 }

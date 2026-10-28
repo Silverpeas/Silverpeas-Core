@@ -35,50 +35,50 @@ import java.time.Instant;
  */
 public interface TwoFactorAuthenticationRepository {
 
-    /**
-     * Gets the two-factor authentication configuration of a user.
-     *
-     * @param userId the Silverpeas user identifier.
-     * @return the configuration if it exists.
-     */
-    Optional<TwoFactorAuthentication> get(int userId);
+  /**
+   * Gets the two-factor authentication configuration of a user.
+   *
+   * @param userId the Silverpeas user identifier.
+   * @return the configuration if it exists.
+   */
+  Optional<TwoFactorAuthentication> get(int userId);
 
-    /**
-     * Creates or replaces the two-factor authentication configuration of a user.
-     *
-     * @param authentication the configuration to persist.
-     */
-    void save(TwoFactorAuthentication authentication);
+  /**
+   * Creates or replaces the two-factor authentication configuration of a user.
+   *
+   * @param authentication the configuration to persist.
+   */
+  void save(TwoFactorAuthentication authentication);
 
-    /**
-     * Deletes the two-factor authentication configuration of a user.
-     *
-     * @param userId the Silverpeas user identifier.
-     */
-    void delete(int userId);
+  /**
+   * Deletes the two-factor authentication configuration of a user.
+   *
+   * @param userId the Silverpeas user identifier.
+   */
+  void delete(int userId);
 
-    /**
-     * Updates the date of the last successful second-factor authentication.
-     *
-     * @param userId the Silverpeas user identifier.
-     * @param lastUsedAt the date of the successful authentication.
-     */
-    void updateLastUsedAt(int userId, Instant lastUsedAt);
+  /**
+   * Updates the date of the last successful second-factor authentication.
+   *
+   * @param userId the Silverpeas user identifier.
+   * @param lastUsedAt the date of the successful authentication.
+   */
+  void updateLastUsedAt(int userId, Instant lastUsedAt);
 
-    /**
-     * Records a failed TOTP validation and optionally locks the authentication.
-     *
-     * @param userId the Silverpeas user identifier.
-     * @param failedAttempts the new number of failed attempts.
-     * @param lockedUntil the lock expiration, or null when the user is not locked.
-     */
-    void updateFailedAttempts(int userId, int failedAttempts,
-            Instant lockedUntil);
+  /**
+   * Records a failed TOTP validation and optionally locks the authentication.
+   *
+   * @param userId the Silverpeas user identifier.
+   * @param failedAttempts the new number of failed attempts.
+   * @param lockedUntil the lock expiration, or null when the user is not locked.
+   */
+  void updateFailedAttempts(int userId, int failedAttempts,
+      Instant lockedUntil);
 
-    /**
-     * Resets the failed TOTP attempts and removes any temporary lock.
-     *
-     * @param userId the Silverpeas user identifier.
-     */
-    void resetFailedAttempts(int userId);
+  /**
+   * Resets the failed TOTP attempts and removes any temporary lock.
+   *
+   * @param userId the Silverpeas user identifier.
+   */
+  void resetFailedAttempts(int userId);
 }

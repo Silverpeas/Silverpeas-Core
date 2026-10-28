@@ -33,35 +33,35 @@ import java.util.List;
  */
 public interface RecoveryCodeRepository {
 
-    /**
-     * Gets all unused recovery codes of a user.
-     *
-     * @param userId the Silverpeas user identifier.
-     * @return the unused recovery codes.
-     */
-    List<RecoveryCode> getUnused(int userId);
+  /**
+   * Gets all unused recovery codes of a user.
+   *
+   * @param userId the Silverpeas user identifier.
+   * @return the unused recovery codes.
+   */
+  List<RecoveryCode> getUnused(int userId);
 
-    /**
-     * Creates a recovery code.
-     *
-     * @param recoveryCode the code to persist.
-     */
-    void save(RecoveryCode recoveryCode);
+  /**
+   * Creates a recovery code.
+   *
+   * @param recoveryCode the code to persist.
+   */
+  void save(RecoveryCode recoveryCode);
 
-    /**
-     * Atomically consumes an unused recovery code belonging to the specified user.
-     *
-     * @param userId the Silverpeas user identifier.
-     * @param hash the hash of the recovery code.
-     * @param usedAt the date at which the code was consumed.
-     * @return true if an unused code belonging to the user was consumed.
-     */
-    boolean consume(int userId, String hash, Instant usedAt);
+  /**
+   * Atomically consumes an unused recovery code belonging to the specified user.
+   *
+   * @param userId the Silverpeas user identifier.
+   * @param hash the hash of the recovery code.
+   * @param usedAt the date at which the code was consumed.
+   * @return true if an unused code belonging to the user was consumed.
+   */
+  boolean consume(int userId, String hash, Instant usedAt);
 
-    /**
-     * Deletes all recovery codes of a user.
-     *
-     * @param userId the Silverpeas user identifier.
-     */
-    void deleteAll(int userId);
+  /**
+   * Deletes all recovery codes of a user.
+   *
+   * @param userId the Silverpeas user identifier.
+   */
+  void deleteAll(int userId);
 }

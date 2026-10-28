@@ -43,6 +43,10 @@ class TwoFactorJpaTestDatabase implements AutoCloseable {
     try (var connection = DriverManager.getConnection(url); var statement = connection.createStatement()) {
       statement.execute("create table ST_User (id int primary key)");
       statement.execute("insert into ST_User values (0), (42), (43)");
+      // Reproduce the legacy index from schema 049 before running its upgrade scripts.
+      statement.execute("create table st_instance_modelused (instanceId varchar(50), modelId varchar(50))");
+      Path legacyIndex = Path.of("../core-configuration/src/main/config/migrations/db/h2/busCore/049/create_index_production.sql");
+      statement.execute(Files.readString(legacyIndex));
       Path scripts = Path.of("../core-configuration/src/main/config/migrations/db/h2/busCore/up049");
       for (String name : new String[]{"create_table.sql", "create_constraint.sql", "create_index.sql"}) {
         for (String sql : Files.readString(scripts.resolve(name)).split(";")) {

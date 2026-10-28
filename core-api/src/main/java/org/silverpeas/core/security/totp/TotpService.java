@@ -33,79 +33,79 @@ import java.time.Instant;
  */
 public interface TotpService {
 
-    /**
-     * Generates a cryptographically secure random TOTP secret.
-     *
-     * @return the secret encoded using RFC 4648 Base32, without padding.
-     */
-    String generateSecret();
+  /**
+   * Generates a cryptographically secure random TOTP secret.
+   *
+   * @return the secret encoded using RFC 4648 Base32, without padding.
+   */
+  String generateSecret();
 
-    /**
-     * Generates the TOTP code for the current instant.
-     *
-     * @param secret Base32 encoded secret.
-     * @return the numeric TOTP code, zero padded to the configured number of digits.
-     */
-    String generateCode(String secret);
+  /**
+   * Generates the TOTP code for the current instant.
+   *
+   * @param secret Base32 encoded secret.
+   * @return the numeric TOTP code, zero padded to the configured number of digits.
+   */
+  String generateCode(String secret);
 
-    /**
-     * Generates the TOTP code for the specified instant.
-     *
-     * <p>This method is mainly useful for tests and for interoperability
-     * verification against RFC 6238 test vectors.</p>
-     *
-     * @param secret Base32 encoded secret.
-     * @param instant instant at which the code must be generated.
-     * @return the numeric TOTP code.
-     */
-    String generateCode(String secret, Instant instant);
+  /**
+   * Generates the TOTP code for the specified instant.
+   *
+   * <p>This method is mainly useful for tests and for interoperability
+   * verification against RFC 6238 test vectors.</p>
+   *
+   * @param secret Base32 encoded secret.
+   * @param instant instant at which the code must be generated.
+   * @return the numeric TOTP code.
+   */
+  String generateCode(String secret, Instant instant);
 
-    /**
-     * Validates a TOTP code against the current instant.
-     *
-     * <p>The configured validation window is used.</p>
-     *
-     * @param secret Base32 encoded secret.
-     * @param code code supplied by the user.
-     * @return true if the code is valid.
-     */
-    boolean validate(String secret, String code);
+  /**
+   * Validates a TOTP code against the current instant.
+   *
+   * <p>The configured validation window is used.</p>
+   *
+   * @param secret Base32 encoded secret.
+   * @param code code supplied by the user.
+   * @return true if the code is valid.
+   */
+  boolean validate(String secret, String code);
 
-    /**
-     * Validates a TOTP code against the specified instant.
-     *
-     * @param secret Base32 encoded secret.
-     * @param code code supplied by the user.
-     * @param instant instant against which the code is validated.
-     * @return true if the code is valid.
-     */
-    boolean validate(String secret, String code, Instant instant);
+  /**
+   * Validates a TOTP code against the specified instant.
+   *
+   * @param secret Base32 encoded secret.
+   * @param code code supplied by the user.
+   * @param instant instant against which the code is validated.
+   * @return true if the code is valid.
+   */
+  boolean validate(String secret, String code, Instant instant);
 
-    /**
-     * Builds an otpauth URI suitable for authenticator applications.
-     *
-     * @param secret Base32 encoded secret.
-     * @param issuer issuer displayed by the authenticator application.
-     * @param account account displayed by the authenticator application.
-     * @return an otpauth URI.
-     */
-    String buildOtpAuthUri(String secret, String issuer, String account);
+  /**
+   * Builds an otpauth URI suitable for authenticator applications.
+   *
+   * @param secret Base32 encoded secret.
+   * @param issuer issuer displayed by the authenticator application.
+   * @param account account displayed by the authenticator application.
+   * @return an otpauth URI.
+   */
+  String buildOtpAuthUri(String secret, String issuer, String account);
 
-    /**
-     * Builds an otpauth URI using the configured issuer and the given account.
-     *
-     * @param secret Base32 encoded secret.
-     * @param account account displayed by the authenticator application.
-     * @return an otpauth URI.
-     */
-    String buildOtpAuthUri(String secret, String account);
+  /**
+   * Builds an otpauth URI using the configured issuer and the given account.
+   *
+   * @param secret Base32 encoded secret.
+   * @param account account displayed by the authenticator application.
+   * @return an otpauth URI.
+   */
+  String buildOtpAuthUri(String secret, String account);
 
-    /**
-     * Builds an otpauth URI using the configured Silverpeas application name
-     * as issuer without an account label.
-     *
-     * @param secret Base32 encoded secret.
-     * @return an otpauth URI.
-     */
-    String buildOtpAuthUri(String secret);
+  /**
+   * Builds an otpauth URI using the configured Silverpeas application name
+   * as issuer without an account label.
+   *
+   * @param secret Base32 encoded secret.
+   * @return an otpauth URI.
+   */
+  String buildOtpAuthUri(String secret);
 }

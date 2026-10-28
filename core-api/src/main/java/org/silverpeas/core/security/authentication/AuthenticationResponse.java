@@ -48,6 +48,13 @@ public class AuthenticationResponse {
     return new AuthenticationResponse(authToken, null);
   }
 
+  /**
+   * Creates a successful response carrying a rotated trusted-device token.
+   *
+   * @param authToken the Silverpeas authentication token.
+   * @param trustedDeviceToken the new browser token, or {@code null} if no device was trusted.
+   * @return the successful authentication response.
+   */
   public static AuthenticationResponse succeed(final String authToken,
       final String trustedDeviceToken) {
     return new AuthenticationResponse(authToken, trustedDeviceToken);
@@ -99,6 +106,11 @@ public class AuthenticationResponse {
     return token;
   }
 
+  /**
+   * Gets the trusted-device token to send back to the browser after rotation.
+   *
+   * @return the clear-text browser token, or {@code null} when none was issued.
+   */
   public String getTrustedDeviceToken() {
     return trustedDeviceToken;
   }

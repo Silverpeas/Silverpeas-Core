@@ -40,6 +40,7 @@ import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.security.authentication.AuthenticationResponse.Status;
 import org.silverpeas.core.security.authentication.exception.*;
 import org.silverpeas.core.security.authentication.twofactor.TwoFactorAuthenticationService;
+import org.silverpeas.core.security.authentication.twofactor.model.TwoFactorAuthentication;
 import org.silverpeas.core.security.authentication.twofactor.TrustedDeviceService;
 import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.core.security.authentication.verifier.UserCanLoginVerifier;
@@ -56,6 +57,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -421,12 +423,17 @@ public class AuthenticationService implements Authentication {
     }
   }
 
- /**
-  * Completes a pending local authentication with the second factor.
-  *
-  * <p>No password is accepted by this method. The caller must already have authenticated
-  * the user with the password and keep the pending authentication state server-side.</p>
-  */
+  /**
+   * Completes a pending local authentication with the second factor.
+   *
+   * <p>No password is accepted by this method. The caller must already have authenticated
+   * the user with the password and keep the pending authentication state server-side.</p>
+   *
+   * @param login the password-authenticated user login.
+   * @param domainId the user domain identifier.
+   * @param code the TOTP or single-use recovery code.
+   * @return the authentication token on success, or a pending second-factor response.
+   */
   public AuthenticationResponse authenticateTwoFactor(
       final String login, final String domainId, final String code) {
     try {
@@ -439,7 +446,7 @@ public class AuthenticationService implements Authentication {
       // A recovery code has 10 characters from the configured recovery alphabet.
       // Route to exactly one validator so a failed attempt is counted only once.
       final String normalizedCode = code == null ? "" :
-          code.replaceAll("[\\s-]", "").toUpperCase(java.util.Locale.ROOT);
+          code.replaceAll("[\\s-]", "").toUpperCase(Locale.ROOT);
       final boolean recoveryCode = normalizedCode.matches("[ABCDEFGHJKLMNPQRSTUVWXYZ2-9]{10}");
       final boolean valid = recoveryCode
           ? twoFactorAuthenticationService.validateRecoveryCode(userId, code)
@@ -498,6 +505,7 @@ public class AuthenticationService implements Authentication {
    * @param domainId the user domain identifier.
    * @param userAgent the browser user-agent.
    * @return the clear-text trusted-device token.
+   * @throws AuthenticationException if the authenticated user cannot be resolved.
    */
   public String createTrustedDevice(final String login, final String domainId,
       final String userAgent) throws AuthenticationException {
@@ -509,6 +517,12 @@ public class AuthenticationService implements Authentication {
 
   /**
    * Gets the remaining validity of a trusted-device token, in seconds.
+   *
+   * @param login the user login.
+   * @param domainId the user domain identifier.
+   * @param token the clear-text browser token.
+   * @return the remaining lifetime in seconds, or zero when the token is unknown or expired.
+   * @throws AuthenticationException if the authenticated user cannot be resolved.
    */
   public long getTrustedDeviceRemainingLifetime(final String login,
       final String domainId, final String token) throws AuthenticationException {
@@ -519,6 +533,10 @@ public class AuthenticationService implements Authentication {
 
   /**
    * Indicates whether the user must enroll a TOTP factor before completing authentication.
+   *
+   * @param login the user login.
+   * @param domainId the user domain identifier.
+   * @return whether mandatory two-factor authentication requires an enrollment.
    */
   public boolean isTwoFactorEnrollmentRequired(final String login, final String domainId) {
     if (!AUTHENTICATION_SETTINGS.getBoolean("twoFactorTotpEnabled", false) ||
@@ -540,9 +558,13 @@ public class AuthenticationService implements Authentication {
 
   /**
    * Starts a TOTP enrollment for a user whose password has already been authenticated.
+   *
+   * @param login the password-authenticated user login.
+   * @param domainId the user domain identifier.
+   * @return the pending authenticator configuration.
+   * @throws AuthenticationException if the authenticated user cannot be resolved.
    */
-  public org.silverpeas.core.security.authentication.twofactor.model.TwoFactorAuthentication
-      startTwoFactorEnrollment(final String login, final String domainId)
+  public TwoFactorAuthentication startTwoFactorEnrollment(final String login, final String domainId)
       throws AuthenticationException {
     final AuthenticationCredential credential =
         AuthenticationCredential.newWithAsLogin(login).withAsDomainId(domainId);
@@ -552,6 +574,11 @@ public class AuthenticationService implements Authentication {
 
   /**
    * Confirms a mandatory TOTP enrollment and creates the final authentication token.
+   *
+   * @param login the password-authenticated user login.
+   * @param domainId the user domain identifier.
+   * @param code the code proving possession of the pending authenticator.
+   * @return the authentication token on success, or a pending second-factor response.
    */
   public AuthenticationResponse authenticateTwoFactorEnrollment(
       final String login, final String domainId, final String code) {
@@ -605,13 +632,13 @@ public class AuthenticationService implements Authentication {
 
   private int getUserId(final AuthenticationCredential credential) throws AuthenticationException {
     try (Connection connection = openConnection()) {
-      return getUserId(credential);
+      return getUserId(connection, credential);
     } catch (SQLException e) {
       throw new AuthenticationException("Unable to resolve the authenticated user", e);
     }
   }
 
- @Override
+  @Override
   public String getAuthToken(AuthenticationCredential credential) {
     String authKey = generateTokenFor(credential.getLogin());
     storeAuthenticationKey(credential.getLogin(), credential.getDomainId(), authKey);

@@ -56,13 +56,47 @@ import static org.silverpeas.core.web.rs.UserPrivilegeValidation.*;
 
 /**
  * An HTTP authentication mechanism for Silverpeas to allow users to consume the Silverpeas Web API.
+ * It implements the authentication process for any incoming HTTPs requests targeting a web resource
+ * in the Silverpeas Web API. This HTTP request can be as well an explicit
+ * authentication ask as a Silverpeas API consume. The HTTP request is expected either to contain
+ * the HTTP header {@code Authorization} valued with the authentication scheme and the user
+ * credentials as expected by the IETF RFC 2617 or to target a web resource URI with the query
+ * parameter {@code access_token} (see IETF RFC 6750).
+ * <p>
+ * Actually, Silverpeas supports for its web resources two HTTP authentication schemes: the
+ * {@code Basic} one (covered by the IETF RFC 2617) and the Bearer one (covered by the IETF RFC
+ * 6750). The API token of the users must be passed with the {@code Bearer} scheme to access the
+ * REST API of Silverpeas. Any other authentication schemes throws a {@link WebApplicationException}
+ * exception with the status {@link Response.Status#UNAUTHORIZED}.
+ * </p>
+ * <p>
+ * The two ways to authenticate with Silverpeas are for different purposes:
+ * </p>
+ * <ul>
+ *   <li>The authentication by credentials (carried by the {@code Basic} authentication scheme)
+ *   is for opening a session in Silverpeas in order to perform one or several Web API invocations.
+ *   The user behind will be then counted as a connected user.</li>
+ *   <li>The authentication by the API token (carried either by the query parameter
+ *   {@code access_token} or by the {@code Bearer} authentication scheme) is for a one-shot API
+ *   call and for doing it doesn't require a session to be opened. It is usually used by external
+ *   tools interacting with Silverpeas in the behalf of the user.</li>
+ * </ul>
+ * <p>
+ * The failure of the authentication throws a {@link WebApplicationException} exception with the
+ * status {@link Response.Status#UNAUTHORIZED}.
+ * </p>
+ * A successful password check can require a second factor. In that case no authenticated
+ * session is opened and the response is unauthorized until the challenge is completed.
+ *
+ * @author mmoquillon
  */
 @Service
 public class HTTPAuthentication {
 
   private static final Pattern AUTHORIZATION_PATTERN = Pattern.compile("(?i)^(Basic|Bearer) (.*)");
+  // the first ':' character is the separator according to the RFC 2617 in basic digest
   private static final Pattern AUTHENTICATION_PATTERN =
-      Pattern.compile("(?i)^\\s*(\\S+)\\s*@domain([0-9]+):(.+)$");
+      Pattern.compile("(?i)^\\s*(\\S+)\\s*@domain(\\d+):(.+)$");
 
   private static final Map<AuthenticationScheme, Function<AuthenticationContext, SessionInfo>>
       schemeHandlers = new EnumMap<>(AuthenticationScheme.class);
@@ -167,6 +201,7 @@ public class HTTPAuthentication {
     final String decodedCredentials =
         new String(StringUtil.fromBase64(context.getUserCredentials()), Charsets.UTF_8).trim();
 
+    // Getting expected parts of credentials
     Matcher matcher = AUTHENTICATION_PATTERN.matcher(decodedCredentials);
     final int credentialPartCount = 3;
     final int loginPart = 1;

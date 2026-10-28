@@ -31,6 +31,9 @@ public class AuthenticationTwoFactorRequiredException extends AuthenticationExce
 
   private static final long serialVersionUID = 1L;
 
+  /**
+   * Creates an exception indicating that a validated password still requires a second factor.
+   */
   public AuthenticationTwoFactorRequiredException() {
     super("Two-factor authentication is required");
   }
