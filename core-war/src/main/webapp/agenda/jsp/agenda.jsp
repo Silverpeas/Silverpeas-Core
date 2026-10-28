@@ -42,6 +42,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.kernel.bundle.LocalizationBundle" %>
 
 <%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
+<%@ taglib uri="silverpeas.tags.silverFunctions" prefix="silfn" %>
 <%@ include file="checkAgenda.jsp" %>
 
 <%
@@ -92,7 +93,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
 <!DOCTYPE html>
-<html>
+<html lang="${silfn:userLanguage(pageContext.request)}">
 <head>
 <title><%=generalMessage.getString("GML.popupTitle")%></title>
 <% if (StringUtil.isDefined(rssURL)) { %>

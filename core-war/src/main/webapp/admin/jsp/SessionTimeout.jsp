@@ -25,11 +25,12 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
+<%@ taglib uri="silverpeas.tags.silverFunctions" prefix="silfn" %>
 
 <c:url var="loginUrl" value="/Login"><c:param name="ErrorCode" value="3"/></c:url>
 
 <!DOCTYPE html>
-<html>
+<html lang="${silfn:userLanguage(pageContext.request)}">
 <head>
   <script type="text/javascript">
     function sessionExpired() {

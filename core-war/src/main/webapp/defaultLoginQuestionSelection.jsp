@@ -73,6 +73,10 @@
         this.action = '<c:url value="/CredentialsServlet/ValidateQuestion"/>';
         return true;
       });
+      $('#questionForm a.submit').on('click', function(event) {
+        event.preventDefault();
+        $('#questionForm').trigger('submit');
+      });
     });
   </script>
 </view:sp-head-part>
@@ -119,7 +123,7 @@
 
         <div class="submit">
           <p><input type="submit" style="width:0; height:0; border:0; padding:0"/>
-            <a href="#" class="submit" onclick="$('#questionForm').trigger('submit')"><span><span>OK</span></span></a>
+            <a href="#" class="submit"><span><span>OK</span></span></a>
           </p>
         </div>
       </div>

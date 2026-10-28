@@ -253,26 +253,32 @@ function notySetupRequestComplete(request) {
 }
 
 /**
+ * Logs the technical error returned by a JQuery Ajax call.
+ * @param jqXHR the request in error.
+ * @param errorThrown the textual part of the HTTP status, used when the response has no body.
+ */
+function notyLogAjaxError(jqXHR, errorThrown) {
+  let errorMsg = jqXHR.responseText;
+  if (!String(errorMsg || "").trim()) {
+    errorMsg = errorThrown;
+  }
+  window.console?.error('Silverpeas JQuery Ajax - ERROR - ' + errorMsg);
+}
+
+/**
  * Setup all JQuery Ajax call to handle returns of messages (or technical errors).
  */
 function notySetupAjaxMessages() {
-  const error = function (jqXHR, errorThrown) {
-    let errorMsg = jqXHR.responseText;
-    if (!String(errorMsg || "").trim()) {
-      errorMsg = errorThrown;
-    }
-    window.console?.error('Silverpeas JQuery Ajax - ERROR - ' + errorMsg);
-  };
   jQuery.ajaxSetup({
     error: function(jqXHR, textStatus, errorThrown) {
-      error.call(this, jqXHR, errorThrown);
+      notyLogAjaxError(jqXHR, errorThrown);
     },
     complete: function(jqXHR, textStatus) {
       notySetupRequestComplete.call(this, jqXHR);
     }
   });
   jQuery(document).on("ajaxError", function(event, jqXHR, settings, errorThrown) {
-    error.call(this, jqXHR, errorThrown);
+    notyLogAjaxError(jqXHR, errorThrown);
   });
   jQuery(document).on("ajaxComplete", function(event, jqXHR, settings) {
     notySetupRequestComplete.call(this, jqXHR);

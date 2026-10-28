@@ -47,7 +47,7 @@
     pageContext.setAttribute("doSynchro", doSynchro);
 %>
 <!DOCTYPE html>
-<html>
+<html lang="${silfn:userLanguage(pageContext.request)}">
   <head>
     <c:if test="${pageScope.doSynchro}">
       <meta http-equiv="refresh" content="<%=importSettings.getSynchroDelay() * 60%>; URL=<c:url value="/Ragenda/jsp/importCalendar" />"/>

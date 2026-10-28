@@ -23,6 +23,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 --%>
+<%@ taglib uri="silverpeas.tags.silverFunctions" prefix="silfn" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page language="java" contentType="text/html; charset=UTF-8"%>
@@ -30,7 +31,7 @@
 <%@ include file="checkAgenda.jsp" %>
 
 <!DOCTYPE html>
-<html>
+<html lang="${silfn:userLanguage(pageContext.request)}">
 <head>
 <title></title>
 <script type="text/javascript">

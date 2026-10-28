@@ -89,11 +89,11 @@
 
         <div class="submit">
           <p><input type="submit" style="width:0; height:0; border:0; padding:0"/>
-            <a href="#" class="submit" onclick="$('#changePwdForm').trigger('submit')"><span><span>OK</span></span></a>
+            <a href="#" class="submit"><span><span>OK</span></span></a>
           </p>
 
           <p>
-          <span class="passwordRules"><a href="#" onclick="$('#password').trigger('focus')">
+          <span class="passwordRules"><a href="#">
             <%=authenticationBundle.getString("authentication.password.showRules") %>
           </a></span>
           </p>
@@ -109,6 +109,14 @@
 <view:loadScript src="/util/javaScript/silverpeas-password.js" jsPromiseName="loadingPromise"/>
 <script type="text/javascript">
   loadingPromise.then(function() {
+    $('#changePwdForm a.submit').on('click', function(event) {
+      event.preventDefault();
+      $('#changePwdForm').trigger('submit');
+    });
+    $('.passwordRules a').on('click', function(event) {
+      event.preventDefault();
+      $('#password').trigger('focus');
+    });
     setTimeout(function() {
       $('#password').trigger('focus');
       handlePasswordForm({

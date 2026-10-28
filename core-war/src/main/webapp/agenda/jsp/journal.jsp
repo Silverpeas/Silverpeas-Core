@@ -34,6 +34,7 @@
 <%@ include file="checkAgenda.jsp" %>
 
 <%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
+<%@ taglib uri="silverpeas.tags.silverFunctions" prefix="silfn" %>
 
 <%
   String journalId = request.getParameter("JournalId");
@@ -69,7 +70,7 @@
 %>
 
 <!DOCTYPE html>
-<html>
+<html lang="${silfn:userLanguage(pageContext.request)}">
 <head>
 <title></title>
 <view:looknfeel withCheckFormScript="true"/>

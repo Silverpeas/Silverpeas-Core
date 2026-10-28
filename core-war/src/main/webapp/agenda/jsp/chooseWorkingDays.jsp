@@ -25,6 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
+<%@ taglib uri="silverpeas.tags.silverFunctions" prefix="silfn" %>
 <%@ include file="checkAgenda.jsp" %>
 <%!
 
@@ -137,7 +138,7 @@ Date 				endDate		= (Date) request.getAttribute("EndDate");
 List			 	holidays	= (List) request.getAttribute("HolidayDates");
 %>
 <!DOCTYPE html>
-<html>
+<html lang="${silfn:userLanguage(pageContext.request)}">
 <head>
 <title></title>
 <view:looknfeel/>

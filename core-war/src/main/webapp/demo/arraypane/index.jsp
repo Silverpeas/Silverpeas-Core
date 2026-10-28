@@ -30,6 +30,7 @@
 <%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view" %>
 <%@ taglib uri="jakarta.tags.functions" prefix="fn" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib uri="silverpeas.tags.silverFunctions" prefix="silfn" %>
 
 <%!
   private User createAccount(final String lastName, final String firstName, final UserAccessLevel userAccessLevel) {
@@ -56,7 +57,7 @@
 %>
 
 <!DOCTYPE html>
-<html>
+<html lang="${silfn:userLanguage(pageContext.request)}">
 <head>
   <title>Array panes Demo</title>
   <view:looknfeel/>

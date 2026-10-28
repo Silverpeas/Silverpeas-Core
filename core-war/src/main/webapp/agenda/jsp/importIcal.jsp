@@ -27,6 +27,7 @@
 
 <%@ include file="checkAgenda.jsp" %>
 <%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
+<%@ taglib uri="silverpeas.tags.silverFunctions" prefix="silfn" %>
 <%
 
 	SettingBundle settings = agenda.getSettings();
@@ -46,7 +47,7 @@
 %>
 
 <!DOCTYPE html>
-<html>
+<html lang="${silfn:userLanguage(pageContext.request)}">
 <head>
 <title><%=resources.getString("agenda.ImportIcalCalendar") %></title>
 <view:looknfeel/>

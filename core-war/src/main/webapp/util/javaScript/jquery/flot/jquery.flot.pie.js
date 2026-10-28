@@ -141,7 +141,7 @@ More detail and specific examples can be found in the included HTML file.
 		plot.hooks.processDatapoints.push(function(plot, series, data, datapoints) {
 			var options = plot.getOptions();
 			if (options.series.pie.show) {
-				processDatapoints(plot, series, data, datapoints);
+				processDatapoints(plot);
 			}
 		});
 
@@ -159,7 +159,7 @@ More detail and specific examples can be found in the included HTML file.
 			}
 		});
 
-		function processDatapoints(plot, series, datapoints) {
+		function processDatapoints(plot) {
 			if (!processed)	{
 				processed = true;
 				canvas = plot.getCanvas();
