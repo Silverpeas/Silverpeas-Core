@@ -51,6 +51,10 @@ public interface TrustedDeviceService {
   /**
    * Returns the remaining lifetime, in seconds, of a trusted-device token.
    * Returns zero when the token is unknown or expired.
+   *
+   * @param userId the Silverpeas user identifier.
+   * @param token the clear-text token received from the browser.
+   * @return the remaining lifetime in seconds, or zero when invalid.
    */
   long getRemainingLifetime(int userId, String token);
 

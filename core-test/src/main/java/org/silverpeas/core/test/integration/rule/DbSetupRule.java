@@ -217,7 +217,6 @@ public class DbSetupRule implements TestRule {
       }
     }
 
-
     Operation preparation = Operations.sequenceOf(tableCreation, dataSetLoading);
     DataSource dataSource = DataSourceProvider.getDataSource();
     DbSetup dbSetup = new DbSetup(new DataSourceDestination(dataSource), preparation);
@@ -409,7 +408,7 @@ public class DbSetupRule implements TestRule {
     if (theCurrentRuleInstance == null) {
       String message =
           "Calling getSafeConnection method requires that the test must use directly DbSetupRule " +
-          "or extends DataSetTest.\n";
+              "or extends DataSetTest.\n";
       message += "Maybe is the method called from a Thread instantiated from a Test method. " +
           "Please call instead getSafeConnectionFromDifferentThread method if it is the case.";
       Logger.getLogger(DbSetupRule.class.getName()).severe(message);
@@ -443,8 +442,8 @@ public class DbSetupRule implements TestRule {
   }
 
   /**
-   * Gets the actual data set in the database so that you can check information persisted in
-   * the data source according to the operations that were performed in the behaviour of the test.
+   * Gets the actual data set in the database so that you can check information persisted in the
+   * data source according to the operations that were performed in the behaviour of the test.
    * @param connection a connection to the database
    * @return the actual data set.
    */
@@ -498,32 +497,32 @@ public class DbSetupRule implements TestRule {
 
     public String getString(String columnName) {
       Object value = getValue(columnName);
-      if (value instanceof String) {
-        return (String) value;
+      if (value instanceof String string) {
+        return string;
       }
       return null;
     }
 
     public Date getDate(String columnName) {
       Object value = getValue(columnName);
-      if (value instanceof Date) {
-        return (Date) value;
+      if (value instanceof Date date) {
+        return date;
       }
       return null;
     }
 
     public Integer getInteger(String columnName) {
       Object value = getValue(columnName);
-      if (value instanceof Number) {
-        return ((Number) value).intValue();
+      if (value instanceof Number number) {
+        return number.intValue();
       }
       return null;
     }
 
     public Long getLong(String columnName) {
       Object value = getValue(columnName);
-      if (value instanceof Number) {
-        return ((Number) value).longValue();
+      if (value instanceof Number number) {
+        return number.longValue();
       }
       return null;
     }

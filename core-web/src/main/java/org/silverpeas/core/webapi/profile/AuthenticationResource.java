@@ -69,6 +69,26 @@ import java.net.URLEncoder;
 
 /**
  * A REST-based Web service to authenticate a user in Silverpeas.
+ * <p>
+ * If the authentication matches the {@code Basic} authentication scheme, then a session is opened
+ * in Silverpeas for the user behind the request and this session can be used both for browsing
+ * the Silverpeas web portal or to access the REST API by the same client. If the authentication
+ * matches a {@code Bearer} authentication scheme, then a session is created just for the HTTP
+ * request. Latter is hence pertinent only to check the the user can access the REST API of
+ * Silverpeas.
+ * </p>
+ * <p>
+ * This service is only interesting for opening an HTTP session before performing several tasks
+ * in Silverpeas. It avoids to authenticate the user by its login and password for each HTTP request
+ * against the REST API of Silverpeas. Nevertheless, the recommended (and better) way to consume the
+ * REST API is to use the Bearer authentication scheme with the API token of the user; the token
+ * can be passed in each request against the REST API in the {@code Authorization} HTTP header
+ * without passing through the heaver authentication mechanism by user credentials
+ * (login/domain/password).
+ * </p>
+ * When a second factor is required, password authentication creates a pending challenge instead
+ * of opening a session. The enrollment, TOTP, recovery-code or trusted-device endpoints complete
+ * that challenge before an authenticated session is opened.
  */
 @WebService
 @Path(AuthenticationResource.PATH)
@@ -95,6 +115,14 @@ public class AuthenticationResource extends RESTWebService {
   @Inject
   private QrCodeGenerator qrCodeGenerator;
 
+  /**
+   * Authenticates the credentials carried by the {@code Authorization} header. An existing
+   * authenticated session is reused. Basic authentication opens a session only after every
+   * required factor has been validated; otherwise a pending second-factor challenge is returned.
+   *
+   * @return the authenticated profile, or a 401 response identifying the pending challenge.
+   * @throws WebApplicationException if authentication fails or the backend is unavailable.
+   */
   @Operation(summary = "Authenticates the user from his credentials passed through the " +
       "Authorization HTTP header, opens a new HTTP session in Silverpeas in the case of a Basic " +
       "authentication scheme, or asks for the second authentication factor.")
@@ -137,6 +165,13 @@ public class AuthenticationResource extends RESTWebService {
         .build();
   }
 
+  /**
+   * Completes a password-authenticated challenge with a TOTP or a single-use recovery code.
+   *
+   * @param request the code and whether the browser should become a trusted device.
+   * @return the authenticated profile, 400 for an empty code, or 401 for an invalid challenge.
+   * @throws AuthenticationException if trusted-device registration fails.
+   */
   @Operation(summary = "Completes a pending REST authentication with a TOTP or recovery code.")
   @ApiResponse(responseCode = "200", description = "The profile of the authenticated user.",
       content = @Content(schema = @Schema(implementation = UserProfileEntity.class)))
@@ -189,6 +224,11 @@ public class AuthenticationResource extends RESTWebService {
     return response.build();
   }
 
+  /**
+   * Completes a pending challenge using the trusted-device cookie and rotates that cookie.
+   *
+   * @return the authenticated profile, or 401 when the challenge or cookie is invalid.
+   */
   @Operation(summary = "Completes a pending REST authentication with a trusted device.")
   @ApiResponse(responseCode = "200", description = "The profile of the authenticated user.",
       content = @Content(schema = @Schema(implementation = UserProfileEntity.class)))
@@ -245,6 +285,18 @@ public class AuthenticationResource extends RESTWebService {
             challenge.getLogin(), challenge.getDomainId())).orElse(null);
   }
 
+  /**
+   * Starts enrollment for the user whose password was validated in the current HTTP session.
+   * Reuses an existing pending secret when enrollment is reopened.
+   *
+   * @return the secret and QR code with caching disabled, 401 without a pending challenge,
+   * or 409 if two-factor authentication is already enabled.
+   */
+  @Operation(summary = "Starts or resumes authenticator enrollment for a pending authentication.")
+  @ApiResponse(responseCode = "200", description = "The pending secret and Base64-encoded QR code.",
+      content = @Content(schema = @Schema(implementation = EnrollmentEntity.class)))
+  @ApiResponse(responseCode = "401", description = "No pending password authentication.")
+  @ApiResponse(responseCode = "409", description = "Two-factor authentication is already enabled.")
   @POST
   @Path("enrollment")
   @Produces(MediaType.APPLICATION_JSON)
@@ -268,6 +320,20 @@ public class AuthenticationResource extends RESTWebService {
         .header("Cache-Control", "no-store").build();
   }
 
+  /**
+   * Confirms the pending enrollment, generates recovery codes and opens an authenticated session.
+   * The clear-text recovery codes are returned only once and must be saved by the user.
+   *
+   * @param request the authenticator code and whether the browser should become trusted.
+   * @return the profile and recovery codes with caching disabled, 400 for an empty code,
+   * or 401 if the challenge or authenticator code is invalid.
+   * @throws AuthenticationException if trusted-device registration fails.
+   */
+  @Operation(summary = "Confirms authenticator enrollment and returns single-use recovery codes.")
+  @ApiResponse(responseCode = "200", description = "The authenticated profile and recovery codes.",
+      content = @Content(schema = @Schema(implementation = EnrollmentConfirmationEntity.class)))
+  @ApiResponse(responseCode = "400", description = "The authenticator code is missing.")
+  @ApiResponse(responseCode = "401", description = "No pending authentication or invalid code.")
   @POST
   @Path("enrollment/confirm")
   @Consumes(MediaType.APPLICATION_JSON)
@@ -306,54 +372,128 @@ public class AuthenticationResource extends RESTWebService {
         recoveryCodes)).header("Cache-Control", "no-store").build();
   }
 
+  /**
+   * JSON request carrying a second-factor code and the optional trusted-browser preference.
+   */
   public static class TwoFactorCodeRequest {
     private String code;
     private boolean trustDevice;
 
+    /**
+     * Creates an empty request for JSON deserialization.
+     */
     public TwoFactorCodeRequest() {
     }
 
+    /**
+     * Gets the code submitted for validation.
+     *
+     * @return the TOTP or recovery code supplied by the user.
+     */
     public String getCode() {
       return code;
     }
 
+    /**
+     * Sets the code submitted for validation.
+     *
+     * @param code the TOTP or recovery code supplied by the user.
+     */
     public void setCode(final String code) {
       this.code = code;
     }
 
+    /**
+     * Indicates whether this browser should be remembered.
+     *
+     * @return whether a trusted-device cookie should be issued after successful authentication.
+     */
     public boolean isTrustDevice() {
       return trustDevice;
     }
 
+    /**
+     * Sets the trusted-browser preference.
+     *
+     * @param trustDevice whether to remember this browser after successful authentication.
+     */
     public void setTrustDevice(final boolean trustDevice) {
       this.trustDevice = trustDevice;
     }
   }
 
+  /**
+   * Pending enrollment details returned only to the password-authenticated user, without caching.
+   */
   public static class EnrollmentEntity {
     private final String secret;
     private final String qrCode;
 
+    /**
+     * Creates the pending enrollment response.
+     *
+     * @param secret the Base32-encoded authenticator secret in clear text.
+     * @param qrCode the Base64-encoded PNG containing the authenticator provisioning URI.
+     */
     public EnrollmentEntity(String secret, String qrCode) {
       this.secret = secret;
       this.qrCode = qrCode;
     }
 
-    public String getSecret() { return secret; }
-    public String getQrCode() { return qrCode; }
+    /**
+     * Gets the secret to configure in the authenticator application.
+     *
+     * @return the Base32-encoded secret to import into the authenticator.
+     */
+    public String getSecret() {
+      return secret;
+    }
+
+    /**
+     * Gets the QR code for importing the enrollment into an authenticator.
+     *
+     * @return the Base64-encoded provisioning QR code as a PNG.
+     */
+    public String getQrCode() {
+      return qrCode;
+    }
   }
 
+  /**
+   * Successful enrollment response containing recovery codes available only at generation time.
+   */
   public static class EnrollmentConfirmationEntity {
     private final UserProfileEntity profile;
     private final List<String> recoveryCodes;
 
+    /**
+     * Creates the successful enrollment response.
+     *
+     * @param profile the profile of the newly authenticated user.
+     * @param recoveryCodes the clear-text single-use recovery codes to save securely.
+     */
     public EnrollmentConfirmationEntity(UserProfileEntity profile, List<String> recoveryCodes) {
       this.profile = profile;
       this.recoveryCodes = recoveryCodes;
     }
 
-    public UserProfileEntity getProfile() { return profile; }
-    public List<String> getRecoveryCodes() { return recoveryCodes; }
+    /**
+     * Gets the authenticated user profile.
+     *
+     * @return the profile of the authenticated user.
+     */
+    public UserProfileEntity getProfile() {
+      return profile;
+    }
+
+    /**
+     * Gets the single-use recovery codes generated by this enrollment.
+     *
+     * @return the clear-text recovery codes, returned only once.
+     */
+    public List<String> getRecoveryCodes() {
+      return recoveryCodes;
+    }
   }
 
   private String getTrustedDeviceToken() {
@@ -407,16 +547,29 @@ public class AuthenticationResource extends RESTWebService {
     return null;
   }
 
+  /**
+   * JSON response indicating that password authentication still requires a second factor.
+   */
   @XmlRootElement
   public static class AuthenticationChallengeEntity {
     private String status;
 
+    /**
+     * Creates the pending second-factor response.
+     *
+     * @return the challenge with the two-factor-required status.
+     */
     public static AuthenticationChallengeEntity twoFactorRequired() {
       AuthenticationChallengeEntity entity = new AuthenticationChallengeEntity();
       entity.status = AuthenticationResponse.Status.TWO_FACTOR_REQUIRED.name();
       return entity;
     }
 
+    /**
+     * Gets the authentication status to present to the client.
+     *
+     * @return the name of the pending authentication status.
+     */
     public String getStatus() {
       return status;
     }
