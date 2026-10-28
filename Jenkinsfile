@@ -17,6 +17,17 @@ pipeline {
     }
   }
   stages {
+    stage('JavaScript tests') {
+      agent {
+        docker {
+          image 'node:22-alpine'
+          reuseNode true
+        }
+      }
+      steps {
+        sh 'node --test core-war/src/test/javascript/*.test.cjs'
+      }
+    }
     stage('Build') {
       steps {
         script {

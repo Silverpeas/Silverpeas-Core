@@ -41,7 +41,7 @@ function page(status, noCode = false) {
   const link = {
     href: '/LinkFile/Key/token/shared.html',
     dataset: { noCode: String(noCode), filename: 'shared.html', lockedError: 'locked',
-      downloadError: 'invalid', verificationError: 'error' },
+      downloadError: 'invalid', verificationError: 'error', confirmLabel: 'Bestätigen' },
     addEventListener: (_, listener) => { click = listener; }
   };
   const download = { click: () => { downloaded = true; }, remove: () => {} };
@@ -67,7 +67,8 @@ function page(status, noCode = false) {
   let prevented = false;
   click({ preventDefault: () => { prevented = true; } });
   return { error, input, download, wasDownloaded: () => downloaded, wasFetched: () => fetched,
-    wasPrevented: () => prevented, confirm: () => options.buttons[0].click() };
+    wasPrevented: () => prevented, confirmLabel: () => options.buttons[0].text,
+    confirm: () => options.buttons[0].click() };
 }
 
 async function settle() {
@@ -137,4 +138,11 @@ test('repository code errors use hidden and become visible after rejection', asy
   await settle();
   assert.equal(error.hidden, false);
   assert.equal(error.textContent, 'sharing.security.invalid');
+});
+
+test('the confirmation button uses the label supplied by the localized JSP', () => {
+  const jsp = readFileSync(resolve(__dirname,
+      '../../main/webapp/sharing/jsp/displayTicketInfo.jsp'), 'utf8');
+  assert.match(jsp, /data-confirm-label="<fmt:message key='GML\.ok'\/>"/);
+  assert.equal(page(200).confirmLabel(), 'Bestätigen');
 });
