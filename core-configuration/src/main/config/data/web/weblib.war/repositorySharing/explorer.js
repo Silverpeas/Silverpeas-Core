@@ -166,7 +166,7 @@ var href = window.location.href;
 				var attachments = displayAttachments(publication.attachments);
 				var li = "";
 				if (attachments.length > 0) {
-					li = "<li class=\"publication\"><span class=\"name\">"+publication.name+"</span><p class=\"description\">"+publication.description.replace("\n", "<br/>")+"</p>";
+					li = "<li class=\"publication\"><span class=\"name\">"+publication.name+"</span><p class=\"description\">"+publication.description.replace(/\r?\n/g, "<br/>")+"</p>";
 					li += attachments;
 					li += "</li>";
 				}

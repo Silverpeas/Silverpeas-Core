@@ -59,7 +59,7 @@ var href = window.location.href;
           try {
             $(".publiName").html(publication.name);
             if (publication.description) {
-              $(".publiDesc").html(publication.description.replace("\n", "<br/>"));
+              $(".publiDesc").html(publication.description.replace(/\r?\n/g, "<br/>"));
             } else {
               $(".publiDesc").remove();
             }
@@ -105,7 +105,7 @@ var href = window.location.href;
             a.appendTo(li);
             if (attachment.description) {
               var p = $("<p>").addClass("description").html(
-                      attachment.description.replace("\n", "<br/>"));
+                      attachment.description.replace(/\r?\n/g, "<br/>"));
               p.appendTo(li);
             }
 
