@@ -70,14 +70,11 @@ public abstract class AbstractFileSender extends HttpServlet {
 
   protected void displayWarningHtmlCode(HttpServletResponse res) throws IOException {
     OutputStream out = res.getOutputStream();
-    StringReader sr = new StringReader(getSettingBunde().getString("warning"));
-    try {
+    try(StringReader sr = new StringReader(getSettingBunde().getString("warning"))) {
       IOUtils.copy(sr, out, Charsets.UTF_8);
       out.flush();
     } catch (IOException e) {
       SilverLogger.getLogger(this).error("warning properties", e);
-    } finally {
-      IOUtils.closeQuietly(sr);
     }
   }
 
