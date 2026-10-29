@@ -45,7 +45,7 @@
       $.password.rules = policy.rules;
       $.password.nbMatchingCombinedRules = policy.nbMatchingCombinedRules;
       $.password.combinedRules = policy.combinedRules;
-      $.password.extraRuleMessage = $.trim(policy.extraRuleMessage);
+      $.password.extraRuleMessage = (policy.extraRuleMessage || "").trim();
     }));
   }
   const __uiReady = Promise.all(__uiPromises);
@@ -132,7 +132,7 @@
         {value : $target.val()}).then(function(passwordCheck) {
 
           // Ajax concurrency
-          $(document).ready(function() {
+          $(function() {
 
             // All rules are verified by default
             $box.find('li').each(function() {

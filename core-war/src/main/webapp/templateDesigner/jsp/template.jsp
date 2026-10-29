@@ -36,8 +36,8 @@ PagesContext		context	= (PagesContext) request.getAttribute("context");
 context.setDesignMode(true);
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 <head>
 <view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
 <view:includePlugin name="popup"/>
@@ -45,7 +45,7 @@ context.setDesignMode(true);
 <script type="text/javascript">
 function deleteField(fieldName) {
   $("#templateForm #fieldName").val(fieldName);
-  $("#templateForm").submit();
+  $("#templateForm").trigger('submit');
 }
 
 function editField(fieldName,displayer) {
@@ -70,7 +70,7 @@ function openFieldWindow(url, displayer) {
 }
 
 <% if (context.isDesignMode()) { %>
-$(document).ready(function(){
+$(function(){
 	$(".fields").sortable({
 		opacity: 0.4,
 		handle: 'label',

@@ -26,8 +26,8 @@
 		$('dl:not(.ui-sortable-helper)', sortable)
 			.removeClass('first').removeClass('last')
 			.find('.up, .down').removeClass('disabled').end()
-			.filter(':first').addClass('first').find('.up').addClass('disabled').end().end()
-			.filter(':last').addClass('last').find('.down').addClass('disabled').end().end();
+			.first().addClass('first').find('.up').addClass('disabled').end().end()
+			.last().addClass('last').find('.down').addClass('disabled').end().end();
 
 		//alert(sortable.id); //thin or thick
 
@@ -64,8 +64,8 @@
 		var tpl = '<dl id="{id}" class="sort"><dt><span class="portletName">{name}</span>' + options + '</dt><dd>Chargement en cours...</dd></dl>';
 		var html = tpl.replace(/{id}/g, portletId).replace(/{name}/g, portletName);
 
-		sortable.prepend(html).sortable('refresh').find('a.up, a.down').bind('click', moveUpDown).end()
-			.find('a.remove').bind('click', removeItem);
+		sortable.prepend(html).sortable('refresh').find('a.up, a.down').on('click', moveUpDown).end()
+			.find('a.remove').on('click', removeItem);
 
 		updateUpDown(sortable, '1');
 
@@ -81,7 +81,7 @@
 
 		//TODO : enlever le hard coding
 		$.post("http://localhost:8000/silverpeas/admin/jsp/"+url, function(data){
-			$("#column0 > dl:first > dd").html(data);
+			$("#column0 > dl").first().children("dd").html(data);
 		});
 
 		//remove portlet from dialog
@@ -109,7 +109,7 @@
 		$("#dialog > ul").prepend(html);
 
 		//rebind event
-		$('a.choose').bind('click', addItem);
+		$('a.choose').on('click', addItem);
 
 		//remove item from layout
 		$(this).parents('.sort').remove();
@@ -182,7 +182,7 @@
 			 });
 	}
 
-	$(document).ready(function(){
+	$(function(){
 		//alert('ready');
 		var els = ['#thick', '#thin'];
 		var $els = $(els.toString());
@@ -190,10 +190,10 @@
 		//$('h2', $els.slice(0,-1)).append('<span class="options"><a class="add">add</a></span>');
 		//$('dt', $els).append('<span class="options"><a class="up" title="Up">up</a><a class="down" title="Down">down</a><a class="remove" title="Remove">X</a></span>');
 
-		//$('a.open').bind('click', openDialog);
-		//$('a.up, a.down').bind('click', moveUpDown);
-		//$('a.remove').bind('click', removeItem);
-		//$('a.choose').bind('click', addItem);
+		//$('a.open').on('click', openDialog);
+		//$('a.up, a.down').on('click', moveUpDown);
+		//$('a.remove').on('click', removeItem);
+		//$('a.choose').on('click', addItem);
 
 		//$els.each(function(){
 		//	updateUpDown(this, '0');
@@ -219,7 +219,7 @@
 
 	});
 
-	$(window).bind('load',function(){
+	$(window).on('load',function(){
 		//alert('load');
 		setTimeout(function(){
 			$('#overlay').fadeOut(function(){

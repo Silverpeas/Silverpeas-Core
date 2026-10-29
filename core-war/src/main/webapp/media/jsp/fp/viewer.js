@@ -106,14 +106,14 @@
     });
     loadFlexPaperHandlers();
 
-    $viewer.bind('onDocumentLoaded', function(e,totalPages){
+    $viewer.on('onDocumentLoaded', function(e,totalPages){
       if (!__docViewApi) {
         __docViewApi = getDocViewer('viewer');
       }
     });
 
     // Function to navigate between images
-    jQuery(document).bind('keydown', function(e) {
+    jQuery(document).on('keydown', function(e) {
       var keyCode = Number(e.keyCode);
       if (__docViewApi && 37 <= keyCode && keyCode <= 40) {
         e.preventDefault();

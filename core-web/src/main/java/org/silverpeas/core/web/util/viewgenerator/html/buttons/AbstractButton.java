@@ -112,7 +112,7 @@ public abstract class AbstractButton implements Button {
         theAction = theAction.substring(javascriptMatcher.group(1).length());
         javascriptSpecif = javascriptMatcher.group(2) + ":" + javascriptMatcher.group(3) + "=";
       } else {
-        theAction = "jQuery('<form>', {'method':'GET', 'action':'" + theAction + "'}).submit();";
+        theAction = "jQuery('<form>', {'method':'GET', 'action':'" + theAction + "'}).trigger('submit');";
         theAction = unEscapeForMessageFormatting(theAction);
         javascriptSpecif = "javascript:onClick=";
       }

@@ -57,6 +57,7 @@
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view" %>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
+<%@ taglib uri="silverpeas.tags.silverFunctions" prefix="silfn" %>
 
 <%
   Date month1 = new Date();
@@ -87,7 +88,8 @@
 <c:set var="periodBarChart" value="<%=periodBarChart%>"/>
 <c:set var="pieChart" value="<%=pieChart%>"/>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="${silfn:userLanguage(pageContext.request)}">
 <head>
   <title>Demo charts</title>
   <view:looknfeel/>

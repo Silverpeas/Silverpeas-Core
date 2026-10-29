@@ -254,7 +254,7 @@
           } else {
             $deletionForm.attr("action", "userRemove");
           }
-          $deletionForm.submit();
+          $deletionForm.trigger('submit');
         }
       });
     }
@@ -263,7 +263,7 @@
       jQuery.popup.confirm("${labelDeleteAvatar}", function() {
         const $deletionForm = jQuery('#deletionForm');
         $deletionForm.attr("action", "userAvatarDelete");
-        $deletionForm.submit();
+        $deletionForm.trigger('submit');
       });
     }
 
@@ -321,7 +321,7 @@
       }
     }
 
-    $(document).ready(function() {
+    $(function() {
       // Use the each() method to gain access to each elements attributes
       $('a[rel]', $('.qTipCompliant')).each(function() {
         $(this).qtip({

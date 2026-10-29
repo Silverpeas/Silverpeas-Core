@@ -67,7 +67,7 @@
         $("#channelManager #channelId").html(options);
 
         $("#channelManager #txtAddress").val("");
-        $("#channelManager #txtNotifName").focus();
+        $("#channelManager #txtNotifName").trigger('focus');
 
         document.channelManagerForm.Action.value = "Add";
 
@@ -84,7 +84,7 @@
 
         $("#channelManager #txtNotifName").val(txtNotifName);
         $("#channelManager #txtAddress").val(txtAddress);
-        $("#channelManager #txtNotifName").focus();
+        $("#channelManager #txtNotifName").trigger('focus');
 
         document.channelManagerForm.Action.value = "Update";
         document.channelManagerForm.id.value = id;

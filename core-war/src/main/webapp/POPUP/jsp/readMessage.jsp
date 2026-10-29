@@ -60,8 +60,8 @@
     <c:set var="popupMsgSource" value="${(popupMsg.source eq popupMsg.senderName) ? '' : popupMsg.source}"/>
     <c:set var="answerAllowed" value="${popupMsg.answerAllowed}"/>
 
-  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-  <html xmlns="http://www.w3.org/1999/xhtml">
+  <!DOCTYPE html>
+  <html>
     <head>
       <title><fmt:message key="GML.popupTitle"/></title>
       <view:looknfeel/>
@@ -77,8 +77,8 @@
         }
         </c:if>
 
-        $(document).ready(function() {
-          $('#messageAux').focus();
+        $(function() {
+          $('#messageAux').trigger('focus');
         });
       </script>
     </head>

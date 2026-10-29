@@ -114,7 +114,7 @@
   </style>
 
   <script type="text/javascript">
-    $(document).ready(function() {
+    $(function() {
       const $window = $(window);
       const $mediaContainer = $('<div>', {
         'id' : 'mediaContainer'

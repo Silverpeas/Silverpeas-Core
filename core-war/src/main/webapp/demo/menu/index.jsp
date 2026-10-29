@@ -28,7 +28,7 @@
 <%@ taglib uri="jakarta.tags.fmt" prefix="fmt"%>
 <%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view" %>
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!DOCTYPE html>
 <html>
 <head>
 <view:looknfeel />
@@ -75,7 +75,7 @@
                 $(".sp-personal-not-used-menu-root").menu('personalNotUsed',
                     personalMenuOptions);
 
-                $("#componentIdOK").click(function() {
+                $("#componentIdOK").on('click', function() {
                   $.menu.reverseExpand($('#componentId').val());
                 });
 

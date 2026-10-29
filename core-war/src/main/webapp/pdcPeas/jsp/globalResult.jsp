@@ -158,8 +158,8 @@ String facetToggleShow = resource.getString("pdcPeas.facet.toggle.show");
 String facetToggleHide = resource.getString("pdcPeas.facet.toggle.hide");
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 <head>
 <title><%=resource.getString("GML.popupTitle")%><c:out value="${anotherUserId}"></c:out></title>
 <view:looknfeel />
@@ -375,7 +375,7 @@ function markAsRead(id) {
 		location.href = "<%=m_context%>/Rprofil/jsp/Main?userId="+userId;
 	}
 
-	$(document).ready(function(){
+	$(function(){
 		//used for keywords autocompletion
 	    <%  if(autoCompletion){ %>
 			        $("#query").autocomplete({
@@ -384,7 +384,7 @@ function markAsRead(id) {
       });
 	    <%}%>
 
-    $("#query").keypress(function(e) {
+    $("#query").on('keypress', function(e) {
       if (e.which == 13) {
         e.preventDefault();
         sendQuery();

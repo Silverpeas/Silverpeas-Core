@@ -155,14 +155,14 @@
     }).addClass('userzoom-tooltip-interaction-accessProfil').append($('<span>').append(__getLabel('myProfile.tab.profile')))).
     append($('<a>', {
       href: '#'
-    }).addClass('userzoom-tooltip-interaction-accessNotification notification').append($('<span>').append(__getLabel('ToContact'))).click(function() {
+    }).addClass('userzoom-tooltip-interaction-accessNotification notification').append($('<span>').append(__getLabel('ToContact'))).on('click', function() {
       sp.messager.open('', {recipientUsers: user.id, recipientEdition: false});
       $.userZoom.clear();
     }));
     if (user.chatEnabled && chatEnabled) {
       interactionBox.addClass('chat-enabled').append($('<a>', {
         href: '#'
-      }).addClass('userzoom-tooltip-interaction-accessChat' + disabledCss).append($('<span>').append(__getLabel('chat'))).click(function() {
+      }).addClass('userzoom-tooltip-interaction-accessChat' + disabledCss).append($('<span>').append(__getLabel('chat'))).on('click', function() {
         chatWith(user);
         $.userZoom.clear();
       }));
@@ -361,7 +361,7 @@
    */
   function render(target, user) {
     let status = connectionStatus(user);
-    target.append('&nbsp;').append($('<span>').addClass('userzoom-infoConnection').append(status)).hover(function() {
+    target.append('&nbsp;').append($('<span>').addClass('userzoom-infoConnection').append(status)).on('mouseenter', function() {
       if (__isRenderingInProgress(target)) {
         return;
       }
@@ -384,11 +384,11 @@
           __markRenderingDone(target);
         }.bind(this));
       }, 750);
-    }, function(){
+    }).on('mouseleave', function(){
       __markRenderingDone(target);
     });
     if (!settingHandlersDone) {
-      $(document).mousedown(function(event) {
+      $(document).on('mousedown', function(event) {
         if ($.userZoom.currentTooltip !== null && $.userZoom.currentTooltip !== undefined) {
           let eventTarget = $(event.target);
           if (!eventTarget.hasClass('userzoom-tooltip') &&
@@ -397,7 +397,7 @@
           }
         }
       });
-      $(document).mousemove(function(event) {
+      $(document).on('mousemove', function(event) {
         currentTarget = event.target;
       });
       settingHandlersDone = true;
@@ -434,7 +434,7 @@
 function activateUserZoom() {
   //activateMessageMe();
   activateRelationShip();
-  jQuery(document).ready(function() {
+  jQuery(function() {
     jQuery('.userToZoom').each(function() {
       let $this = jQuery(this);
       if (!$this.data('userZoom')) {

@@ -27,6 +27,7 @@
 <%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
 <%@ include file="checkPersonalization.jsp" %>
 
+<!DOCTYPE html>
 <HTML>
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>

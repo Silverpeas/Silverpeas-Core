@@ -2070,6 +2070,25 @@ if (typeof window.sp === 'undefined') {
       });
     },
     /**
+     * Loads the script at the given source once into the current document: a script already
+     * loaded, by this method or by a script element, is not loaded again. Loading again a script
+     * would otherwise execute it again, which is forbidden for those declaring top-level
+     * constants.
+     * @param src the source of the script.
+     * @return a promise resolved once the script is loaded.
+     */
+    loadScriptOnce : function(src) {
+      const registry = window.__sp_loadedScripts = window.__sp_loadedScripts || {};
+      const key = new URL(src, document.baseURI).href;
+      if (!registry[key]) {
+        const alreadyIn = Array.from(document.scripts).some(function(script) {
+          return script.src === key;
+        });
+        registry[key] = alreadyIn ? Promise.resolve() : sp.loadScript(src);
+      }
+      return registry[key];
+    },
+    /**
      * @deprecated use instead sp.ajaxRequest(...).loadTarget(...)
      */
     load : function(targetOrArrayOfTargets, ajaxRequest, isGettingFullHtmlContent) {
@@ -2119,6 +2138,36 @@ if (typeof window.sp === 'undefined') {
        */
       parseHtmlString : function (htmlAsString) {
         return new DOMParser().parseFromString(htmlAsString, 'text/html');
+      },
+      /**
+       * Empties the specified frame. Unlike about:blank, which has no DOCTYPE and is then reported
+       * by the browser as rendered in quirks mode, the frame displays an empty document in standards
+       * mode.
+       * @param {HTMLIFrameElement} frame the frame to empty.
+       */
+      blankFrame : function(frame) {
+        frame.setAttribute('srcdoc', '<!DOCTYPE html><title></title>');
+      },
+      /**
+       * Loads the specified URL into the specified frame, whether it was emptied or not with
+       * blankFrame: as the content given by the srcdoc attribute takes precedence over the URL
+       * given by the src attribute, the srcdoc attribute is removed once the URL is set, which
+       * navigates the frame to the URL.
+       * @param {HTMLIFrameElement} frame the frame into which the URL has to be loaded.
+       * @param {string} url the URL to load.
+       */
+      loadFrame : function(frame, url) {
+        frame.setAttribute('src', url);
+        frame.removeAttribute('srcdoc');
+      },
+      /**
+       * Is the specified document an empty document of a frame, either the initial about:blank
+       * one or the one set by blankFrame?
+       * @param {Document} doc a document.
+       * @returns {boolean} true if the document is an empty frame document, false otherwise.
+       */
+      isBlankDocument : function(doc) {
+        return doc.URL === 'about:blank' || doc.URL === 'about:srcdoc';
       },
       /**
        * Inserts dynamically css styles into the DOM.
@@ -2970,8 +3019,8 @@ if (typeof window.sp === 'undefined') {
                   e.stopPropagation();
                   e.preventDefault();
                 };
-                jQuery(elt).bind('mousedown', muteEvent);
-                jQuery(elt).bind('mouseup', muteEvent);
+                jQuery(elt).on('mousedown', muteEvent);
+                jQuery(elt).on('mouseup', muteEvent);
                 $help.spSearchHelpApi = spSearchHelpApi;
               }));
         }

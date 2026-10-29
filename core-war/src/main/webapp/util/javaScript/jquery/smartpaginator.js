@@ -39,18 +39,18 @@
                     dataElements = $('' + settings.dataelement + '', dataContainer);
                 }
                 var list = $('<ul/>');
-                var btnPrev = $('<div/>').append(settings.prev).click(function () { currentPage = parseInt(list.find('li a.active').text()) - 1; navigate(--currentPage); }).addClass('btn');
-                var btnNext = $('<div/>').append(settings.next).click(function () { currentPage = parseInt(list.find('li a.active').text()); navigate(currentPage); }).addClass('btn');
-                var btnFirst = $('<div/>').append(settings.first).click(function () { currentPage = 0; navigate(0); }).addClass('btn');
-                var btnLast = $('<div/>').append(settings.last).click(function () { currentPage = totalpages - 1; navigate(currentPage); }).addClass('btn');
-                var inputPage = $('<input/>').attr('type', 'text').keydown(function (e) {
+                var btnPrev = $('<div/>').append(settings.prev).on('click', function () { currentPage = parseInt(list.find('li a.active').text()) - 1; navigate(--currentPage); }).addClass('btn');
+                var btnNext = $('<div/>').append(settings.next).on('click', function () { currentPage = parseInt(list.find('li a.active').text()); navigate(currentPage); }).addClass('btn');
+                var btnFirst = $('<div/>').append(settings.first).on('click', function () { currentPage = 0; navigate(0); }).addClass('btn');
+                var btnLast = $('<div/>').append(settings.last).on('click', function () { currentPage = totalpages - 1; navigate(currentPage); }).addClass('btn');
+                var inputPage = $('<input/>').attr('type', 'text').on('keydown', function (e) {
                     if (isTextSelected(inputPage)) inputPage.val('');
                     if (e.which >= 48 && e.which < 58) {
                         var value = parseInt(inputPage.val() + (e.which - 48));
                         if (!(value > 0 && value <= totalpages)) e.preventDefault();
                     } else if (!(e.which == 8 || e.which == 46)) e.preventDefault();
                 });
-                var btnGo = $('<input/>').attr('type', 'button').attr('value', settings.go).addClass('btn').click(function () { if (inputPage.val() == '') return false; else { currentPage = parseInt(inputPage.val()) - 1; navigate(currentPage); } });
+                var btnGo = $('<input/>').attr('type', 'button').attr('value', settings.go).addClass('btn').on('click', function () { if (inputPage.val() == '') return false; else { currentPage = parseInt(inputPage.val()) - 1; navigate(currentPage); } });
                 container.append(btnFirst).append(btnPrev).append(list).append(btnNext).append(btnLast).append($('<div/>').addClass('short').append(inputPage).append(btnGo));
                 if (settings.display == 'single') {
                     btnGo.css('display', 'none');
@@ -85,12 +85,12 @@
                                     .append($('<a>').attr('id', (i + 1)).addClass(settings.theme).addClass('normal')
                                     .attr('href', 'javascript:void(0)')
                                     .text(i + 1))
-                                    .click(clickFunc));
+                                    .on('click', clickFunc));
                     }
                     showLabels(aStartPage);
                     inputPage.val((aStartPage + 1));
                     list.find('li a').addClass(settings.theme).removeClass('active');
-                    list.find('li:eq(0) a').addClass(settings.theme).addClass('active');
+                    list.find('li').first().find('a').addClass(settings.theme).addClass('active');
                     //set width of paginator
                     /*var sW = list.find('li:eq(0)').outerWidth(true) + parseInt(list.find('li:eq(0)').css('margin-left'));
                     var width = sW * list.find('li').length;

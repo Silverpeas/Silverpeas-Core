@@ -198,7 +198,7 @@
         if (!this.contentFrame) {
           __logDebug("creating iframe content container");
           this.contentFrame = document.createElement('iframe');
-          this.contentFrame.setAttribute('src', 'about:blank');
+          sp.dom.blankFrame(this.contentFrame);
           this.contentFrame.setAttribute('name', 'AdminBodyContentFrame');
           this.contentFrame.setAttribute('marginwidth', 0);
           this.contentFrame.setAttribute('marginheight', 0);
@@ -222,8 +222,10 @@
           }
 
           var frameContentDocument = this.contentFrame.contentWindow.document;
-          frameContentDocument.body.setAttribute('tabindex', '-1');
-          frameContentDocument.body.focus();
+          if (!sp.dom.isBlankDocument(frameContentDocument)) {
+            frameContentDocument.body.setAttribute('tabindex', '-1');
+            frameContentDocument.body.focus();
+          }
 
           spAdminLayout.getBody().resize();
           this.getContent().dispatchEvent("load");
@@ -243,7 +245,7 @@
             sp.updateTargetWithHtmlContent(this.getContainer(), defaultAdminContent);
             _handleNavigationAndContent();
             this.getNavigation().hide();
-            this.contentFrame.setAttribute('src', ajaxConfig.getUrl());
+            sp.dom.loadFrame(this.contentFrame, ajaxConfig.getUrl());
             resolve();
           }.bind(this));
         } else {

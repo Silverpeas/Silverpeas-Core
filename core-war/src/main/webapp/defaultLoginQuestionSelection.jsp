@@ -27,8 +27,7 @@
 <%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 
 <%@ include file="headLog.jsp" %>
 <%
@@ -58,8 +57,8 @@
   </style>
   <![endif]-->
   <script type="text/javascript">
-    $(document).ready(function() {
-      $('#question').focus();
+    $(function() {
+      $('#question').trigger('focus');
       $('#questionForm').on("submit", function() {
         if (this.elements["answer"].value.length === 0) {
           SilverpeasError.add("<%=authenticationBundle.getString("authentication.reminder.answer.empty") %>");
@@ -73,6 +72,10 @@
         }
         this.action = '<c:url value="/CredentialsServlet/ValidateQuestion"/>';
         return true;
+      });
+      $('#questionForm a.submit').on('click', function(event) {
+        event.preventDefault();
+        $('#questionForm').trigger('submit');
       });
     });
   </script>
@@ -120,7 +123,7 @@
 
         <div class="submit">
           <p><input type="submit" style="width:0; height:0; border:0; padding:0"/>
-            <a href="#" class="submit" onclick="$('#questionForm').submit()"><span><span>OK</span></span></a>
+            <a href="#" class="submit"><span><span>OK</span></span></a>
           </p>
         </div>
       </div>

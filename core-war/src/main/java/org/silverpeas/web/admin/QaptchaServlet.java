@@ -64,6 +64,8 @@ public class QaptchaServlet extends HttpServlet {
     }
     String result = JSONCodec.encodeObject(o -> o.put("error", error));
     try {
+      resp.setContentType("application/json");
+      resp.setCharacterEncoding("UTF-8");
       resp.getWriter().append(result);
     } catch (IOException e) {
       SilverLogger.getLogger(this).error(e);

@@ -40,11 +40,11 @@
 // jQuery object, or a list of DOM elements containing one or more
 // `<input type="file">` elements:
 
-//     $("#myform").submit(function() {
+//     $("#myform").on("submit", function() {
 //         $.ajax(this.action, {
 //             files: $(":file", this),
 //             iframe: true
-//         }).complete(function(data) {
+//         }).always(function(data) {
 //             console.log(data);
 //         });
 //     });
@@ -55,13 +55,13 @@
 // If you want to include other form fields in the form submission, include
 // them in the `data` option, and set the `processData` option to `false`:
 
-//     $("#myform").submit(function() {
+//     $("#myform").on("submit", function() {
 //         $.ajax(this.action, {
 //             data: $(":text", this).serializeArray(),
 //             files: $(":file", this),
 //             iframe: true,
 //             processData: false
-//         }).complete(function(data) {
+//         }).always(function(data) {
 //             console.log(data);
 //         });
 //     });
@@ -131,7 +131,7 @@
   $.ajaxTransport("iframe", function(options, origOptions, jqXHR) {
     var form = null,
         iframe = null,
-        name = "iframe-" + $.now(),
+        name = "iframe-" + Date.now(),
         files = $(options.files).filter(":file:enabled"),
         markers = null,
         accepts = null;
@@ -253,7 +253,7 @@
         // aborted.
         abort: function() {
           if (iframe !== null) {
-            iframe.unbind("load").attr("src", "javascript:false;");
+            iframe.off("load").attr("src", "javascript:false;");
             cleanUp();
           }
         }

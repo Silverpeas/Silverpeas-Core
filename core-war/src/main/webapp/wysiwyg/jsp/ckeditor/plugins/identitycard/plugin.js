@@ -23,7 +23,7 @@
  */
 
 // Register the plugin within the editor.
-customTemplate =
+let customTemplate =
     '<div class="user-card">' + '<div class="avatar"><img src="" alt="avatar"/></div>' +
     '<span class="field userToZoom">firstName lastName</span>' +
     '<span class="field emailAddress">email</span>' + '<span class="field title">title</span>' +
@@ -41,10 +41,19 @@ CKEDITOR.plugins.add('identitycard', {
   lang : 'en,fr',
 
   beforeInit : function(editor) {
-    $.get("/weblib/ckeditor/identitycard/template.html", function(data) {
+    // the custom template is optional: its absence must not be reported as an error
+    $.ajax({
+      url : "/weblib/ckeditor/identitycard/template.html",
+      dataType : "html",
+      global : false,
+      error : function() {
+        // no custom template
+      }
+    }).done(function(data) {
       customTemplate = data;
       editor.widgets.registered.identitycard.template.source = data;
-
+    }).fail(function() {
+      // nothing to do: the default template is used.
     });
   },
 

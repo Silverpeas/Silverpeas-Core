@@ -144,10 +144,10 @@ function smoothReload() {
 }
 
 function jqCheckAll2(id, name) {
-   $("input[name='" + name + "'][type='checkbox']").attr('checked', $('#' + id).is(':checked'));
+   $("input[name='" + name + "'][type='checkbox']").prop('checked', $('#' + id).is(':checked'));
 }
 
-$(document).ready(function() {
+$(function() {
   // By supplying no content attribute, the library uses each elements title attribute by default
   $('.item-path').qtip({
     content : {

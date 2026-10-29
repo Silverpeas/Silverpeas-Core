@@ -25,8 +25,10 @@
 --%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view" %>
+<%@ taglib uri="silverpeas.tags.silverFunctions" prefix="silfn" %>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="${silfn:userLanguage(pageContext.request)}">
 <head>
   <title>Demo popups</title>
   <view:looknfeel/>

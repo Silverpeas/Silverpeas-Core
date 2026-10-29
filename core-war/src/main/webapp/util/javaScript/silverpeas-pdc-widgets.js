@@ -646,7 +646,7 @@ function removePosition(position, positions) {
                   append($('<img>', {
             src: settings.update.icon,
             alt: settings.update.title
-          }).click(function() {
+          }).on('click', function() {
             settings.onUpdate(aPosition);
           })));
         }
@@ -659,7 +659,7 @@ function removePosition(position, positions) {
                   append($('<img>', {
             src: settings.deletion.icon,
             alt: settings.deletion.title
-          }).click(function() {
+          }).on('click', function() {
             settings.onDeletion(aPosition);
           })));
         }
@@ -673,7 +673,7 @@ function removePosition(position, positions) {
     if (settings.addition.activated) {
       $('<a>', {
         href: 'javascript:void(0);'
-      }).addClass('add_position').html(settings.addition.title).click(function() {
+      }).addClass('add_position').html(settings.addition.title).on('click', function() {
         settings.onAddition();
       }).appendTo($("#" + settings.id + '_allpositions'));
     }
@@ -1039,7 +1039,7 @@ function removePosition(position, positions) {
     var axisValuesSelection = $('<select>', {
       'id': idPrefix + i,
       'name': anAxis.name
-    }).addClass(mandatoryField).appendTo($axisDiv).change(function() {
+    }).addClass(mandatoryField).appendTo($axisDiv).on('change', function() {
       // take care of the change of the option selection (axis value selection)
       var theValue = $('select[id=' + idPrefix + i + '] option:selected').val();
       if (theValue === '-1') {
@@ -1079,7 +1079,7 @@ function removePosition(position, positions) {
       $('<a>', {
         href: 'javascript:void(0);',
         title: settings.anotherValueLegend
-      }).addClass('another-value').click(function() {
+      }).addClass('another-value').on('click', function() {
         duplicateAxis($axisDiv, settings, selectedPositions, anAxis);
       }).append($('<img>', {
         src: settings.anotherValueIcon,
@@ -1193,7 +1193,7 @@ function removePosition(position, positions) {
           href: 'javascript:void(0);'
         }).addClass('valid_position').
            addClass('sp_button').
-           html(settings.labelOk).click(function() {
+           html(settings.labelOk).on('click', function() {
             informOfNewPositions($thisPdcAxisValuesSelector, settings, selectedPositions);
         }));
       } else if (!settings.onValueChange) {

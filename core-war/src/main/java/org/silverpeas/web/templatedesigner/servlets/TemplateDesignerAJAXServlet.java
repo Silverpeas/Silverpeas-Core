@@ -63,6 +63,9 @@ public class TemplateDesignerAJAXServlet extends HttpServlet {
     }
 
     try {
+      // a plain text answer: without a declared type, the browser would parse it as XML
+      res.setContentType("text/plain");
+      res.setCharacterEncoding("UTF-8");
       Writer writer = res.getWriter();
       writer.write(result);
     } catch (IOException e) {

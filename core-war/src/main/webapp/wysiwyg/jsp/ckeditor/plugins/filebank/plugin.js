@@ -40,15 +40,19 @@ CKEDITOR.plugins.add( 'filebank', {
         filebankEnabled = editor.config.filebank;
       }
       if (filebankEnabled) {
-        var apps;
-        var url = webContext + "/services/components?filter=filebanks";
-        $.ajax({
-          url : url,
-          cache: false,
-          async : false
-        }).done(function(result) {
-          apps = result;
-        });
+        // the banks are given with the configuration of the editor by Silverpeas; otherwise, they
+        // have to be known before the toolbar of the editor is built, so synchronously
+        var apps = editor.config.filebankApps;
+        if (!Array.isArray(apps)) {
+          var url = webContext + "/services/components?filter=filebanks";
+          $.ajax({
+            url : url,
+            cache: false,
+            async : false
+          }).done(function(result) {
+            apps = result;
+          });
+        }
 
         if (apps && apps.length > 0) {
           if (apps.length === 1) {

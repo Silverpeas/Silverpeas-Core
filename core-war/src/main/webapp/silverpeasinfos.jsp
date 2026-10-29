@@ -34,6 +34,7 @@
   <c:redirect url="/welcome.jsp"/>
 </c:if>
 
+<!DOCTYPE html>
 <html>
 <head>
   <title>Infos</title>

@@ -31,6 +31,7 @@
 	String nom = Encode.javaStringToHtmlString(voca.getName());
 	String desc = Encode.javaStringToHtmlString(voca.getDescription());
 %>
+<!DOCTYPE html>
 <HTML>
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
@@ -69,7 +70,7 @@ function save() {
 }
 function Deletes() {
   jQuery.popup.confirm("<%=resource.getString("thesaurus.MessageSuppressionVoca")%>", function() {
-    jQuery('#genericForm').attr('action', "DeleteVoca").submit();
+    jQuery('#genericForm').attr('action', "DeleteVoca").trigger('submit');
   });
 }
 //-->

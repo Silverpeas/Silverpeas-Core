@@ -61,6 +61,7 @@
 
 <c:set var="pieChart" value="${requestScope.Chart}"/>
 
+<!DOCTYPE html>
 <html>
 <head>
 <title><fmt:message key="GML.popupTitle" /></title>

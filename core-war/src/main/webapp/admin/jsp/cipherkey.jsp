@@ -45,8 +45,8 @@
 <fmt:message var="hexaError"   key="crypto.keyNotInHexadecimal"/>
 <fmt:message var="sizeError"   key="crypto.invalidKeySize"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 <head>
   <view:looknfeel withFieldsetStyle="true"/>
   <style type="text/css">
@@ -108,9 +108,9 @@
       }
     }
 
-    $(document).ready(function() {
+    $(function() {
       var enterKey = 13;
-      $("#cipherKey").keypress(function(event) {
+      $("#cipherKey").on('keypress', function(event) {
         if ( event.which === enterKey ) {
           event.preventDefault();
           importCipherKey();

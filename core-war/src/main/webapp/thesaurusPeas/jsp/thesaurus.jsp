@@ -46,6 +46,7 @@
     boolean selected;
 
 %>
+<!DOCTYPE html>
 <html>
 <head>
 <style type="text/css">
@@ -91,7 +92,7 @@ function Deletes()
 	if (existVocaSelected())
 	{
     jQuery.popup.confirm("<%=resource.getString("thesaurus.MessageSuppressionSelectedVoca")%>", function() {
-      jQuery('#genericForm').attr('action', "DeleteVoca").submit();
+      jQuery('#genericForm').attr('action', "DeleteVoca").trigger('submit');
 		});
 	}
 	else
@@ -100,7 +101,7 @@ function Deletes()
 function Update()
 {
 	if (existVocaSelected())
-    jQuery('#genericForm').attr('action', "UpdateVocaQuery").submit();
+    jQuery('#genericForm').attr('action', "UpdateVocaQuery").trigger('submit');
 	else
     jQuery.popup.error("<%=resource.getString("thesaurus.MessageSelectVoca")%>");
 }
@@ -183,7 +184,7 @@ function validateSynonyms(termId) {
   });
 }
 
-$(document).ready(function() {
+$(function() {
   $( "input:text" ).on('input', function() {
     $(this).addClass("colorRed");
     var id = $(this).attr("name").substring("field".length);

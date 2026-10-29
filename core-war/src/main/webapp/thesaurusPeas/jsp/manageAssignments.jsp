@@ -30,6 +30,7 @@
 	Collection jargons = (Collection) request.getAttribute("listJargons");
 	Iterator it = jargons.iterator();
 %>
+<!DOCTYPE html>
 <HTML>
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>

@@ -438,12 +438,23 @@ public class URLUtil {
     String minifiedUrl = url;
     if (!minifiedUrl.matches(".*[-.]min[-.].*") && !MINIFY_FILTER.matcher(url).matches()) {
       final String suffix = minifiedUrl.endsWith("js") ? "js" : "css";
-      if (getGeneralSettingBundle().getBoolean(
-          "web.resource." + suffix + ".get.minified.enabled")) {
+      if (isMinifiedWebResourceEnabled(suffix)) {
         minifiedUrl = minifiedUrl.replaceAll("[.]" + suffix + "$", "-min." + suffix);
       }
     }
     return minifiedUrl;
+  }
+
+  /**
+   * Is the minified version of the web resources of the given type served to the web browsers?
+   * It is driven by the setting {@code web.resource.<type>.get.minified.enabled}.
+   *
+   * @param resourceType the type of web resource: {@code js} or {@code css}.
+   * @return true if the minified version of such resources is served, false otherwise.
+   */
+  public static boolean isMinifiedWebResourceEnabled(final String resourceType) {
+    return getGeneralSettingBundle().getBoolean(
+        "web.resource." + resourceType + ".get.minified.enabled");
   }
 
   public enum Permalink {

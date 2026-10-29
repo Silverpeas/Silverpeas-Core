@@ -106,6 +106,18 @@ class WysiwygFCKFieldDisplayerTest {
     assertThat(editor, not(containsString(DD_UPLOAD)));
   }
 
+  /**
+   * The image and file banks are given with the configuration of the editor, otherwise the
+   * plugins of CKEditor request them by a synchronous XMLHttpRequest.
+   */
+  @Test
+  void theEditorIsGivenTheImageAndFileBanks() throws FormException {
+    String editor = display(context("kmelia1", "42"));
+
+    assertThat(editor, containsString("filebankApps : ["));
+    assertThat(editor, containsString("imagebankApps : ["));
+  }
+
   private String display(final PagesContext context) throws FormException {
     StringWriter html = new StringWriter();
     new WysiwygFCKFieldDisplayer().display(new PrintWriter(html), field, template, context);

@@ -55,6 +55,7 @@
             personalizationScc.addPreference(componentId,null,notificationId);
         }
         %>
+<!DOCTYPE html>
         <HTML>
           <HEAD>
           <script language="Javascript">

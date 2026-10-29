@@ -93,8 +93,8 @@
     }
 
 %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 <head>
     <view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
     <view:includePlugin name="tags" />
@@ -208,14 +208,14 @@
             <% } else { %>
             $(".applicableToDirectory").hide();
             <% } %>
-            $("#DirectoryUsage").click(function() {
+            $("#DirectoryUsage").on('click', function() {
                 $(".notApplicableToDirectory").toggle();
                 $(".applicableToDirectory").toggle();
             });
 
             <c:if test="${not creationMode and template.locked}">
-            $("input").attr("disabled", true);
-            $("input", $(document.DuplicateForm)).attr("disabled", false);
+            $("input").prop("disabled", true);
+            $("input", $(document.DuplicateForm)).prop("disabled", false);
             $(".layer-delete").css("display", "none");
             </c:if>
 

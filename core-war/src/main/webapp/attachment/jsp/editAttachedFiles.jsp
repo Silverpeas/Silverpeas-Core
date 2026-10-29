@@ -236,7 +236,7 @@
       }
     });
   }
-  $(document).ready(function() {
+  $(function() {
       $("#fileLang").on("change", function () {
         $("#fileLang option:selected").each(function () {
           alert($(this).val());
@@ -284,7 +284,7 @@
         }
       });
 
-    jQuery(document).ajaxError(function() {
+    jQuery(document).on('ajaxError', function() {
       $.closeProgressMessage();
     });
 
@@ -296,7 +296,7 @@
       modal : true,
       buttons : {
         '<fmt:message key="GML.ok"/>' : function() {
-          const filename = $.trim($("#file_create").val().split('\\').pop());
+          const filename = $("#file_create").val().split('\\').pop().trim();
           if (filename === '') {
             return false;
           }
@@ -318,7 +318,7 @@
           } else {
             const $form = $('#add-attachment-form');
             $form.attr('action', submitUrl);
-            $form.submit();
+            $form.trigger('submit');
           }
         }, '<fmt:message key="GML.cancel"/>' : function() {
           $(this).dialog("close");
@@ -338,7 +338,7 @@
         '<fmt:message key="GML.ok"/>' : function() {
           let submitUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' +
               $(this).data('attachmentId');
-          const filename = $.trim($("#file_upload").val().split('\\').pop());
+          const filename = $("#file_upload").val().split('\\').pop().trim();
           if (filename !== '') {
             submitUrl = submitUrl + '/' + encodeURIComponent(filename);
           } else {
@@ -360,7 +360,7 @@
           } else {
             const $form = $('#add-attachment-form');
             $form.attr('action', submitUrl);
-            $form.submit();
+            $form.trigger('submit');
           }
         },
         '<fmt:message key="GML.delete"/>' : function() {

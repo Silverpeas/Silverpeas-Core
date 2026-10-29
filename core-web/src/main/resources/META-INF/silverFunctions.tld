@@ -434,6 +434,14 @@
       java.lang.String formatForDomId(java.lang.Object))
     </function-signature>
   </function>
+  <function>
+    <description>Gets the language in which the page answering the given request is rendered.</description>
+    <name>userLanguage</name>
+    <function-class>org.silverpeas.core.web.util.viewgenerator.html.TagUtil</function-class>
+    <function-signature>
+      java.lang.String userLanguage(jakarta.servlet.ServletRequest)
+    </function-signature>
+  </function>
   <!-- Localization -->
   <function>
     <description>Gets a localized parameter instance.</description>

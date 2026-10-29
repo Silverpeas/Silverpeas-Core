@@ -117,7 +117,7 @@
         _originalOnKeyDown.apply(this, arguments);
         // On key down, select the first option if no option selected
         if (e.keyCode === 40 && !this.$activeOption) {
-          var $firstOption = this.$dropdown_content.find('[data-selectable]:first');
+          var $firstOption = this.$dropdown_content.find('[data-selectable]').first();
           this.setActiveOption($firstOption);
         }
       };

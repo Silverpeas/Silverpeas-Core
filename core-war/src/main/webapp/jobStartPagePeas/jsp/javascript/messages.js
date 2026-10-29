@@ -38,7 +38,7 @@ const messageTriggers = {
       return (always && always === "true") || false;
     }
     function __getDefaultSelectValueAsString(event) {
-      return $('select[name="' + event.target.name + '"] option:first').val();
+      return $('select[name="' + event.target.name + '"] option').first().val();
     }
     function __getInitialValueAsString(event, defaultValue) {
       return $('#warning-' + event.target.name).attr('initialParamValue') || defaultValue;
@@ -69,7 +69,7 @@ const messageTriggers = {
                   + sp.i18n.get('Warning.dialog.confirmation.message.end')
                   + '</p>';
               $this.html(html);
-            }).prev().change(function(event) {
+            }).prev().on('change', function(event) {
               const always = __alwaysWarning(event);
               if (event.target.type === "checkbox") {
                 const newChecked = event.target.checked;
@@ -95,6 +95,6 @@ const messageTriggers = {
   }
 };
 
-$(document).ready(function() {
+$(function() {
   messageTriggers.attach();
 });

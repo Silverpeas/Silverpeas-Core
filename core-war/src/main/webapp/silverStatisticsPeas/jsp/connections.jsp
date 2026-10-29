@@ -49,6 +49,7 @@ UserAccessLevel userProfile = (UserAccessLevel)request.getAttribute("UserProfile
 %>
 
 
+<!DOCTYPE html>
 <html>
 <head>
 <title><%=resources.getString("GML.popupTitle")%></title>
@@ -76,7 +77,7 @@ UserAccessLevel userProfile = (UserAccessLevel)request.getAttribute("UserProfile
 
   function ConfirmAndSend(targetURL,textToDisplay) {
     jQuery.popup.confirm(textToDisplay, function() {
-      jQuery('#genericForm').attr('action', targetURL).submit();
+      jQuery('#genericForm').attr('action', targetURL).trigger('submit');
     });
   }
 

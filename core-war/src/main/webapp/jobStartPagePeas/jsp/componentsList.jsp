@@ -35,37 +35,35 @@
   browseBar.setExtraInformation(resource.getString("JSPP.creationInstance"));
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
 <adminTags:refreshSpaceNavigation/>
 <script type="text/javascript">
-  $(document).ready(function()
+  $(function()
   {
 
-		$(".linkSee").click(function() {
+		$(".linkSee").on('click', function() {
 			$(".applicationsType ul").hide();
 			$(".linkSee").removeClass("select");
 			$(this).addClass("select");
 			$(this).parents('.applicationsType').children("ul").show();
 		});
 
-		$(".application a").hover(
-			function() {
+		$(".application a").on("mouseenter", function() {
 			$(this).children("p").show();
 			$(this).children("h3").hide();
-			},
-			function(){
+			}).on("mouseleave", function(){
 			$(this).children("h3").show();
 			$(this).children("p").hide();
 			}
 		);
 
 		$(".linkSee span").html(function() {
-			id = $.trim($(this).text()).substring(0,2);
-			$(this).html($.trim($(this).text()).substring(3));
+			id = $(this).text().trim().substring(0,2);
+			$(this).html($(this).text().trim().substring(3));
 			$(this).parents('.applicationsType').addClass("type_"+id);
 		});
 

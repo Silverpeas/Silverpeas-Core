@@ -24,6 +24,9 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html;
 
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil;
 import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.Optional;
@@ -70,5 +73,15 @@ public class TagUtil {
         .map(StringUtil::normalizeByRemovingAccent)
         .map(v -> v.replaceAll("[=\\- ]", "_"))
         .orElse(StringUtil.EMPTY);
+  }
+
+  /**
+   * Gets the language in which the page answering the given request is rendered: the one of the
+   * current user or, without any authenticated user, the one of the web browser.
+   * @param request the HTTP request.
+   * @return the ISO 639-1 code of the language.
+   */
+  public static String userLanguage(ServletRequest request) {
+    return SilverpeasWebUtil.get().getUserLanguage((HttpServletRequest) request);
   }
 }

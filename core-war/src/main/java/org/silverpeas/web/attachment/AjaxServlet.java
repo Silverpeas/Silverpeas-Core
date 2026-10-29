@@ -77,6 +77,9 @@ public class AjaxServlet extends SilverpeasAuthenticatedHttpServlet {
     }
 
     try {
+      // a plain text answer: without a declared type, the browser would parse it as XML
+      resp.setContentType("text/plain");
+      resp.setCharacterEncoding("UTF-8");
       Writer writer = resp.getWriter();
       writer.write(result);
     } catch (IOException e) {

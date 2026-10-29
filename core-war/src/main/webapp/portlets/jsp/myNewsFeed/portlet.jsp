@@ -63,7 +63,7 @@
     return '<%=urlServlet%>';
   }
 
-  $(document).ready(function() {
+  $(function() {
     init('${ALL_SOCIAL_INFORMATION}');
   });
 </script>

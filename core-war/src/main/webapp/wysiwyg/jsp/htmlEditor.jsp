@@ -290,7 +290,7 @@
   let $deferred;
 
   <c:if test="${not empty param.notySuccess}">
-  $(document).ready(function(){
+  $(function(){
     notySuccess('${silfn:escapeJs(param.notySuccess)}');
   });
   </c:if>
@@ -301,7 +301,7 @@
       browseInfo="<%=browseInformation%>" objectId="<%=objectId%>" objectType="<%=objectType%>"
       activateWysiwygBackupManager="true" />
 
-    if ($.trim($(".wysiwyg-fileStorage").text()).length === 0) {
+    if ($(".wysiwyg-fileStorage").text().trim().length === 0) {
       $(".wysiwyg-fileStorage").css("display", "none");
     }
   };
@@ -309,7 +309,7 @@
   function saveCalledByFormSubmit() {
     $deferred = $.Deferred();
     document.recupHtml.actionWysiwyg.value = "SaveHtml";
-    jQuery(document.recupHtml).submit();
+    jQuery(document.recupHtml).trigger('submit');
     $deferred.then(function(mustReload) {
       if (!mustReload) {
         notySuccess('<fmt:message key="GML.validation.update"/>');
@@ -324,7 +324,7 @@
     $deferred = $.Deferred();
     document.recupHtml.actionWysiwyg.value = "SaveHtmlAndExit";
     CKEDITOR.instances.editor1.updateElement();
-    jQuery(document.recupHtml).submit();
+    jQuery(document.recupHtml).trigger('submit');
     $deferred.then(function() {
       location.href = '<%=returnUrl%>';
     });
@@ -412,8 +412,8 @@
       document.recupHtml.submit();
     }
 
-    jQuery(document).ready(function() {
-      jQuery(document.recupHtml).submit(function() {
+    jQuery(function() {
+      jQuery(document.recupHtml).on('submit', function() {
         const wysiwygContent =
                 sp.editor.wysiwyg.lastBackupManager.instance.existsUnvalidatedContent() ?
                         sp.editor.wysiwyg.lastBackupManager.instance.getUnvalidatedContent() : '';

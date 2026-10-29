@@ -69,6 +69,8 @@ public class JobDomainPeasItemPathServlet extends HttpServlet {
       result = getComponentPath(sc, componentId);
     }
     try {
+      resp.setContentType("text/html");
+      resp.setCharacterEncoding("UTF-8");
       Writer writer = resp.getWriter();
       writer.write(result);
     } catch (IOException e) {

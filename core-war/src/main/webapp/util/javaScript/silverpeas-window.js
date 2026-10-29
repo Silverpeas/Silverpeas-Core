@@ -804,13 +804,14 @@ function _spWindow_isSilverpeasMainWindow() {
 
     let __getNavigationLink = function(id) {
       let $target = spLayout.getBody().getNavigation().getContainer().querySelector('#' + id);
+      // the navigation part may not be rendered yet (direct access to a component for example)
       if (!$target || sp.element.isHidden($target)) {
-        sp.log.warning("DOM element with id #" + id + " is missing");
+        __logDebug("DOM element with id #" + id + " is missing");
         return;
       }
       let $link = $target.querySelector('a');
       if (!$link || sp.element.isHidden($link)) {
-        sp.log.warning("Link is missing under DOM element with id #" + id);
+        __logDebug("Link is missing under DOM element with id #" + id);
         return;
       }
       return $link;

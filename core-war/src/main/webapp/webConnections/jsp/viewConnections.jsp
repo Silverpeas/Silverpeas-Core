@@ -35,6 +35,7 @@ Collection<ConnectionDetail> 	connections = (Collection<ConnectionDetail>) reque
 
 <%@page import="org.silverpeas.core.admin.service.OrganizationControllerProvider"%>
 <%@ page import="org.silverpeas.core.util.CollectionUtil" %>
+<!DOCTYPE html>
 <html>
 <head>
   <view:looknfeel />

@@ -13,7 +13,12 @@ CKEDITOR.editorConfig = function( config )
   config.filebrowserFlashBrowseUrl = config.baseHref+'uploadFile.jsp';
   config.filebrowserBrowseUrl = config.baseHref+'uploadFile.jsp';
   config.imageUploadUrl = 'activated';
+  // the pasted images are handled by the uploadimage plugin (imageUploadUrl); without this
+  // setting, CKEditor disables itself the clipboard handling of images and logs an error
+  config.clipboard_handleImages = false;
   config.extraPlugins = 'userzoom,identitycard,autolink,video,html5audio,imageresizerowandcolumn,variables,listblock,floatpanel,richcombo,mediaofcontribution,imagebank,filebank,emoji';
+  // Export to PDF relies on the CKEditor cloud services, which Silverpeas doesn't use
+  config.removePlugins = 'exportpdf';
   config.allowedContent = true;
   config.toolbarCanCollapse = true;
   config.disableNativeSpellChecker = false;

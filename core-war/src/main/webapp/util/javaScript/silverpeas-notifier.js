@@ -184,7 +184,7 @@ function __noty(data) {
  * @param registredKey
  */
 function notyRegistredMessages(registredKey) {
-  jQuery(document).ready(function() {
+  jQuery(function() {
     const url = webContext + '/services/messages/' + registredKey;
 
     // Ajax request
@@ -194,7 +194,7 @@ function notyRegistredMessages(registredKey) {
       dataType: 'json',
       cache: false,
       success: function(result) {
-        if (result && result.messages) {
+        if (result?.messages) {
           jQuery.each(result.messages, function(index, message) {
 
             // Default options
@@ -204,7 +204,7 @@ function notyRegistredMessages(registredKey) {
               timeout: false,
               layout: 'topCenter'
             };
-            if (jQuery.isNumeric(message.displayLiveTime) && message.displayLiveTime > 0) {
+            if (Number.isFinite(Number(message.displayLiveTime)) && message.displayLiveTime > 0) {
               messageOptions.timeout = message.displayLiveTime;
             } else {
               messageOptions.closeWith = ['button']; // ['click', 'button', 'hover']
@@ -225,9 +225,8 @@ function notyRegistredMessages(registredKey) {
                 break;
               default :
                 // Message is not supported
-                window.console &&
-                        window.console.log('Silverpeas Messages JQuery Plugin - WARNING - Message not displayed, type : ' +
-                                messageOptions.type + ', message : ' + messageOptions.content);
+                window.console?.log('Silverpeas Messages JQuery Plugin - WARNING - Message not displayed, type : ' +
+                    messageOptions.type + ', message : ' + messageOptions.content);
                 return;
             }
 
@@ -244,7 +243,7 @@ function notySetupRequestComplete(request) {
   if (!request.notySetupAjaxMessagesCompleteDone) {
     request.notySetupAjaxMessagesCompleteDone = true;
     const allHeaders = request.getAllResponseHeaders();
-    if (allHeaders && allHeaders.toLowerCase().indexOf('x-silverpeas-messagekey') > -1) {
+    if (allHeaders?.toLowerCase().includes('x-silverpeas-messagekey')) {
       const registeredKeyOfMessages = request.getResponseHeader('X-Silverpeas-MessageKey');
       if (registeredKeyOfMessages) {
         notyRegistredMessages(registeredKeyOfMessages);
@@ -254,28 +253,34 @@ function notySetupRequestComplete(request) {
 }
 
 /**
+ * Logs the technical error returned by a JQuery Ajax call.
+ * @param jqXHR the request in error.
+ * @param errorThrown the textual part of the HTTP status, used when the response has no body.
+ */
+function notyLogAjaxError(jqXHR, errorThrown) {
+  let errorMsg = jqXHR.responseText;
+  if (!String(errorMsg || "").trim()) {
+    errorMsg = errorThrown;
+  }
+  window.console?.error('Silverpeas JQuery Ajax - ERROR - ' + errorMsg);
+}
+
+/**
  * Setup all JQuery Ajax call to handle returns of messages (or technical errors).
  */
 function notySetupAjaxMessages() {
-  const error = function (jqXHR, errorThrown) {
-    let errorMsg = jqXHR.responseText;
-    if (!jQuery.trim(errorMsg)) {
-      errorMsg = errorThrown;
-    }
-    window.console && window.console.error('Silverpeas JQuery Ajax - ERROR - ' + errorMsg);
-  };
   jQuery.ajaxSetup({
     error: function(jqXHR, textStatus, errorThrown) {
-      error.call(this, jqXHR, errorThrown);
+      notyLogAjaxError(jqXHR, errorThrown);
     },
     complete: function(jqXHR, textStatus) {
       notySetupRequestComplete.call(this, jqXHR);
     }
   });
-  jQuery(document).ajaxError(function(event, jqXHR, settings, errorThrown) {
-    error.call(this, jqXHR, errorThrown);
+  jQuery(document).on("ajaxError", function(event, jqXHR, settings, errorThrown) {
+    notyLogAjaxError(jqXHR, errorThrown);
   });
-  jQuery(document).ajaxComplete(function(event, jqXHR, settings) {
+  jQuery(document).on("ajaxComplete", function(event, jqXHR, settings) {
     notySetupRequestComplete.call(this, jqXHR);
   });
 }

@@ -23,15 +23,15 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 --%>
+<%@ taglib uri="silverpeas.tags.silverFunctions" prefix="silfn" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page language="java" contentType="text/html; charset=UTF-8"%>
 
 <%@ include file="checkAgenda.jsp" %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="${silfn:userLanguage(pageContext.request)}">
 <head>
 <title></title>
 <script type="text/javascript">

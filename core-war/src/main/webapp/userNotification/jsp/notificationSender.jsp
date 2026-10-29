@@ -52,7 +52,7 @@
 <c:set var="requiredSubjectErrorMessage"><fmt:message key="GML.thefield"/> <strong><fmt:message key="GML.notification.subject"/></strong> <fmt:message key="GML.isRequired"/></c:set>
 <view:link href="/util/styleSheets/fieldset.css"/>
 <view:includePlugin name="wysiwyg"/>
-<view:loadScript src="/util/javaScript/checkForm.js"/>
+<view:loadScript src="/util/javaScript/checkForm.js" once="true"/>
 <script type="text/javascript">
   var userSelectApi;
 

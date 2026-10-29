@@ -45,6 +45,7 @@
   String m_context = URLUtil.getApplicationURL();
 %>
 
+<!DOCTYPE html>
 <html>
   <head>
     <view:looknfeel withFieldsetStyle="true"/>

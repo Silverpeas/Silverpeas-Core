@@ -311,8 +311,12 @@
               try {
                 const contentWindow = this.contentFrame.contentWindow;
                 const frameContentDocument = contentWindow.document;
-                frameContentDocument.body.setAttribute('tabindex', '-1');
-                frameContentDocument.body.focus();
+                if (!sp.dom.isBlankDocument(frameContentDocument)) {
+                  // the initial about:blank document has no doctype: touching its layout would
+                  // only make the browser report it as rendered in quirks mode
+                  frameContentDocument.body.setAttribute('tabindex', '-1');
+                  frameContentDocument.body.focus();
+                }
                 contentWindow.addEventListener('blur', function() {
                   this.dispatchEvent("blur");
                 }.bind(this));
@@ -629,7 +633,7 @@
       overlay.style.display = 'none';
       document.body.appendChild(overlay);
       var contentFrame = document.createElement('iframe');
-      contentFrame.setAttribute('src', 'about:blank');
+      sp.dom.blankFrame(contentFrame);
       contentFrame.setAttribute('name', 'SpLayoutSplashContentWindow');
       contentFrame.setAttribute('marginheight', '0');
       contentFrame.setAttribute('frameborder', '0');
@@ -654,8 +658,10 @@
         }
 
         var frameContentDocument = this.contentFrame.contentWindow.document;
-        frameContentDocument.body.setAttribute('tabindex', '-1');
-        frameContentDocument.body.focus();
+        if (!sp.dom.isBlankDocument(frameContentDocument)) {
+          frameContentDocument.body.setAttribute('tabindex', '-1');
+          frameContentDocument.body.focus();
+        }
 
         this.dispatchEvent("load");
         spLayout.getBody().hideProgressMessage();
@@ -673,7 +679,7 @@
       __logDebug("loading splash content part");
       var promise = applyReadyBehaviorOn(this);
       this.dispatchEvent("start-load");
-      this.contentFrame.setAttribute('src', url);
+      sp.dom.loadFrame(this.contentFrame, url);
       promise.then(function() {
         var progressMessageDeferred;
         if (!this.isShown()) {
@@ -686,7 +692,7 @@
     },
     close : function() {
       this.hide().then(function() {
-        this.contentFrame.setAttribute('src', 'about:blank');
+        sp.dom.blankFrame(this.contentFrame);
         this.dispatchEvent("close");
       }.bind(this));
     },

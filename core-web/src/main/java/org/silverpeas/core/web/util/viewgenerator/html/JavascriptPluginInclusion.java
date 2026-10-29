@@ -57,12 +57,10 @@ import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.util.SystemWrapper;
 
 import java.text.MessageFormat;
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.stream;
-import static org.silverpeas.core.cache.service.CacheAccessorProvider.getApplicationCacheAccessor;
 import static org.silverpeas.core.cache.service.CacheAccessorProvider.getThreadCacheAccessor;
 import static org.silverpeas.core.chart.ChartSettings.getDefaultPieChartColorsAsJson;
 import static org.silverpeas.core.chart.ChartSettings.getThresholdOfPieCombination;
@@ -103,6 +101,10 @@ public class JavascriptPluginInclusion {
   private static final String PDF_VIEWER_BASE = getApplicationURL() + "/media/jsp/pdf";
   private static final String JQUERY_PATH = JAVASCRIPT_PATH + "jquery/";
   private static final String JQUERY_CSS_PATH = STYLESHEET_PATH + "jquery/";
+  static final String JQUERY_JS = "jquery-3.7.1.min.js";
+  static final String JQUERY_MIGRATE_DEV_JS = "jquery-migrate-3.6.0.js";
+  static final String JQUERY_MIGRATE_MIN_JS = "jquery-migrate-3.6.0.min.js";
+  static final String JQUERY_UI_JS = "jquery-ui-1.14.2.min.js";
   private static final String ANGULARJS_PATH = JAVASCRIPT_PATH + "angularjs/";
   private static final String ANGULARJS_I18N_PATH = ANGULARJS_PATH + "i18n/";
   private static final String ANGULARJS_SERVICES_PATH = ANGULARJS_PATH + SERVICES_PATH_PART;
@@ -131,7 +133,7 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_PAGINATOR = "silverpeas-pagination.js";
   private static final String JQUERY_DATEPICKER = "jquery.ui.datepicker-{0}.js";
   private static final String SILVERPEAS_DATECHECKER = "silverpeas-datechecker.js";
-  private static final String JQUERY_CALENDAR = "fullcalendar.min.js";
+  private static final String JQUERY_CALENDAR = "fullcalendar.js";
   private static final String SILVERPEAS_CALENDAR = "silverpeas-calendar.js";
   private static final String STYLESHEET_JQUERY_CALENDAR = "fullcalendar.min.css";
   private static final String PRINT_STYLESHEET_JQUERY_CALENDAR = "fullcalendar.print.min.css";
@@ -195,12 +197,12 @@ public class JavascriptPluginInclusion {
   private static final String VIRTUAL_KEYBOARD_PATH = getApplicationURL() + "/silverkeyboard";
   private static final String A11Y_PATH = getApplicationURL() + "/a11y";
 
-  private static final String CHART_JS = "flot/jquery.flot.min.js";
-  private static final String CHART_PIE_JS = "flot/jquery.flot.pie.min.js";
-  private static final String CHART_TIME_JS = "flot/jquery.flot.time.min.js";
-  private static final String CHART_CATEGORIES_JS = "flot/jquery.flot.categories.min.js";
+  private static final String CHART_JS = "flot/jquery.flot.js";
+  private static final String CHART_PIE_JS = "flot/jquery.flot.pie.js";
+  private static final String CHART_TIME_JS = "flot/jquery.flot.time.js";
+  private static final String CHART_CATEGORIES_JS = "flot/jquery.flot.categories.js";
   private static final String CHART_AXISLABEL_JS = "flot/jquery.flot.axislabels.js";
-  private static final String CHART_TOOLTIP_JS = "flot/jquery.flot.tooltip.min.js";
+  private static final String CHART_TOOLTIP_JS = "flot/jquery.flot.tooltip.js";
   private static final String SILVERPEAS_CHART_JS = "silverpeas-chart.js";
   private static final String SILVERPEAS_CHART_I18N_ST = "chartBundle";
   private static final String SILVERPEAS_LIST_OF_USERS_AND_GROUPS_JS =
@@ -296,18 +298,19 @@ public class JavascriptPluginInclusion {
     if (cache.get(key) == null) {
       cache.put(key, true);
       StringBuilder sb = new StringBuilder();
-      sb.append("jQuery(document).ready(function() {");
+      sb.append("jQuery(function() {");
       sb.append("  if (typeof jQuery.").append(jqPluginName).append(" === 'undefined' &&");
       sb.append("      typeof window.").append(jqPluginName).append(" === 'undefined') {");
-      sb.append("    jQuery.ajax({type:'GET',url:'").append(normalizeWebResourceUrl(src))
-          .append("',dataType:'script',cache:true,success:function() {");
+      // loaded by a script element, once per document (see LoadScriptTag)
+      sb.append("    sp.loadScriptOnce('").append(normalizeWebResourceUrl(src))
+          .append("').then(function() {");
       if (StringUtil.isDefined(jsCallbackContentOnSuccessfulLoad)) {
         sb.append("    ").append(jsCallbackContentOnSuccessfulLoad);
       }
       if (StringUtil.isDefined(jsCallback)) {
         sb.append("    ").append(jsCallback);
       }
-      sb.append("    }})");
+      sb.append("    });");
       sb.append("  } else {");
       if (StringUtil.isDefined(jsCallback)) {
         sb.append("    ").append(jsCallback);
@@ -453,7 +456,7 @@ public class JavascriptPluginInclusion {
 
   static ElementContainer includeQTip(final ElementContainer xhtml, final String language) {
     xhtml.addElement(link(JQUERY_CSS_PATH + JQUERY_QTIP + ".min.css"));
-    xhtml.addElement(script(JQUERY_PATH + JQUERY_QTIP + ".min.js"));
+    xhtml.addElement(script(JQUERY_PATH + JQUERY_QTIP + ".js"));
     final LocalizationBundle bundle = ResourceLocator.getGeneralLocalizationBundle(language);
     final JavascriptBundleProducer bundleProducer = bundleVariableName("TipBundle");
     bundleProducer.add("tip.c", bundle.getString("GML.close"));
@@ -723,7 +726,10 @@ public class JavascriptPluginInclusion {
   }
 
   static ElementContainer includePdfViewer(final ElementContainer xhtml) {
-    xhtml.addElement(link(PDF_VIEWER_BASE + "/locale/locale.json", l -> l.setType("application/l10n")));
+    // the viewer looks for the l10n resource by its type; the stylesheet relation set by default
+    // would make the browser try to load it as a CSS
+    xhtml.addElement(link(PDF_VIEWER_BASE + "/locale/locale.json",
+        l -> l.setRel("resource").setType("application/l10n")));
     final LocalizationBundle bundle = ResourceLocator.getLocalizationBundle("org.silverpeas.viewer.multilang.viewerBundle", "fr");
     xhtml.addElement(scriptContent(bundleVariableName("PdfViewerBundle")
         .add(bundle, bundle.specificKeySet().toArray(new String[0]))
@@ -779,9 +785,29 @@ public class JavascriptPluginInclusion {
     includePreview(xhtml);
     includeFileManager(xhtml);
     includeDragAndDropUpload(xhtml, language);
+    includeAttachmentOperationMenu(xhtml);
     xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + "util/silverpeas-attachment.js"));
     xhtml.addElement(link(VUEJS_COMPONENT_PATH + "content/silverpeas-attachment.css"));
     xhtml.addElement(script(VUEJS_COMPONENT_PATH + "content/silverpeas-attachment.js"));
+    return xhtml;
+  }
+
+  /**
+   * Includes the scripts of the operation menu of the attached files (a YUI menu whose state is
+   * kept in a cookie). The attachment pane includes them itself, but when it is inserted by
+   * AngularJS into a page, jQuery would fetch them synchronously if they weren't already in the
+   * page.
+   * @param xhtml the container of the HTML elements to which the scripts are added.
+   * @return the container itself.
+   */
+  public static ElementContainer includeAttachmentOperationMenu(final ElementContainer xhtml) {
+    final String yuiPath = getApplicationURL() + "/util/yui/";
+    xhtml.addElement(script(yuiPath + "yahoo-dom-event/yahoo-dom-event.js"));
+    xhtml.addElement(script(yuiPath + "container/container_core-min.js"));
+    xhtml.addElement(script(yuiPath + "animation/animation-min.js"));
+    xhtml.addElement(script(yuiPath + "menu/menu-min.js"));
+    xhtml.addElement(script(JAVASCRIPT_PATH + "jquery/jquery.cookie.js"));
+    xhtml.addElement(link(yuiPath + "menu/assets/menu.css"));
     return xhtml;
   }
 
@@ -798,6 +824,9 @@ public class JavascriptPluginInclusion {
     includeDragAndDropUpload(xhtml, language);
     includeWysiwygEditor(xhtml, language);
     includeContributionReminder(xhtml, language);
+    // the progress message is used by the calendar management template: loaded here, it is not
+    // fetched again synchronously when the template is inserted by AngularJS
+    includeProgressMessage(xhtml);
     includeBasketSelection(xhtml);
 
     SettingBundle calendarSettings = ResourceLocator
@@ -907,21 +936,29 @@ public class JavascriptPluginInclusion {
     return xhtml;
   }
 
+  /**
+   * Includes jQuery, jQuery Migrate and jQuery UI.
+   * <p>
+   * Only the development build of jQuery Migrate reports in the web browser console the usages of
+   * the deprecated or removed jQuery APIs; its minified build is silent. So, the development
+   * build is served, and not muted, only when the minified version of the JavaScript resources
+   * isn't served (setting {@code web.resource.js.get.minified.enabled}), that is to say in
+   * development.
+   * </p>
+   * @param xhtml the container of the HTML elements to render.
+   * @return the given container.
+   */
   static ElementContainer includeJQuery(final ElementContainer xhtml) {
     includeJQueryCss(xhtml);
-    final String spJQueryScriptName = "silverpeas-jquery.js";
-    final Element spJQueryScript = script(JAVASCRIPT_PATH + spJQueryScriptName);
-    final boolean minifiedVersion = Objects.requireNonNull(getApplicationCacheAccessor().getCache()
-        .computeIfAbsent(spJQueryScriptName, Boolean.class,
-            () -> !spJQueryScript.toString().contains(spJQueryScriptName)));
-    xhtml.addElement(script(JQUERY_PATH + "jquery-3.3.1.min.js"));
-    xhtml.addElement(scriptContent("jQuery.migrateTrace = " + minifiedVersion + ";"));
-    xhtml.addElement(scriptContent("jQuery.migrateMute = " + minifiedVersion + ";"));
-    xhtml.addElement(script(JQUERY_PATH + "jquery-migrate-3.0.1.min.js"));
-    xhtml.addElement(script(JQUERY_PATH + "jquery-ui.min.js"));
+    final boolean minified = URLUtil.isMinifiedWebResourceEnabled("js");
+    xhtml.addElement(script(JQUERY_PATH + JQUERY_JS));
+    xhtml.addElement(scriptContent("jQuery.migrateMute = " + minified + ";"));
+    xhtml.addElement(
+        script(JQUERY_PATH + (minified ? JQUERY_MIGRATE_MIN_JS : JQUERY_MIGRATE_DEV_JS)));
+    xhtml.addElement(script(JQUERY_PATH + JQUERY_UI_JS));
     xhtml.addElement(script(JQUERY_PATH + "jquery.json-2.3.min.js"));
     xhtml.addElement(script(JAVASCRIPT_PATH + "i18n.properties.js"));
-    xhtml.addElement(spJQueryScript);
+    xhtml.addElement(script(JAVASCRIPT_PATH + "silverpeas-jquery.js"));
     return xhtml;
   }
 
@@ -1011,16 +1048,27 @@ public class JavascriptPluginInclusion {
     return xhtml;
   }
 
-  static ElementContainer includeChart(final ElementContainer xhtml, final String language) {
-    includeHtml2CanvasAndDownload(xhtml);
-    includeDatePicker(xhtml, language);
-    includeQTip(xhtml, language);
+  /**
+   * Includes the Flot plotting library and the plugins used by the charts of Silverpeas. They are
+   * bundled as patched official sources, minified by the build.
+   * @param xhtml the container of the HTML elements to which the scripts are added.
+   * @return the container itself.
+   */
+  static ElementContainer includeFlot(final ElementContainer xhtml) {
     xhtml.addElement(script(JQUERY_PATH + CHART_JS));
     xhtml.addElement(script(JQUERY_PATH + CHART_PIE_JS));
     xhtml.addElement(script(JQUERY_PATH + CHART_TIME_JS));
     xhtml.addElement(script(JQUERY_PATH + CHART_CATEGORIES_JS));
     xhtml.addElement(script(JQUERY_PATH + CHART_AXISLABEL_JS));
     xhtml.addElement(script(JQUERY_PATH + CHART_TOOLTIP_JS));
+    return xhtml;
+  }
+
+  static ElementContainer includeChart(final ElementContainer xhtml, final String language) {
+    includeHtml2CanvasAndDownload(xhtml);
+    includeDatePicker(xhtml, language);
+    includeQTip(xhtml, language);
+    includeFlot(xhtml);
     xhtml.addElement(scriptContent("var defaultChartColors = " + getDefaultPieChartColorsAsJson() +
         "; var chartPieCombinationThreshold = " + getThresholdOfPieCombination() +
         ";"));
@@ -1045,41 +1093,28 @@ public class JavascriptPluginInclusion {
     final JavascriptSettingProducer settingBundle = settingVariableName("SilverChatSettings");
     final String chatDir = getApplicationURL() + "/chat/";
     final ChatSettings chatSettings = ChatSettings.get();
-    final String silverpeasChatClientId = chatSettings.getSilverpeasChatClientId();
-    if (silverpeasChatClientId.equals("jsxc")) {
-      final String jsxcDir = chatDir + "jsxc/";
-      xhtml.addElement(script(jsxcDir + "lib/jquery.fullscreen.js"));
-      xhtml.addElement(script(jsxcDir + "lib/jquery.slimscroll.js"));
-      xhtml.addElement(script(jsxcDir + "lib/jsxc.dep.min.js"));
-      xhtml.addElement(script(jsxcDir + "jsxc.min.js"));
-      xhtml.addElement(script(JAVASCRIPT_PATH + "silverpeas-chat-resizable.js"));
-      xhtml.addElement(script(chatDir + "js/silverchat.min.js"));
-      xhtml.addElement(link(jsxcDir + "css/jsxc.css"));
-      xhtml.addElement(link(jsxcDir + "css/magnific-popup.css"));
-    } else if (silverpeasChatClientId.equals("conversejs")) {
-      final String converseDir = chatDir + "converse/";
-      xhtml.addElement(script(converseDir + "converse.min.js"));
-      xhtml.addElement(script(chatDir + "converse-plugins/silverpeas-commons.min.js"));
-      xhtml.addElement(script(chatDir + "converse-plugins/silverpeas-muc-invitations.min.js"));
-      xhtml.addElement(script(chatDir + "converse-plugins/silverpeas-muc-destroy.min.js"));
-      xhtml.addElement(script(chatDir + "converse-plugins/silverpeas-sp-permalink.min.js"));
-      if (chatSettings.isReplyToEnabled() || chatSettings.isReactionToEnabled()) {
-        xhtml.addElement(script(chatDir + "converse-plugins/actions.min.js"));
-      }
-      if (chatSettings.isVisioEnabled()) {
-        settingBundle.add("v.u", chatSettings.getVisioUrl());
-        xhtml.addElement(script(chatDir + "converse-plugins/jitsimeet.min.js"));
-      }
-      if (chatSettings.isScreencastEnabled()) {
-        xhtml.addElement(script(chatDir + "converse-plugins/screencast.min.js"));
-      }
-      final Element link = link(converseDir + "converse.min.css");
-      if (link instanceof link) {
-        ((link) link).setMedia("screen");
-        xhtml.addElement(link);
-      }
-      xhtml.addElement(script(chatDir + "js/silverpeas-converse.js"));
+    final String converseDir = chatDir + "converse/";
+    xhtml.addElement(script(converseDir + "converse.min.js"));
+    xhtml.addElement(script(chatDir + "converse-plugins/silverpeas-commons.min.js"));
+    xhtml.addElement(script(chatDir + "converse-plugins/silverpeas-muc-invitations.min.js"));
+    xhtml.addElement(script(chatDir + "converse-plugins/silverpeas-muc-destroy.min.js"));
+    xhtml.addElement(script(chatDir + "converse-plugins/silverpeas-sp-permalink.min.js"));
+    if (chatSettings.isReplyToEnabled() || chatSettings.isReactionToEnabled()) {
+      xhtml.addElement(script(chatDir + "converse-plugins/actions.min.js"));
     }
+    if (chatSettings.isVisioEnabled()) {
+      settingBundle.add("v.u", chatSettings.getVisioUrl());
+      xhtml.addElement(script(chatDir + "converse-plugins/jitsimeet.min.js"));
+    }
+    if (chatSettings.isScreencastEnabled()) {
+      xhtml.addElement(script(chatDir + "converse-plugins/screencast.min.js"));
+    }
+    final Element link = link(converseDir + "converse.min.css");
+    if (link instanceof link) {
+      ((link) link).setMedia("screen");
+      xhtml.addElement(link);
+    }
+    xhtml.addElement(script(chatDir + "js/silverpeas-converse.js"));
     xhtml.addElement(link(chatDir + "css/silverchat.css"));
     xhtml.addElement(link(chatDir + "css/silverpeas-converse.css"));
     xhtml.addElement(scriptContent(settingBundle
@@ -1495,6 +1530,17 @@ public class JavascriptPluginInclusion {
 
   static ElementContainer includePanes(final ElementContainer xhtml) {
     xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + "util/silverpeas-panes.js"));
+    return xhtml;
+  }
+
+  /**
+   * Includes the script of the progress message widget. As for any other script, it is emitted
+   * once per rendered page.
+   * @param xhtml the container of the HTML elements to which the script is added.
+   * @return the container itself.
+   */
+  public static ElementContainer includeProgressMessage(final ElementContainer xhtml) {
+    xhtml.addElement(script(JAVASCRIPT_PATH + "progressMessage.js"));
     return xhtml;
   }
 

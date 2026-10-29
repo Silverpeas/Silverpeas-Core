@@ -551,6 +551,15 @@
     }.bind(this);
 
     /**
+     * Reports to the calendar the changes performed on the given event. Since FullCalendar 3.5,
+     * the events given by forEachEvent are copies: a change on them must be explicitly reported.
+     * @param event an event previously obtained from forEachEvent.
+     */
+    this.updateEvent = function(event) {
+      this.$fc.fullCalendar('updateEvent', event);
+    }.bind(this);
+
+    /**
      * Silverpeas Event sources manager
      */
     var SpEventSources = new function() {
@@ -733,7 +742,7 @@
           displayEventEnd : $window.CalendarSettings.get('c.v.m.e')
         },
         week : {
-          columnFormat : 'ddd DD',
+          columnHeaderFormat : 'ddd DD',
           displayEventEnd : $window.CalendarSettings.get('c.v.w.e')
         },
         day : {
@@ -753,12 +762,12 @@
       },
       eventClick : function(calEvent, jsEvent, view) {
         if (calendarOptions.onevent) {
-          calendarOptions.onevent(calEvent);
+          calendarOptions.onevent(__renderedEvent(this, calEvent));
         }
       },
       eventMouseover : function(calEvent, jsEvent, view) {
         if (calendarOptions.oneventmouseover) {
-          calendarOptions.oneventmouseover(calEvent);
+          calendarOptions.oneventmouseover(__renderedEvent(this, calEvent));
         }
       },
       eventDrop : function(calEvent, delta, revertFunc) {
@@ -781,6 +790,7 @@
 
     if (calendarOptions.eventrender) {
       fullCalendarOptions.eventRender = function(calEvent, $element, view) {
+        $element.data(RENDERED_EVENT_KEY, calEvent);
         calendarOptions.eventrender(calEvent, $element, view);
       };
     }
@@ -788,6 +798,22 @@
     const $fullCalendar = jQuery(target);
     $fullCalendar.fullCalendar(fullCalendarOptions);
     return $fullCalendar;
+  }
+
+  const RENDERED_EVENT_KEY = 'sp-rendered-event';
+
+  /**
+   * Gets the event as it was given to the eventrender callback when the specified element was
+   * rendered. Since FullCalendar 3.5, each callback receives its own copy of the event: the
+   * properties set by the eventrender callback (the rendered element for example) are then lost
+   * for the click and mouse-over callbacks.
+   * @param element the DOM element of the event in the calendar view.
+   * @param calEvent the event given by FullCalendar to the callback.
+   * @returns {*} the rendered event or, if none, the given one.
+   * @private
+   */
+  function __renderedEvent(element, calEvent) {
+    return jQuery(element).data(RENDERED_EVENT_KEY) || calEvent;
   }
 
   /**

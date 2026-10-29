@@ -23,6 +23,31 @@
  */
 
 (function($) {
+
+  /**
+   * When some HTML is inserted into the DOM by jQuery, each external script it contains is fetched
+   * by a synchronous XMLHttpRequest and then evaluated, even if the script is already loaded into
+   * the document (the templates of the AngularJS directives for example). A script already loaded
+   * into the document isn't fetched nor evaluated again.
+   * jQuery inserts the script element into the document before evaluating it: the element being
+   * evaluated is itself in the document, so the script is already loaded only if another element
+   * refers it, or if it was already evaluated here or loaded by sp.loadScriptOnce.
+   */
+  const evalUrl = $._evalUrl;
+  $._evalUrl = function(url, options, doc) {
+    const key = new URL(url, document.baseURI).href;
+    const registry = window.__sp_loadedScripts = window.__sp_loadedScripts || {};
+    const elementsInDocument = Array.from((doc || document).scripts).filter(function(script) {
+      return script.src === key;
+    }).length;
+    if (registry[key] || elementsInDocument > 1) {
+      return;
+    }
+    const result = evalUrl.apply(this, arguments);
+    registry[key] = Promise.resolve();
+    return result;
+  };
+
   $.fn.serializeFormJSON = function() {
     var o = {};
     var a = this.serializeArray();

@@ -80,7 +80,7 @@
 
     <script type="text/javascript">
       // Create the tooltips only on document load
-      $(document).ready(function() {
+      $(function() {
         // Use the each() method to gain access to each elements attributes
         $('a[rel]').each(function() {
           $(this).qtip({

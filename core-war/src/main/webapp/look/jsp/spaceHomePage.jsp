@@ -70,8 +70,8 @@
 
 <c:set var="spaceHomepageProxy" value="<%=SpaceHomepageProxyManager.get().getProxyBySpaceId(homepage.getSpace().getId())%>"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 <head>
   <title><%=space.getName(helper.getLanguage()) %>
   </title>
@@ -229,15 +229,15 @@
       spWindow.loadComponent(spaceId);
     }
 
-    $(document).ready(function() {
+    $(function() {
       // if at least one item have got a description
-      if ($.trim($(".spaceNavigation li p").text()).length !== 0) {
+      if ($(".spaceNavigation li p").text().trim().length !== 0) {
         $(".spaceNavigation li").css("min-height", "43px");
         $(".spaceNavigation li").css("line-height", "40px");
       }
 
       // if right column is empty
-      if ($.trim($(".rightContent").text()).length === 0) {
+      if ($(".rightContent").text().trim().length === 0) {
         $(".rightContent").css("display", "none");
         $(".principalContent").css("margin-right", "0");
       }

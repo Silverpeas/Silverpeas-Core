@@ -104,8 +104,8 @@
 <fmt:message key="selection.searchUserGroups" var="defaultGroupSearchText"/>
 <fmt:message key="selection.searchUsers" var="defaultUserSearchText"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.userSelector" xml:lang="${sessionScope['SilverSessionController'].favoriteLanguage}">
+<!DOCTYPE html>
+<html id="ng-app" ng-app="silverpeas.userSelector" lang="${sessionScope['SilverSessionController'].favoriteLanguage}">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <view:looknfeel />
@@ -719,23 +719,28 @@
               const selectionIdField = '<c:out value="${selection.htmlFormElementId}"/>';
               const selectionNameField = '<c:out value="${selection.htmlFormElementName}"/>';
               const selectionTypeField = '<c:out value="${selection.htmlFormElementType}"/>';
-              __triggerChange(window.opener.$('#' + selectionIdField).val((selectedUserIds.length > 0 ? selectedUserIds : selectedGroupIds)));
-              __triggerChange(window.opener.$('#' + selectionNameField).val((selectedUserNames.length > 0 ? selectedUserNames : selectedGroupNames)));
+              // a caller can provide only some of the fields (the notification sender has no name
+              // field): an undefined field matches no element instead of the invalid selector '#'
+              const __openerField = function(fieldId, suffix) {
+                return fieldId ? window.opener.$('#' + fieldId + (suffix || '')) : window.opener.$();
+              };
+              __triggerChange(__openerField(selectionIdField).val((selectedUserIds.length > 0 ? selectedUserIds : selectedGroupIds)));
+              __triggerChange(__openerField(selectionNameField).val((selectedUserNames.length > 0 ? selectedUserNames : selectedGroupNames)));
               if(selectionTypeField != null && selectionTypeField.length > 0) {
-		window.opener.$('#' + selectionTypeField).val((selectedUserIds.length > 0 ? '<%=Selection.TYPE_SELECTED_ELEMENT%>' : '<%=Selection.TYPE_SELECTED_SET%>'));
+                __openerField(selectionTypeField).val((selectedUserIds.length > 0 ? '<%=Selection.TYPE_SELECTED_ELEMENT%>' : '<%=Selection.TYPE_SELECTED_SET%>'));
               }
 
-              window.opener.$('#' + selectionIdField + "-userIds").val(selectedUserIds);
-              window.opener.$('#' + selectionIdField + "-groupIds").val(selectedGroupIds);
-              __triggerChange(window.opener.$('#' + selectionIdField + "-userIds"));
-              __triggerChange(window.opener.$('#' + selectionIdField + "-groupIds"));
+              __openerField(selectionIdField, '-userIds').val(selectedUserIds);
+              __openerField(selectionIdField, '-groupIds').val(selectedGroupIds);
+              __triggerChange(__openerField(selectionIdField, '-userIds'));
+              __triggerChange(__openerField(selectionIdField, '-groupIds'));
 
               window.close();
         </c:when>
         <c:otherwise>
               $("input#group-selection").val(selectedGroupIds);
               $("input#user-selection").val(selectedUserIds);
-              $("#selection").submit();
+              $("#selection").trigger('submit');
         </c:otherwise>
       </c:choose>
             };
@@ -749,7 +754,7 @@
         <c:otherwise>
             $('input[name="UserOrGroupSelection"]').val('false');
             $("#selection").attr("action", "<c:out value='${cancelationURL}'/>");
-            $("#selection").submit();
+            $("#selection").trigger('submit');
         </c:otherwise>
       </c:choose>
             };
@@ -808,7 +813,7 @@
           $('.listing_groups_filter').css('height', new_height_listing_groups + 'px');
         }
 
-        $(document).ready(function() {
+        $(function() {
           try {
             const documentWidth = 1090;
             if ($(window).width() < documentWidth) {
@@ -818,25 +823,25 @@
             // to prevent errors according to cross browser compatibility
           }
 
-          $(window).resize(function() {
+          $(window).on('resize', function() {
             autoresizeUserGroupFilters();
           });
 
-          $('.add').focusin(function() {
+          $('.add').on('focusin', function() {
             $(this).parent('li').addClass('focus');
           });
-          $('.add').focusout(function() {
+          $('.add').on('focusout', function() {
             $(this).parent('li').removeClass('focus');
           });
-          $('.remove').focusin(function() {
+          $('.remove').on('focusin', function() {
             $(this).parent('li').addClass('focus');
           });
-          $('.remove').focusout(function() {
+          $('.remove').on('focusout', function() {
             $(this).parent('li').removeClass('focus');
           });
-          $('.line').hover(function() {
+          $('.line').on('mouseenter', function() {
             $(this).addClass('focus');
-          }, function() {
+          }).on('mouseleave', function() {
             $(this).removeClass('focus');
           });
 

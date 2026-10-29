@@ -1,6 +1,6 @@
 //manage the tooltip displaying in publication
 //the displaying personalization must be done here
-$(document).ready(function() {
+$(function() {
   $('.highlight-silver').each(function() {
     $(this).qtip({
       content : {

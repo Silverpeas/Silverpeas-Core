@@ -31,8 +31,7 @@
 <c:set var="templateLocationBase" value="core:termsOfService"/>
 <c:set var="templateContent" value="termsOfService${requestScope.templateDomainIdContent}"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <%@ include file="headLog.jsp" %>
 
 <fmt:setLocale value="${requestScope.language}"/>
@@ -59,14 +58,14 @@
     </style>
     <![endif]-->
     <script type="text/javascript">
-      $(document).ready(function() {
+      $(function() {
         $('#termsOfServiceAcceptance').on("submit", function() {
           this.action = '<c:url value="/CredentialsServlet/TermsOfServiceResponse"/>';
           return true;
         });
       });
       function submit() {
-        $('#termsOfServiceAcceptance').submit();
+        $('#termsOfServiceAcceptance').trigger('submit');
       }
       function userAccept() {
         $('#tosAccepted').val('true');

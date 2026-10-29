@@ -192,8 +192,8 @@
 <c:set var="appGroupList" value="<%=Arrays.asList(appGroups)%>"/>
 <c:set var="ldapDomain" value="<%=isDomainLdap%>"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 <head>
 <title></title>
 <view:looknfeel withFieldsetStyle="true"/>
@@ -201,7 +201,7 @@
 <script type="text/javascript">
 function ConfirmAndSend(textToDisplay, targetURL) {
   jQuery.popup.confirm(textToDisplay, function() {
-    jQuery('#deletionForm').attr('action', targetURL).submit();
+    jQuery('#deletionForm').attr('action', targetURL).trigger('submit');
   });
 }
 
@@ -480,9 +480,9 @@ out.println(window.printBefore());
           ajaxRequest.send().then(arrayPaneAjaxControl.refreshFromRequestResponse);
         }
 
-        $("#selectedState").change(function() {
+        $("#selectedState").on('change', function() {
           filterByUserState(this);
-        }).bind();
+        });
 
         whenSilverpeasReady(function() {
           arrayPaneAjaxControl = sp.arrayPane.ajaxControls('#dynamic-user-container', {

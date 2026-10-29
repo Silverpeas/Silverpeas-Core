@@ -117,8 +117,8 @@ int autocompletionMinChars = resource.getSetting("autocompletion.minChars", 3);
 QueryParser.Operator defaultOperand = IndexSearcher.get().getDefaultOperator();
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel withCheckFormScript="true"/>
@@ -307,7 +307,7 @@ function showExplorer() {
 	SP_openWindow('<%=URLUtil.getApplicationURL()%>/explorer/jsp/explorer.jsp?elementHidden=<%=QueryParameters.PARAM_FOLDER %>&elementVisible=pathAsString&resultType=path&scope='+componentId,'explorer',400,600,'scrollbars=yes');
 }
 
- $(document).ready(function(){
+ $(function(){
     <% if(resource.getSetting("enableAutocompletion", false)){ %>
 		//used for keywords autocompletion
 	    $("#query").autocomplete({

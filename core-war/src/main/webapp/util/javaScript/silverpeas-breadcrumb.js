@@ -130,7 +130,7 @@
 
     $node.append($('<a>', {
       href: '#'
-    }).text(path[position].name).click(function() {
+    }).text(path[position].name).on('click', function() {
       clearNodes($this, position + 1);
       settings.onchange(node);
     })).appendTo($this);

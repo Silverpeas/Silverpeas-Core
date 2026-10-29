@@ -85,6 +85,7 @@ if (field != null) {
 %>
 
 <% if (shownInNewWindow) { %>
+<!DOCTYPE html>
 <html>
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
@@ -184,9 +185,9 @@ if (field != null) {
 	  }
 	}
 
-	$(document).ready(
+	$(
 		function () {
-			$( "#multivaluableChk" ).change(function() {
+			$( "#multivaluableChk" ).on('change', function() {
 			  checkMultivaluedVisibility();
 			});
 
