@@ -25,6 +25,7 @@ package org.silverpeas.core.web.mvc;
 
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.io.file.SilverpeasFile;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.http.FileResponse;
@@ -69,14 +70,11 @@ public abstract class AbstractFileSender extends HttpServlet {
 
   protected void displayWarningHtmlCode(HttpServletResponse res) throws IOException {
     OutputStream out = res.getOutputStream();
-    StringReader sr = new StringReader(getSettingBunde().getString("warning"));
-    try {
-      IOUtils.copy(sr, out);
+    try(StringReader sr = new StringReader(getSettingBunde().getString("warning"))) {
+      IOUtils.copy(sr, out, Charsets.UTF_8);
       out.flush();
     } catch (IOException e) {
       SilverLogger.getLogger(this).error("warning properties", e);
-    } finally {
-      IOUtils.closeQuietly(sr);
     }
   }
 
