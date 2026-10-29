@@ -1,3 +1,4 @@
+**/.sonar/
 .env
 .idea
 **/*.env
