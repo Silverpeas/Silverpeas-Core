@@ -91,19 +91,17 @@ class ActifyDocumentProcessSchedulerTest {
   }
 
   @BeforeEach
-  public void setUpTest() {
-    volatileQuartScheduler.init();
+  void setUpTest() {
     initActifyDirectories();
 
     attachmentService = AttachmentServiceProvider.getAttachmentService();
     assertThat(attachmentService, not(nullValue()));
     reset(attachmentService);
-
-    processScheduler.init();
   }
 
   @AfterEach
-  public void cleanUpActifyResultDirectory() {
+  void cleanUpActifyResultDirectory() throws SchedulerException {
+    volatileQuartScheduler.shutdown();
     File dir = new File(ActifyDocumentProcessor.getActifyResultPath());
     File[] children = dir.listFiles();
     assertThat(children, is(notNullValue()));
@@ -158,13 +156,14 @@ class ActifyDocumentProcessSchedulerTest {
 
   @Test
   void jobSchedulingAtInitialization() throws SchedulerException {
+    // Only this test needs automatic scheduling; the other tests execute jobs directly.
+    volatileQuartScheduler.init();
+    processScheduler.init();
     Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
     Job importer = processScheduler.getActifyDocumentImporter();
     Job cleaner = processScheduler.getActifyDocumentCleaner();
     assertThat(scheduler.isJobScheduled(importer.getName()), is(true));
     assertThat(scheduler.isJobScheduled(cleaner.getName()), is(true));
-
-    scheduler.shutdown();
   }
 
   @Test
