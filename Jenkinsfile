@@ -91,10 +91,12 @@ pipeline {
   }
   post {
     always {
-      step([$class                  : 'Mailer',
-            notifyEveryUnstableBuild: true,
-            recipients              : "miguel.moquillon@silverpeas.org, david.lesimple@silverpeas.org, silveryocha@chastagnier.com",
-            sendToIndividuals       : true])
+      node('') {
+        step([$class                  : 'Mailer',
+              notifyEveryUnstableBuild: true,
+              recipients              : "miguel.moquillon@silverpeas.org, david.lesimple@silverpeas.org, silveryocha@chastagnier.com",
+              sendToIndividuals       : true])
+      }
     }
   }
 }
