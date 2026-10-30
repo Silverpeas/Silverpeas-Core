@@ -29,6 +29,7 @@ import jakarta.transaction.Transactional;
 import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.datasource.model.jpa.EntityManagerProvider;
 import java.time.Instant;
+import org.silverpeas.core.security.authentication.twofactor.MissingTwoFactorEncryptionKeyException;
 import org.silverpeas.core.security.authentication.twofactor.model.TwoFactorAuthentication;
 import org.silverpeas.core.security.encryption.ContentEncryptionService;
 import org.silverpeas.core.security.encryption.cipher.CryptoException;
@@ -128,8 +129,7 @@ public class TwoFactorAuthenticationRepositoryImpl implements TwoFactorAuthentic
 
   private String encryptSecret(final String secret) {
     if (!encryptionService.isCipherKeyDefined()) {
-      throw new IllegalStateException("The Silverpeas content encryption key must be configured " +
-          "before enrolling in two-factor authentication");
+      throw new MissingTwoFactorEncryptionKeyException();
     }
     try {
       return encryptionService.encryptContent(secret)[0];

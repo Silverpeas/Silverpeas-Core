@@ -28,6 +28,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.security.authentication.exception.AuthenticationBadCredentialException;
+import org.silverpeas.core.security.authentication.twofactor.MissingTwoFactorEncryptionKeyException;
 import org.silverpeas.core.security.authentication.twofactor.TwoFactorAuthenticationService;
 import org.silverpeas.core.security.authentication.twofactor.model.TwoFactorAuthentication;
 import org.silverpeas.core.security.encryption.cipher.CryptMD5;
@@ -46,6 +47,7 @@ import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
+import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 import org.silverpeas.core.web.socialnetwork.user.model.SNFullUser;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
@@ -127,7 +129,12 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
 
         return getDestination(MySettings.toString(), myProfilSC, request);
       } else if (route == StartTwoFactor) {
-        startTwoFactor(request, myProfilSC);
+        try {
+          startTwoFactor(request, myProfilSC);
+        } catch (MissingTwoFactorEncryptionKeyException e) {
+          SilverLogger.getLogger(this).warn(e.getMessage());
+          WebMessager.getInstance().addError(e.getMessage());
+        }
         return getDestination(MySettings.toString(), myProfilSC, request);
       } else if (route == ConfirmTwoFactor) {
         confirmTwoFactor(request, myProfilSC);
