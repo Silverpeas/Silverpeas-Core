@@ -42,6 +42,7 @@ import org.silverpeas.core.security.authentication.exception.*;
 import org.silverpeas.core.security.authentication.twofactor.TwoFactorAuthenticationService;
 import org.silverpeas.core.security.authentication.twofactor.model.TwoFactorAuthentication;
 import org.silverpeas.core.security.authentication.twofactor.TrustedDeviceService;
+import org.silverpeas.core.security.encryption.ContentEncryptionService;
 import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.core.security.authentication.verifier.UserCanLoginVerifier;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
@@ -101,6 +102,9 @@ public class AuthenticationService implements Authentication {
 
   @Inject
   private TrustedDeviceService trustedDeviceService;
+
+  @Inject
+  private ContentEncryptionService encryptionService;
 
   private static final Predicate<Domain> DOMAIN_WITH_AUTHENTICATION_SERVER = d -> {
     final AuthenticationServer authenticationServer =
@@ -257,7 +261,7 @@ public class AuthenticationService implements Authentication {
 
       // Password authentication has succeeded. Do not create the Silverpeas authentication
       // token before the second factor has been validated.
-      if (AUTHENTICATION_SETTINGS.getBoolean(TWO_FACTOR_ENABLED_SETTING, false)) {
+      if (isTwoFactorEnabled()) {
         final int userId = getUserId(credential);
         if (!isAnonymousUser(userId)) {
           final boolean configured = twoFactorAuthenticationService.getAuthentication(userId)
@@ -322,7 +326,7 @@ public class AuthenticationService implements Authentication {
 
     // Do not create the Silverpeas authentication token before the second factor
     // has been validated, including for remotely authenticated users.
-    if (AUTHENTICATION_SETTINGS.getBoolean(TWO_FACTOR_ENABLED_SETTING, false)) {
+    if (isTwoFactorEnabled()) {
       final int userId = getUserId(credential);
       if (!isAnonymousUser(userId)) {
         final boolean configured = twoFactorAuthenticationService.getAuthentication(userId)
@@ -397,6 +401,16 @@ public class AuthenticationService implements Authentication {
     onPasswordAndEmailChanged(credential, email);
   }
 
+  /**
+   * Checks the global switch and whether the configured encryption key can actually be read.
+   * Missing or inaccessible keys suspend 2FA without modifying the stored enrollments. The normal
+   * password or remote authentication checks still apply before a session can be opened.
+   */
+  private boolean isTwoFactorEnabled() {
+    return AUTHENTICATION_SETTINGS.getBoolean(TWO_FACTOR_ENABLED_SETTING, false) &&
+        encryptionService.isCipherKeyDefined();
+  }
+
   private boolean isAnonymousUser(final int userId) {
     final UserDetail user = UserDetail.getById(String.valueOf(userId));
     return user != null && user.isAnonymous();
@@ -410,7 +424,7 @@ public class AuthenticationService implements Authentication {
    */
   public boolean isTwoFactorLocked(final String login, final String domainId) {
     try {
-      if (!AUTHENTICATION_SETTINGS.getBoolean(TWO_FACTOR_ENABLED_SETTING, false)) {
+      if (!isTwoFactorEnabled()) {
         return false;
       }
       final AuthenticationCredential credential =
@@ -439,7 +453,7 @@ public class AuthenticationService implements Authentication {
   public AuthenticationResponse authenticateTwoFactor(
       final String login, final String domainId, final String code) {
     try {
-      if (!AUTHENTICATION_SETTINGS.getBoolean(TWO_FACTOR_ENABLED_SETTING, false)) {
+      if (!isTwoFactorEnabled()) {
         return AuthenticationResponse.error(Status.BAD_LOGIN_PASSWORD);
       }
       final AuthenticationCredential credential =
@@ -477,7 +491,7 @@ public class AuthenticationService implements Authentication {
   public AuthenticationResponse authenticateTrustedDevice(final String login,
       final String domainId, final String trustedDeviceToken, final String userAgent) {
     try {
-      if (!AUTHENTICATION_SETTINGS.getBoolean(TWO_FACTOR_ENABLED_SETTING, false) ||
+      if (!isTwoFactorEnabled() ||
           !AUTHENTICATION_SETTINGS.getBoolean("twoFactorTrustedDeviceEnabled", false) ||
           !StringUtil.isDefined(trustedDeviceToken)) {
         return AuthenticationResponse.error(Status.TWO_FACTOR_REQUIRED);
@@ -541,7 +555,7 @@ public class AuthenticationService implements Authentication {
    * @return whether mandatory two-factor authentication requires an enrollment.
    */
   public boolean isTwoFactorEnrollmentRequired(final String login, final String domainId) {
-    if (!AUTHENTICATION_SETTINGS.getBoolean(TWO_FACTOR_ENABLED_SETTING, false) ||
+    if (!isTwoFactorEnabled() ||
         !AUTHENTICATION_SETTINGS.getBoolean(TWO_FACTOR_MANDATORY_SETTING, false)) {
       return false;
     }
@@ -585,7 +599,7 @@ public class AuthenticationService implements Authentication {
   public AuthenticationResponse authenticateTwoFactorEnrollment(
       final String login, final String domainId, final String code) {
     try {
-      if (!AUTHENTICATION_SETTINGS.getBoolean(TWO_FACTOR_ENABLED_SETTING, false) ||
+      if (!isTwoFactorEnabled() ||
           !AUTHENTICATION_SETTINGS.getBoolean(TWO_FACTOR_MANDATORY_SETTING, false)) {
         return AuthenticationResponse.error(Status.TWO_FACTOR_REQUIRED);
       }

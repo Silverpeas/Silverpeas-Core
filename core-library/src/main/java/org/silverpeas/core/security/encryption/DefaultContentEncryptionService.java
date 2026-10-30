@@ -349,7 +349,7 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
    */
   protected static Map<String, String> encryptContent(Map<String, String> content, Cipher cipher,
       CipherKey key) throws CryptoException {
-    Map<String, String> encryptedContents = new HashMap<>(content.size());
+    Map<String, String> encryptedContents = HashMap.newHashMap(content.size());
     for (Map.Entry<String, String> aContent : content.entrySet()) {
       if (aContent.getValue() != null) {
         byte[] theEncryptedContent = cipher.encrypt(aContent.getValue(), key);
@@ -371,7 +371,7 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
    */
   protected static Map<String, String> decryptContent(Map<String, String> encryptedContent,
       Cipher cipher, CipherKey key) throws CryptoException {
-    Map<String, String> content = new HashMap<>(encryptedContent.size());
+    Map<String, String> content = HashMap.newHashMap(encryptedContent.size());
     try {
       for (Map.Entry<String, String> anEncryptedContent : encryptedContent.entrySet()) {
         if (anEncryptedContent.getValue() != null) {
@@ -457,7 +457,8 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
       getActualCipherKey();
       return true;
     } catch (Exception e) {
-      SilverLogger.getLogger(this).warn(e);
+      SilverLogger.getLogger(this)
+          .warn("The Silverpeas content encryption key is missing or inaccessible");
       return false;
     }
   }
@@ -618,7 +619,7 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
     private void setHidden(String file) {
       if (System.getProperty("os.name").toLowerCase().contains("windows")) {
         try {
-          Runtime.getRuntime().exec("attrib +H " + file);
+          new ProcessBuilder("attrib", "+H", file).start();
         } catch (IOException ex) {
           SilverLogger.getLogger(this).warn(ex);
         }
