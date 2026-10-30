@@ -36,6 +36,7 @@ import java.time.Instant;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import org.silverpeas.core.security.authentication.twofactor.model.TwoFactorAuthentication;
+import org.silverpeas.core.security.authentication.twofactor.MissingTwoFactorEncryptionKeyException;
 import org.silverpeas.core.security.encryption.ContentEncryptionService;
 import org.silverpeas.core.security.encryption.cipher.CryptoException;
 
@@ -134,7 +135,11 @@ class TwoFactorAuthenticationRepositoryTest {
   void shouldRejectMissingKeyWithoutInstallingOne() throws Exception {
     when(encryptionService.isCipherKeyDefined()).thenReturn(false);
     var authentication = authentication(42, "secret");
-    assertThrows(IllegalStateException.class, () -> repository.save(authentication));
+    var error = assertThrows(MissingTwoFactorEncryptionKeyException.class,
+        () -> repository.save(authentication));
+    assertEquals("The Silverpeas content encryption key must be configured " +
+        "before enrolling in two-factor authentication", error.getMessage());
+    verify(encryptionService, never()).encryptContent(anyString());
     verify(encryptionService, never()).updateCipherKey(anyString());
     assertTrue(repository.get(42).isEmpty());
   }
