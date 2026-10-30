@@ -9,14 +9,19 @@ pipeline {
     docker {
       image 'silverpeas/silverbuild'
       args '''
-        -v $HOME/.m2:/home/silverbuild/.m2 
-        -v $HOME/.gitconfig:/home/silverbuild/.gitconfig 
-        -v $HOME/.ssh:/home/silverbuild/.ssh 
+        -v $HOME/.m2:/home/silverbuild/.m2
+        -v $HOME/.gitconfig:/home/silverbuild/.gitconfig
+        -v $HOME/.ssh:/home/silverbuild/.ssh
         -v $HOME/.gnupg:/home/silverbuild/.gnupg
         '''
     }
   }
   stages {
+    stage('JavaScript tests') {
+      steps {
+        sh 'node --test core-war/src/test/javascript/*.test.cjs'
+      }
+    }
     stage('Build') {
       steps {
         script {

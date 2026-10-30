@@ -23,3 +23,7 @@
  */
 @import url("generic.css");
 @import url("custom.css");
+/* Hide the verification dialog until it is opened. */
+.security-dialog {
+  display: none;
+}
