@@ -17,6 +17,11 @@ pipeline {
     }
   }
   stages {
+    stage('JavaScript tests') {
+      steps {
+        sh 'node --test core-war/src/test/javascript/*.test.cjs'
+      }
+    }
     stage('Build') {
       steps {
         script {

@@ -111,6 +111,8 @@
   boolean isGroupManager = (Boolean) request.getAttribute("isOnlyGroupManager");
   boolean onlySpaceManager = (Boolean) request.getAttribute("isOnlySpaceManager");
   boolean isRightCopyReplaceEnabled = (Boolean) request.getAttribute("IsRightCopyReplaceEnabled");
+  boolean twoFactorAuthenticationEnabled = Boolean.TRUE.equals(
+      request.getAttribute("twoFactorAuthenticationEnabled"));
 
   String thisUserId = userObject.getId();
   boolean updatableUser = false;
@@ -156,6 +158,13 @@
     operationPane.addOperation(resource.getIcon("JDP.userDel"), resource.getString("GML.remove"),
         "javascript:removeUser()");
   }
+  if ((isDomainRW || isDomainSync || isDomainListener) && !isGroupManager
+      && twoFactorAuthenticationEnabled) {
+    operationPane.addOperation(resource.getIcon("JDP.userUpdate"),
+        resource.getString("JDP.userTwoFactorReset"),
+        "#", "reset-two-factor");
+  }
+
   if ((isDomainSync || isDomainListener) && !isGroupManager) {
     if (isUserFull) {
       operationPane
@@ -230,6 +239,7 @@
 <view:sp-head-part withFieldsetStyle="true" withCheckFormScript="true">
   <view:includePlugin name="popup"/>
   <view:includePlugin name="qtip"/>
+  <script src="${context}/jobDomainPeas/js/userTwoFactor.js"></script>
   <style>
     #deletionFormDialog .complement {
       display: flex;
@@ -370,6 +380,11 @@
   </script>
 </view:sp-head-part>
 <view:sp-body-part cssClass="admin-user page_content_admin">
+<fmt:message key="JDP.userTwoFactorResetConfirm" var="twoFactorResetConfirm"/>
+<div id="two-factor-reset-data"
+     data-user-id="<c:out value='${userInfos.id}'/>"
+     data-admin-token="<c:out value='${requestScope["X-ATKN"]}'/>"
+     data-confirmation="<c:out value='${twoFactorResetConfirm}'/>"></div>
 <%
 out.println(window.printBefore());
 %>
@@ -403,7 +418,7 @@ out.println(window.printBefore());
         <div class="avatar"> <view:image src="${userInfos.avatar}" size="120x" alt="viewUser" css="avatar"/>
           <% if (updatableUser && avatarDefined) { %>
           <div class="operation actionShownOnMouseOver">
-            <a title="${labelDelete}" href="#" onclick="deleteAvatar()"><img title="${labelDelete}" alt="${labelDelete}" src="../../util/icons/delete.gif" border="0"></a>
+            <button type="button" title="${labelDelete}" onclick="deleteAvatar()"><img title="${labelDelete}" alt="${labelDelete}" src="../../util/icons/delete.gif" border="0"></button>
           </div>
           <% } %>
         </div>
@@ -495,14 +510,14 @@ out.println(window.printBefore());
       <legend class="without-img"><fmt:message key="JDP.userManualNotif"/></legend>
       <div class="fields">
         <div class="field" id="form-row-user-manual-notification-limitation-activation">
-          <label class="txtlibform"><fmt:message key="JDP.userManualNotifReceiverLimitActivation"/></label>
+          <span class="txtlibform"><fmt:message key="JDP.userManualNotifReceiverLimitActivation"/></span>
           <div class="champs">
               ${(userInfos.userManualNotificationUserReceiverLimit)? yesLabel : noLabel}
           </div>
         </div>
         <c:if test="${userInfos.userManualNotificationUserReceiverLimit}">
           <div class="field" id="form-row-user-manual-notification-limitation-value">
-            <label class="txtlibform">${userManualNotifReceiverLimitValueLabel}</label>
+            <span class="txtlibform">${userManualNotifReceiverLimitValueLabel}</span>
             <div class="champs">
                 ${userInfos.notifManualReceiverLimit}
             </div>
@@ -633,34 +648,34 @@ out.println(window.printAfter());
     <form accept-charset="UTF-8" enctype="multipart/form-data" id="affected-profil"
           name="rightsForm" action="AssignSameRights" method="post">
         <input type="hidden" name="X-ATKN" value="${requestScope['X-ATKN']}"/>
-      <label class="label-ui-dialog"><fmt:message key="JDP.rights.assign.as"/></label>
+      <label for="sourceRightsName" class="label-ui-dialog"><fmt:message key="JDP.rights.assign.as"/></label>
       <span class="champ-ui-dialog">
 		    <input type="text" id="sourceRightsName" name="sourceRightsName" value="" size="50" readonly="readonly"/>
-		    <a title="<fmt:message key="JDP.rights.assign.sourceRightsUserPanel"/>" href="#" onclick="javascript:SP_openWindow('SelectRightsUserOrGroup','SelectUserGroupWindow',800,600,'');">
+		    <button type="button" title="<fmt:message key="JDP.rights.assign.sourceRightsUserPanel"/>" onclick="javascript:SP_openWindow('SelectRightsUserOrGroup','SelectUserGroupWindow',800,600,'');">
 				<img src="${context}${sourceRightsUserPanelIcon}"
              alt="<fmt:message key="JDP.rights.assign.sourceRightsUserPanel"/>"
              title="<fmt:message key="JDP.rights.assign.sourceRightsUserPanel"/>"/>
-			  </a>
+			  </button>
         <img src="${context}${mandatoryIcon}" width="5" height="5" border="0" alt=""/>
         <input type="hidden" name="sourceRightsId" id="sourceRightsId" value=""/>
         <input type="hidden" name="sourceRightsType" id="sourceRightsType" value=""/>
 		  </span>
-      <label class="label-ui-dialog"><fmt:message key="JDP.rights.assign.mode"/></label>
+      <span class="label-ui-dialog"><fmt:message key="JDP.rights.assign.mode"/></span>
       <span class="champ-ui-dialog">
-        <input type="radio" name="choiceAssignRights" id="choiceAssignRights" value="${ASSIGNATION_MODE_ADD}" checked="checked"/>
-        <strong><fmt:message key="JDP.rights.assign.mode.add"/></strong> <fmt:message key="JDP.rights.assign.actualRights"/>
-        <input type="radio" name="choiceAssignRights" id="choiceAssignRights" value="${ASSIGNATION_MODE_REPLACE}"/>
-        <strong><fmt:message key="JDP.rights.assign.mode.replace"/></strong> <fmt:message key="JDP.rights.assign.theActualRights"/>
+        <input type="radio" name="choiceAssignRights" id="choiceAssignRightsAdd" value="${ASSIGNATION_MODE_ADD}" checked="checked"/>
+        <label for="choiceAssignRightsAdd"><strong><fmt:message key="JDP.rights.assign.mode.add"/></strong> <fmt:message key="JDP.rights.assign.actualRights"/></label>
+        <input type="radio" name="choiceAssignRights" id="choiceAssignRightsReplace" value="${ASSIGNATION_MODE_REPLACE}"/>
+        <label for="choiceAssignRightsReplace"><strong><fmt:message key="JDP.rights.assign.mode.replace"/></strong> <fmt:message key="JDP.rights.assign.theActualRights"/></label>
 	    </span>
-      <label class="label-ui-dialog"></label>
+      <span class="label-ui-dialog"></span>
       <span class="champ-ui-dialog">
         <input type="checkbox" name="checkNodeAssignRights" id="checkNodeAssignRights" checked="checked"/>
-        <fmt:message key="JDP.rights.assign.nodeAssignRights"/>
+        <label for="checkNodeAssignRights"><fmt:message key="JDP.rights.assign.nodeAssignRights"/></label>
         <input type="hidden" name="nodeAssignRights" id="nodeAssignRights" value="true"/>
 	    </span>
-      <label class="label-ui-dialog">
+      <span class="label-ui-dialog">
         <img src="${context}${mandatoryIcon}" width="5" height="5" alt=""/> : <fmt:message key="GML.requiredField"/>
-      </label>
+      </span>
     </form>
   </div>
 <% } %>
