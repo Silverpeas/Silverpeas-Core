@@ -133,7 +133,8 @@ class TwoFactorAuthenticationRepositoryTest {
   @Test
   void shouldRejectMissingKeyWithoutInstallingOne() throws Exception {
     when(encryptionService.isCipherKeyDefined()).thenReturn(false);
-    assertThrows(IllegalStateException.class, () -> repository.save(authentication(42, "secret")));
+    var authentication = authentication(42, "secret");
+    assertThrows(IllegalStateException.class, () -> repository.save(authentication));
     verify(encryptionService, never()).updateCipherKey(anyString());
     assertTrue(repository.get(42).isEmpty());
   }
@@ -141,7 +142,8 @@ class TwoFactorAuthenticationRepositoryTest {
   @Test
   void shouldPropagateEncryptionFailureWithoutPersistingSecret() throws Exception {
     when(encryptionService.encryptContent("secret")).thenThrow(new CryptoException("failure"));
-    assertThrows(IllegalStateException.class, () -> repository.save(authentication(42, "secret")));
+    var authentication = authentication(42, "secret");
+    assertThrows(IllegalStateException.class, () -> repository.save(authentication));
     assertTrue(repository.get(42).isEmpty());
   }
 

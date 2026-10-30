@@ -74,6 +74,8 @@ import static java.util.Arrays.stream;
  */
 @Service
 public class AuthenticationService implements Authentication {
+  private static final String TWO_FACTOR_MANDATORY_SETTING = "twoFactorTotpMandatory";
+  private static final String TWO_FACTOR_ENABLED_SETTING = "twoFactorTotpEnabled";
 
   private static final String DATA_SOURCE_JNDI_NAME;
   private static final String DOMAIN_TABLE_NAME;
@@ -255,14 +257,14 @@ public class AuthenticationService implements Authentication {
 
       // Password authentication has succeeded. Do not create the Silverpeas authentication
       // token before the second factor has been validated.
-      if (AUTHENTICATION_SETTINGS.getBoolean("twoFactorTotpEnabled", false)) {
+      if (AUTHENTICATION_SETTINGS.getBoolean(TWO_FACTOR_ENABLED_SETTING, false)) {
         final int userId = getUserId(credential);
         if (!isAnonymousUser(userId)) {
           final boolean configured = twoFactorAuthenticationService.getAuthentication(userId)
-              .map(authentication -> authentication.isEnabled())
+              .map(TwoFactorAuthentication::isEnabled)
               .orElse(false);
           final boolean mandatory = AUTHENTICATION_SETTINGS.getBoolean(
-              "twoFactorTotpMandatory", false);
+              TWO_FACTOR_MANDATORY_SETTING, false);
           if (configured || mandatory) {
             throw new AuthenticationTwoFactorRequiredException();
           }
@@ -320,14 +322,14 @@ public class AuthenticationService implements Authentication {
 
     // Do not create the Silverpeas authentication token before the second factor
     // has been validated, including for remotely authenticated users.
-    if (AUTHENTICATION_SETTINGS.getBoolean("twoFactorTotpEnabled", false)) {
+    if (AUTHENTICATION_SETTINGS.getBoolean(TWO_FACTOR_ENABLED_SETTING, false)) {
       final int userId = getUserId(credential);
       if (!isAnonymousUser(userId)) {
         final boolean configured = twoFactorAuthenticationService.getAuthentication(userId)
-            .map(authentication -> authentication.isEnabled())
+            .map(TwoFactorAuthentication::isEnabled)
             .orElse(false);
         final boolean mandatory = AUTHENTICATION_SETTINGS.getBoolean(
-            "twoFactorTotpMandatory", false);
+            TWO_FACTOR_MANDATORY_SETTING, false);
         if (configured || mandatory) {
           throw new AuthenticationTwoFactorRequiredException();
         }
@@ -408,7 +410,7 @@ public class AuthenticationService implements Authentication {
    */
   public boolean isTwoFactorLocked(final String login, final String domainId) {
     try {
-      if (!AUTHENTICATION_SETTINGS.getBoolean("twoFactorTotpEnabled", false)) {
+      if (!AUTHENTICATION_SETTINGS.getBoolean(TWO_FACTOR_ENABLED_SETTING, false)) {
         return false;
       }
       final AuthenticationCredential credential =
@@ -437,7 +439,7 @@ public class AuthenticationService implements Authentication {
   public AuthenticationResponse authenticateTwoFactor(
       final String login, final String domainId, final String code) {
     try {
-      if (!AUTHENTICATION_SETTINGS.getBoolean("twoFactorTotpEnabled", false)) {
+      if (!AUTHENTICATION_SETTINGS.getBoolean(TWO_FACTOR_ENABLED_SETTING, false)) {
         return AuthenticationResponse.error(Status.BAD_LOGIN_PASSWORD);
       }
       final AuthenticationCredential credential =
@@ -475,7 +477,7 @@ public class AuthenticationService implements Authentication {
   public AuthenticationResponse authenticateTrustedDevice(final String login,
       final String domainId, final String trustedDeviceToken, final String userAgent) {
     try {
-      if (!AUTHENTICATION_SETTINGS.getBoolean("twoFactorTotpEnabled", false) ||
+      if (!AUTHENTICATION_SETTINGS.getBoolean(TWO_FACTOR_ENABLED_SETTING, false) ||
           !AUTHENTICATION_SETTINGS.getBoolean("twoFactorTrustedDeviceEnabled", false) ||
           !StringUtil.isDefined(trustedDeviceToken)) {
         return AuthenticationResponse.error(Status.TWO_FACTOR_REQUIRED);
@@ -539,8 +541,8 @@ public class AuthenticationService implements Authentication {
    * @return whether mandatory two-factor authentication requires an enrollment.
    */
   public boolean isTwoFactorEnrollmentRequired(final String login, final String domainId) {
-    if (!AUTHENTICATION_SETTINGS.getBoolean("twoFactorTotpEnabled", false) ||
-        !AUTHENTICATION_SETTINGS.getBoolean("twoFactorTotpMandatory", false)) {
+    if (!AUTHENTICATION_SETTINGS.getBoolean(TWO_FACTOR_ENABLED_SETTING, false) ||
+        !AUTHENTICATION_SETTINGS.getBoolean(TWO_FACTOR_MANDATORY_SETTING, false)) {
       return false;
     }
     try {
@@ -583,8 +585,8 @@ public class AuthenticationService implements Authentication {
   public AuthenticationResponse authenticateTwoFactorEnrollment(
       final String login, final String domainId, final String code) {
     try {
-      if (!AUTHENTICATION_SETTINGS.getBoolean("twoFactorTotpEnabled", false) ||
-          !AUTHENTICATION_SETTINGS.getBoolean("twoFactorTotpMandatory", false)) {
+      if (!AUTHENTICATION_SETTINGS.getBoolean(TWO_FACTOR_ENABLED_SETTING, false) ||
+          !AUTHENTICATION_SETTINGS.getBoolean(TWO_FACTOR_MANDATORY_SETTING, false)) {
         return AuthenticationResponse.error(Status.TWO_FACTOR_REQUIRED);
       }
       final AuthenticationCredential credential =

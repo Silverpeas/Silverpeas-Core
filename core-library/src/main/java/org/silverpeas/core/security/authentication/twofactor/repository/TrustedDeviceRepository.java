@@ -37,6 +37,7 @@ import java.util.Optional;
 @Repository
 @Transactional(Transactional.TxType.SUPPORTS)
 public class TrustedDeviceRepository {
+  private static final String USER_ID_PARAMETER = "userId";
 
   private final EntityManagerProvider entityManagerProvider;
 
@@ -81,13 +82,13 @@ public class TrustedDeviceRepository {
     EntityManager em = entityManager();
     em.createQuery("delete from TrustedDeviceEntity d where d.userId = :userId " +
         "and d.tokenHash = :hash and d.expiresAt <= :now")
-        .setParameter("userId", userId).setParameter("hash", hash)
+        .setParameter(USER_ID_PARAMETER, userId).setParameter("hash", hash)
         .setParameter("now", now).executeUpdate();
     return em.createQuery("update TrustedDeviceEntity d set d.tokenHash = :newHash, " +
         "d.lastUsedAt = :now, d.userAgent = :userAgent where d.userId = :userId " +
         "and d.tokenHash = :hash and d.expiresAt > :now")
         .setParameter("newHash", newHash).setParameter("now", now)
-        .setParameter("userAgent", userAgent).setParameter("userId", userId)
+        .setParameter("userAgent", userAgent).setParameter(USER_ID_PARAMETER, userId)
         .setParameter("hash", hash).executeUpdate() == 1;
   }
 
@@ -100,7 +101,7 @@ public class TrustedDeviceRepository {
   public Optional<Instant> getExpiration(final int userId, final String hash) {
     return entityManager().createQuery("select d.expiresAt from TrustedDeviceEntity d " +
         "where d.userId = :userId and d.tokenHash = :hash", Instant.class)
-        .setParameter("userId", userId).setParameter("hash", hash).getResultStream().findFirst();
+        .setParameter(USER_ID_PARAMETER, userId).setParameter("hash", hash).getResultStream().findFirst();
   }
 
   /**
@@ -110,7 +111,7 @@ public class TrustedDeviceRepository {
   @Transactional(Transactional.TxType.REQUIRED)
   public void deleteAll(final int userId) {
     entityManager().createQuery("delete from TrustedDeviceEntity d where d.userId = :userId")
-        .setParameter("userId", userId).executeUpdate();
+        .setParameter(USER_ID_PARAMETER, userId).executeUpdate();
   }
 
   private EntityManager entityManager() {

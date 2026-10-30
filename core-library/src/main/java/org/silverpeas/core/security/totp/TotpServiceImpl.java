@@ -222,6 +222,9 @@ public class TotpServiceImpl implements TotpService {
         + period;
   }
 
+  // RFC 6238 section 1.2 defines HMAC-SHA-1 for interoperable TOTP. This is a keyed MAC,
+  // not an unkeyed SHA-1 password hash. RFC 4226 appendix B distinguishes their security.
+  @SuppressWarnings("java:S4790")
   private String generateCode(
       final byte[] secret,
       final long counter) {
@@ -247,7 +250,7 @@ public class TotpServiceImpl implements TotpService {
       int modulo = powerOfTen(digits);
       int otp = binary % modulo;
 
-      return String.format("%0" + digits + "d", otp);
+      return org.apache.commons.lang3.StringUtils.leftPad(Integer.toString(otp), digits, '0');
 
     } catch (GeneralSecurityException e) {
       throw new IllegalStateException("Unable to generate TOTP code", e);

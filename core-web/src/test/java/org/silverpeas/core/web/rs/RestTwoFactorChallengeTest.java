@@ -110,6 +110,23 @@ class RestTwoFactorChallengeTest {
   }
 
   @Test
+  void shouldRejectMissingSessionBeforeStartingChallenge() {
+    when(request.getSession(true)).thenReturn(null);
+    var exception = assertThrows(NullPointerException.class,
+        () -> RestTwoFactorChallenge.start(request, "alice", "0"));
+    assertEquals("A challenge requires an HTTP session", exception.getMessage());
+    verify(request, never()).setAttribute(anyString(), any());
+  }
+
+  @Test
+  void shouldClearChallengeWithAnInvalidExpirationType() {
+    RestTwoFactorChallenge.start(request, "alice", "0");
+    attributes.put("org.silverpeas.core.web.rs.HTTPAuthentication.twoFactorExpiresAt", "invalid");
+    assertTrue(RestTwoFactorChallenge.from(request).isEmpty());
+    assertTrue(attributes.isEmpty());
+  }
+
+  @Test
   void shouldNotCreateSessionWhenLookingForChallenge() {
     when(request.getSession(false)).thenReturn(null);
     assertTrue(RestTwoFactorChallenge.from(request).isEmpty());
@@ -117,15 +134,15 @@ class RestTwoFactorChallengeTest {
   }
 
   @Test
-  void shouldRejectPendingSecondFactorOnProtectedRestResources() throws Exception {
+  void shouldRejectPendingSecondFactorOnProtectedRestResources() {
     String credentials = Base64.getEncoder().encodeToString(
         "alice@domain0:password".getBytes(StandardCharsets.UTF_8));
     when(request.getHeader(UserPrivilegeValidation.HTTP_AUTHORIZATION))
         .thenReturn("Basic " + credentials);
     when(authenticator.authenticate(any())).thenReturn(
         AuthenticationResponse.error(AuthenticationResponse.Status.TWO_FACTOR_REQUIRED));
-    var exception = assertThrows(WebApplicationException.class, () -> authentication.authenticate(
-        new HTTPAuthentication.AuthenticationContext(request, mock(HttpServletResponse.class))));
+    var context = new HTTPAuthentication.AuthenticationContext(request, mock(HttpServletResponse.class));
+    var exception = assertThrows(WebApplicationException.class, () -> authentication.authenticate(context));
     assertEquals(401, exception.getResponse().getStatus());
     assertEquals("alice", RestTwoFactorChallenge.from(request).orElseThrow().getLogin());
     assertTrue(RestTwoFactorChallenge.isRequired(request));
@@ -133,8 +150,8 @@ class RestTwoFactorChallengeTest {
 
   @Test
   void shouldRejectMissingCredentialsWithoutStartingChallenge() {
-    var exception = assertThrows(WebApplicationException.class, () -> authentication.authenticate(
-        new HTTPAuthentication.AuthenticationContext(request, mock(HttpServletResponse.class))));
+    var context = new HTTPAuthentication.AuthenticationContext(request, mock(HttpServletResponse.class));
+    var exception = assertThrows(WebApplicationException.class, () -> authentication.authenticate(context));
     assertEquals(401, exception.getResponse().getStatus());
     assertFalse(RestTwoFactorChallenge.isRequired(request));
     verify(request, never()).getSession(true);

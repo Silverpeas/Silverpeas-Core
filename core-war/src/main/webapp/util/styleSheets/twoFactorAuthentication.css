@@ -71,8 +71,8 @@ body {
   padding: 40px 36px 32px;
 }
 
-#header {
-  display: flex !important;
+#formTwoFactor #header {
+  display: flex;
   align-items: center;
   gap: 12px;
   margin-bottom: 24px;
@@ -95,10 +95,10 @@ body {
   stroke: var(--accent-dark);
 }
 
-.information {
-  display: block !important;
-  width: auto !important;
-  text-align: left !important;
+#formTwoFactor #header .information {
+  display: block;
+  width: auto;
+  text-align: left;
   font-size: 17px;
   font-weight: 600;
   line-height: 1.3;
@@ -217,11 +217,11 @@ a.submit:focus-visible {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  * { transition: none !important; }
+  #formTwoFactor * { transition: none; }
 }
 
-.is-hidden {
-  display: none !important;
+#formTwoFactor .is-hidden {
+  display: none;
 }
 .two-factor-qr-code {
   text-align: center;

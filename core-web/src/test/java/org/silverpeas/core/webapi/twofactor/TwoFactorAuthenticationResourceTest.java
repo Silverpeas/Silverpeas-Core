@@ -24,25 +24,37 @@
 package org.silverpeas.core.webapi.twofactor;
 
 import org.junit.jupiter.api.Test;
+import org.silverpeas.core.admin.user.model.User;
+import java.lang.reflect.Field;
 import org.silverpeas.core.security.authentication.twofactor.TwoFactorAuthenticationService;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
 class TwoFactorAuthenticationResourceTest {
 
   @Test
-  void shouldGenerateRecoveryCodesForCurrentUser() {
+  void shouldGenerateRecoveryCodesForCurrentUser() throws ReflectiveOperationException {
     final TwoFactorAuthenticationService service = mock(TwoFactorAuthenticationService.class);
-    final var resource = new TwoFactorAuthenticationResource();
-    // Resource wiring and current-user context are covered by the REST integration layer.
-    // This test is intentionally kept as a compilation-level placeholder until the standard
-    // REST resource test harness is applied to two-factor resources.
-    assertEquals("two-factor", TwoFactorAuthenticationResourceURIs.BASE_URI);
-    assertEquals("recovery-codes", TwoFactorAuthenticationResourceURIs.RECOVERY_CODES_URI_PART);
+    final User user = mock(User.class);
+    when(user.getId()).thenReturn("42");
+    final var resource = new TwoFactorAuthenticationResource() {
+      @Override
+      protected User getUser() {
+        return user;
+      }
+    };
+    Field serviceField = TwoFactorAuthenticationResource.class.getDeclaredField("service");
+    serviceField.setAccessible(true);
+    serviceField.set(resource, service);
+    List<String> expectedCodes = List.of("recovery-code");
+    when(service.generateRecoveryCodes(42)).thenReturn(expectedCodes);
+
+    assertSame(expectedCodes, resource.generateRecoveryCodes());
+    verify(service).generateRecoveryCodes(42);
   }
 }

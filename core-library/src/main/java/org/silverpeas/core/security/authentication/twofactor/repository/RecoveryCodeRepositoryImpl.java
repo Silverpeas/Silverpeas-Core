@@ -38,6 +38,7 @@ import java.util.List;
 @Repository
 @Transactional(Transactional.TxType.SUPPORTS)
 public class RecoveryCodeRepositoryImpl implements RecoveryCodeRepository {
+  private static final String USER_ID_PARAMETER = "userId";
 
   private final EntityManagerProvider entityManagerProvider;
 
@@ -50,7 +51,7 @@ public class RecoveryCodeRepositoryImpl implements RecoveryCodeRepository {
   public List<RecoveryCode> getUnused(final int userId) {
     return entityManager().createQuery(
         "select c from RecoveryCodeEntity c where c.userId = :userId and c.used = false",
-        RecoveryCodeEntity.class).setParameter("userId", userId).getResultList().stream()
+        RecoveryCodeEntity.class).setParameter(USER_ID_PARAMETER, userId).getResultList().stream()
         .map(c -> RecoveryCode.builder(c.userId).id(c.id).hash(c.hash).used(c.used)
             .createdAt(c.createdAt).usedAt(c.usedAt).build()).toList();
   }
@@ -72,7 +73,7 @@ public class RecoveryCodeRepositoryImpl implements RecoveryCodeRepository {
   public boolean consume(final int userId, final String hash, final Instant usedAt) {
     return entityManager().createQuery("update RecoveryCodeEntity c set c.used = true, " +
         "c.usedAt = :usedAt where c.userId = :userId and c.hash = :hash and c.used = false")
-        .setParameter("userId", userId).setParameter("hash", hash)
+        .setParameter(USER_ID_PARAMETER, userId).setParameter("hash", hash)
         .setParameter("usedAt", usedAt).executeUpdate() == 1;
   }
 
@@ -80,7 +81,7 @@ public class RecoveryCodeRepositoryImpl implements RecoveryCodeRepository {
   @Transactional(Transactional.TxType.REQUIRED)
   public void deleteAll(final int userId) {
     entityManager().createQuery("delete from RecoveryCodeEntity c where c.userId = :userId")
-        .setParameter("userId", userId).executeUpdate();
+        .setParameter(USER_ID_PARAMETER, userId).executeUpdate();
   }
 
   private EntityManager entityManager() {

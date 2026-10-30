@@ -88,7 +88,7 @@ class TwoFactorAuthenticationServiceImplTest {
   private TwoFactorAuthenticationServiceImpl service;
 
   @Test
-  void shouldGetAuthentication() throws Exception {
+  void shouldGetAuthentication() {
     final TwoFactorAuthentication authentication =
         authentication(TwoFactorAuthentication.Status.ENABLED);
     when(repository.get(USER_ID)).thenReturn(Optional.of(authentication));
@@ -100,7 +100,7 @@ class TwoFactorAuthenticationServiceImplTest {
   }
 
   @Test
-  void shouldStartEnrollment() throws Exception {
+  void shouldStartEnrollment() {
     when(repository.get(USER_ID)).thenReturn(Optional.empty());
     when(totpService.generateSecret()).thenReturn(SECRET);
 
@@ -114,7 +114,7 @@ class TwoFactorAuthenticationServiceImplTest {
   }
 
   @Test
-  void shouldRejectStartEnrollmentWhenAlreadyEnabled() throws Exception {
+  void shouldRejectStartEnrollmentWhenAlreadyEnabled() {
     when(repository.get(USER_ID)).thenReturn(
         Optional.of(authentication(TwoFactorAuthentication.Status.ENABLED)));
 
@@ -125,7 +125,7 @@ class TwoFactorAuthenticationServiceImplTest {
   }
 
   @Test
-  void shouldRestartPendingEnrollmentWithNewSecret() throws Exception {
+  void shouldRestartPendingEnrollmentWithNewSecret() {
     final Instant createdAt = Instant.parse("2026-09-21T08:00:00Z");
     final TwoFactorAuthentication current = TwoFactorAuthentication.builder(USER_ID)
         .secret(SECRET)
@@ -145,7 +145,7 @@ class TwoFactorAuthenticationServiceImplTest {
   }
 
   @Test
-  void shouldConfirmEnrollment() throws Exception {
+  void shouldConfirmEnrollment() {
     final TwoFactorAuthentication pending =
         authentication(TwoFactorAuthentication.Status.PENDING);
     when(repository.get(USER_ID)).thenReturn(Optional.of(pending));
@@ -159,7 +159,7 @@ class TwoFactorAuthenticationServiceImplTest {
   }
 
   @Test
-  void shouldRejectConfirmationWithInvalidCode() throws Exception {
+  void shouldRejectConfirmationWithInvalidCode() {
     final TwoFactorAuthentication pending =
         authentication(TwoFactorAuthentication.Status.PENDING);
     when(repository.get(USER_ID)).thenReturn(Optional.of(pending));
@@ -171,7 +171,7 @@ class TwoFactorAuthenticationServiceImplTest {
   }
 
   @Test
-  void shouldRejectConfirmationWhenNotPending() throws Exception {
+  void shouldRejectConfirmationWhenNotPending() {
     when(repository.get(USER_ID)).thenReturn(
         Optional.of(authentication(TwoFactorAuthentication.Status.ENABLED)));
 
@@ -182,14 +182,14 @@ class TwoFactorAuthenticationServiceImplTest {
   }
 
   @Test
-  void shouldRejectBlankConfirmationCode() throws Exception {
+  void shouldRejectBlankConfirmationCode() {
     assertFalse(service.confirmEnrollment(USER_ID, "  "));
 
     verify(repository, never()).get(anyInt());
   }
 
   @Test
-  void shouldValidateEnabledAuthentication() throws Exception {
+  void shouldValidateEnabledAuthentication() {
     final TwoFactorAuthentication enabled =
         authentication(TwoFactorAuthentication.Status.ENABLED);
     when(repository.get(USER_ID)).thenReturn(Optional.of(enabled));
@@ -202,7 +202,7 @@ class TwoFactorAuthenticationServiceImplTest {
   }
 
   @Test
-  void shouldRejectAuthenticationWhenLocked() throws Exception {
+  void shouldRejectAuthenticationWhenLocked() {
     final TwoFactorAuthentication locked =
         authentication(TwoFactorAuthentication.Status.ENABLED).toBuilder()
             .failedAttempts(5)
@@ -217,7 +217,7 @@ class TwoFactorAuthenticationServiceImplTest {
   }
 
   @Test
-  void shouldRecordFailedAuthenticationAttempt() throws Exception {
+  void shouldRecordFailedAuthenticationAttempt() {
     final TwoFactorAuthentication enabled =
         authentication(TwoFactorAuthentication.Status.ENABLED).toBuilder()
             .failedAttempts(2)
@@ -231,7 +231,7 @@ class TwoFactorAuthenticationServiceImplTest {
   }
 
   @Test
-  void shouldLockAfterMaximumFailedAuthenticationAttempts() throws Exception {
+  void shouldLockAfterMaximumFailedAuthenticationAttempts() {
     final TwoFactorAuthentication enabled =
         authentication(TwoFactorAuthentication.Status.ENABLED).toBuilder()
             .failedAttempts(4)
@@ -246,7 +246,7 @@ class TwoFactorAuthenticationServiceImplTest {
   }
 
   @Test
-  void shouldRejectInvalidAuthenticationCode() throws Exception {
+  void shouldRejectInvalidAuthenticationCode() {
     final TwoFactorAuthentication enabled =
         authentication(TwoFactorAuthentication.Status.ENABLED);
     when(repository.get(USER_ID)).thenReturn(Optional.of(enabled));
@@ -258,7 +258,7 @@ class TwoFactorAuthenticationServiceImplTest {
   }
 
   @Test
-  void shouldRejectValidationWhenNotEnabled() throws Exception {
+  void shouldRejectValidationWhenNotEnabled() {
     when(repository.get(USER_ID)).thenReturn(
         Optional.of(authentication(TwoFactorAuthentication.Status.PENDING)));
 
@@ -269,14 +269,14 @@ class TwoFactorAuthenticationServiceImplTest {
   }
 
   @Test
-  void shouldRejectBlankValidationCode() throws Exception {
+  void shouldRejectBlankValidationCode() {
     assertFalse(service.validate(USER_ID, ""));
 
     verify(repository, never()).get(anyInt());
   }
 
   @Test
-  void shouldGenerateRecoveryCodes() throws Exception {
+  void shouldGenerateRecoveryCodes() {
     when(repository.get(USER_ID)).thenReturn(
         Optional.of(authentication(TwoFactorAuthentication.Status.ENABLED)));
 
@@ -290,7 +290,7 @@ class TwoFactorAuthenticationServiceImplTest {
   }
 
   @Test
-  void shouldRejectRecoveryCodeGenerationWhenTwoFactorIsNotEnabled() throws Exception {
+  void shouldRejectRecoveryCodeGenerationWhenTwoFactorIsNotEnabled() {
     when(repository.get(USER_ID)).thenReturn(
         Optional.of(authentication(TwoFactorAuthentication.Status.PENDING)));
 
@@ -300,7 +300,7 @@ class TwoFactorAuthenticationServiceImplTest {
   }
 
   @Test
-  void shouldValidateRecoveryCode() throws Exception {
+  void shouldValidateRecoveryCode() {
     when(repository.get(USER_ID)).thenReturn(
         Optional.of(authentication(TwoFactorAuthentication.Status.ENABLED)));
     when(recoveryCodeRepository.consume(eq(USER_ID), any(String.class), any(Instant.class)))
@@ -312,7 +312,7 @@ class TwoFactorAuthenticationServiceImplTest {
   }
 
   @Test
-  void shouldRejectInvalidRecoveryCode() throws Exception {
+  void shouldRejectInvalidRecoveryCode() {
     when(repository.get(USER_ID)).thenReturn(
         Optional.of(authentication(TwoFactorAuthentication.Status.ENABLED)));
     when(recoveryCodeRepository.consume(eq(USER_ID), any(String.class), any(Instant.class)))
@@ -322,7 +322,7 @@ class TwoFactorAuthenticationServiceImplTest {
   }
 
   @Test
-  void shouldRejectRecoveryCodeWhenLocked() throws Exception {
+  void shouldRejectRecoveryCodeWhenLocked() {
     final TwoFactorAuthentication locked =
         authentication(TwoFactorAuthentication.Status.ENABLED).toBuilder()
             .failedAttempts(5)
@@ -337,7 +337,7 @@ class TwoFactorAuthenticationServiceImplTest {
   }
 
   @Test
-  void shouldCountInvalidRecoveryCodeAttempt() throws Exception {
+  void shouldCountInvalidRecoveryCodeAttempt() {
     final TwoFactorAuthentication enabled =
         authentication(TwoFactorAuthentication.Status.ENABLED).toBuilder()
             .failedAttempts(2)
@@ -350,7 +350,7 @@ class TwoFactorAuthenticationServiceImplTest {
   }
 
   @Test
-  void shouldLockAfterMaximumInvalidRecoveryCodes() throws Exception {
+  void shouldLockAfterMaximumInvalidRecoveryCodes() {
     final TwoFactorAuthentication enabled =
         authentication(TwoFactorAuthentication.Status.ENABLED).toBuilder()
             .failedAttempts(4)
@@ -364,7 +364,7 @@ class TwoFactorAuthenticationServiceImplTest {
   }
 
   @Test
-  void shouldDisableAuthentication() throws Exception {
+  void shouldDisableAuthentication() {
     service.disable(USER_ID);
 
     verify(trustedDeviceService).revokeAll(USER_ID);
@@ -372,7 +372,7 @@ class TwoFactorAuthenticationServiceImplTest {
   }
 
   @Test
-  void shouldAcceptUserIdentifierZero() throws Exception {
+  void shouldAcceptUserIdentifierZero() {
     when(repository.get(0)).thenReturn(Optional.empty());
 
     assertTrue(service.getAuthentication(0).isEmpty());

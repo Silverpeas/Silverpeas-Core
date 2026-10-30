@@ -40,6 +40,7 @@ import java.util.Optional;
 @Repository
 @Transactional(Transactional.TxType.SUPPORTS)
 public class TwoFactorAuthenticationRepositoryImpl implements TwoFactorAuthenticationRepository {
+  private static final String USER_ID_PARAMETER = "userId";
 
   private final EntityManagerProvider entityManagerProvider;
   private final ContentEncryptionService encryptionService;
@@ -56,7 +57,7 @@ public class TwoFactorAuthenticationRepositoryImpl implements TwoFactorAuthentic
     // Projection reads the database after bulk updates without returning stale managed entities.
     return entityManager().createQuery("select a.secret, a.status, a.createdAt, a.updatedAt, " +
         "a.lastUsedAt, a.failedAttempts, a.lockedUntil from TwoFactorAuthenticationEntity a " +
-        "where a.userId = :userId", Object[].class).setParameter("userId", userId)
+        "where a.userId = :userId", Object[].class).setParameter(USER_ID_PARAMETER, userId)
         .getResultStream().findFirst().map(a -> TwoFactorAuthentication.builder(userId)
             .secret(decryptSecret((String) a[0]))
             .status(TwoFactorAuthentication.Status.valueOf((String) a[1]))
@@ -77,7 +78,7 @@ public class TwoFactorAuthenticationRepositoryImpl implements TwoFactorAuthentic
         .setParameter("now", now).setParameter("lastUsedAt", authentication.getLastUsedAt())
         .setParameter("attempts", authentication.getFailedAttempts())
         .setParameter("lockedUntil", authentication.getLockedUntil())
-        .setParameter("userId", authentication.getUserId()).executeUpdate();
+        .setParameter(USER_ID_PARAMETER, authentication.getUserId()).executeUpdate();
     if (updated == 0) {
       TwoFactorAuthenticationEntity entity = new TwoFactorAuthenticationEntity();
       entity.userId = authentication.getUserId();
@@ -96,7 +97,7 @@ public class TwoFactorAuthenticationRepositoryImpl implements TwoFactorAuthentic
   @Transactional(Transactional.TxType.REQUIRED)
   public void delete(final int userId) {
     entityManager().createQuery("delete from TwoFactorAuthenticationEntity a where a.userId = :userId")
-        .setParameter("userId", userId).executeUpdate();
+        .setParameter(USER_ID_PARAMETER, userId).executeUpdate();
   }
 
   @Override
@@ -105,7 +106,7 @@ public class TwoFactorAuthenticationRepositoryImpl implements TwoFactorAuthentic
     entityManager().createQuery("update TwoFactorAuthenticationEntity a set " +
         "a.lastUsedAt = :lastUsedAt, a.updatedAt = :now where a.userId = :userId")
         .setParameter("lastUsedAt", lastUsedAt).setParameter("now", Instant.now())
-        .setParameter("userId", userId).executeUpdate();
+        .setParameter(USER_ID_PARAMETER, userId).executeUpdate();
   }
 
   @Override
@@ -116,7 +117,7 @@ public class TwoFactorAuthenticationRepositoryImpl implements TwoFactorAuthentic
         "a.failedAttempts = :attempts, a.lockedUntil = :lockedUntil, a.updatedAt = :now " +
         "where a.userId = :userId").setParameter("attempts", failedAttempts)
         .setParameter("lockedUntil", lockedUntil).setParameter("now", Instant.now())
-        .setParameter("userId", userId).executeUpdate();
+        .setParameter(USER_ID_PARAMETER, userId).executeUpdate();
   }
 
   @Override

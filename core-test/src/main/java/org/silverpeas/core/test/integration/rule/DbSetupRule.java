@@ -232,26 +232,30 @@ public class DbSetupRule implements TestRule {
     if (scripts != null) {
       Stream.of(scripts)
           .filter(s -> FilenameUtils.getExtension(s).equalsIgnoreCase("sql"))
-          .forEach(s -> {
-            try (InputStream sqlScriptInput = classOfTest.getResourceAsStream(s)) {
-              if (sqlScriptInput != null) {
-                StringWriter sqlScriptContent = new StringWriter();
-                IOUtils.copy(sqlScriptInput, sqlScriptContent, StandardCharsets.UTF_8);
-                if (sqlScriptContent.toString() != null && !sqlScriptContent.toString().isEmpty()) {
-                  String[] sql = sqlScriptContent.toString().split(";");
-                  if (INITIAL_TABLES.equals(s)) {
-                    sql = filterExistingQuartzConstraints(sql);
-                  }
-                  statements.add(Operations.sql(sql));
-                }
-              }
-            } catch (IOException e) {
-              Logger.getLogger(getClass().getSimpleName())
-                  .log(Level.SEVERE, "Error while loading the SQL script {0}!", s);
-            }
-          });
+          .forEach(s -> addSqlScriptOperation(classOfTest, s, statements));
     }
     return Operations.sequenceOf(statements);
+  }
+
+  private void addSqlScriptOperation(final Class<?> classOfTest, final String script,
+      final List<Operation> statements) {
+    try (InputStream input = classOfTest.getResourceAsStream(script)) {
+      if (input == null) {
+        return;
+      }
+      StringWriter content = new StringWriter();
+      IOUtils.copy(input, content, StandardCharsets.UTF_8);
+      if (!content.toString().isEmpty()) {
+        String[] sql = content.toString().split(";");
+        if (INITIAL_TABLES.equals(script)) {
+          sql = filterExistingQuartzConstraints(sql);
+        }
+        statements.add(Operations.sql(sql));
+      }
+    } catch (IOException e) {
+      Logger.getLogger(getClass().getSimpleName())
+          .log(Level.SEVERE, "Error while loading the SQL script {0}!", script);
+    }
   }
 
   /**

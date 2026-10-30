@@ -29,6 +29,7 @@ import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.util.StringUtil;
 import java.util.Optional;
+import java.util.Objects;
 
 /**
  * A pending REST second-factor challenge. Session attribute names and retry rules are internal
@@ -46,7 +47,7 @@ public final class RestTwoFactorChallenge {
   private final HttpSession session;
 
   private RestTwoFactorChallenge(final HttpSession session) {
-    this.session = session;
+    this.session = Objects.requireNonNull(session, "A challenge requires an HTTP session");
   }
 
   static void start(final HttpServletRequest request, final String login, final String domainId) {
@@ -132,13 +133,13 @@ public final class RestTwoFactorChallenge {
   private boolean isValid() {
     Object expiresAt = session.getAttribute(EXPIRES_AT);
     return StringUtil.isDefined(getLogin()) && StringUtil.isDefined(getDomainId()) &&
-        expiresAt instanceof Long && (Long) expiresAt >= System.currentTimeMillis() &&
+        expiresAt instanceof Long expiration && expiration >= System.currentTimeMillis() &&
         getAttempts() < maxAttempts();
   }
 
   private int getAttempts() {
     Object attempts = session.getAttribute(ATTEMPTS);
-    return attempts instanceof Integer ? (Integer) attempts : 0;
+    return attempts instanceof Integer count ? count : 0;
   }
 
   private int maxAttempts() {
