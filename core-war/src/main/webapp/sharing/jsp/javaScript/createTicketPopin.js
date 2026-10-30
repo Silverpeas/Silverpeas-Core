@@ -122,26 +122,24 @@ function ifCorrectFormExecute(callback) {
         sp.i18n.get("GML.MustBeFilled") +
         "\n";
       errorNb++;
-    } else {
-      if (
-        !isDateOK(
-          endDate,
-          document.getElementById("sharingticket-popup-content").dataset
-            .language
-        )
-      ) {
-        errorMsg +=
-          "  - " +
-          sp.i18n.get("GML.theField") +
-          " '" +
-          sp.i18n.get("sharing.endDate") +
-          "' " +
-          sp.i18n.get("GML.MustContainsCorrectDate") +
-          "\n";
-        errorNb++;
-      }
+    } else if (
+      !isDateOK(
+        endDate,
+        document.getElementById("sharingticket-popup-content").dataset.language
+      )
+    ) {
+      errorMsg +=
+        "  - " +
+        sp.i18n.get("GML.theField") +
+        " '" +
+        sp.i18n.get("sharing.endDate") +
+        "' " +
+        sp.i18n.get("GML.MustContainsCorrectDate") +
+        "\n";
+      errorNb++;
     }
   }
+
   switch (errorNb) {
     case 0:
       callback.call(this);
@@ -204,7 +202,11 @@ function createTicket() {
       cleanForm();
     },
     error: function (xhr, ajaxOptions, thrownError) {
-      const data = /<body.*?>([\s\S]*)<\/body>/.exec(xhr.responseText)[1];
+      const errorDocument = new DOMParser().parseFromString(
+        xhr.responseText,
+        "text/html"
+      );
+      const data = errorDocument.body.innerHTML;
       $("#sharingticket-error-content").html(data);
       $("#sharingticket-error-content").popup("basic", {
         title: "Error"

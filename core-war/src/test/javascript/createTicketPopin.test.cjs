@@ -35,6 +35,7 @@ function page() {
   const bundles = [];
   const dates = [];
   const windows = [];
+  const parsed = [];
   let request;
   let secured;
   let ready;
@@ -62,13 +63,19 @@ function page() {
   const context = { $, jQuery: $, webContext: '/silverpeas',
     sp: { i18n: { load: options => bundles.push(options), get: key => '[' + key + ']' } },
     document: { getElementById: () => ({ dataset: { language: 'de' } }) },
+    DOMParser: class {
+      parseFromString(source, type) {
+        parsed.push([source, type]);
+        return { body: { innerHTML: '<p>Server error</p>' } };
+      }
+    },
     isWhitespace: value => !value.trim(), isInteger: value => /^\d+$/.test(value),
     isDateOK: (date, language) => { dates.push([date, language]); return date === '31.12.2026'; },
     applyTokenSecurity: selector => { secured = selector; },
     SP_openWindow: (...args) => windows.push(args) };
   runInNewContext(script, context);
   ready();
-  return { $, context, errors, bundles, dates, windows, request: () => request,
+  return { $, context, errors, bundles, dates, windows, parsed, request: () => request,
     secured: () => secured };
 }
 
@@ -137,4 +144,29 @@ test('external handlers update validity and open user selection', () => {
   view.$('#selectSharingUsers').handlers.click({ preventDefault: () => { prevented = true; } });
   assert.equal(prevented, true);
   assert.ok(view.windows[0][0].includes('selectedUsers=12,34&selectionMultiple=true'));
+});
+
+
+test('server error responses are parsed as HTML and shown without losing the error dialog', () => {
+  const view = page();
+  view.context.createSharingTicketPopup({ type: 'Publication', componentId: 'kmelia1', id: '42' });
+  view.$('#securityCode').val('secret');
+  view.context.createTicket();
+  const response = '<HTML><BODY class="error"><p>Server error</p></BODY></HTML>';
+  view.request().error({ responseText: response });
+  assert.deepEqual(view.parsed, [[response, 'text/html']]);
+  assert.equal(view.$('#sharingticket-error-content').content, '<p>Server error</p>');
+  assert.equal(view.$('#sharingticket-error-content').dialog.type, 'basic');
+  assert.equal(view.$('#securityCode').val(), '');
+});
+
+test('an invalid date rejects the limited ticket with the translated message', () => {
+  const view = page();
+  view.context.createSharingTicketPopup({ type: 'Publication' });
+  view.$('#validity').val('1');
+  view.$('#endDate').val('invalid');
+  let submitted = false;
+  assert.equal(view.context.ifCorrectFormExecute(() => { submitted = true; }), false);
+  assert.equal(submitted, false);
+  assert.ok(view.errors[0].includes('[GML.MustContainsCorrectDate]'));
 });
