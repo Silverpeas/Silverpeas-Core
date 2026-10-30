@@ -5,98 +5,82 @@ pipeline {
     lockFilePath = null
     version = null
   }
-  agent none
+  agent {
+    docker {
+      image 'silverpeas/silverbuild'
+      args '''
+        -v $HOME/.m2:/home/silverbuild/.m2
+        -v $HOME/.gitconfig:/home/silverbuild/.gitconfig
+        -v $HOME/.ssh:/home/silverbuild/.ssh
+        -v $HOME/.gnupg:/home/silverbuild/.gnupg
+        '''
+    }
+  }
   stages {
     stage('JavaScript tests') {
-      agent {
-        docker {
-          image 'node:22-alpine'
-        }
-      }
       steps {
         sh 'node --test core-war/src/test/javascript/*.test.cjs'
       }
     }
-    stage('Build and analysis') {
-      agent {
-        docker {
-          image 'silverpeas/silverbuild'
-          args '''
-            -v $HOME/.m2:/home/silverbuild/.m2 
-            -v $HOME/.gitconfig:/home/silverbuild/.gitconfig 
-            -v $HOME/.ssh:/home/silverbuild/.ssh 
-            -v $HOME/.gnupg:/home/silverbuild/.gnupg
-            '''
-        }
-      }
-      stages {
-        stage('Build') {
-          steps {
-            script {
-              sh "/opt/wildfly-for-tests/wildfly-*.Final/bin/standalone.sh -c standalone-full.xml &> /dev/null &"
-              version = computeSnapshotVersion()
-              checkParentPOMVersion(version)
-              waitForDependencyRunningBuildIfAny(version, 'core')
-              lockFilePath = createLockFile(version, 'core')
-              sh """
-                mvn -U versions:set -DgenerateBackupPoms=false -DnewVersion=${version}
-                mvn clean install -Pdeployment -Djava.awt.headless=true -Dcontext=ci
-                /opt/wildfly-for-tests/wildfly-*.Final/bin/jboss-cli.sh --connect :shutdown
-                """
-              deleteLockFile(lockFilePath)
-            }
-          }
-        }
-        stage('Quality Analysis') {
-          // quality analyse with our SonarQube service is performed only for PR against our main
-          // repository and for master branch
-          when {
-            expression {
-              env.BRANCH_NAME.startsWith('PR') &&
-                  env.CHANGE_URL?.startsWith('https://github.com/Silverpeas')
-            }
-          }
-          steps {
-            script {
-              String jdkHome = sh(script: 'echo ${SONAR_JDK_HOME}', returnStdout: true).trim()
-              withSonarQubeEnv('Silverpeas SonarCloud') {
-                 sh """
-                    JAVA_HOME=$jdkHome mvn org.codehaus.mojo:sonar-maven-plugin::sonar \\
-                      -Dsonar.projectKey=Silverpeas_Silverpeas-Core2 \\
-                      -Dsonar.organization=silverpeas \\
-                      -Dsonar.pullrequest.branch=${env.BRANCH_NAME} \\
-                      -Dsonar.pullrequest.key=${env.CHANGE_ID} \\
-                      -Dsonar.pullrequest.base=master \\
-                      -Dsonar.pullrequest.provider=github \\
-                      -Dsonar.scanner.force-deprecated-java-version=true
-                    """
-              }
-              timeout(time: 30, unit: 'MINUTES') {
-                // Just in case something goes wrong, pipeline will be killed after a timeout
-                def qg = waitForQualityGate() // Reuse taskId previously collected by withSonarQubeEnv
-                if (qg.status != 'OK' && qg.status != 'WARNING') {
-                  error "Pipeline aborted due to quality gate failure: ${qg.status}"
-                }
-              }
-            }
-          }
-        }
-      }
-      post {
-        always {
+    stage('Build') {
+      steps {
+        script {
+          sh "/opt/wildfly-for-tests/wildfly-*.Final/bin/standalone.sh -c standalone-full.xml &> /dev/null &"
+          version = computeSnapshotVersion()
+          checkParentPOMVersion(version)
+          waitForDependencyRunningBuildIfAny(version, 'core')
+          lockFilePath = createLockFile(version, 'core')
+          sh """
+            mvn -U versions:set -DgenerateBackupPoms=false -DnewVersion=${version}
+            mvn clean install -Pdeployment -Djava.awt.headless=true -Dcontext=ci
+            /opt/wildfly-for-tests/wildfly-*.Final/bin/jboss-cli.sh --connect :shutdown
+            """
           deleteLockFile(lockFilePath)
+        }
+      }
+    }
+    stage('Quality Analysis') {
+      // quality analyse with our SonarQube service is performed only for PR against our main
+      // repository and for master branch
+      when {
+        expression {
+          env.BRANCH_NAME.startsWith('PR') &&
+              env.CHANGE_URL?.startsWith('https://github.com/Silverpeas')
+        }
+      }
+      steps {
+        script {
+          String jdkHome = sh(script: 'echo ${SONAR_JDK_HOME}', returnStdout: true).trim()
+          withSonarQubeEnv('Silverpeas SonarCloud') {
+             sh """
+                JAVA_HOME=$jdkHome mvn org.codehaus.mojo:sonar-maven-plugin::sonar \\
+                  -Dsonar.projectKey=Silverpeas_Silverpeas-Core2 \\
+                  -Dsonar.organization=silverpeas \\
+                  -Dsonar.pullrequest.branch=${env.BRANCH_NAME} \\
+                  -Dsonar.pullrequest.key=${env.CHANGE_ID} \\
+                  -Dsonar.pullrequest.base=master \\
+                  -Dsonar.pullrequest.provider=github \\
+                  -Dsonar.scanner.force-deprecated-java-version=true
+                """
+          }
+          timeout(time: 30, unit: 'MINUTES') {
+            // Just in case something goes wrong, pipeline will be killed after a timeout
+            def qg = waitForQualityGate() // Reuse taskId previously collected by withSonarQubeEnv
+            if (qg.status != 'OK' && qg.status != 'WARNING') {
+              error "Pipeline aborted due to quality gate failure: ${qg.status}"
+            }
+          }
         }
       }
     }
   }
   post {
     always {
-      node('') {
-        step([$class                  : 'Mailer',
-              notifyEveryUnstableBuild: true,
-              recipients              : "miguel.moquillon@silverpeas.org, david.lesimple@silverpeas.org, silveryocha@chastagnier.com",
-              sendToIndividuals       : true])
-      }
+      deleteLockFile(lockFilePath)
+      step([$class                  : 'Mailer',
+            notifyEveryUnstableBuild: true,
+            recipients              : "miguel.moquillon@silverpeas.org, david.lesimple@silverpeas.org, silveryocha@chastagnier.com",
+            sendToIndividuals       : true])
     }
   }
 }
