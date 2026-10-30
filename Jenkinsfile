@@ -17,11 +17,6 @@ pipeline {
     }
   }
   stages {
-    stage('JavaScript tests') {
-      steps {
-        sh 'node --test core-war/src/test/javascript/*.test.cjs'
-      }
-    }
     stage('Build') {
       steps {
         script {
@@ -33,6 +28,7 @@ pipeline {
           sh """
             mvn -U versions:set -DgenerateBackupPoms=false -DnewVersion=${version}
             mvn clean install -Pdeployment -Djava.awt.headless=true -Dcontext=ci
+            node --test core-war/src/test/javascript/*.test.cjs
             /opt/wildfly-for-tests/wildfly-*.Final/bin/jboss-cli.sh --connect :shutdown
             """
           deleteLockFile(lockFilePath)
