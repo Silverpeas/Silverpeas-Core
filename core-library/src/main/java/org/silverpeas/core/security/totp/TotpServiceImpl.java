@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.security.totp;
 
+import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
@@ -250,7 +251,7 @@ public class TotpServiceImpl implements TotpService {
       int modulo = powerOfTen(digits);
       int otp = binary % modulo;
 
-      return org.apache.commons.lang3.StringUtils.leftPad(Integer.toString(otp), digits, '0');
+      return StringUtils.leftPad(Integer.toString(otp), digits, '0');
 
     } catch (GeneralSecurityException e) {
       throw new IllegalStateException("Unable to generate TOTP code", e);
