@@ -145,6 +145,22 @@ class TwoFactorAuthenticationRepositoryTest {
   }
 
   @Test
+  void shouldHideEnrollmentWhileKeyIsUnavailableAndRestoreItWhenKeyReturns() throws Exception {
+    repository.save(authentication(42, "existing-secret").toBuilder()
+        .status(TwoFactorAuthentication.Status.ENABLED).lastUsedAt(NOW).build());
+    var original = repository.get(42).orElseThrow();
+    clearInvocations(encryptionService);
+    when(encryptionService.isCipherKeyDefined()).thenReturn(false);
+
+    assertTrue(repository.get(42).isEmpty());
+    verify(encryptionService, never()).decryptContent(anyString());
+    verify(encryptionService, never()).updateCipherKey(anyString());
+
+    when(encryptionService.isCipherKeyDefined()).thenReturn(true);
+    assertEquals(original, repository.get(42).orElseThrow());
+  }
+
+  @Test
   void shouldPropagateEncryptionFailureWithoutPersistingSecret() throws Exception {
     when(encryptionService.encryptContent("secret")).thenThrow(new CryptoException("failure"));
     var authentication = authentication(42, "secret");

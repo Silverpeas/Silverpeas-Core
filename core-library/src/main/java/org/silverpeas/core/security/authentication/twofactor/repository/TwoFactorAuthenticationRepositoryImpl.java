@@ -55,6 +55,10 @@ public class TwoFactorAuthenticationRepositoryImpl implements TwoFactorAuthentic
 
   @Override
   public Optional<TwoFactorAuthentication> get(final int userId) {
+    if (!encryptionService.isCipherKeyDefined()) {
+      // Keep the encrypted enrollment intact so restoring the key restores the second factor.
+      return Optional.empty();
+    }
     // Projection reads the database after bulk updates without returning stale managed entities.
     return entityManager().createQuery("select a.secret, a.status, a.createdAt, a.updatedAt, " +
         "a.lastUsedAt, a.failedAttempts, a.lockedUntil from TwoFactorAuthenticationEntity a " +
