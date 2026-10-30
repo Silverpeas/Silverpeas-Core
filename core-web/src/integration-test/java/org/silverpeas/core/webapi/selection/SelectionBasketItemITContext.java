@@ -31,6 +31,7 @@ import org.silverpeas.core.web.test.WarBuilder4WebCore;
 import org.silverpeas.core.webapi.profile.AuthenticationResource;
 import org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs;
 import org.silverpeas.core.webapi.profile.UserProfileEntity;
+import org.silverpeas.core.webapi.twofactor.QrCodeGenerator;
 import org.silverpeas.core.webapi.util.UserEntity;
 import org.silverpeas.web.test.RESTWebServiceTest;
 
@@ -62,9 +63,10 @@ public abstract class SelectionBasketItemITContext {
     return WarBuilder4WebCore.onWarForTestClass(test)
         .addRESTWebServiceEnvironment()
         .addMVCFeatures()
+        .addMavenDependencies("com.google.zxing:javase")
         .addClasses(UserEntity.class, UserProfileEntity.class, AuthenticationResource.class,
             ProfileResourceBaseURIs.class, CalendarInstanceRoutingMap.class,
-            AbstractCalendarInstanceRoutingMap.class)
+            AbstractCalendarInstanceRoutingMap.class, QrCodeGenerator.class)
         .testFocusedOn(w -> w.addPackages(true, "org.silverpeas.core.webapi.selection"))
         .build();
   }
