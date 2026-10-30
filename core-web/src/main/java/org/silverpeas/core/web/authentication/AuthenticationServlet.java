@@ -169,19 +169,9 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
       userCanTryAgainToLoginVerifier.clearSession(request);
 
       if (result != null && result.getStatus() == Status.TWO_FACTOR_REQUIRED) {
-        final Cookie trustedDeviceCookie = getCookie(servletRequest, TRUSTED_DEVICE_COOKIE);
-        if (trustedDeviceCookie != null) {
-          result = authService.authenticateTrustedDevice(
-              authenticationParameters.getLogin(), authenticationParameters.getDomainId(),
-              trustedDeviceCookie.getValue(), servletRequest.getHeader("User-Agent"));
-          if (result.getStatus().succeeded()) {
-            writeTrustedDeviceCookie(response, result.getTrustedDeviceToken(),
-                authenticationParameters.isSecuredAccess());
-            openNewSession(result.getToken(), request, response, authenticationParameters,
-                userCanTryAgainToLoginVerifier);
-            return;
-          }
-          deleteTrustedDeviceCookie(response, authenticationParameters.isSecuredAccess());
+        if (authenticateTrustedDeviceIfAny(request, response, authenticationParameters,
+            userCanTryAgainToLoginVerifier)) {
+          return;
         }
         startTwoFactorChallenge(request, response, authenticationParameters);
       } else if (result == null || result.getStatus().isInError()) {
@@ -195,6 +185,25 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
       SilverLogger.getLogger(this).error(e);
       response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
+  }
+
+  private boolean authenticateTrustedDeviceIfAny(final HttpRequest request,
+      final HttpServletResponse response, final AuthenticationParameters parameters,
+      final UserCanTryAgainToLoginVerifier verifier) throws ServletException, IOException {
+    final Cookie cookie = getCookie(request, TRUSTED_DEVICE_COOKIE);
+    if (cookie == null) {
+      return false;
+    }
+    final AuthenticationResponse result = authService.authenticateTrustedDevice(
+        parameters.getLogin(), parameters.getDomainId(), cookie.getValue(),
+        request.getHeader("User-Agent"));
+    if (result.getStatus().succeeded()) {
+      writeTrustedDeviceCookie(response, result.getTrustedDeviceToken(), parameters.isSecuredAccess());
+      openNewSession(result.getToken(), request, response, parameters, verifier);
+      return true;
+    }
+    deleteTrustedDeviceCookie(response, parameters.isSecuredAccess());
+    return false;
   }
 
   private boolean isTwoFactorValidationRequest(final HttpServletRequest request) {

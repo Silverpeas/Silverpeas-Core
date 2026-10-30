@@ -93,6 +93,8 @@ import java.net.URLEncoder;
 @WebService
 @Path(AuthenticationResource.PATH)
 public class AuthenticationResource extends RESTWebService {
+  private static final String USER_AGENT = "User-Agent";
+  private static final String EXPOSE_HEADERS = "Access-Control-Expose-Headers";
 
   static final String PATH = "authentication";
   static final String TRUSTED_DEVICE_COOKIE = "Silverpeas_TrustedDevice";
@@ -149,12 +151,12 @@ public class AuthenticationResource extends RESTWebService {
           .isPresent()) {
         return Response.status(Response.Status.UNAUTHORIZED)
             .header("X-Silverpeas-2FA-Enrollment-Required", "true")
-            .header("Access-Control-Expose-Headers", "X-Silverpeas-2FA-Enrollment-Required")
+            .header(EXPOSE_HEADERS, "X-Silverpeas-2FA-Enrollment-Required")
             .entity(AuthenticationChallengeEntity.twoFactorRequired()).build();
       }
       return Response.status(Response.Status.UNAUTHORIZED)
           .header("X-Silverpeas-2FA-Required", "true")
-          .header("Access-Control-Expose-Headers", "X-Silverpeas-2FA-Required")
+          .header(EXPOSE_HEADERS, "X-Silverpeas-2FA-Required")
           .entity(AuthenticationChallengeEntity.twoFactorRequired())
           .build();
     }
@@ -218,7 +220,7 @@ public class AuthenticationResource extends RESTWebService {
         .withAsUri(ProfileResourceBaseURIs.uriOfUser(user.getId())));
     if (trustDevice) {
       String trustedDeviceToken = authenticationService.createTrustedDevice(
-          user.getLogin(), user.getDomainId(), getHttpServletRequest().getHeader("User-Agent"));
+          user.getLogin(), user.getDomainId(), getHttpServletRequest().getHeader(USER_AGENT));
       writeTrustedDeviceCookie(trustedDeviceToken);
     }
     return response.build();
@@ -247,7 +249,7 @@ public class AuthenticationResource extends RESTWebService {
 
     String trustedDeviceToken = getTrustedDeviceToken();
     AuthenticationResponse result = authenticationService.authenticateTrustedDevice(
-        login, domainId, trustedDeviceToken, getHttpServletRequest().getHeader("User-Agent"));
+        login, domainId, trustedDeviceToken, getHttpServletRequest().getHeader(USER_AGENT));
     if (!result.getStatus().succeeded()) {
       return Response.status(Response.Status.UNAUTHORIZED)
           .entity(AuthenticationChallengeEntity.twoFactorRequired())
@@ -364,7 +366,7 @@ public class AuthenticationResource extends RESTWebService {
     openAuthenticatedSession(user);
     if (trustDevice) {
       String token = authenticationService.createTrustedDevice(
-          user.getLogin(), user.getDomainId(), getHttpServletRequest().getHeader("User-Agent"));
+          user.getLogin(), user.getDomainId(), getHttpServletRequest().getHeader(USER_AGENT));
       writeTrustedDeviceCookie(token);
     }
     return Response.ok(new EnrollmentConfirmationEntity(
@@ -383,6 +385,7 @@ public class AuthenticationResource extends RESTWebService {
      * Creates an empty request for JSON deserialization.
      */
     public TwoFactorCodeRequest() {
+      // Required by JSON deserialization; fields are populated through setters.
     }
 
     /**
@@ -528,7 +531,7 @@ public class AuthenticationResource extends RESTWebService {
     SessionInfo session = sessionManagement
         .openSession(user, getHttpServletRequest());
     getHttpServletResponse().setHeader(UserPrivilegeValidation.HTTP_SESSIONKEY, session.getSessionId());
-    getHttpServletResponse().addHeader("Access-Control-Expose-Headers",
+    getHttpServletResponse().addHeader(EXPOSE_HEADERS,
         UserPrivilegeValidation.HTTP_SESSIONKEY + ", " +
             SynchronizerTokenService.SESSION_TOKEN_KEY);
     SynchronizerTokenService tokenService = synchronizerTokenService;

@@ -200,13 +200,14 @@ class TotpServiceImplTest {
 
   @Test
   void shouldRejectNullOrBlankSecretWhenGeneratingCode() {
+    Instant instant = Instant.ofEpochSecond(300);
     assertThrows(
         IllegalArgumentException.class,
-        () -> service.generateCode(null, Instant.ofEpochSecond(300)));
+        () -> service.generateCode(null, instant));
 
     assertThrows(
         IllegalArgumentException.class,
-        () -> service.generateCode("   ", Instant.ofEpochSecond(300)));
+        () -> service.generateCode("   ", instant));
 
     assertThrows(
         IllegalArgumentException.class,

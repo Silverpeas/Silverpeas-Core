@@ -155,7 +155,7 @@ class ActifyDocumentProcessSchedulerTest {
   }
 
   @Test
-  void jobSchedulingAtInitialization() throws SchedulerException {
+  void jobSchedulingAtInitialization() {
     // Only this test needs automatic scheduling; the other tests execute jobs directly.
     volatileQuartScheduler.init();
     processScheduler.init();

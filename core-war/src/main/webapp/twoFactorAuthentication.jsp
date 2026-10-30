@@ -46,7 +46,7 @@
         <div class="cadre">
           <div id="header">
             <div class="lock-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="4" y="10" width="16" height="10" rx="2"></rect>
                 <path d="M8 10V7a4 4 0 0 1 8 0v3"></path>
               </svg>
