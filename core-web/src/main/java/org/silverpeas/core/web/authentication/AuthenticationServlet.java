@@ -131,9 +131,7 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
         final User connectedUser = userSessionStatus.getInfo().getUserDetail();
         // Prevent trashing the user session on SSO authentication when user behind the current
         // session is the one authenticated for SSO.
-        if (authenticationParameters.isSsoMode() &&
-            connectedUser.getLogin().equals(authenticationParameters.getLogin()) &&
-            connectedUser.getDomainId().equals(authenticationParameters.getDomainId())) {
+        if (isSameSsoUser(authenticationParameters, connectedUser)) {
           SilverLogger.getLogger("silverpeas.sso")
               .debug(() -> format(
                   "SSO Authentication of PRINCIPAL {0} on domain {1}, keeping existing user " +
@@ -185,6 +183,12 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
       SilverLogger.getLogger(this).error(e);
       response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
+  }
+
+  private static boolean isSameSsoUser(final AuthenticationParameters parameters,
+      final User connectedUser) {
+    return parameters.isSsoMode() && connectedUser.getLogin().equals(parameters.getLogin()) &&
+        connectedUser.getDomainId().equals(parameters.getDomainId());
   }
 
   private boolean authenticateTrustedDeviceIfAny(final HttpRequest request,
