@@ -69,6 +69,19 @@ public class MassiveWebSecurityFilterIT {
             {"seLect", "insert", "upDate", "Delete", "references", "alter", "index", "all"};
 
     @Test
+    public void webDavDocumentUploadIsNotInspectedAsAnApplicationEntity() {
+        assertThat(MassiveWebSecurityFilter.isWebDavDocumentUpload("PUT", "/repository"), is(true));
+        assertThat(MassiveWebSecurityFilter.isWebDavDocumentUpload("PUT", "/repository2000"), is(true));
+        assertThat(MassiveWebSecurityFilter.isWebDavDocumentUpload("put", "/repository"), is(true));
+        assertThat(MassiveWebSecurityFilter.isWebDavDocumentUpload("PUT", "/repository-other"), is(false));
+        assertThat(MassiveWebSecurityFilter.isWebDavDocumentUpload("PUT", "/services"), is(false));
+        assertThat(MassiveWebSecurityFilter.isWebDavDocumentUpload("PROPFIND", "/repository"), is(false));
+        assertThat(MassiveWebSecurityFilter.isWebDavDocumentUpload("PROPPATCH", "/repository"), is(false));
+        assertThat(MassiveWebSecurityFilter.isWebDavDocumentUpload("LOCK", "/repository"), is(false));
+        assertThat(MassiveWebSecurityFilter.isWebDavDocumentUpload("POST", "/services"), is(false));
+    }
+
+    @Test
     public void secureAgainstXss() {
         assertXSS(skippedParam("script"), false);
         assertXSS(param("script"), false);
