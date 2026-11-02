@@ -567,6 +567,13 @@ public class MassiveWebSecurityFilter implements Filter {
   }
 
   private static boolean isWebEntityEmbodiedIn(ServletRequest request) {
+    HttpServletRequest httpRequest = (HttpServletRequest) request;
+    String servletPath = httpRequest.getServletPath();
+    if ("PUT".equalsIgnoreCase(httpRequest.getMethod()) &&
+        ("/repository".equals(servletPath) || "/repository2000".equals(servletPath))) {
+      // WebDAV PUT transfers a document, not an application JSON/XML entity.
+      return false;
+    }
     String contentType = request.getContentType();
     if (StringUtil.isDefined(contentType)) {
       contentType = contentType.toLowerCase();
