@@ -38,8 +38,7 @@ import static org.mockito.Mockito.*;
 @EnableSilverTestEnv(context = JEETestContext.class)
 class ContentEncryptionKeyAvailabilityTest {
   @Test
-  void inaccessibleKeyShouldReturnFalseAndLogOnlyAWarningWithoutSecretsOrStackTrace()
-      throws Exception {
+  void inaccessibleKeyShouldReturnFalseAndLogOnlyAWarningWithoutSecretsOrStackTrace() {
     var service = new DefaultContentEncryptionService();
     var logger = mock(SilverLogger.class);
     try (var keys = mockStatic(DefaultContentEncryptionService.class, CALLS_REAL_METHODS);
@@ -56,7 +55,7 @@ class ContentEncryptionKeyAvailabilityTest {
   }
 
   @Test
-  void readableKeyShouldBeAvailableWithoutWarning() throws Exception {
+  void readableKeyShouldBeAvailableWithoutWarning() {
     var service = new DefaultContentEncryptionService();
     var logger = mock(SilverLogger.class);
     try (var keys = mockStatic(DefaultContentEncryptionService.class, CALLS_REAL_METHODS);

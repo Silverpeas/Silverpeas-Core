@@ -39,6 +39,7 @@ import java.util.List;
 @Repository
 @Transactional(Transactional.TxType.SUPPORTS)
 public class TwoFactorSecretRepository {
+  private static final String USER_ID_PARAMETER = "userId";
   private final EntityManagerProvider provider;
   private final Event<TwoFactorKeyReset> resetEvents;
 
@@ -73,7 +74,7 @@ public class TwoFactorSecretRepository {
   public void updateEncryptedSecret(final int userId, final String ciphertext) {
     provider.getEntityManager().createQuery(
         "update TwoFactorAuthenticationEntity a set a.secret = :secret where a.userId = :userId")
-        .setParameter("secret", ciphertext).setParameter("userId", userId).executeUpdate();
+        .setParameter("secret", ciphertext).setParameter(USER_ID_PARAMETER, userId).executeUpdate();
   }
 
   /**
@@ -96,7 +97,7 @@ public class TwoFactorSecretRepository {
   public void resetUser(final int userId) {
     var configurations = provider.getEntityManager().createQuery(
         "select a from TwoFactorAuthenticationEntity a where a.userId = :userId",
-        TwoFactorAuthenticationEntity.class).setParameter("userId", userId)
+        TwoFactorAuthenticationEntity.class).setParameter(USER_ID_PARAMETER, userId)
         .setLockMode(LockModeType.PESSIMISTIC_WRITE).getResultList();
     reset(configurations);
   }
@@ -107,9 +108,9 @@ public class TwoFactorSecretRepository {
     var em = provider.getEntityManager();
     for (var configuration : configurations) {
       em.createQuery("delete from RecoveryCodeEntity r where r.userId = :userId")
-          .setParameter("userId", configuration.userId).executeUpdate();
+          .setParameter(USER_ID_PARAMETER, configuration.userId).executeUpdate();
       em.createQuery("delete from TrustedDeviceEntity d where d.userId = :userId")
-          .setParameter("userId", configuration.userId).executeUpdate();
+          .setParameter(USER_ID_PARAMETER, configuration.userId).executeUpdate();
       em.remove(configuration);
     }
     em.flush();
