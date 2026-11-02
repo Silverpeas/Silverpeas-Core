@@ -43,6 +43,7 @@ import org.silverpeas.core.security.authentication.twofactor.TwoFactorAuthentica
 import org.silverpeas.core.security.authentication.twofactor.model.TwoFactorAuthentication;
 import org.silverpeas.core.security.authentication.twofactor.TrustedDeviceService;
 import org.silverpeas.core.security.encryption.ContentEncryptionService;
+import org.silverpeas.core.security.authentication.twofactor.repository.TwoFactorSecretRepository;
 import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.core.security.authentication.verifier.UserCanLoginVerifier;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
@@ -105,6 +106,9 @@ public class AuthenticationService implements Authentication {
 
   @Inject
   private ContentEncryptionService encryptionService;
+
+  @Inject
+  private TwoFactorSecretRepository keyResetRepository;
 
   private static final Predicate<Domain> DOMAIN_WITH_AUTHENTICATION_SERVER = d -> {
     final AuthenticationServer authenticationServer =
@@ -208,7 +212,11 @@ public class AuthenticationService implements Authentication {
       result = AuthenticationResponse.error(Status.UNKNOWN_FAILURE);
     }
 
-    if (!result.getStatus().succeeded()) {
+    if (result.getStatus() == Status.TWO_FACTOR_REQUIRED) {
+      SilverLogger.getLogger(this).info(
+          "Authentication requires a second factor for login ''{0}'' in domain {1}",
+          userCredential.getLogin(), userCredential.getDomainId());
+    } else if (!result.getStatus().succeeded()) {
       SilverLogger.getLogger(this)
           .error("Authentication error ({0}) with login ''{1}'' and domain id ''{2}''",
               result.getStatus().toString(), userCredential.getLogin(),
@@ -403,12 +411,18 @@ public class AuthenticationService implements Authentication {
 
   /**
    * Checks the global switch and whether the configured encryption key can actually be read.
-   * Missing or inaccessible keys suspend 2FA without modifying the stored enrollments. The normal
+   * Missing or inaccessible keys invalidate existing enrollments and their credentials. The normal
    * password or remote authentication checks still apply before a session can be opened.
    */
   private boolean isTwoFactorEnabled() {
-    return AUTHENTICATION_SETTINGS.getBoolean(TWO_FACTOR_ENABLED_SETTING, false) &&
-        encryptionService.isCipherKeyDefined();
+    if (!AUTHENTICATION_SETTINGS.getBoolean(TWO_FACTOR_ENABLED_SETTING, false)) {
+      return false;
+    }
+    if (!encryptionService.isCipherKeyDefined()) {
+      keyResetRepository.resetAll();
+      return false;
+    }
+    return true;
   }
 
   private boolean isAnonymousUser(final int userId) {

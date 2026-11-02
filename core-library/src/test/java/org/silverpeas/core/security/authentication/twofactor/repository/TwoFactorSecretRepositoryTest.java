@@ -26,6 +26,9 @@ package org.silverpeas.core.security.authentication.twofactor.repository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import jakarta.enterprise.event.Event;
+import org.silverpeas.core.security.authentication.twofactor.TwoFactorKeyReset;
+import java.util.List;
 import org.silverpeas.core.persistence.datasource.model.jpa.EntityManagerProvider;
 import org.silverpeas.core.security.authentication.twofactor.TwoFactorSecretEncryptionIterator;
 import org.silverpeas.core.security.authentication.twofactor.model.TwoFactorAuthentication;
@@ -46,11 +49,13 @@ class TwoFactorSecretRepositoryTest {
   // Supply constructor dependencies explicitly and register the resulting tested bean.
   TwoFactorSecretRepositoryTest(
       @TestManagedMock EntityManagerProvider provider,
-      @TestManagedMock ContentEncryptionService encryptionService) {
+      @TestManagedMock ContentEncryptionService encryptionService,
+      @TestManagedMock Event<TwoFactorKeyReset> resetEvents) {
     this.provider = provider;
     this.encryptionService = encryptionService;
-    this.authenticationRepository = new TwoFactorAuthenticationRepositoryImpl(provider, encryptionService);
-    this.repository = new TwoFactorSecretRepository(provider);
+    this.resetEvents = resetEvents;
+    this.repository = new TwoFactorSecretRepository(provider, resetEvents);
+    this.authenticationRepository = new TwoFactorAuthenticationRepositoryImpl(provider, encryptionService, repository);
   }
 
   @TestManagedBean
@@ -61,6 +66,8 @@ class TwoFactorSecretRepositoryTest {
   private TwoFactorAuthenticationRepositoryImpl authenticationRepository;
   @TestedBean
   private TwoFactorSecretRepository repository;
+  @TestManagedBean
+  private Event<TwoFactorKeyReset> resetEvents;
   private TwoFactorJpaTestDatabase database;
 
   @BeforeEach
@@ -80,32 +87,48 @@ class TwoFactorSecretRepositoryTest {
   }
 
   @Test
-  void shouldRenewEverySecretWithoutChangingAuthenticationMetadata() {
-    Instant lastUse = Instant.parse("2026-10-13T08:00:00Z");
+  void shouldResetCredentialsAndNotifyOnlyEnabledUsersAfterSuccessfulKeyChange() {
     for (int owner : new int[]{42, 43}) {
       authenticationRepository.save(TwoFactorAuthentication.builder(owner).secret("secret" + owner)
-          .status(TwoFactorAuthentication.Status.ENABLED).lastUsedAt(lastUse)
-          .failedAttempts(2).lockedUntil(lastUse.plusSeconds(300)).build());
+          .status(owner == 42 ? TwoFactorAuthentication.Status.ENABLED : TwoFactorAuthentication.Status.PENDING)
+          .build());
+      var em = database.entityManager();
+      em.createNativeQuery("insert into ST_User_2FA_Recovery (userId, hash, createdAt) " +
+          "values (:userId, 'recovery-hash', CURRENT_TIMESTAMP)")
+          .setParameter("userId", owner).executeUpdate();
+      em.createNativeQuery("insert into ST_User_2FA_Trusted_Device " +
+          "(userId, tokenHash, createdAt, expiresAt) values " +
+          "(:userId, 'trusted-hash', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)")
+          .setParameter("userId", owner).executeUpdate();
     }
-    var before = authenticationRepository.get(42).orElseThrow();
     TwoFactorSecretEncryptionIterator iterator = new TwoFactorSecretEncryptionIterator(repository);
     iterator.init();
-    int renewed = 0;
-    while (iterator.hasNext()) {
-      String ciphertext = iterator.next().get("secret");
-      assertTrue(ciphertext.startsWith("old:"));
-      iterator.update(Map.of("secret", "new:" + ciphertext.substring(4)));
-      renewed++;
-    }
-    assertEquals(2, renewed);
-    var stored = repository.getEncryptedSecrets();
-    assertTrue(stored.stream().allMatch(a -> ((String) a[1]).startsWith("new:")));
-    assertEquals(before, authenticationRepository.get(42).orElseThrow());
-    assertEquals("secret43", authenticationRepository.get(43).orElseThrow().getSecret());
-    // The same iterator must reload current ciphertext on the next key renewal.
-    iterator.init();
-    while (iterator.hasNext()) {
-      assertTrue(iterator.next().get("secret").startsWith("new:"));
-    }
+    assertFalse(iterator.hasNext());
+    assertEquals(2, repository.getEncryptedSecrets().size());
+    verifyNoInteractions(resetEvents);
+
+    iterator.onEncryptionKeyChanged();
+    assertTrue(repository.getEncryptedSecrets().isEmpty());
+    assertEquals(0L, database.entityManager().createQuery(
+        "select count(r) from RecoveryCodeEntity r", Long.class).getSingleResult());
+    assertEquals(0L, database.entityManager().createQuery(
+        "select count(d) from TrustedDeviceEntity d", Long.class).getSingleResult());
+    verify(resetEvents).fire(new TwoFactorKeyReset(List.of("42")));
+
+    iterator.onEncryptionKeyChanged();
+    verifyNoMoreInteractions(resetEvents);
   }
+
+  @Test
+  void shouldResetOnlyTheUserWhoseSecretIsUnreadable() {
+    for (int owner : new int[]{42, 43}) {
+      authenticationRepository.save(TwoFactorAuthentication.builder(owner).secret("secret" + owner)
+          .status(TwoFactorAuthentication.Status.ENABLED).build());
+    }
+    repository.resetUser(42);
+    assertTrue(authenticationRepository.get(42).isEmpty());
+    assertTrue(authenticationRepository.get(43).orElseThrow().isEnabled());
+    verify(resetEvents).fire(new TwoFactorKeyReset(List.of("42")));
+  }
+
 }

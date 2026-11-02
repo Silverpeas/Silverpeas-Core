@@ -24,6 +24,8 @@
 package org.silverpeas.web.socialnetwork.myprofil.servlets;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authentication.twofactor.MissingTwoFactorEncryptionKeyException;
 import org.silverpeas.core.security.authentication.twofactor.TwoFactorAuthenticationService;
@@ -58,13 +60,19 @@ class MyProfilTwoFactorEnrollmentTest {
   @TestedBean
   private MyProfilRequestRouter router;
 
-  @Test
-  void missingKeyShouldShowOnlyFunctionalMessageAndWarningWithoutStackTrace() {
+  @ParameterizedTest
+  @ValueSource(strings = {"fr", "en", "de"})
+  void missingKeyShouldShowLocalizedMessageAndWarningWithoutStackTrace(String language) {
+    var bundle = ResourceLocator.getLocalizationBundle(
+        "org.silverpeas.social.multilang.socialNetworkBundle", language);
+    String expectedMessage = bundle.getString("myProfile.twoFactor.encryptionKeyMissing");
     router = spy(router);
     HttpRequest request = mock(HttpRequest.class);
     MyProfilSessionController controller = mock(MyProfilSessionController.class);
     when(controller.getUserDetail()).thenReturn(mock(UserDetail.class));
     when(controller.getUserId()).thenReturn("42");
+    when(controller.getString("myProfile.twoFactor.encryptionKeyMissing"))
+        .thenReturn(expectedMessage);
     when(twoFactorService.startEnrollment(42))
         .thenThrow(new MissingTwoFactorEncryptionKeyException());
     doReturn(SETTINGS).when(router).getDestination("MySettings", controller, request);
@@ -84,7 +92,7 @@ class MyProfilTwoFactorEnrollmentTest {
 
       assertEquals(SETTINGS, router.getDestination("StartTwoFactor", controller, request));
 
-      verify(messager).addError(MESSAGE);
+      verify(messager).addError(expectedMessage);
       verify(logger).warn(MESSAGE);
       verifyNoMoreInteractions(logger, messager);
       verifyNoInteractions(totpService);

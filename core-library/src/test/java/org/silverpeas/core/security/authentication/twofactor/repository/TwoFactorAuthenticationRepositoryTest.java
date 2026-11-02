@@ -46,10 +46,12 @@ class TwoFactorAuthenticationRepositoryTest {
   // Supply constructor dependencies explicitly and register the resulting tested bean.
   TwoFactorAuthenticationRepositoryTest(
       @TestManagedMock EntityManagerProvider provider,
-      @TestManagedMock ContentEncryptionService encryptionService) {
+      @TestManagedMock ContentEncryptionService encryptionService,
+      @TestManagedMock TwoFactorSecretRepository keyResetRepository) {
     this.provider = provider;
     this.encryptionService = encryptionService;
-    this.repository = new TwoFactorAuthenticationRepositoryImpl(provider, encryptionService);
+    this.keyResetRepository = keyResetRepository;
+    this.repository = new TwoFactorAuthenticationRepositoryImpl(provider, encryptionService, keyResetRepository);
   }
 
   @TestManagedBean
@@ -58,6 +60,8 @@ class TwoFactorAuthenticationRepositoryTest {
   private ContentEncryptionService encryptionService;
   @TestedBean
   private TwoFactorAuthenticationRepositoryImpl repository;
+  @TestManagedBean
+  private TwoFactorSecretRepository keyResetRepository;
   private TwoFactorJpaTestDatabase database;
   private static final Instant NOW = Instant.parse("2026-10-13T08:00:00Z");
 
@@ -145,10 +149,9 @@ class TwoFactorAuthenticationRepositoryTest {
   }
 
   @Test
-  void shouldHideEnrollmentWhileKeyIsUnavailableAndRestoreItWhenKeyReturns() throws Exception {
+  void shouldResetEnrollmentsWhenTheKeyBecomesUnavailable() throws Exception {
     repository.save(authentication(42, "existing-secret").toBuilder()
         .status(TwoFactorAuthentication.Status.ENABLED).lastUsedAt(NOW).build());
-    var original = repository.get(42).orElseThrow();
     clearInvocations(encryptionService);
     when(encryptionService.isCipherKeyDefined()).thenReturn(false);
 
@@ -156,8 +159,17 @@ class TwoFactorAuthenticationRepositoryTest {
     verify(encryptionService, never()).decryptContent(anyString());
     verify(encryptionService, never()).updateCipherKey(anyString());
 
-    when(encryptionService.isCipherKeyDefined()).thenReturn(true);
-    assertEquals(original, repository.get(42).orElseThrow());
+    verify(keyResetRepository).resetAll();
+  }
+
+  @Test
+  void shouldResetUnreadableEnrollmentAfterAnExternalKeyReplacement() throws Exception {
+    repository.save(authentication(42, "secret"));
+    when(encryptionService.decryptContent("encrypted:secret"))
+        .thenThrow(new CryptoException("The ciphertext cannot be decrypted with this key"));
+
+    assertTrue(repository.get(42).isEmpty());
+    verify(keyResetRepository).resetUser(42);
   }
 
   @Test

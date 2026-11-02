@@ -24,6 +24,9 @@
 package org.silverpeas.core.security.authentication.twofactor.repository;
 
 import jakarta.inject.Inject;
+import jakarta.enterprise.event.Event;
+import jakarta.persistence.LockModeType;
+import org.silverpeas.core.security.authentication.twofactor.TwoFactorKeyReset;
 import jakarta.transaction.Transactional;
 import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.datasource.model.jpa.EntityManagerProvider;
@@ -37,10 +40,18 @@ import java.util.List;
 @Transactional(Transactional.TxType.SUPPORTS)
 public class TwoFactorSecretRepository {
   private final EntityManagerProvider provider;
+  private final Event<TwoFactorKeyReset> resetEvents;
 
+  /**
+   * Creates the ciphertext repository and its transactional reset-event publisher.
+   * @param provider the entity manager provider.
+   * @param resetEvents events delivered to notification observers after commit.
+   */
   @Inject
-  protected TwoFactorSecretRepository(final EntityManagerProvider provider) {
+  protected TwoFactorSecretRepository(final EntityManagerProvider provider,
+      final Event<TwoFactorKeyReset> resetEvents) {
     this.provider = provider;
+    this.resetEvents = resetEvents;
   }
 
   /**
@@ -64,4 +75,47 @@ public class TwoFactorSecretRepository {
         "update TwoFactorAuthenticationEntity a set a.secret = :secret where a.userId = :userId")
         .setParameter("secret", ciphertext).setParameter("userId", userId).executeUpdate();
   }
+
+  /**
+   * Invalidates all enrollments and associated credentials after a key loss or change.
+   * Row locks serialize competing resets so enabled users are notified once.
+   */
+  @Transactional(Transactional.TxType.REQUIRES_NEW)
+  public void resetAll() {
+    var configurations = provider.getEntityManager().createQuery(
+        "select a from TwoFactorAuthenticationEntity a", TwoFactorAuthenticationEntity.class)
+        .setLockMode(LockModeType.PESSIMISTIC_WRITE).getResultList();
+    reset(configurations);
+  }
+
+  /**
+   * Invalidates a configuration whose secret cannot be decrypted with the available key.
+   * @param userId the owner of the unreadable secret.
+   */
+  @Transactional(Transactional.TxType.REQUIRES_NEW)
+  public void resetUser(final int userId) {
+    var configurations = provider.getEntityManager().createQuery(
+        "select a from TwoFactorAuthenticationEntity a where a.userId = :userId",
+        TwoFactorAuthenticationEntity.class).setParameter("userId", userId)
+        .setLockMode(LockModeType.PESSIMISTIC_WRITE).getResultList();
+    reset(configurations);
+  }
+
+  private void reset(final List<TwoFactorAuthenticationEntity> configurations) {
+    var enabledUsers = configurations.stream().filter(a -> "ENABLED".equals(a.status))
+        .map(a -> String.valueOf(a.userId)).toList();
+    var em = provider.getEntityManager();
+    for (var configuration : configurations) {
+      em.createQuery("delete from RecoveryCodeEntity r where r.userId = :userId")
+          .setParameter("userId", configuration.userId).executeUpdate();
+      em.createQuery("delete from TrustedDeviceEntity d where d.userId = :userId")
+          .setParameter("userId", configuration.userId).executeUpdate();
+      em.remove(configuration);
+    }
+    em.flush();
+    if (!enabledUsers.isEmpty()) {
+      resetEvents.fire(new TwoFactorKeyReset(enabledUsers));
+    }
+  }
+
 }
