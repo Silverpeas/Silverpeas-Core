@@ -791,6 +791,8 @@
       rootContainerId : "user-group-list-root-container",
       initialUserIds : [],
       initialGroupIds : [],
+      nonRemovableUserIds : [],
+      nonRemovableGroupIds : [],
       userPanelInitUrl : false,
       jsSaveCallback : false,
       formSaveSelector : '',
@@ -814,7 +816,9 @@
       readOnly : typeof this.options.readOnly === 'boolean' && this.options.readOnly,
       userPanelSaving : false,
       currentUserIds : [].concat(initialUserIds),
-      currentGroupIds : [].concat(initialGroupIds)
+      currentGroupIds : [].concat(initialGroupIds),
+      nonRemovableUserIds : __convertToString(this.options.nonRemovableUserIds),
+      nonRemovableGroupIds : __convertToString(this.options.nonRemovableGroupIds)
     };
     this.context.displayActionPanel = !this.options.readOnly && typeof this.options.userPanelInitUrl === 'string';
 
@@ -885,9 +889,24 @@
       }.bind(this));
     };
 
+    const nonRemovableOf = function(ids, nonRemovableIds) {
+      return ids.filter(function(id) {
+        return nonRemovableIds.indexOf(id) >= 0;
+      });
+    };
+
+    const hasRemovableItems = function() {
+      return nonRemovableOf(this.context.currentUserIds, this.context.nonRemovableUserIds).length <
+          this.context.currentUserIds.length ||
+          nonRemovableOf(this.context.currentGroupIds, this.context.nonRemovableGroupIds).length <
+          this.context.currentGroupIds.length;
+    }.bind(this);
+
     this.removeAll = function() {
-      this.context.currentUserIds = [];
-      this.context.currentGroupIds = [];
+      this.context.currentUserIds =
+          nonRemovableOf(this.context.currentUserIds, this.context.nonRemovableUserIds);
+      this.context.currentGroupIds =
+          nonRemovableOf(this.context.currentGroupIds, this.context.nonRemovableGroupIds);
       if (this.context.userPanelSaving) {
         this.refreshCommons();
       } else {
@@ -927,7 +946,7 @@
             this.context.messagePanel.style.display = 'none';
           }
         }
-        if (this.context.currentUserIds.length || this.context.currentGroupIds.length) {
+        if (hasRemovableItems()) {
           this.context.clearButton.style.display = '';
         } else {
           this.context.clearButton.style.display = 'none';
@@ -1187,6 +1206,10 @@
     getElement : function() {
       return this.element;
     },
+    isRemovable : function() {
+      const nonRemovableIds = this.getNonRemovableIds() || [];
+      return nonRemovableIds.indexOf(this.getId()) < 0;
+    },
     remove : function() {
       const index = this.handledIds.indexOf(this.profile.id);
       this.handledIds.splice(index, 1);
@@ -1207,6 +1230,9 @@
       this._super(profile, instance);
       this.element = __createUserElement(this);
       this.handledIds = this.instance.context.currentUserIds;
+    },
+    getNonRemovableIds : function() {
+      return this.instance.context.nonRemovableUserIds;
     },
     getFullName : function() {
       return this.profile.fullName;
@@ -1231,6 +1257,9 @@
       this._super(profile, instance);
       this.element = __createGroupElement(this);
       this.handledIds = this.instance.context.currentGroupIds;
+    },
+    getNonRemovableIds : function() {
+      return this.instance.context.nonRemovableGroupIds;
     },
     getFullName : function() {
       return this.profile.name + " (" + this.getUserCount() + ")";
@@ -1311,7 +1340,7 @@
       }
     });
     item.appendChild($infos);
-    if (intoList && !userItem.instance.context.readOnly) {
+    if (intoList && !userItem.instance.context.readOnly && userItem.isRemovable()) {
       item.appendChild(__createOperationFragment(userItem));
     }
     return item;
@@ -1343,7 +1372,7 @@
       }
     }
     item.appendChild(span);
-    if (intoList && !groupItem.instance.context.readOnly) {
+    if (intoList && !groupItem.instance.context.readOnly && groupItem.isRemovable()) {
       item.appendChild(__createOperationFragment(groupItem));
     }
     return item;
