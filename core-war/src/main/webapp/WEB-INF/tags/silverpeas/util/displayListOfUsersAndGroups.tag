@@ -42,6 +42,12 @@
 <%@ attribute name="groupIds" required="false" type="java.util.Collection"
               description="The list of groupIds to display" %>
 
+<%@ attribute name="nonRemovableUserIds" required="false" type="java.util.Collection"
+              description="The identifiers of the users that cannot be removed from the list" %>
+
+<%@ attribute name="nonRemovableGroupIds" required="false" type="java.util.Collection"
+              description="The identifiers of the groups that cannot be removed from the list" %>
+
 <%@ attribute name="label" required="false" type="java.lang.String"
               description="Label to use as fieldset legend" %>
 
@@ -183,6 +189,8 @@
       rootContainerId : "root-profile-list-${id}",
       initialUserIds : userIds,
       initialGroupIds : groupIds,
+      nonRemovableUserIds : [<c:forEach items="${nonRemovableUserIds}" var="userId" varStatus="status"><c:if test="${not status.first}">, </c:if>'${silfn:escapeJs(userId)}'</c:forEach>],
+      nonRemovableGroupIds : [<c:forEach items="${nonRemovableGroupIds}" var="groupId" varStatus="status"><c:if test="${not status.first}">, </c:if>'${silfn:escapeJs(groupId)}'</c:forEach>],
       userPanelInitUrl : '${updateCallback}',
       jsSaveCallback : ${empty jsSaveCallback ? false : silfn:escapeJs(jsSaveCallback)},
       formSaveSelector : '${empty formSaveSelector ? '' : silfn:escapeJs(formSaveSelector)}',

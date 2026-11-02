@@ -26,6 +26,7 @@
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
 <%@ taglib uri="silverpeas.tags.viewGenerator" prefix="view"%>
+<%@ taglib uri="silverpeas.tags.silverFunctions" prefix="silfn" %>
 
 <%@ page import="org.silverpeas.core.web.selection.Selection"%>
 
@@ -207,7 +208,7 @@
                   <span class="name_group">{{ group.name }}</span>
                   <span class="nb_user_group">{{ group.userCount + ' ' + '<fmt:message key="GML.user_s"/>' }}</span>
                   <span class="sep_nb_user_group" ng-show="showDomainData()"> - </span><span class="domain_group" ng-show="showDomainData()">{{ group.domainName }}</span>
-                  <a ng-click="deselectGroup(group)" title="${deselectText}" href="#" class="remove group">${deselectText}</a>
+                  <a ng-hide="selectedGroups.isLocked(group)" ng-click="deselectGroup(group)" title="${deselectText}" href="#" class="remove group">${deselectText}</a>
                 </li>
               </ul>
               <silverpeas-pagination page-size="groupSelectionPageSize" items-size="selectedGroups.length()" on-page="changeGroupSelectionPage(page)"></silverpeas-pagination>
@@ -231,7 +232,7 @@
                   </span>
                   <span class="mail_user">{{ user.emailAddress }}</span>
                   <span class="sep_mail_user" ng-show="showDomainData()"> - </span><span class="domain_user" ng-show="showDomainData()">{{ user.domainName }}</span>
-                  <a ng-click="deselectUser(user)" title="${deselectText}" href="#" class="remove user">${deselectText}</a>
+                  <a ng-hide="selectedUsers.isLocked(user)" ng-click="deselectUser(user)" title="${deselectText}" href="#" class="remove user">${deselectText}</a>
                 </li>
               </ul>
               <silverpeas-pagination page-size="userSelectionPageSize" items-size="selectedUsers.length()" on-page="changeUserSelectionPage(page)"></silverpeas-pagination>
@@ -312,6 +313,9 @@
           var preselectedUserGroups = [];
         </c:otherwise>
       </c:choose>
+            // what are the users and the user groups that cannot be removed from the selection
+            const lockedUsers = [<c:forEach items="${selection.lockedUsers}" var="userId" varStatus="status"><c:if test="${not status.first}">, </c:if>'${silfn:escapeJs(userId)}'</c:forEach>];
+            const lockedUserGroups = [<c:forEach items="${selection.lockedGroups}" var="groupId" varStatus="status"><c:if test="${not status.first}">, </c:if>'${silfn:escapeJs(groupId)}'</c:forEach>];
 
             /* the type of users displayed in the user listing: relationships or users in a group */
           let displayedUserType;
@@ -524,7 +528,7 @@
                   size : GroupsFilterSizeStep
                 }
               }).then(setGroupsFilter);
-              $scope.selectedUsers = new Selection(context.multiSelection, $scope.userSelectionPageSize);
+              $scope.selectedUsers = new Selection(context.multiSelection, $scope.userSelectionPageSize, lockedUsers);
               if(preselectedUsers.length) {
                 const component = context.component;
                 context.component = '';
@@ -533,7 +537,7 @@
                 });
                 context.component = component;
               }
-              $scope.selectedGroups = new Selection(context.multiSelection, $scope.groupSelectionPageSize);
+              $scope.selectedGroups = new Selection(context.multiSelection, $scope.groupSelectionPageSize, lockedUserGroups);
               if(preselectedUserGroups.length) {
                 const component = context.component;
                 context.component = '';
