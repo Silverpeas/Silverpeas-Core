@@ -566,11 +566,15 @@ public class MassiveWebSecurityFilter implements Filter {
     // Nothing to do.
   }
 
+  static boolean isWebDavDocumentUpload(String method, String servletPath) {
+    return "PUT".equalsIgnoreCase(method) &&
+        ("/repository".equals(servletPath) || "/repository2000".equals(servletPath));
+  }
+
   private static boolean isWebEntityEmbodiedIn(ServletRequest request) {
     HttpServletRequest httpRequest = (HttpServletRequest) request;
     String servletPath = httpRequest.getServletPath();
-    if ("PUT".equalsIgnoreCase(httpRequest.getMethod()) &&
-        ("/repository".equals(servletPath) || "/repository2000".equals(servletPath))) {
+    if (isWebDavDocumentUpload(httpRequest.getMethod(), servletPath)) {
       // WebDAV PUT transfers a document, not an application JSON/XML entity.
       return false;
     }
