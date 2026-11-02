@@ -91,7 +91,7 @@ class OnlineFileServerTest {
   }
 
   @Test
-  void noFileIsSentWithoutAnAuthenticatedSession() throws Exception {
+  void noFileIsSentWithoutAnAuthenticatedSession() {
     when(request.getSession(anyBoolean())).thenReturn(null);
     when(request.getSession()).thenReturn(null);
     askForComponentFile(COMPONENT_ID);
@@ -104,7 +104,7 @@ class OnlineFileServerTest {
   }
 
   @Test
-  void noFileIsSentWhenTheSessionHasNoUser() throws Exception {
+  void noFileIsSentWhenTheSessionHasNoUser() {
     when(session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT)).thenReturn(null);
     askForComponentFile(COMPONENT_ID);
     when(componentAccessControl.isUserAuthorized(any(), eq(COMPONENT_ID))).thenReturn(true);
@@ -116,7 +116,7 @@ class OnlineFileServerTest {
   }
 
   @Test
-  void aComponentFileIsNotSentToAUserWithoutAccessToTheComponent() throws Exception {
+  void aComponentFileIsNotSentToAUserWithoutAccessToTheComponent() {
     askForComponentFile(COMPONENT_ID);
     when(componentAccessControl.isUserAuthorized(USER_ID, COMPONENT_ID)).thenReturn(false);
 
@@ -127,7 +127,7 @@ class OnlineFileServerTest {
   }
 
   @Test
-  void aComponentFileIsSentToAUserWithAccessToTheComponent() throws Exception {
+  void aComponentFileIsSentToAUserWithAccessToTheComponent() {
     askForComponentFile(COMPONENT_ID);
     when(componentAccessControl.isUserAuthorized(USER_ID, COMPONENT_ID)).thenReturn(true);
 
@@ -137,7 +137,7 @@ class OnlineFileServerTest {
   }
 
   @Test
-  void noFileIsSentWhenNoComponentIsSpecified() throws Exception {
+  void noFileIsSentWhenNoComponentIsSpecified() {
     askForComponentFile(null);
 
     servlet.doPost(request, response);
@@ -147,7 +147,7 @@ class OnlineFileServerTest {
   }
 
   @Test
-  void aSpaceLookFileIsNotSentToAUserWithoutAccessToTheSpace() throws Exception {
+  void aSpaceLookFileIsNotSentToAUserWithoutAccessToTheSpace() {
     askForComponentFile("Space12");
     when(spaceAccessControl.isUserAuthorized(USER_ID, "WA12")).thenReturn(false);
     when(spaceAccessControl.hasUserSpaceManagementAuthorization(USER_ID, "WA12")).thenReturn(false);
@@ -160,7 +160,7 @@ class OnlineFileServerTest {
   }
 
   @Test
-  void aSpaceLookFileIsSentToAUserWithAccessToTheSpace() throws Exception {
+  void aSpaceLookFileIsSentToAUserWithAccessToTheSpace() {
     askForComponentFile("Space12");
     when(spaceAccessControl.isUserAuthorized(USER_ID, "WA12")).thenReturn(true);
 
@@ -170,7 +170,7 @@ class OnlineFileServerTest {
   }
 
   @Test
-  void aSpaceLookFileIsSentToAManagerOfTheSpace() throws Exception {
+  void aSpaceLookFileIsSentToAManagerOfTheSpace() {
     askForComponentFile("SpaceWA12");
     when(spaceAccessControl.isUserAuthorized(USER_ID, "WA12")).thenReturn(false);
     when(spaceAccessControl.hasUserSpaceManagementAuthorization(USER_ID, "WA12")).thenReturn(true);
@@ -181,8 +181,8 @@ class OnlineFileServerTest {
   }
 
   @Test
-  void anAttachmentIsNotSentToAUserNotAllowedToDownloadIt() throws Exception {
-    SimpleDocument attachment = anAttachmentIn("kmelia99", "file.pdf");
+  void anAttachmentIsNotSentToAUserNotAllowedToDownloadIt() {
+    SimpleDocument attachment = anAttachment("file.pdf");
     when(request.getParameter("attachmentId")).thenReturn(ATTACHMENT_ID);
     when(request.getParameter("ComponentId")).thenReturn("kmelia99");
     when(attachmentService.searchDocumentById(any(SimpleDocumentPK.class), any())).thenReturn(
@@ -200,11 +200,10 @@ class OnlineFileServerTest {
   }
 
   @Test
-  void anAttachmentOfAnotherComponentIsNotSentEvenIfTheRequestedOneIsAccessible()
-      throws Exception {
+  void anAttachmentOfAnotherComponentIsNotSentEvenIfTheRequestedOneIsAccessible() {
     // the attachment is in another component than the one given in the request: only the access
     // rights on the attachment itself matter
-    SimpleDocument attachment = anAttachmentIn("kmelia99", "file.pdf");
+    SimpleDocument attachment = anAttachment("file.pdf");
     when(request.getParameter("attachmentId")).thenReturn(ATTACHMENT_ID);
     when(request.getParameter("ComponentId")).thenReturn(COMPONENT_ID);
     when(attachmentService.searchDocumentById(any(SimpleDocumentPK.class), any())).thenReturn(
@@ -220,8 +219,8 @@ class OnlineFileServerTest {
   }
 
   @Test
-  void anAttachmentIsSentToAUserAllowedToDownloadIt() throws Exception {
-    SimpleDocument attachment = anAttachmentIn("kmelia99", "file.pdf");
+  void anAttachmentIsSentToAUserAllowedToDownloadIt() {
+    SimpleDocument attachment = anAttachment("file.pdf");
     when(request.getParameter("attachmentId")).thenReturn(ATTACHMENT_ID);
     when(request.getParameter("ComponentId")).thenReturn("kmelia99");
     when(attachmentService.searchDocumentById(any(SimpleDocumentPK.class), any())).thenReturn(
@@ -236,8 +235,8 @@ class OnlineFileServerTest {
   }
 
   @Test
-  void aVersionIsNotSentToAUserNotAllowedToDownloadIt() throws Exception {
-    SimpleDocument version = anAttachmentIn("kmelia99", "version.odt");
+  void aVersionIsNotSentToAUserNotAllowedToDownloadIt() {
+    SimpleDocument version = anAttachment("version.odt");
     when(request.getParameter("DocumentId")).thenReturn("8");
     when(request.getParameter("VersionId")).thenReturn(VERSION_ID);
     when(request.getParameter("ComponentId")).thenReturn("kmelia99");
@@ -253,8 +252,8 @@ class OnlineFileServerTest {
   }
 
   @Test
-  void aVersionIsSentToAUserAllowedToDownloadIt() throws Exception {
-    SimpleDocument version = anAttachmentIn("kmelia99", "version.odt");
+  void aVersionIsSentToAUserAllowedToDownloadIt() {
+    SimpleDocument version = anAttachment("version.odt");
     when(request.getParameter("DocumentId")).thenReturn("8");
     when(request.getParameter("VersionId")).thenReturn(VERSION_ID);
     when(request.getParameter("ComponentId")).thenReturn("kmelia99");
@@ -275,11 +274,11 @@ class OnlineFileServerTest {
     when(request.getParameter("Directory")).thenReturn("look");
   }
 
-  private SimpleDocument anAttachmentIn(final String instanceId, final String fileName) {
+  private SimpleDocument anAttachment(final String fileName) {
     SimpleDocument document = mock(SimpleDocument.class);
-    when(document.getInstanceId()).thenReturn(instanceId);
+    when(document.getInstanceId()).thenReturn("kmelia99");
     when(document.getContentType()).thenReturn("application/octet-stream");
-    when(document.getAttachmentPath()).thenReturn("/tmp/" + instanceId + "/" + fileName);
+    when(document.getAttachmentPath()).thenReturn("/tmp/" + "kmelia99" + "/" + fileName);
     return document;
   }
 
