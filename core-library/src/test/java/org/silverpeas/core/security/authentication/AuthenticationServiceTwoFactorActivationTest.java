@@ -30,6 +30,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authentication.twofactor.TwoFactorAuthenticationService;
 import org.silverpeas.core.security.encryption.ContentEncryptionService;
+import org.silverpeas.core.security.authentication.twofactor.repository.TwoFactorSecretRepository;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.security.authentication.twofactor.model.TwoFactorAuthentication;
 import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.core.security.authentication.verifier.UserCanLoginVerifier;
@@ -58,6 +60,8 @@ class AuthenticationServiceTwoFactorActivationTest {
   private TwoFactorAuthenticationService twoFactorService;
   @TestManagedMock
   private ContentEncryptionService encryptionService;
+  @TestManagedMock
+  private TwoFactorSecretRepository keyResetRepository;
   @TestedBean
   private AuthenticationService service;
 
@@ -68,13 +72,15 @@ class AuthenticationServiceTwoFactorActivationTest {
   @ValueSource(booleans = {false, true})
   void globalSwitchShouldOverrideExistingEnrollmentAndMandatoryPolicy(boolean remote)
       throws Exception {
+    var logger = mock(SilverLogger.class);
     String url = "jdbc:h2:mem:" + UUID.randomUUID() + ";DB_CLOSE_DELAY=-1";
     try (var connection = DriverManager.getConnection(url);
          var statement = connection.createStatement();
          var naming = mockStatic(InitialContext.class);
          var servers = mockStatic(AuthenticationServer.class);
          var verifiers = mockStatic(AuthenticationUserVerifierFactory.class);
-         var users = mockStatic(UserDetail.class)) {
+         var users = mockStatic(UserDetail.class);
+         var logs = mockStatic(SilverLogger.class, CALLS_REAL_METHODS)) {
       statement.execute("create table ST_User (id int, login varchar(100), domainId int)");
       statement.execute("insert into ST_User values (42, 'alice', 0)");
       statement.execute("create table ST_Domain (id int, authenticationServer varchar(100))");
@@ -95,6 +101,7 @@ class AuthenticationServiceTwoFactorActivationTest {
       when(twoFactorService.getAuthentication(42)).thenReturn(Optional.of(enrollment));
       service = spy(service);
       doReturn("authenticated-token").when(service).getAuthToken(any());
+      logs.when(() -> SilverLogger.getLogger(service)).thenReturn(logger);
       var credential = AuthenticationCredential.newWithAsLogin("alice")
           .withAsPassword("password").withAsDomainId("0");
       if (remote) {
@@ -111,7 +118,7 @@ class AuthenticationServiceTwoFactorActivationTest {
       var result = service.authenticate(credential);
       assertEquals(AuthenticationResponse.Status.SUCCESS, result.getStatus());
       assertEquals("authenticated-token", result.getToken());
-      verifyNoInteractions(twoFactorService);
+      verifyNoInteractions(twoFactorService, keyResetRepository);
       verify(verifier, times(2)).verify();
       if (!remote) {
         verify(server, times(2)).authenticate(credential);
@@ -121,7 +128,7 @@ class AuthenticationServiceTwoFactorActivationTest {
       assertEquals(AuthenticationResponse.Status.TWO_FACTOR_REQUIRED,
           service.authenticate(credential).getStatus());
 
-      // Loss of the key must suspend 2FA without deleting or attempting to decrypt enrollment.
+      // Key loss invalidates enrollment, unlike an ordinary global switch.
       clearInvocations(twoFactorService);
       when(encryptionService.isCipherKeyDefined()).thenReturn(false);
       result = service.authenticate(credential);
@@ -131,7 +138,8 @@ class AuthenticationServiceTwoFactorActivationTest {
       assertFalse(service.isTwoFactorEnrollmentRequired("alice", "0"));
       verifyNoInteractions(twoFactorService);
 
-      // Restoring the key must reactivate the unchanged enrollment.
+      verify(keyResetRepository, atLeastOnce()).resetAll();
+      // With a usable key, authentication policy applies again; the reset users must re-enroll.
       when(encryptionService.isCipherKeyDefined()).thenReturn(true);
       assertEquals(AuthenticationResponse.Status.TWO_FACTOR_REQUIRED,
           service.authenticate(credential).getStatus());
@@ -140,6 +148,9 @@ class AuthenticationServiceTwoFactorActivationTest {
         verify(server, times(5)).authenticate(credential);
       }
       verify(service, times(2)).getAuthToken(credential);
+      verify(logger, times(3)).info(
+          "Authentication requires a second factor for login ''{0}'' in domain {1}", "alice", "0");
+      verifyNoMoreInteractions(logger);
     }
   }
 }

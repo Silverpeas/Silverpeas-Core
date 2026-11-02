@@ -126,6 +126,11 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
     assertKeyIsInHexadecimal(key);
     assertKeyIsIn256Bits(key);
     ConcurrentEncryptionTaskExecutor.execute(new CipherKeyUpdater(key));
+    // Notify dependents after releasing the cipher-renewal lock: notification delivery may decrypt
+    // its own configuration, and must not run under that lock.
+    for (EncryptionContentIterator iterator : contentIterators) {
+      iterator.onEncryptionKeyChanged();
+    }
   }
 
   /**
@@ -512,6 +517,11 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
     @Override
     public void init() {
       wrapped.init();
+    }
+
+    @Override
+    public void onEncryptionKeyChanged() {
+      wrapped.onEncryptionKeyChanged();
     }
   }
 

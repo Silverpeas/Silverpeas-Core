@@ -26,22 +26,19 @@ package org.silverpeas.core.security.authentication.twofactor;
 import org.silverpeas.core.security.authentication.twofactor.repository.TwoFactorSecretRepository;
 import org.silverpeas.core.security.encryption.EncryptionContentIterator;
 import org.silverpeas.core.security.encryption.cipher.CryptoException;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 /**
- * Includes persisted TOTP secrets in platform cipher-key renewal.
+ * Invalidates TOTP enrollments after a successful platform cipher-key change. TOTP secrets are
+ * deliberately not renewed: users must configure a new authenticator after the change.
  */
 public class TwoFactorSecretEncryptionIterator implements EncryptionContentIterator {
-  private static final String SECRET = "secret";
   private final TwoFactorSecretRepository repository;
-  private Iterator<Object[]> secrets = Collections.emptyIterator();
-  private int currentUserId;
 
   /**
-   * Creates the iterator registered during application initialization.
-   * @param repository the repository of encrypted secrets.
+   * Creates the lifecycle adapter registered during application initialization.
+   * @param repository the repository resetting enrollment and its associated credentials.
    */
   public TwoFactorSecretEncryptionIterator(final TwoFactorSecretRepository repository) {
     this.repository = repository;
@@ -49,28 +46,31 @@ public class TwoFactorSecretEncryptionIterator implements EncryptionContentItera
 
   @Override
   public void init() {
-    secrets = repository.getEncryptedSecrets().iterator();
+    // Wait for the success callback before invalidating any enrollment.
   }
 
   @Override
   public boolean hasNext() {
-    return secrets.hasNext();
+    return false;
   }
 
   @Override
   public Map<String, String> next() {
-    Object[] secret = secrets.next();
-    currentUserId = (Integer) secret[0];
-    return Map.of(SECRET, (String) secret[1]);
+    throw new NoSuchElementException("TOTP enrollments are reset instead of re-encrypted");
   }
 
   @Override
-  public void update(final Map<String, String> updatedContent) {
-    repository.updateEncryptedSecret(currentUserId, updatedContent.get(SECRET));
+  public void update(final Map<String, String> content) {
+    throw new IllegalStateException("TOTP enrollments are reset instead of re-encrypted");
   }
 
   @Override
   public void onError(final Map<String, String> content, final CryptoException error) {
-    throw new IllegalStateException("Unable to renew the two-factor authentication secret cipher", error);
+    throw new IllegalStateException("Unable to process the cipher-key change", error);
+  }
+
+  @Override
+  public void onEncryptionKeyChanged() {
+    repository.resetAll();
   }
 }

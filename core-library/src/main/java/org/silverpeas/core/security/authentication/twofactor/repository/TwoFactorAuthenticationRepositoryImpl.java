@@ -45,29 +45,44 @@ public class TwoFactorAuthenticationRepositoryImpl implements TwoFactorAuthentic
 
   private final EntityManagerProvider entityManagerProvider;
   private final ContentEncryptionService encryptionService;
+  private final TwoFactorSecretRepository keyResetRepository;
 
+  /**
+   * Creates the encrypted configuration repository.
+   * @param entityManagerProvider the entity manager provider.
+   * @param encryptionService the platform content cipher.
+   * @param keyResetRepository the reset path for unavailable or unreadable secrets.
+   */
   @Inject
   protected TwoFactorAuthenticationRepositoryImpl(final EntityManagerProvider entityManagerProvider,
-      final ContentEncryptionService encryptionService) {
+      final ContentEncryptionService encryptionService,
+      final TwoFactorSecretRepository keyResetRepository) {
     this.entityManagerProvider = entityManagerProvider;
     this.encryptionService = encryptionService;
+    this.keyResetRepository = keyResetRepository;
   }
 
   @Override
   public Optional<TwoFactorAuthentication> get(final int userId) {
     if (!encryptionService.isCipherKeyDefined()) {
-      // Keep the encrypted enrollment intact so restoring the key restores the second factor.
+      keyResetRepository.resetAll();
       return Optional.empty();
     }
     // Projection reads the database after bulk updates without returning stale managed entities.
     return entityManager().createQuery("select a.secret, a.status, a.createdAt, a.updatedAt, " +
         "a.lastUsedAt, a.failedAttempts, a.lockedUntil from TwoFactorAuthenticationEntity a " +
         "where a.userId = :userId", Object[].class).setParameter(USER_ID_PARAMETER, userId)
-        .getResultStream().findFirst().map(a -> TwoFactorAuthentication.builder(userId)
-            .secret(decryptSecret((String) a[0]))
-            .status(TwoFactorAuthentication.Status.valueOf((String) a[1]))
-            .createdAt((Instant) a[2]).updatedAt((Instant) a[3]).lastUsedAt((Instant) a[4])
-            .failedAttempts((Integer) a[5]).lockedUntil((Instant) a[6]).build());
+        .getResultStream().findFirst().map(a -> {
+          String secret = decryptSecret(userId, (String) a[0]);
+          if (secret == null) {
+            return null;
+          }
+          return TwoFactorAuthentication.builder(userId)
+              .secret(secret)
+              .status(TwoFactorAuthentication.Status.valueOf((String) a[1]))
+              .createdAt((Instant) a[2]).updatedAt((Instant) a[3]).lastUsedAt((Instant) a[4])
+              .failedAttempts((Integer) a[5]).lockedUntil((Instant) a[6]).build();
+        });
   }
 
   @Override
@@ -142,11 +157,12 @@ public class TwoFactorAuthenticationRepositoryImpl implements TwoFactorAuthentic
     }
   }
 
-  private String decryptSecret(final String secret) {
+  private String decryptSecret(final int userId, final String secret) {
     try {
       return encryptionService.decryptContent(secret)[0];
     } catch (CryptoException e) {
-      throw new IllegalStateException("Unable to decrypt the two-factor authentication secret", e);
+      keyResetRepository.resetUser(userId);
+      return null;
     }
   }
 

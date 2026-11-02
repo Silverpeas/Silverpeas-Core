@@ -93,4 +93,13 @@ public interface EncryptionContentIterator extends Iterator<Map<String, String>>
    * @param ex the exception raised at the error.
    */
   void onError(Map<String, String> content, CryptoException ex);
+
+  /**
+   * Invoked once the new key is installed and all content ciphers have been processed successfully.
+   * It is not invoked if key renewal fails. Implementations can invalidate key-dependent state.
+   */
+  default void onEncryptionKeyChanged() {
+    // Most encrypted contents only need the normal cipher renewal.
+  }
+
 }

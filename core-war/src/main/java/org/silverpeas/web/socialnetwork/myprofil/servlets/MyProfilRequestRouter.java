@@ -133,7 +133,8 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
           startTwoFactor(request, myProfilSC);
         } catch (MissingTwoFactorEncryptionKeyException e) {
           SilverLogger.getLogger(this).warn(e.getMessage());
-          WebMessager.getInstance().addError(e.getMessage());
+          WebMessager.getInstance().addError(
+              myProfilSC.getString("myProfile.twoFactor.encryptionKeyMissing"));
         }
         return getDestination(MySettings.toString(), myProfilSC, request);
       } else if (route == ConfirmTwoFactor) {
