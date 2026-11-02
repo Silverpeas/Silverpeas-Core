@@ -46,6 +46,8 @@ public final class Selection {
   protected String htmlFormElementType; //TYPE_SELECTED_SET or TYPE_SELECTED_ELEMENT
   protected String[] selectedSets;
   protected String[] selectedElements;
+  protected List<String> lockedGroups;
+  protected List<String> lockedUsers;
   protected boolean popupMode;
   protected boolean multiSelect;
   protected boolean setSelectable;
@@ -72,6 +74,8 @@ public final class Selection {
 
     selectedSets = new String[0];
     selectedElements = new String[0];
+    lockedGroups = List.of();
+    lockedUsers = List.of();
 
     popupMode = false;
     multiSelect = true;
@@ -246,6 +250,39 @@ public final class Selection {
       return selectedSets[0];
     }
     return null;
+  }
+
+  /**
+   * Gets the identifiers of the users that, once selected, cannot be removed from the selection.
+   * @return an immutable list of user identifiers. Empty if no users are locked.
+   */
+  public List<String> getLockedUsers() {
+    return lockedUsers;
+  }
+
+  /**
+   * Locks the specified users: once selected, they cannot be removed from the selection.
+   * @param lockedUsers the identifiers of the users to lock. Null unlocks all the users.
+   */
+  public void setLockedUsers(Collection<String> lockedUsers) {
+    this.lockedUsers = lockedUsers != null ? List.copyOf(lockedUsers) : List.of();
+  }
+
+  /**
+   * Gets the identifiers of the user groups that, once selected, cannot be removed from the
+   * selection.
+   * @return an immutable list of user group identifiers. Empty if no groups are locked.
+   */
+  public List<String> getLockedGroups() {
+    return lockedGroups;
+  }
+
+  /**
+   * Locks the specified user groups: once selected, they cannot be removed from the selection.
+   * @param lockedGroups the identifiers of the user groups to lock. Null unlocks all the groups.
+   */
+  public void setLockedGroups(Collection<String> lockedGroups) {
+    this.lockedGroups = lockedGroups != null ? List.copyOf(lockedGroups) : List.of();
   }
 
   public SelectionUsersGroups getExtraParams() {
