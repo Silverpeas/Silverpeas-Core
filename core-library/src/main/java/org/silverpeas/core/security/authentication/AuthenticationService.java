@@ -212,6 +212,18 @@ public class AuthenticationService implements Authentication {
       result = AuthenticationResponse.error(Status.UNKNOWN_FAILURE);
     }
 
+    logAuthenticationResult(result, userCredential);
+
+    return result;
+  }
+
+  /**
+   * Logs a pending second factor as a normal step and failed authentication as an error.
+   * @param result the outcome of the authentication attempt.
+   * @param userCredential the credentials identifying the user and domain.
+   */
+  private void logAuthenticationResult(final AuthenticationResponse result,
+      final AuthenticationCredential userCredential) {
     if (result.getStatus() == Status.TWO_FACTOR_REQUIRED) {
       SilverLogger.getLogger(this).info(
           "Authentication requires a second factor for login ''{0}'' in domain {1}",
@@ -222,8 +234,6 @@ public class AuthenticationService implements Authentication {
               result.getStatus().toString(), userCredential.getLogin(),
               userCredential.getDomainId());
     }
-
-    return result;
   }
 
   private String checkAuthentication(final AuthenticationCredential userCredential)
