@@ -43,14 +43,25 @@ class TwoFactorKeyResetNotificationTest {
   @Test
   void shouldNotifyOnlyAccountsInTheCommittedReset() {
     var reset = new TwoFactorKeyReset(List.of("42", "43"));
-    var notifier = new TwoFactorKeyResetNotifier();
+    var sender = new TwoFactorKeyResetNotificationSender();
     try (var notifications = mockStatic(UserNotificationHelper.class)) {
-      notifier.notifyUsers(reset);
+      sender.send(reset);
       var builder = ArgumentCaptor.forClass(UserNotificationBuilder.class);
       notifications.verify(() -> UserNotificationHelper.buildAndSend(builder.capture()));
       var captured = (TwoFactorKeyResetNotification) builder.getValue();
       assertEquals(List.of("42", "43"), captured.getUserIdsToNotify());
     }
+  }
+
+  @Test
+  void shouldDelegateTheCommittedResetToTheTransactionalSender() {
+    var sender = mock(TwoFactorKeyResetNotificationSender.class);
+    var reset = new TwoFactorKeyReset(List.of("42", "43"));
+
+    new TwoFactorKeyResetNotifier(sender).notifyUsers(reset);
+
+    verify(sender).send(reset);
+    verifyNoMoreInteractions(sender);
   }
 
   @ParameterizedTest

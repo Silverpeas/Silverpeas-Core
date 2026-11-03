@@ -25,19 +25,30 @@ package org.silverpeas.core.security.authentication.twofactor;
 
 import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.event.TransactionPhase;
+import jakarta.inject.Inject;
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 
 /**
  * Sends key-reset notifications only after the enrollment reset has committed successfully.
  */
 @Bean
 public class TwoFactorKeyResetNotifier {
+  private final TwoFactorKeyResetNotificationSender sender;
+
+  /**
+   * Creates the after-commit observer with a separately intercepted notification sender.
+   * @param sender the sender that opens a new transaction for notification delivery.
+   */
+  @Inject
+  public TwoFactorKeyResetNotifier(final TwoFactorKeyResetNotificationSender sender) {
+    this.sender = sender;
+  }
+
   /**
    * Notifies previously enrolled users in their preferred language.
    * @param reset the committed reset and its affected users.
    */
   public void notifyUsers(@Observes(during = TransactionPhase.AFTER_SUCCESS) final TwoFactorKeyReset reset) {
-    UserNotificationHelper.buildAndSend(new TwoFactorKeyResetNotification(reset.userIds()));
+    sender.send(reset);
   }
 }
