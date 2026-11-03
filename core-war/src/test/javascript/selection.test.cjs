@@ -110,3 +110,21 @@ test('a locked item not yet selected can be selected', () => {
   assert.equal(selection.isLocked(user('1')), true);
   assert.deepEqual(idsOf(selection), ['1']);
 });
+
+test('an already selected item isn\'t selected again', () => {
+  const selection = newSelection(true);
+  select(selection, '1', '2');
+
+  selection.add(user('1'));
+
+  assert.deepEqual(idsOf(selection), ['1', '2']);
+});
+
+test('selecting several items doesn\'t select again the already selected ones', () => {
+  const selection = newSelection(true);
+  select(selection, '1', '2');
+
+  selection.add([user('2'), user('3'), user('1')]);
+
+  assert.deepEqual(idsOf(selection), ['1', '2', '3']);
+});
