@@ -64,7 +64,7 @@ function Selection(multiselection, pageSize, lockedIds) {
 function __addMultipleSelection(items, selectionItems) {
   let i, userOrGroup, existingUris = [];
   for (i = 0; i < selectionItems.length; i++) {
-    userOrGroup = selectionItems;
+    userOrGroup = selectionItems[i];
     existingUris[userOrGroup.uri] = userOrGroup;
   }
   if (Array.isArray(items)) {
