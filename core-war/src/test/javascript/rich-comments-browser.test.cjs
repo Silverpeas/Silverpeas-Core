@@ -46,6 +46,7 @@ async function setup(comments = []) {
     'util/javaScript/richEditor/vendor/tiptap-3.32.2.min.js', 'util/javaScript/richEditor/silverpeas-rich-editor.js']) {
     await page.addScriptTag({path: path.join(assets, file)});
   }
+  await page.addStyleTag({path: path.join(assets, 'util/styleSheets/silverpeas-main.css')});
   await page.addStyleTag({path: path.join(assets, 'util/styleSheets/richEditor.css')});
   await page.evaluate(({templates, comments}) => {
     window.webContext = '/silverpeas';
@@ -190,6 +191,30 @@ test('failed mention lookup leaves the visual editor usable and unmount releases
     assert.equal(await editor.textContent(), 'Still usable');
     await page.evaluate(() => {vm.$.appContext.app.unmount();});
     assert.equal(await page.locator('.tiptap, .sp-editor-tools').count(), 0);
+    assert.deepEqual(errors, []);
+  } finally {await browser.close();}
+});
+
+test('emoji grid fits every button without horizontal overflow with the native comment theme', async () => {
+  const {browser, page, errors} = await setup();
+  try {
+    for (const width of [1024, 320]) {
+      await page.setViewportSize({width, height:800});
+      await page.locator('#edition-box .sp-editor-tools > button').first().click();
+      const geometry = await page.locator('#edition-box .sp-emoji-picker').evaluate(picker => {
+        const bounds = picker.getBoundingClientRect();
+        return {client:picker.clientWidth, scroll:picker.scrollWidth,
+          visible:[...picker.children].every(button => {
+            const item = button.getBoundingClientRect();
+            return item.left >= bounds.left && item.right <= bounds.right;
+          })};
+      });
+      assert.ok(geometry.scroll <= geometry.client, JSON.stringify(geometry));
+      assert.ok(geometry.visible);
+      await page.getByRole('button', {name:'🚀', exact:true}).click();
+      assert.equal(await page.locator('#edition-box .sp-emoji-picker').isVisible(), false);
+    }
+    assert.equal(await page.locator('#edition-box .tiptap').textContent(), '🚀🚀');
     assert.deepEqual(errors, []);
   } finally {await browser.close();}
 });
