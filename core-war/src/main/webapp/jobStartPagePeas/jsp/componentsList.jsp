@@ -28,6 +28,7 @@
 <%@ taglib uri="jakarta.tags.fmt" prefix="fmt" %>
 <%@ taglib uri="jakarta.tags.functions" prefix="fn" %>
 <%@ include file="check.jsp" %>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <%
   String spaceId = (String) request.getAttribute("CurrentSpaceId");
 
@@ -36,54 +37,13 @@
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="${pageContext.response.locale.language}">
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
 <adminTags:refreshSpaceNavigation/>
-<script type="text/javascript">
-  $(document).ready(function()
-  {
-
-    $(".linkSee").click(function() {
-      $(".applicationsType ul").hide();
-      $(".linkSee").removeClass("select");
-      $(this).addClass("select");
-      $(this).parents('.applicationsType').children("ul").show();
-    });
-
-    $(".application a").hover(
-      function() {
-      $(this).children("p").show();
-      $(this).children("h3").hide();
-      },
-      function(){
-      $(this).children("h3").show();
-      $(this).children("p").hide();
-      }
-    );
-
-    $(".linkSee span").html(function() {
-      id = $.trim($(this).text()).substring(0,2);
-      $(this).html($.trim($(this).text()).substring(3));
-      $(this).parents('.applicationsType').addClass("type_"+id);
-    });
-
-
-
-    $(".type_01 ul").show();
-    $(".type_01 .linkSee").addClass("select");
-
-  });
-</script>
-<style>
-<!--
-/* ne peut �tre ajouter � la global html heit � 100% a trop d'impacte*/
-body , html {
-height:100%;
-}
--->
-</style>
+<script src="<c:url value='/jobStartPagePeas/jsp/javascript/components-catalogue.js'/>" defer></script>
+<link rel="stylesheet" href="<c:url value='/jobStartPagePeas/jsp/javascript/components-catalogue.css'/>"/>
 
 </head>
 <body class="page_content_admin">
@@ -100,8 +60,14 @@ height:100%;
             <li class="applicationsType"><a class="linkSee" href="#"><span><c:out value="${currentSuite}"/></span></a>
             <ul class="applicationList">
           </c:if>
+              <c:set var="availability" value="${requestScope.ComponentAvailability[component.name]}"/>
+              <c:url var="applicationAction" value="CreateInstance"><c:param name="ComponentName" value="${component.name}"/></c:url>
+              <c:if test="${not availability.available}">
+                <c:set var="applicationAction" value="#"/>
+                <c:if test="${not empty availability.existingInstanceId}"><c:url var="applicationAction" value="/Component/${availability.existingInstanceId}"/></c:if>
+              </c:if>
               <li id="<c:out value="${component.name}" />" class="application">
-                <a href="CreateInstance?ComponentName=<c:out value="${component.name}" />" title="<%=resource.getString("JSPP.applications.add")%>">
+                <a href="${fn:escapeXml(applicationAction)}" class="${not empty availability.existingInstanceId ? 'sp-link' : ''}" aria-disabled="${not availability.available and empty availability.existingInstanceId}" title="${fn:escapeXml(component.label)}">
                   <c:if test="${component.suite == '05 Workflow'}">
                     <img src="<%=iconsPath%>/util/icons/component/processManagerBig.png" class="component-icon" alt=""/>
                   </c:if>
@@ -111,6 +77,10 @@ height:100%;
 
                   <h3 class="applicationName"><c:out value="${component.label}" /></h3>
                   <p class="applicationDescription"><c:out value="${component.description}"/></p>
+                  <c:if test="${not availability.available}">
+                    <span class="application-capacity"><fmt:message key="${availability.platform ? 'JSPP.applicationPlatformLimitReached' : 'JSPP.applicationLimitReached'}"><fmt:param value="${availability.maximum}"/></fmt:message></span>
+                    <c:if test="${not empty availability.existingInstanceId}"><span class="application-open-existing"><fmt:message key="JSPP.openExistingApplication"/></span></c:if>
+                  </c:if>
                 </a>
               </li>
           </c:if>

@@ -1,0 +1,6 @@
+html, body { height:100%; }
+.application-capacity { display:block; margin-top:.35rem; font-size:.85em; color:#666; }
+.application-open-existing { display:block; margin-top:.35rem; text-decoration:underline; }
+.application a[aria-disabled=true] { cursor:default; opacity:.65; }
+
+.application .application-capacity, .application .application-open-existing { background:none; }

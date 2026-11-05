@@ -136,6 +136,7 @@ public class AdminController implements Serializable {
 
     try {
       UserDetail user = admin.getUserDetail(sUserId);
+      if (user == null) { return ArrayUtil.emptyStringArray(); }
       if (user.isAccessAdmin() || sUserId.equals("0")) {
         return admin.getClientSpaceIds(admin.getAllSpaceIds());
       } else {
@@ -308,6 +309,13 @@ public class AdminController implements Serializable {
       throw e;
     } catch (Exception e) {
       exception = e;
+      Throwable cause = e;
+      while (cause != null) {
+        if (cause instanceof org.silverpeas.core.admin.component.ComponentInstanceLimitException limit) {
+          throw limit;
+        }
+        cause = cause.getCause();
+      }
       return "";
     } finally {
       if (exception != null) {
@@ -587,7 +595,7 @@ public class AdminController implements Serializable {
     }
   }
 
-  /*
+  /**
    * Assign rights of a user to a user
    * @param operationMode : value of {@link RightAssignationContext.MODE}
    * @param sourceUserId : the user id of the source user
@@ -602,7 +610,7 @@ public class AdminController implements Serializable {
         authorId);
   }
 
-  /*
+  /**
    * Assign rights of a user to a group
    * @param operationMode : value of {@link RightAssignationContext.MODE}
    * @param sourceUserId : the user id of the source user
@@ -617,7 +625,7 @@ public class AdminController implements Serializable {
         authorId);
   }
 
-  /*
+  /**
    * Assign rights of a group to a user
    * @param operationMode : value of {@link RightAssignationContext.MODE}
    * @param sourceGroupId : the group id of the source group
@@ -632,7 +640,7 @@ public class AdminController implements Serializable {
         authorId);
   }
 
-  /*
+  /**
    * Assign rights of a group to a group
    * @param operationMode : value of {@link RightAssignationContext.MODE}
    * @param sourceGroupId : the group id of the source group
@@ -1303,11 +1311,10 @@ public class AdminController implements Serializable {
       return admin.synchronizeGroup(groupId, true);
     } catch (AdminException e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      if (e.getCause() instanceof GroupSynchronizationRule.RuleError) {
-        GroupSynchronizationRule.RuleError error = (GroupSynchronizationRule.RuleError) e.getCause();
-        if (error instanceof GroupSynchronizationRule.GroundRuleError) {
+      if (e.getCause() instanceof GroupSynchronizationRule.RuleError error) {
+        if (error instanceof GroupSynchronizationRule.GroundRuleError groundRuleError) {
           return error.getHandledMessage() + "|" +
-              ((GroupSynchronizationRule.GroundRuleError) error).getBaseRulePart();
+              groundRuleError.getBaseRulePart();
         }
         return error.getHandledMessage();
       }

@@ -1,0 +1,695 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2026 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "https://www.silverpeas.org/legal/floss_exception.html"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+-->
+<xs:schema xmlns="http://silverpeas.org/xml/ns/component"
+           elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://silverpeas.org/xml/ns/component"
+           version="4.0">
+
+  <xs:annotation>
+    <xs:documentation>
+      Copyright (C) 2000 - 2026 Silverpeas
+
+      This program is free software: you can redistribute it and/or modify
+      it under the terms of the GNU Affero General Public License as
+      published by the Free Software Foundation, either version 3 of the
+      License, or (at your option) any later version.
+
+      As a special exception to the terms and conditions of version 3.0 of
+      the GPL, you may redistribute this Program in connection with Free/Libre
+      Open Source Software ("FLOSS") applications as described in Silverpeas's
+      FLOSS exception. You should have received a copy of the text describing
+      the FLOSS exception, and it is also available here:
+      "https://www.silverpeas.org/legal/floss_exception.html"
+
+      This program is distributed in the hope that it will be useful,
+      but WITHOUT ANY WARRANTY; without even the implied warranty of
+      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+      GNU Affero General Public License for more details.
+
+      You should have received a copy of the GNU Affero General Public License
+      along with this program. If not, see &lt;https://www.gnu.org/licenses/>.
+    </xs:documentation>
+  </xs:annotation>
+
+  <xs:annotation>
+    <xs:documentation xml:lang="en">
+      This schema defines the grammar of a descriptor of either a shareable application component
+      or a personal application component. A shareable application component is an application that
+      can be instantiated several times in the collaborative spaces of Silverpeas and that can be
+      accessed by the users of Silverpeas according to their roles they play in the instances of the
+      application. A personal application component is an application that can be instantiated only
+      one time for each user and this in the personal space of the concerned user.
+
+      The descriptor is used to define for Silverpeas an application component, how it is expected
+      to behave within Silverpeas, and what are the different parameters when instantiating it.
+    </xs:documentation>
+  </xs:annotation>
+
+  <xs:element name="WAComponent" type="WAComponentType">
+    <xs:annotation>
+      <xs:documentation>
+        Web Application Component. A Silverpeas component based upon Silverpeas Core defines an
+        integrated application aiming for some users in Silverpeas to manage some kinds of
+        contributions and to provide a dedicated functionality for working with them. These
+        applications can be instantiated several times in different collaborative spaces.
+      </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:element name="PersonalComponent" type="PersonalComponentType">
+    <xs:annotation>
+      <xs:documentation>
+        Personal Web Application Component. A Silverpeas personal component based upon Silverpeas
+        Core defines an integrated application aiming for the only usage of a given user to manage
+        some kinds of contributions and to provide a dedicated functionality for working with them.
+        These applications can be instantiated for each user in their personal user.
+      </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:simpleType name="BehaviorType" final="restriction">
+    <xs:annotation>
+      <xs:documentation>
+        Specific predefined behavior of a Web Application Component. It can manage folders as
+        topics or it can be a workflow.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="topicTracker"/>
+      <xs:enumeration value="workflow"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="SpaceProfileType" final="restriction">
+    <xs:annotation>
+      <xs:documentation>
+        A space has its own pre-defined user profiles. When a component instance is added within a
+        given space, the roles of the users in this instance can then be inherited from the parent
+        space. Because the user profiles of the application can be different from those of a space,
+        it is necessary to define a mapping between the profiles of the space with those of the
+        application.
+      </xs:documentation>
+      <xs:documentation>
+        By default, a space is visible to all users defined at least in a given user profile of an
+        application instance in that space.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="admin">
+        <xs:annotation>
+          <xs:documentation>
+            The space administrator. He can manage the details of a space and as such he can add or
+            remove any application instances.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="publisher">
+        <xs:annotation>
+          <xs:documentation>
+            The publisher. He can add/remove/edit/move contributions in the application instances in
+            the space. When supported, he's in charge also of the validation of the contributions
+            proposed by users in lower user profile.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="writer">
+        <xs:annotation>
+          <xs:documentation>
+            The writer. He can add/remove/edit his own contributions in the application instances.
+            When the multiuser contribution is supported, he can also participate in the edition
+            of the contributions of others users.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="reader">
+        <xs:annotation>
+          <xs:documentation>
+            The reader. He has only read-only access to the application instances of the space.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="ProfileType">
+    <xs:annotation>
+      <xs:documentation>
+        A user profile supported in an application. A user profile is a mix between a given role and
+        some pre-defined privileges. The name of the profile is the name of the role a user will
+        play in the instance of the application. The privileges covered by a user profile are under
+        the discretion of the application, but it is expected they satisfy the conventions in force
+        in Silverpeas regarding the roles to which they are mapped.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexContent>
+      <xs:extension base="ProfileDescriptionType">
+        <xs:attribute name="name" type="xs:string"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="MessageType">
+    <xs:annotation>
+      <xs:documentation>
+        A message to render in the application instance configuration page. A message is always
+        written in a given language specified by the attribute 'lang'
+      </xs:documentation>
+    </xs:annotation>
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="lang" type="xs:language"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="L10nType">
+    <xs:annotation>
+      <xs:documentation>
+        A l10n text. A text with its translation in different languages.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="message" type="MessageType" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ProfileDescriptionType">
+    <xs:annotation>
+      <xs:documentation>
+        Description of a user profile supported by a Web Application Component. It provides a label
+        of the role, a short description of it that will be displayed as a help, and a mapping with
+        one or several user profiles from the parent space. The l10n information can be provided
+        by the resource bundles accompanying the XML Web Application Component descriptor instead
+        of being directly defined in latter.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="label" type="L10nType" minOccurs="0"/>
+      <xs:element name="help" type="L10nType" minOccurs="0"/>
+      <xs:element name="spaceMapping" minOccurs="0">
+        <xs:complexType>
+          <xs:annotation>
+            <xs:documentation>
+              <![CDATA[
+              Mapping of this user profile with at least one of the profiles of the parent space.
+              If no mapping is defined, then by default this profile is mapped with the one of the
+              parent space having the same name. For doing, the profiles name must match unless
+              there is another mapping rule defined in Silverpeas (only for versions of Silverpeas
+              <= 6.3. Above 6.3, the names must match).
+              ]]>
+            </xs:documentation>
+          </xs:annotation>
+          <xs:sequence>
+            <xs:element name="profile" type="SpaceProfileType" maxOccurs="4"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ParameterType">
+    <xs:annotation>
+      <xs:documentation>
+        A parameter instance of an application. Such parameters constrain the behavior of the
+        application instances. All the configuration parameters acting only on an application
+        instance should be defined here and these parameters can be modified by the administrators.
+        For the global application parameters, those are applying on all the instances of the
+        application, they have to be defined in a dedicated properties file on the filesystem.
+      </xs:documentation>
+      <xs:documentation>
+        Any l10n data describing a parameter (label, help and warning) can be provided by the
+        resource bundles accompanying the XML Web Application Component descriptor instead of
+        being directly defined in latter.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="name" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            The technical name of the parameter.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="label" type="L10nType" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            The displayable name of the parameter to render to users.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="order" type="xs:int">
+        <xs:annotation>
+          <xs:documentation>
+            The displayable order of this parameter among others ones.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="mandatory" type="xs:boolean">
+        <xs:annotation>
+          <xs:documentation>
+            Should the setting of this parameter be mandatory?
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="value" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+            The default value of this parameter.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="options" maxOccurs="unbounded" minOccurs="0">
+        <xs:complexType>
+          <xs:annotation>
+            <xs:documentation>
+              In the case the parameter accepts only discriminant values, the options defines all
+              those values with which the parameter can be set.
+            </xs:documentation>
+          </xs:annotation>
+          <xs:sequence>
+            <xs:element name="option" type="ParameterOptionType" maxOccurs="unbounded"
+                        minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="type">
+        <xs:simpleType>
+          <xs:annotation>
+            <xs:documentation>
+              The type of the parameter and hence the way it can be valued by the user.
+            </xs:documentation>
+          </xs:annotation>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="checkbox">
+              <xs:annotation>
+                <xs:documentation>
+                  The valuation of the parameter is done with a checkbox indicating if the parameter
+                  is enabled or not.
+                </xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="select">
+              <xs:annotation>
+                <xs:documentation>
+                  The valuation of the parameter is done by a selection of a value among predefined
+                  ones. In this case, the parameter accepts only discriminant values defined for
+                  each of them by an 'option' element.
+                </xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="xmltemplates">
+              <xs:annotation>
+                <xs:documentation>
+                  The parameter is valued by the name of an XML form.
+                </xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="text">
+              <xs:annotation>
+                <xs:documentation>
+                  The valuation of the parameter is simply a text.
+                </xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="radio">
+              <xs:annotation>
+                <xs:documentation>
+                  The valuation of the parameter is done with a radio button. In this case, it
+                  accepts only discriminant values defined for each of them by an 'option' element;
+                  for each 'option' element is associated a radio button with which the setting
+                  of the value is done.
+                </xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="size" type="xs:int" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            The size of the value of the parameter if such data is pertinent for the type of the
+            value. Usually for textual value.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="updatable">
+        <xs:simpleType>
+          <xs:annotation>
+            <xs:documentation>
+              Once the parameter set, indicates whether it can be updatable and under which
+              condition.
+            </xs:documentation>
+          </xs:annotation>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="always">
+              <xs:annotation>
+                <xs:documentation>
+                  The value of the parameter can be always updated.
+                </xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="creation">
+              <xs:annotation>
+                <xs:documentation>
+                  The parameter isn't modifiable. Its value is set only at the creation of the
+                  application instance.
+                </xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="never">
+              <xs:annotation>
+                <xs:documentation>
+                  The parameter isn't settable and thus updatable. It means either the parameter
+                  isn't more valued or its value is now hard set by the application.
+                </xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="hidden">
+              <xs:annotation>
+                <xs:documentation>
+                  Once set, the parameter cannot be anymore updated, and it is hidden from the
+                  users.
+                </xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element type="L10nType" name="help" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            A help about the parameter explaining what it does.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="L10nType" name="warning" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            A warning message giving the user some important information about the parameter.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="xs:string" name="personalSpaceValue" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            The default value of the application instance created in the personal space of a user.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="ParameterOptionType">
+    <xs:annotation>
+      <xs:documentation>
+        In the case a parameter accepts only discriminant values, this type defines what are those
+        values in the form of an option. For each option, a name indicates to the user what this
+        value, and the value itself with which the parameter can be set. The name is localized,
+        meaning it can be provided by the resource bundles accompanying the XML Web Application
+        Component descriptor instead of being directly defined in latter.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="name" type="L10nType" minOccurs="0"/>
+      <xs:element name="value" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="GroupOfParametersType">
+    <xs:annotation>
+      <xs:documentation>
+        A group of parameters. It is for grouping the parameters by a common property (for example
+        on the type of contributions they relate). It is defined by a label, a short description and
+        a help to render to the users. Then are defined the order to indicate it displayable rank
+        and all the grouped parameters.
+      </xs:documentation>
+      <xs:documentation>
+        Any l10n data describing a group of parameters (label, description and help) can be
+        provided by the resource bundles accompanying the XML Web Application Component
+        descriptor instead of being directly defined in latter.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="label" type="L10nType" minOccurs="0"/>
+      <xs:element name="description" type="L10nType" minOccurs="0"/>
+      <xs:element name="help" type="L10nType" minOccurs="0"/>
+      <xs:element name="order" type="xs:int"/>
+      <xs:element name="parameters">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element type="ParameterType" name="parameter" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:token"/>
+  </xs:complexType>
+
+  <xs:complexType name="WAComponentType">
+    <xs:annotation>
+      <xs:documentation>
+        Descriptor of a Web Application Component in which are defined its name, a description of
+        it, the different supported user profiles, the pre-defined instance parameters, and the
+        specific instance parameters. The texts are usually localized.
+      </xs:documentation>
+      <xs:documentation>
+        Any l10n information about the Web Application Component (label, description, suite, etc.)
+        can be provided by the resource bundles accompanying the XML Web Application Component
+        descriptor instead of being directly defined in latter.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element type="xs:string" name="name">
+        <xs:annotation>
+          <xs:documentation>
+            The technical name of the application.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="behaviors" minOccurs="0">
+        <xs:complexType>
+          <xs:annotation>
+            <xs:documentation>
+              Some specific and predefined behaviors the application support. Behind each behavior
+              set, a specific transverse hard-coded mechanism is triggered for the application
+              instances.
+            </xs:documentation>
+          </xs:annotation>
+          <xs:sequence>
+            <xs:element type="BehaviorType" name="behavior" maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element type="L10nType" name="label" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            The name of the application to render to the users.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="L10nType" name="description" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            A description of the application, of what it does, what are its goals.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="L10nType" name="suite" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            The category in which this application has to be put.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="xs:boolean" name="inheritSpaceRightsByDefault"  default="true" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Should the inheritance mechanism of the user profiles from the parent space be enabled?
+            If not, no user profiles will be by default inherited from the parent space and as such
+            the user profiles for the application instances have to be always explicitly set by the
+            administrators.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="xs:boolean" name="publicByDefault" default="false" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Should the application instances to be public by default? If true, then the predefined
+            public instance parameter will always be enabled, but it could be disabled by the
+            administrators.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="xs:boolean" name="visible">
+        <xs:annotation>
+          <xs:documentation>
+            Should this application be visible in the backoffice to be instantiated and then used?
+            It is a way to enable or not by default an application in Silverpeas.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="xs:boolean" name="visibleInPersonalSpace" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            Should this application be also instantiated in the personal space of the users?
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="xs:boolean" name="portlet">
+        <xs:annotation>
+          <xs:documentation>
+            Is this application supports the portlet mechanism?
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="router" type="xs:string" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            If the application doesn't define any request router, this predefined parameter allows
+            to indicate what request router to use for the instances of the application. For
+            instance, this parameter is used for the workflows to indicate to use the request
+            router of the Process Management Application.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="profiles">
+        <xs:complexType>
+          <xs:annotation>
+            <xs:documentation>
+              The user profiles used in the applications.
+            </xs:documentation>
+          </xs:annotation>
+          <xs:sequence>
+            <xs:element type="ProfileType" name="profile" maxOccurs="unbounded" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="groupsOfParameters" minOccurs="0">
+        <xs:complexType>
+          <xs:annotation>
+            <xs:documentation>
+              The groups of instance parameters for this application.
+            </xs:documentation>
+          </xs:annotation>
+          <xs:sequence>
+            <xs:element type="GroupOfParametersType" name="groupOfParameters"
+                        maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="parameters" minOccurs="0">
+        <xs:complexType>
+          <xs:annotation>
+            <xs:documentation>
+              The ungrouped instance parameters for this application.
+            </xs:documentation>
+          </xs:annotation>
+          <xs:sequence>
+            <xs:element type="ParameterType" name="parameter" maxOccurs="unbounded" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="maxInstancesPerSpace" type="xs:nonNegativeInteger" minOccurs="0" default="0">
+        <xs:annotation><xs:documentation>Maximum active instances in the direct parent space. Zero or absence means unlimited.</xs:documentation></xs:annotation>
+      </xs:element>
+      <xs:element name="maxInstancesPerPlatform" type="xs:nonNegativeInteger" minOccurs="0" default="0">
+        <xs:annotation><xs:documentation>Maximum active instances on the whole platform. Zero or absence means unlimited.</xs:documentation></xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="PersonalComponentType">
+    <xs:annotation>
+      <xs:documentation>
+        Descriptor of a Personal Web Application Component in which are defined its name, a
+        description of it, the pre-defined instance parameters, and the specific instance
+        parameters. The texts are usually localized.
+      </xs:documentation>
+      <xs:documentation>
+        Any l10n information about the Personal Web Application Component (label, description, etc.)
+        can be provided by the resource bundles accompanying the XML Web Application Component
+        descriptor instead of being directly defined in latter.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element type="xs:string" name="name">
+        <xs:annotation>
+          <xs:documentation>
+            The technical name of this personal application.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="L10nType" name="label" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            The name of the personal application to render to the users.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="L10nType" name="description" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>
+            A description of the personal application, of what it does, what are its goals.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element type="xs:boolean" name="visible">
+        <xs:annotation>
+          <xs:documentation>
+            Should this application be visible in the backoffice to be instantiated and then used?
+            It is a way to enable or not by default an application in Silverpeas.
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="groupsOfParameters" minOccurs="0">
+        <xs:complexType>
+          <xs:annotation>
+            <xs:documentation>
+              The groups of instance parameters for this personal application.
+            </xs:documentation>
+          </xs:annotation>
+          <xs:sequence>
+            <xs:element type="GroupOfParametersType" name="groupOfParameters"
+                        maxOccurs="unbounded"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="parameters" minOccurs="0">
+        <xs:complexType>
+          <xs:annotation>
+            <xs:documentation>
+              The ungrouped instance parameters for this personal application.
+            </xs:documentation>
+          </xs:annotation>
+          <xs:sequence>
+            <xs:element type="ParameterType" name="parameter" maxOccurs="unbounded" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
