@@ -194,9 +194,10 @@ public class JDBCCommentRequester {
    * @throws SQLException if an error occurs during the comment fetching.
    */
   public Comment getComment(Connection con, CommentId commentId) throws SQLException {
-    String selectQuery = SQL_COMMENT_QUERY + " WHERE commentId = ?";
+    String selectQuery = SQL_COMMENT_QUERY + " WHERE commentId = ? AND instanceId=?";
     try (PreparedStatement prepStmt = con.prepareStatement(selectQuery)) {
       prepStmt.setInt(1, Integer.parseInt(commentId.getLocalId()));
+      prepStmt.setString(2, commentId.getComponentInstanceId());
       try (ResultSet rs = prepStmt.executeQuery()) {
         if (rs.next()) {
           return toComment(rs);
