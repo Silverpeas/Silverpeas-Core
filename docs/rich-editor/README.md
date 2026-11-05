@@ -89,7 +89,7 @@ et l'envoi d'images de Discussion restent disponibles via son adaptateur existan
 ## Migration et compilation
 
 Le module Core `comment` passe de 003 à 004. L'installation Silverpeas applique
-l'ajout de colonne via `core-configuration/.../migrations/db/<db>/comment/003/alter_table.sql`.
+l'ajout de colonne via `core-configuration/.../migrations/db/<db>/comment/up003/alter_table.sql`.
 Le schéma d'installation neuve se trouve dans `comment/004`. La version de migration
 de Discussion reste 001.
 

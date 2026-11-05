@@ -29,6 +29,11 @@ import java.sql.DriverManager;
 import java.util.Date;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilderFactory;
+import org.w3c.dom.Element;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.comment.model.Comment;
@@ -77,13 +82,38 @@ class RichCommentPersistenceTest {
       try (var sql = connection.createStatement()) {
         sql.executeUpdate("INSERT INTO SB_Comment_Comment VALUES (1,2,'2026/11/05',NULL,'**historical**','kmelia1','Publication','16')");
       }
-      execute(connection, "003/alter_table.sql");
+      execute(connection, "up003/alter_table.sql");
       var comment = requester.getComment(connection, new CommentId("kmelia1", "1"));
       assertEquals("**historical**", comment.getMessage());
       assertNull(comment.getRichText());
       comment.setRichText("**Updated**");
       requester.updateComment(connection, comment);
       assertEquals("Updated", requester.getComment(connection, comment.getIdentifier()).getMessage());
+    }
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"h2", "mssql", "oracle", "postgresql"})
+  void upgradeScriptsExistAtThePathsResolvedByTheInstaller(String database) throws Exception {
+    var factory = DocumentBuilderFactory.newDefaultInstance();
+    factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+    factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+    factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+    try (var descriptor = getClass().getResourceAsStream("/migrations/modules/comment-migration.xml")) {
+      assertNotNull(descriptor);
+      var upgrades = factory.newDocumentBuilder().parse(descriptor).getElementsByTagName("upgrade");
+      for (int index = 0; index < upgrades.getLength(); index++) {
+        var upgrade = (Element) upgrades.item(index);
+        var scripts = upgrade.getElementsByTagName("script");
+        for (int scriptIndex = 0; scriptIndex < scripts.getLength(); scriptIndex++) {
+          var script = (Element) scripts.item(scriptIndex);
+          var path = "/migrations/db/" + database + "/comment/up"
+              + upgrade.getAttribute("fromVersion") + "/" + script.getAttribute("name");
+          try (var input = getClass().getResourceAsStream(path)) {
+            assertNotNull(input, "Installer cannot resolve " + path);
+          }
+        }
+      }
     }
   }
 
