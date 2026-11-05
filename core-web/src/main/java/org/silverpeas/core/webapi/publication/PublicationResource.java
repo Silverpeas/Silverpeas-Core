@@ -58,6 +58,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A REST Web resource providing access to publications through private mode.
@@ -135,10 +136,7 @@ public class PublicationResource extends AbstractPublicationResource {
 
     PublicationPK pk = new PublicationPK(pubId, componentId);
 
-    String uri = getUri().getAbsolutePath().toString();
-    uri = uri.replace("/locations", "");
-
-    List<LocationEntity> entities = new ArrayList<>();
+    final String uri = getUri().getAbsolutePath().toString().replace("/locations", "");
     List<Location> locations = getPublicationService().getAllLocations(pk);
 
     //Sorting according to spaces sort
@@ -156,20 +154,15 @@ public class PublicationResource extends AbstractPublicationResource {
       sortedLocations = locations;
     }
 
-    for (Location location : sortedLocations) {
-      entities.add(LocationEntity.fromLocation(location, UriBuilder.fromUri(uri).build(), language));
-    }
-    return entities;
+    return sortedLocations.stream()
+        .map(l -> LocationEntity.fromLocation(l, UriBuilder.fromUri(uri).build(), language))
+        .collect(Collectors.toList());
   }
 
   private List<Location> getComponentLocations(List<Location> allLocations, String componentId) {
-    List<Location> componentLocations = new ArrayList<>();
-    for (Location location : allLocations) {
-      if (location.getInstanceId().equals(componentId)) {
-        componentLocations.add(location);
-      }
-    }
-    return componentLocations;
+    return allLocations.stream()
+        .filter(l -> l.getInstanceId().equals(componentId))
+        .collect(Collectors.toList());
   }
 
   @PUT
@@ -179,10 +172,13 @@ public class PublicationResource extends AbstractPublicationResource {
       @PathParam("nodeId") String nodeId, @PathParam("aliasComponentId") String aliasComponentId) {
 
     PublicationPK pk = new PublicationPK(pubId, componentId);
+    NodePK nodePK = new NodePK(nodeId, aliasComponentId);
+    AccessControlContext accessCtx = AccessControlContext.init()
+        .onOperationsOf(AccessControlOperation.MODIFICATION);
 
     //Checking publication is modified by user
-    if (!publicationAccessController.isUserAuthorized(getUser().getId(), pk, AccessControlContext
-        .init().onOperationsOf(AccessControlOperation.MODIFICATION))) {
+    if (!publicationAccessController.isUserAuthorized(getUser().getId(), pk, accessCtx) ||
+        !nodeAccessController.isUserAuthorized(getUser().getId(), nodePK, accessCtx)) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
 
@@ -200,11 +196,14 @@ public class PublicationResource extends AbstractPublicationResource {
   public Response deleteAlias(@PathParam("pubId") String pubId,
       @PathParam("nodeId") String nodeId, @PathParam("aliasComponentId") String aliasComponentId) {
 
+    NodePK nodePK = new NodePK(nodeId, aliasComponentId);
     PublicationPK pk = new PublicationPK(pubId, componentId);
+    AccessControlContext accessCtx = AccessControlContext.init()
+        .onOperationsOf(AccessControlOperation.MODIFICATION);
 
     //Checking publication is modified by user
-    if (!publicationAccessController.isUserAuthorized(getUser().getId(), pk, AccessControlContext
-        .init().onOperationsOf(AccessControlOperation.MODIFICATION))) {
+    if (!publicationAccessController.isUserAuthorized(getUser().getId(), pk, accessCtx) ||
+        !nodeAccessController.isUserAuthorized(getUser().getId(), nodePK, accessCtx)) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
 
