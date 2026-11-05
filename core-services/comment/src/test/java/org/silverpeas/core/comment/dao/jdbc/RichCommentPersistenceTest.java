@@ -93,6 +93,31 @@ class RichCommentPersistenceTest {
   }
 
   @ParameterizedTest
+  @ValueSource(booleans = {false, true})
+  void postgresqlUpgradeIsRepeatableAndPreservesAManuallyAddedColumn(boolean alreadyExists) throws Exception {
+    try (var connection = DriverManager.getConnection("jdbc:h2:mem:" + UUID.randomUUID() + ";MODE=PostgreSQL");
+         var statement = connection.createStatement()) {
+      execute(connection, "003/create_table.sql");
+      statement.executeUpdate("INSERT INTO SB_Comment_Comment VALUES (1,2,'2026/11/05',NULL,'Historical','kmelia1','Publication','16')");
+      if (alreadyExists) {
+        statement.execute("ALTER TABLE SB_Comment_Comment ADD commentRichText TEXT");
+        statement.executeUpdate("UPDATE SB_Comment_Comment SET commentRichText='**Preserved**'");
+      }
+      try (var input = getClass().getResourceAsStream("/migrations/db/postgresql/comment/up003/alter_table.sql")) {
+        assertNotNull(input);
+        var script = new String(input.readAllBytes(), StandardCharsets.UTF_8);
+        statement.execute(script);
+        statement.execute(script);
+      }
+      try (var rows = statement.executeQuery("SELECT commentComment, commentRichText FROM SB_Comment_Comment")) {
+        assertTrue(rows.next());
+        assertEquals("Historical", rows.getString(1));
+        assertEquals(alreadyExists ? "**Preserved**" : null, rows.getString(2));
+      }
+    }
+  }
+
+  @ParameterizedTest
   @ValueSource(strings = {"h2", "mssql", "oracle", "postgresql"})
   void upgradeScriptsExistAtThePathsResolvedByTheInstaller(String database) throws Exception {
     var factory = DocumentBuilderFactory.newDefaultInstance();

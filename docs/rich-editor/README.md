@@ -96,11 +96,12 @@ de Discussion reste 001.
 Le script PostgreSQL est :
 
 ```sql
-ALTER TABLE SB_Comment_Comment ADD COLUMN commentRichText TEXT;
+ALTER TABLE SB_Comment_Comment ADD COLUMN IF NOT EXISTS commentRichText TEXT;
 ```
 
-Laisser de préférence l'installeur l'appliquer automatiquement. Ne pas l'exécuter
-manuellement puis relancer la même migration sans mise en cohérence de son état.
+Laisser de préférence l'installeur l'appliquer automatiquement. Le script PostgreSQL
+peut aussi être relancé si la colonne a déjà été ajoutée manuellement : elle est
+conservée avec ses données. L'installeur peut ainsi terminer la migration normalement.
 Aucune réécriture des commentaires existants n'est nécessaire.
 
 Construire Core avant Components, sur leurs branches `feature-15552` :
