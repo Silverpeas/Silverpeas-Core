@@ -1,1 +1,1 @@
-ALTER TABLE SB_Comment_Comment ADD commentRichText TEXT;
+ALTER TABLE SB_Comment_Comment ADD COLUMN IF NOT EXISTS commentRichText TEXT;
