@@ -45,34 +45,34 @@
   $(document).ready(function()
   {
 
-		$(".linkSee").click(function() {
-			$(".applicationsType ul").hide();
-			$(".linkSee").removeClass("select");
-			$(this).addClass("select");
-			$(this).parents('.applicationsType').children("ul").show();
-		});
+    $(".linkSee").click(function() {
+      $(".applicationsType ul").hide();
+      $(".linkSee").removeClass("select");
+      $(this).addClass("select");
+      $(this).parents('.applicationsType').children("ul").show();
+    });
 
-		$(".application a").hover(
-			function() {
-			$(this).children("p").show();
-			$(this).children("h3").hide();
-			},
-			function(){
-			$(this).children("h3").show();
-			$(this).children("p").hide();
-			}
-		);
+    $(".application a").hover(
+      function() {
+      $(this).children("p").show();
+      $(this).children("h3").hide();
+      },
+      function(){
+      $(this).children("h3").show();
+      $(this).children("p").hide();
+      }
+    );
 
-		$(".linkSee span").html(function() {
-			id = $.trim($(this).text()).substring(0,2);
-			$(this).html($.trim($(this).text()).substring(3));
-			$(this).parents('.applicationsType').addClass("type_"+id);
-		});
+    $(".linkSee span").html(function() {
+      id = $.trim($(this).text()).substring(0,2);
+      $(this).html($.trim($(this).text()).substring(3));
+      $(this).parents('.applicationsType').addClass("type_"+id);
+    });
 
 
 
-		$(".type_01 ul").show();
-		$(".type_01 .linkSee").addClass("select");
+    $(".type_01 ul").show();
+    $(".type_01 .linkSee").addClass("select");
 
   });
 </script>
@@ -87,35 +87,35 @@ height:100%;
 
 </head>
 <body class="page_content_admin">
-	<% out.print(window.printBefore()); %>
-		<ul class="applicationsTypeList">
-				<c:set var="currentSuite" value="null" scope="page"/>
-				<c:forEach items="${requestScope.ListComponents}" var="component" varStatus="loop">
-				  <c:if test="${component.visible}">
-					<c:if test="${component.suite != null && component.suite != currentSuite  && currentSuite != 'null'}">
-						</ul></li>
-					</c:if>
-					<c:if test="${component.suite != null && component.suite != currentSuite}">
-					  <c:set var="currentSuite" value="${component.suite}" scope="page"/>
-						<li class="applicationsType"><a class="linkSee" href="#"><span><c:out value="${currentSuite}"/></span></a>
-						<ul class="applicationList">
-					</c:if>
-							<li id="<c:out value="${component.name}" />" class="application">
-								<a href="CreateInstance?ComponentName=<c:out value="${component.name}" />" title="<%=resource.getString("JSPP.applications.add")%>">
-									<c:if test="${component.suite == '05 Workflow'}">
-										<img src="<%=iconsPath%>/util/icons/component/processManagerBig.png" class="component-icon" alt=""/>
-									</c:if>
-									<c:if test="${component.suite != '05 Workflow'}">
-										<img src="<%=iconsPath%>/util/icons/component/<c:out value="${component.name}" />Big.png" class="component-icon" alt=""/>
-									</c:if>
+  <% out.print(window.printBefore()); %>
+    <ul class="applicationsTypeList">
+        <c:set var="currentSuite" value="null" scope="page"/>
+        <c:forEach items="${requestScope.ListComponents}" var="component" varStatus="loop">
+          <c:if test="${component.visible}">
+          <c:if test="${component.suite != null && component.suite != currentSuite  && currentSuite != 'null'}">
+            </ul></li>
+          </c:if>
+          <c:if test="${component.suite != null && component.suite != currentSuite}">
+            <c:set var="currentSuite" value="${component.suite}" scope="page"/>
+            <li class="applicationsType"><a class="linkSee" href="#"><span><c:out value="${currentSuite}"/></span></a>
+            <ul class="applicationList">
+          </c:if>
+              <li id="<c:out value="${component.name}" />" class="application">
+                <a href="CreateInstance?ComponentName=<c:out value="${component.name}" />" title="<%=resource.getString("JSPP.applications.add")%>">
+                  <c:if test="${component.suite == '05 Workflow'}">
+                    <img src="<%=iconsPath%>/util/icons/component/processManagerBig.png" class="component-icon" alt=""/>
+                  </c:if>
+                  <c:if test="${component.suite != '05 Workflow'}">
+                    <img src="<%=iconsPath%>/util/icons/component/<c:out value="${component.name}" />Big.png" class="component-icon" alt=""/>
+                  </c:if>
 
-									<h3 class="applicationName"><c:out value="${component.label}" /></h3>
-									<p class="applicationDescription"><c:out value="${component.description}"/></p>
-								</a>
-							</li>
-				  </c:if>
-				</c:forEach>
-		</ul>
+                  <h3 class="applicationName"><c:out value="${component.label}" /></h3>
+                  <p class="applicationDescription"><c:out value="${component.description}"/></p>
+                </a>
+              </li>
+          </c:if>
+        </c:forEach>
+    </ul>
 
         <br />
      <% out.print(window.printAfter()); %>
