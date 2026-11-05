@@ -40,6 +40,8 @@ import org.silverpeas.core.comment.CommentRuntimeException;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentId;
 import org.silverpeas.core.comment.service.CommentService;
+import org.silverpeas.core.comment.service.CommentMentionService;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
@@ -334,6 +336,7 @@ public class CommentResource extends RESTWebService {
    */
   protected CommentEntity asWebEntity(final Comment comment, URI commentURI) {
     return CommentEntity.fromComment(comment, i18n.getDefaultLanguage())
+        .withRichRepresentation(richRepresentation)
         .withURI(commentURI)
         .withCurrentUserLanguage(getUserPreferences().getLanguage());
   }
@@ -362,6 +365,14 @@ public class CommentResource extends RESTWebService {
    * @param theComment the comment to validate.
    */
   protected void checkIsValid(final CommentEntity theComment) {
+    try {
+      var content = theComment.toComment();
+      if (content.getMessage() == null || content.getMessage().isBlank() || content.getMessage().length() > 2000) {
+        throw new IllegalArgumentException("Invalid comment content");
+      }
+    } catch (IllegalArgumentException invalid) {
+      throw new WebApplicationException(invalid, Status.BAD_REQUEST);
+    }
     if (getUser().isAnonymous() || getUser().isAccessGuest()) {
       throw new WebApplicationException("anonymous or guest user cannot manage comments",
           FORBIDDEN);
@@ -371,6 +382,28 @@ public class CommentResource extends RESTWebService {
             getContentType()) || !theComment.getResourceId().equals(
         getContentId())) {
       throw new WebApplicationException(Status.NOT_FOUND);
+    }
+  }
+
+  @QueryParam("rich")
+  @DefaultValue("false")
+  private boolean richRepresentation;
+
+  @Inject
+  private CommentMentionService mentions;
+
+  @GET
+  @Path("mention-candidates")
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Lists authorized mention candidates for the commented resource.")
+  public List<CommentMentionService.Candidate> mentionCandidates(
+      @QueryParam("q") String query) {
+    try {
+      var target = ContributionIdentifier.from(
+          new ResourceReference(getContentId(), getComponentId()), getContentType());
+      return mentions.candidates(target, getUser(), query);
+    } catch (SecurityException denied) {
+      throw new WebApplicationException(denied, Status.FORBIDDEN);
     }
   }
 

@@ -78,7 +78,7 @@ public class JDBCCommentRequester {
   private static final String COMMENT_COUNT = "nb_comment";
   private static final String SQL_COMMENT_QUERY =
       "SELECT commentId, commentOwnerId, commentCreationDate, commentModificationDate, " +
-          "commentComment, resourceType, resourceId, instanceId FROM " + COMMENT_TABLE;
+          "commentComment, commentRichText, resourceType, resourceId, instanceId FROM " + COMMENT_TABLE;
   private static final String SELECT_COMMENT_COUNT =
       "SELECT COUNT(commentId) as nb_comment, resourceType, resourceId, instanceId FROM " +
           COMMENT_TABLE;
@@ -100,7 +100,7 @@ public class JDBCCommentRequester {
   public Comment saveComment(Connection con, Comment cmt) throws SQLException {
     String insertQuery = "INSERT INTO sb_comment_comment (commentId , commentOwnerId, " +
         "commentCreationDate, commentModificationDate, commentComment, resourceType, resourceId, " +
-        "instanceId) VALUES ( ?, ?, ?, ?, ?, ?, ?, ? )";
+        "instanceId, commentRichText) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? )";
     String errorMessage = "The comment should be created by an authenticated user";
     int newId = DBUtil.getNextId(COMMENT_TABLE, COMMENT_ID);
     User author = User.getCurrentRequester();
@@ -116,6 +116,7 @@ public class JDBCCommentRequester {
       prepStmt.setString(6, cmt.getResourceType());
       prepStmt.setString(7, cmt.getResourceReference().getLocalId());
       prepStmt.setString(8, cmt.getIdentifier().getComponentInstanceId());
+      prepStmt.setString(9, cmt.getRichText());
       prepStmt.executeUpdate();
     }
     CommentId id =
@@ -147,7 +148,7 @@ public class JDBCCommentRequester {
   public void updateComment(Connection con, Comment cmt) throws SQLException {
     String updateQuery =
         "UPDATE sb_comment_comment SET commentOwnerId=?, commentModificationDate=?, " +
-            "commentComment=?, resourceType=?, resourceId=?, instanceId=? WHERE commentId= ?";
+            "commentComment=?, resourceType=?, resourceId=?, instanceId=?, commentRichText=? WHERE commentId= ?";
     try (PreparedStatement prepStmt = con.prepareStatement(updateQuery)) {
       prepStmt.setInt(1, Integer.parseInt(cmt.getCreatorId()));
       prepStmt.setString(2, date2SQLDate(cmt.getLastUpdateDate()));
@@ -155,7 +156,8 @@ public class JDBCCommentRequester {
       prepStmt.setString(4, cmt.getResourceType());
       prepStmt.setString(5, cmt.getResourceReference().getLocalId());
       prepStmt.setString(6, cmt.getIdentifier().getComponentInstanceId());
-      prepStmt.setInt(7, Integer.parseInt(cmt.getIdentifier().getLocalId()));
+      prepStmt.setString(7, cmt.getRichText());
+      prepStmt.setInt(8, Integer.parseInt(cmt.getIdentifier().getLocalId()));
       prepStmt.executeUpdate();
     }
   }
@@ -456,10 +458,10 @@ public class JDBCCommentRequester {
     try (PreparedStatement prepStmt = con.prepareStatement(selectQuery.toString())) {
       int indexParam = 1;
       for (Object param : params) {
-        if (param instanceof String) {
-          prepStmt.setString(indexParam++, (String) param);
-        } else if (param instanceof Integer) {
-          prepStmt.setInt(indexParam++, (Integer) param);
+        if (param instanceof String string) {
+          prepStmt.setString(indexParam++, string);
+        } else if (param instanceof Integer integer) {
+          prepStmt.setInt(indexParam++, integer);
         }
       }
       try (ResultSet rs = prepStmt.executeQuery()) {
@@ -502,6 +504,7 @@ public class JDBCCommentRequester {
       Comment comment = new Comment(id, creatorId, resourceType, resourceId, creationDate);
       comment.setLastUpdateDate(updateDate);
       comment.setMessage(text);
+      comment.setRichText(rs.getString("commentRichText"));
       return comment;
     } catch (ParseException ex) {
       throw new SQLException(ex.getMessage(), ex);

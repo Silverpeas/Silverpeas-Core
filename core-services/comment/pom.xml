@@ -46,4 +46,13 @@
     </dependency>
   </dependencies>
 
+  <build>
+    <testResources>
+      <testResource><directory>src/test/resources</directory></testResource>
+      <testResource>
+        <directory>${project.basedir}/../../core-configuration/src/main/config/migrations/db/h2/comment</directory>
+        <targetPath>migrations/comment</targetPath>
+      </testResource>
+    </testResources>
+  </build>
 </project>

@@ -57,6 +57,7 @@ public class DefaultWebPlugin implements WebPlugin, Initialization {
     add(BREADCRUMB, (x, l) -> includeBreadCrumb(x));
     add(USERZOOM, JavascriptPluginInclusion::includeUserZoom);
     add(RELATIONSHIP, JavascriptPluginInclusion::includeRelationship);
+    add(RICHEDITOR, (x, l) -> includeRichEditor(x));
     add(WYSIWYG, JavascriptPluginInclusion::includeWysiwygEditor);
     add(RESPONSIBLES, JavascriptPluginInclusion::includeResponsibles);
     add(POPUP, (x, l) -> includePopup(x));

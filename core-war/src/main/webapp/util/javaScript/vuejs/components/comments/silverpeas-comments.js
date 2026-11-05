@@ -85,6 +85,9 @@
               this.resourceType + '/' + this.resourceId;
           this.loadComments();
         },
+        beforeUnmount() {
+          SilverpeasRichEditor.destroy(this.$refs.updateText);
+        },
         mounted: function() {
           whenSilverpeasEntirelyLoaded(function() {
             let element = cache.get(this.contributionId.asString());
@@ -118,9 +121,11 @@
            * @returns {boolean} true if the text is valid, false otherwise.
            */
           validateText : function(text) {
-            if (StringUtil.isNotDefined(text)) {
+            const rendered = SilverpeasRichContent.render(text);
+            const plain = rendered.textContent.trim();
+            if (!plain) {
               SilverpeasError.add(this.messages.commentErrorSingleCharAtLeast);
-            } else if (!isValidTextArea(text)) {
+            } else if (text.length > 8000 || plain.length > 2000) {
               SilverpeasError.add(this.messages.commentErrorFieldTooLong);
             }
             return !SilverpeasError.show();
@@ -130,7 +135,7 @@
            * @returns {Promise} the promise of an HTTP response.
            */
           loadComments: function() {
-            return sp.ajaxRequest(this.url)
+            return sp.ajaxRequest(this.url + '?rich=true')
                 .sendAndPromiseJsonResponse()
                 .then(function(comments) {
                   this.comments = comments;
@@ -151,9 +156,11 @@
                 resourceId : this.resourceId,
                 resourceType : this.resourceType,
                 indexed : this.indexed,
-                text : this.commentText
+                format : 'MARKDOWN',
+                text : SilverpeasRichContent.render(this.commentText).textContent.trim(),
+                richText : this.commentText
               }
-              sp.ajaxRequest(this.url)
+              sp.ajaxRequest(this.url + '?rich=true')
                   .byPostMethod()
                   .sendAndPromiseJsonResponse(comment)
                   .then(function(newComment) {
@@ -170,16 +177,23 @@
            * @param comment {Object} the comment to update.
            */
           updateComment: function(comment) {
-            this.updatedCommentText = comment.text;
-            let $textarea = this.$el.querySelector('#comment-update-text');
-            jQuery($textarea).autoResize();
+            const source = comment.format === 'MARKDOWN' ? comment.richText : SilverpeasMarkdown.fromPlainText(comment.text);
+            this.updatedCommentText = source;
+            const textarea = this.$refs.updateText;
+            SilverpeasRichEditor.enhance(textarea, {
+              labels:this.$el.dataset,
+              people:query => sp.ajaxRequest(this.url + '/mention-candidates').withParam('q', query).sendAndPromiseJsonResponse()
+            });
+            SilverpeasRichEditor.reset(textarea, source);
             this.updatePopin.open({
               callback: function() {
                 const commentWithUpdatedText = extendsObject({}, comment, {
-                  text: this.updatedCommentText
+                  text: SilverpeasRichContent.render(this.updatedCommentText).textContent.trim(),
+                  richText: this.updatedCommentText,
+                  format: 'MARKDOWN'
                 })
-                if (this.validateText(commentWithUpdatedText.text)) {
-                  return sp.ajaxRequest(this.url + '/' + commentWithUpdatedText.id)
+                if (this.validateText(commentWithUpdatedText.richText)) {
+                  return sp.ajaxRequest(this.url + '/' + commentWithUpdatedText.id + '?rich=true')
                       .byPutMethod()
                       .sendAndPromiseJsonResponse(commentWithUpdatedText)
                       .then(function(updatedComment) {
@@ -241,13 +255,26 @@
             'type': Object,
             'mandatory': true
           },
+          mentionUrl: {type:String, required:true},
           modelValue : {
             'type' : String
           }
         },
         mounted : function() {
-          let $textarea = this.$el.querySelector('#comment-edition-text');
-          jQuery($textarea).autoResize();
+          const textarea = this.$el.querySelector('#comment-edition-text');
+          SilverpeasRichEditor.enhance(textarea, {
+            labels:this.$el.closest('[data-rich-editor]').dataset,
+            people:query => sp.ajaxRequest(this.mentionUrl).withParam('q', query).sendAndPromiseJsonResponse()
+          });
+        },
+        watch: {
+          modelValue(value) {
+            const textarea = this.$el.querySelector('#comment-edition-text');
+            if (SilverpeasRichEditor.getContent(textarea) !== value) { SilverpeasRichEditor.reset(textarea, value || ''); }
+          }
+        },
+        beforeUnmount() {
+          SilverpeasRichEditor.destroy(this.$el.querySelector('#comment-edition-text'));
         },
         data: function() {
           return {
@@ -278,7 +305,9 @@
         },
         computed : {
           commentText : function() {
-            return this.comment.text.noHTML().convertNewLineAsHtml();
+            return this.comment.format === 'MARKDOWN'
+                ? SilverpeasRichContent.renderHtml(this.comment.richText, {profileBase:webContext + '/Rprofil/jsp/Main'})
+                : this.comment.text.noHTML().convertNewLineAsHtml();
           },
           displayUserZoom: function() {
             return this.currentUser.id !== this.comment.author.id && !this.currentUser.anonymous;
