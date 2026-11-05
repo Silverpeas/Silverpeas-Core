@@ -46,6 +46,8 @@ import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
+import org.silverpeas.core.security.authorization.NodeAccessController;
+import org.silverpeas.core.security.authorization.PublicationAccessController;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 import org.silverpeas.core.webapi.attachment.AttachmentEntity;
 import org.silverpeas.kernel.logging.SilverLogger;
@@ -139,10 +141,7 @@ public class PublicationResource extends AbstractPublicationResource {
 
     PublicationPK pk = new PublicationPK(pubId, componentId);
 
-    String uri = getUri().getAbsolutePath().toString();
-    uri = uri.replace("/locations", "");
-
-    List<LocationEntity> entities = new ArrayList<>();
+    final String uri = getUri().getAbsolutePath().toString().replace("/locations", "");
     List<Location> locations = getPublicationService().getAllLocations(pk);
 
     //Sorting according to spaces sort
@@ -160,21 +159,15 @@ public class PublicationResource extends AbstractPublicationResource {
       sortedLocations = locations;
     }
 
-    for (Location location : sortedLocations) {
-      entities.add(LocationEntity.fromLocation(location, UriBuilder.fromUri(uri).build(),
-          language));
-    }
-    return entities;
+    return sortedLocations.stream()
+        .map(l -> LocationEntity.fromLocation(l, UriBuilder.fromUri(uri).build(), language))
+        .toList();
   }
 
   private List<Location> getComponentLocations(List<Location> allLocations, String componentId) {
-    List<Location> componentLocations = new ArrayList<>();
-    for (Location location : allLocations) {
-      if (location.getInstanceId().equals(componentId)) {
-        componentLocations.add(location);
-      }
-    }
-    return componentLocations;
+    return allLocations.stream()
+        .filter(l -> l.getInstanceId().equals(componentId))
+        .toList();
   }
 
   @Operation(summary = "Adds an alias of the given publication in the given folder.")
@@ -186,11 +179,13 @@ public class PublicationResource extends AbstractPublicationResource {
       @PathParam("nodeId") String nodeId, @PathParam("aliasComponentId") String aliasComponentId) {
 
     PublicationPK pk = new PublicationPK(pubId, componentId);
+    NodePK nodePK = new NodePK(nodeId, aliasComponentId);
+    AccessControlContext accessCtx = AccessControlContext.init()
+        .onOperationsOf(AccessControlOperation.MODIFICATION);
 
     //Checking publication is modified by user
-    if (!getPublicationAccessController().isUserAuthorized(getUser().getId(), pk,
-        AccessControlContext.init()
-            .onOperationsOf(AccessControlOperation.MODIFICATION))) {
+    if (!getPublicationAccessController().isUserAuthorized(getUser().getId(), pk, accessCtx) ||
+        !getNodeAccessController().isUserAuthorized(getUser().getId(), nodePK, accessCtx)) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
 
@@ -210,12 +205,14 @@ public class PublicationResource extends AbstractPublicationResource {
   public Response deleteAlias(@PathParam("pubId") String pubId,
       @PathParam("nodeId") String nodeId, @PathParam("aliasComponentId") String aliasComponentId) {
 
+    NodePK nodePK = new NodePK(nodeId, aliasComponentId);
     PublicationPK pk = new PublicationPK(pubId, componentId);
+    AccessControlContext accessCtx = AccessControlContext.init()
+        .onOperationsOf(AccessControlOperation.MODIFICATION);
 
     //Checking publication is modified by user
-    if (!getPublicationAccessController().isUserAuthorized(getUser().getId(), pk,
-        AccessControlContext.init()
-            .onOperationsOf(AccessControlOperation.MODIFICATION))) {
+    if (!getPublicationAccessController().isUserAuthorized(getUser().getId(), pk, accessCtx) ||
+        !getNodeAccessController().isUserAuthorized(getUser().getId(), nodePK, accessCtx)) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
 
