@@ -253,6 +253,7 @@ public class JobStartPagePeasRequestRouter extends
     } else if ("ListComponent".equals(function)) {
       setSpaceNameInRequest(jobStartPageSC, request);
       request.setAttribute("ListComponents", jobStartPageSC.getAllLocalizedComponents());
+      request.setAttribute("ComponentAvailability", jobStartPageSC.getComponentAvailability());
       destination = "/jobStartPagePeas/jsp/componentsList.jsp";
     } else if (function.equals("CreateInstance")) {
       jobStartPageSC.setManagedInstanceId(null);
@@ -270,6 +271,8 @@ public class JobStartPagePeasRequestRouter extends
       String sErrorMessage = null;
       try {
         sComponentId = jobStartPageSC.addComponentInst(componentInst);
+      } catch (org.silverpeas.core.admin.component.ComponentInstanceLimitException e) {
+        sErrorMessage = MessageFormat.format(jobStartPageSC.getString(e.isPlatform() ? "JSPP.applicationPlatformLimitReached" : "JSPP.applicationLimitReached"), e.getMaximum());
       } catch (QuotaException e) {
         sErrorMessage = jobStartPageSC.getString("JSPP.componentSpaceQuotaFull");
       }
@@ -880,6 +883,14 @@ public class JobStartPagePeasRequestRouter extends
     String destination;
     String componentName = request.getParameter("ComponentName");
     WAComponent component = sessionController.getComponentByName(componentName);
+    var availability = sessionController.getComponentAvailability().get(componentName);
+    if (availability != null && !availability.isAvailable()) {
+      setSpaceNameInRequest(sessionController, request);
+      request.setAttribute("When", "ComponentCreation");
+      request.setAttribute("ErrorMessage", MessageFormat.format(
+          sessionController.getString(availability.isPlatform() ? "JSPP.applicationPlatformLimitReached" : "JSPP.applicationLimitReached"), availability.getMaximum()));
+      return ERROR_FULL_DEST;
+    }
     if (component != null && component.isVisible()) {
       setSpaceNameInRequest(sessionController, request);
       request.setAttribute(PARAMETERS_ATTR, sessionController.getParameters(component, true));

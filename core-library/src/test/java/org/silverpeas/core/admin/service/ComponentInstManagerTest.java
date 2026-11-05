@@ -54,6 +54,9 @@ class ComponentInstManagerTest {
   @TestManagedMock
   private OrganizationSchema organizationSchema;
 
+  @TestManagedMock
+  private org.silverpeas.core.admin.component.ComponentInstanceCapacity capacity;
+
   @TestedBean
   private ComponentInstManager manager;
 
@@ -97,4 +100,44 @@ class ComponentInstManagerTest {
     assertThat(manager.getComponentInst(0).isEmpty(), is(true));
     verifyNoInteractions(instanceTable);
   }
+  @Test
+  void allMembershipWritersCheckCapacityBeforeChangingTheDatabase() throws Exception {
+    var limit = new org.silverpeas.core.admin.component.ComponentInstanceLimitException(1);
+    doThrow(limit).when(capacity).verifyAddition(anyString(), anyInt(), anyInt());
+    doThrow(limit).when(capacity).verifyMove(anyString(), anyInt(), anyInt());
+    var instance = new ComponentInst(); instance.setName("app");
+    org.junit.jupiter.api.Assertions.assertThrows(AdminException.class, () -> manager.createComponentInst(instance, 2));
+    verify(instanceTable, never()).createComponentInstance(any());
+    var row = new ComponentInstanceRow(); row.id=12; row.spaceId=1; row.componentName="app";
+    when(instanceTable.getComponentInstance(12)).thenReturn(row);
+    org.junit.jupiter.api.Assertions.assertThrows(AdminException.class, () -> manager.moveComponentInst(2,12));
+    verify(instanceTable, never()).moveComponentInstance(anyInt(),anyInt());
+    org.junit.jupiter.api.Assertions.assertThrows(AdminException.class, () -> manager.restoreComponentFromBasket(12));
+    verify(instanceTable, never()).restoreComponentFromBasket(anyInt());
+    verify(capacity).verifyAddition("app",2,-1);
+    verify(capacity).verifyMove("app",2,12);
+    verify(capacity).verifyAddition("app",1,12);
+  }
+
+  @Test
+  void reorderingWithinTheSameSpaceDoesNotRejectExistingOverLimitInstances() throws Exception {
+    var row = new ComponentInstanceRow(); row.id=12; row.spaceId=1; row.componentName="app";
+    when(instanceTable.getComponentInstance(12)).thenReturn(row);
+    manager.moveComponentInst(1,12);
+    verifyNoInteractions(capacity);
+    verify(instanceTable).moveComponentInstance(1,12);
+  }
+
+  @Test
+  void changingRemovedStatusThroughUpdateCannotBypassRestoreCapacity() throws Exception {
+    var row = new ComponentInstanceRow(); row.id=12; row.spaceId=1; row.componentName="app"; row.status="R";
+    when(instanceTable.getComponentInstance(12)).thenReturn(row);
+    var instance = new ComponentInst(); instance.setLocalId(12); instance.setName("app");
+    doThrow(new org.silverpeas.core.admin.component.ComponentInstanceLimitException(1))
+        .when(capacity).verifyAddition("app",1,12);
+    org.junit.jupiter.api.Assertions.assertThrows(AdminException.class, () -> manager.updateComponentInst(instance,instance));
+    verify(capacity).verifyAddition("app",1,12);
+    verify(instanceTable,never()).updateComponentInstance(any());
+  }
+
 }

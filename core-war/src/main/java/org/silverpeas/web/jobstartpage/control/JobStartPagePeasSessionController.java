@@ -801,6 +801,24 @@ public class JobStartPagePeasSessionController extends AbstractAdminComponentSes
     return result;
   }
 
+  private transient org.silverpeas.core.admin.component.ComponentInstanceCapacity instanceCapacity;
+
+  public Map<String, org.silverpeas.core.admin.component.model.ComponentInstanceAvailability> getComponentAvailability() {
+    var space = getSpaceInstById();
+    var instances = space == null ? List.<ComponentInst>of() : space.getAllComponentsInst();
+    return adminController.getAllComponents().values().stream().collect(java.util.stream.Collectors.toMap(
+        WAComponent::getName,
+        descriptor -> org.silverpeas.core.admin.component.model.ComponentInstanceAvailability.from(descriptor, instances, platformInstances(descriptor))));
+  }
+
+  private List<String> platformInstances(WAComponent descriptor) {
+    if (descriptor.getMaxInstancesPerPlatform() == 0) { return List.of(); }
+    if (instanceCapacity == null) {
+      instanceCapacity = ServiceProvider.getService(org.silverpeas.core.admin.component.ComponentInstanceCapacity.class);
+    }
+    return instanceCapacity.platformInstanceIds(descriptor.getName());
+  }
+
   public WAComponent getComponentByName(String name) {
     return adminController.getAllComponents().get(name);
   }

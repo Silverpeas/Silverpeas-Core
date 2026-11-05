@@ -52,7 +52,8 @@ import java.util.*;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "WAComponentType", propOrder = {"name", "behaviors", "label", "description",
     "suite", "inheritSpaceRightsByDefault", "publicByDefault", "visible", "visibleInPersonalSpace",
-    "portlet", "router", "profiles", "groupsOfParameters", "parameters"})
+    "portlet", "router", "profiles", "groupsOfParameters", "parameters", "maxInstancesPerSpace",
+    "maxInstancesPerPlatform"})
 public class WAComponent extends AbstractSilverpeasComponent {
 
   @XmlElement(required = true)
@@ -67,6 +68,8 @@ public class WAComponent extends AbstractSilverpeasComponent {
   @XmlElement(required = true)
   @XmlJavaTypeAdapter(MultilangHashMapAdapter.class)
   protected Map<String, String> suite;
+  protected Integer maxInstancesPerSpace;
+  protected Integer maxInstancesPerPlatform;
   protected boolean inheritSpaceRightsByDefault = true;
   protected boolean publicByDefault = false;
   protected boolean visible;
@@ -281,9 +284,33 @@ public class WAComponent extends AbstractSilverpeasComponent {
     this.visibleInPersonalSpace = value;
   }
 
-  /**
-   * Gets the value of the portlet property.
-   */
+  /** @return maximum active instances on the whole platform, or zero for unlimited. */
+  public int getMaxInstancesPerPlatform() {
+    if (maxInstancesPerPlatform == null) { return 0; }
+    if (maxInstancesPerPlatform < 0) { throw new IllegalStateException("Negative instance limit"); }
+    return maxInstancesPerPlatform;
+  }
+
+  /** @param maximum platform-wide maximum; zero means unlimited. */
+  public void setMaxInstancesPerPlatform(int maximum) {
+    if (maximum < 0) { throw new IllegalArgumentException("Negative instance limit"); }
+    maxInstancesPerPlatform = maximum == 0 ? null : maximum;
+  }
+
+  /** @return maximum direct instances per space, or zero for no component-specific limit. */
+  public int getMaxInstancesPerSpace() {
+    if (maxInstancesPerSpace == null) { return 0; }
+    if (maxInstancesPerSpace < 0) { throw new IllegalStateException("Negative instance limit"); }
+    return maxInstancesPerSpace;
+  }
+
+  /** @param maximum maximum instance count; zero means unlimited. */
+  public void setMaxInstancesPerSpace(int maximum) {
+    if (maximum < 0) { throw new IllegalArgumentException("Negative instance limit"); }
+    maxInstancesPerSpace = maximum == 0 ? null : maximum;
+  }
+
+  /** @return whether this application supports portlets. */
   public boolean isPortlet() {
     return portlet;
   }

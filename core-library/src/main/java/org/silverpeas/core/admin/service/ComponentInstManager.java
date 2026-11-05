@@ -66,6 +66,8 @@ public class ComponentInstManager {
   @Inject
   private OrganizationSchema organizationSchema;
   @Inject
+  private org.silverpeas.core.admin.component.ComponentInstanceCapacity capacity;
+  @Inject
   private I18n i18n;
 
   public static ComponentInstManager get() {
@@ -130,6 +132,7 @@ public class ComponentInstManager {
   public void createComponentInst(ComponentInst componentInst, int spaceLocalId)
       throws AdminException {
     try {
+      capacity.verifyAddition(componentInst.getName(), spaceLocalId, -1);
       // Create the component node
       ComponentInstanceRow newInstance = makeComponentInstanceRow(componentInst);
       newInstance.spaceId = spaceLocalId;
@@ -207,6 +210,9 @@ public class ComponentInstManager {
 
   public void restoreComponentFromBasket(int localComponentId) throws AdminException {
     try {
+      var removed = organizationSchema.instance().getComponentInstance(localComponentId);
+      if (removed == null) { throw new AdminException("Unknown component instance"); }
+      capacity.verifyAddition(removed.componentName, removed.spaceId, removed.id);
       organizationSchema.instance().restoreComponentFromBasket(localComponentId);
       getComponentInst(localComponentId)
           .ifPresent(compInstance -> notifier.notifyEventOn(RECOVERY, compInstance));
@@ -379,6 +385,9 @@ public class ComponentInstManager {
       ComponentInstanceRow old = organizationSchema.instance().getComponentInstance(
           changedInstance.id);
 
+      if (old.status != null && changedInstance.status == null) {
+        capacity.verifyAddition(old.componentName, old.spaceId, old.id);
+      }
       if (compoInstNew.isRemoveTranslation()) {
         removeTranslation(compoInstNew, changedInstance, old);
       } else {
@@ -450,6 +459,11 @@ public class ComponentInstManager {
   public void moveComponentInst(int spaceLocalId, int componentLocalId) throws AdminException {
     try {
       // Create the component node
+      var moved = organizationSchema.instance().getComponentInstance(componentLocalId);
+      if (moved == null) { throw new AdminException("Unknown component instance"); }
+      if (moved.spaceId != spaceLocalId) {
+        capacity.verifyMove(moved.componentName, spaceLocalId, moved.id);
+      }
       organizationSchema.instance().moveComponentInstance(spaceLocalId, componentLocalId);
     } catch (Exception e) {
       throw new AdminException(
