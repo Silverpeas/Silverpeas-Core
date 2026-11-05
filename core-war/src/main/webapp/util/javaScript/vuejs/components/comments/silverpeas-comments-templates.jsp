@@ -60,6 +60,7 @@
   </c:otherwise>
 </c:choose>
 
+<fmt:setBundle basename="org.silverpeas.richEditor.multilang.richEditorBundle" var="richEditorBundle"/>
 <c:url var="deletionIcon" value="/util/icons/delete.gif"/>
 <c:url var="updateIcon" value="/util/icons/update.gif"/>
 <c:url var="loginUrl" value="/Login"/>
@@ -71,7 +72,26 @@ The user can update or delete its own comments and, in the case he's an administ
 other users. The update opens a popup to modify the text of the comment.
 ################################################################################################ -->
 <silverpeas-component-template name="comments">
-  <div id="commentaires" class="commentaires">
+  <div id="commentaires" class="commentaires" data-rich-editor="true"
+      data-format-label="<fmt:message key='richEditor.formatLabel' bundle='${richEditorBundle}'/>"
+      data-emoji-label="<fmt:message key='richEditor.emojiLabel' bundle='${richEditorBundle}'/>"
+      data-mention-label="<fmt:message key='richEditor.mentionLabel' bundle='${richEditorBundle}'/>"
+      data-length-error="<fmt:message key='richEditor.lengthError' bundle='${richEditorBundle}'/>"
+      data-message-required="<fmt:message key='richEditor.messageRequired' bundle='${richEditorBundle}'/>"
+      data-link-text="<fmt:message key='richEditor.linkText' bundle='${richEditorBundle}'/>"
+      data-link-url="<fmt:message key='richEditor.linkUrl' bundle='${richEditorBundle}'/>"
+      data-link-apply="<fmt:message key='richEditor.linkApply' bundle='${richEditorBundle}'/>"
+      data-link-invalid="<fmt:message key='richEditor.linkInvalid' bundle='${richEditorBundle}'/>"
+      data-close-image="<fmt:message key='richEditor.closeImage' bundle='${richEditorBundle}'/>"
+      data-format-bold="<fmt:message key='richEditor.formatBold' bundle='${richEditorBundle}'/>"
+      data-format-italic="<fmt:message key='richEditor.formatItalic' bundle='${richEditorBundle}'/>"
+      data-format-strike="<fmt:message key='richEditor.formatStrike' bundle='${richEditorBundle}'/>"
+      data-format-bullets="<fmt:message key='richEditor.formatBullets' bundle='${richEditorBundle}'/>"
+      data-format-numbers="<fmt:message key='richEditor.formatNumbers' bundle='${richEditorBundle}'/>"
+      data-format-quote="<fmt:message key='richEditor.formatQuote' bundle='${richEditorBundle}'/>"
+      data-format-code="<fmt:message key='richEditor.formatCode' bundle='${richEditorBundle}'/>"
+      data-format-link="<fmt:message key='richEditor.formatLink' bundle='${richEditorBundle}'/>"
+      data-remove-quote="<fmt:message key='richEditor.removeQuote' bundle='${richEditorBundle}'/>">
 
     <div v-sp-init>
       {{ addMessages({
@@ -93,7 +113,8 @@ other users. The update opens a popup to modify the text of the comment.
           v-on:comment-adding="createComment"
           v-bind:current-user="user"
           v-model="commentText"
-          v-if="!user.anonymous && !user.guestAccess">
+          v-if="!user.anonymous && !user.guestAccess"
+          v-bind:mention-url="url + '/mention-candidates'">
       </silverpeas-comment-edition>
 
       <div class="inlineMessage connection" v-if="user.anonymous">
@@ -112,7 +133,8 @@ other users. The update opens a popup to modify the text of the comment.
         <silverpeas-form-pane id="comments-update-box"
                               v-bind:manual-actions="true"
                               v-bind:mandatory-legend="true">
-          <textarea id="comment-update-text"
+          <textarea id="comment-update-text" ref="updateText"
+                    name="commentUpdate" maxlength="8000" aria-label="${commentUpdateTitle}"
                     class="text"
                     v-model="updatedCommentText">
           </textarea>
@@ -165,6 +187,7 @@ Edition block of a new comment.
       <img v-bind:src="currentUser.avatar" alt="avatar">
     </div>
     <textarea id="comment-edition-text"
+              name="commentBody" maxlength="8000" aria-label="${commentNewTitle}"
               class="text"
               v-bind:value="modelValue"
               v-on:input="$emit('update:modelValue', $event.target.value)">
@@ -185,13 +208,9 @@ According to the rights of the current user, the comment can be updated and dele
   <div v-bind:id="'comment' + comment.id" class="oneComment">
     <div>
       <div class="action">
-        <img v-if="canBeUpdated"
-             v-on:click="$emit('comment-update', comment)"
-             src="${updateIcon}" alt="${commentUpdateAction}">
+        <button v-if="canBeUpdated" type="button" class="sp-comment-action" aria-label="${commentUpdateAction}" v-on:click="$emit('comment-update', comment)"><img src="${updateIcon}" alt=""/></button>
         <span>&nbsp;</span>
-        <img v-if="canBeDeleted"
-             v-on:click="$emit('comment-deletion', comment)"
-             src="${deletionIcon}" alt="${commentDeletionAction}">
+        <button v-if="canBeDeleted" type="button" class="sp-comment-action" aria-label="${commentDeletionAction}" v-on:click="$emit('comment-deletion', comment)"><img src="${deletionIcon}" alt=""/></button>
       </div>
       <div class="avatar">
         <img v-bind:src="comment.author.avatar" alt="avatar">
@@ -201,7 +220,8 @@ According to the rights of the current user, the comment can be updated and dele
               v-bind:rel="comment.author.id">{{ comment.author.fullName }}</span>
         <span class="date"> - {{ comment.creationDate }}</span>
       </p>
-      <pre class="text" v-html="commentText"></pre>
+      <pre v-if="comment.format !== 'MARKDOWN'" class="text" v-html="commentText"></pre>
+      <div v-else class="text sp-rich-content" v-html="commentText"></div>
     </div>
   </div>
 </silverpeas-component-template>

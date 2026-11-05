@@ -45,6 +45,7 @@ public class Comment implements SilverpeasContent {
   private final String resourceType;
   private final ResourceReference resource;
   private String message;
+  private String richText;
   private final Date creationDate;
   private Date updateDate;
   private final String authorId;
@@ -95,6 +96,22 @@ public class Comment implements SilverpeasContent {
 
   public void setMessage(String message) {
     this.message = message;
+    this.richText = null;
+  }
+
+  /** The optional Markdown source. Null identifies historical plain text explicitly. */
+  public String getRichText() { return richText; }
+
+  public void setRichText(String source) {
+    if (source != null) {
+      if (source.length() > 8000) { throw new IllegalArgumentException("Comment source is too long"); }
+      String plain = org.silverpeas.core.text.RichText.plainText(source);
+      if (plain.isBlank() || plain.length() > 2000) {
+        throw new IllegalArgumentException("Comment content must contain between 1 and 2000 characters");
+      }
+      this.message = plain;
+    }
+    this.richText = source;
   }
 
   public String getMessage() {

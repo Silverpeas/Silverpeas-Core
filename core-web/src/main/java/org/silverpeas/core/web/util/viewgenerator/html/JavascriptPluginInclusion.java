@@ -90,6 +90,15 @@ import static org.silverpeas.kernel.util.StringUtil.getBooleanValue;
 @SuppressWarnings("UnusedReturnValue")
 public class JavascriptPluginInclusion {
 
+  public static void includeRichEditor(final ElementContainer xhtml) {
+    xhtml.addElement(link(getApplicationURL() + "/util/styleSheets/richEditor.css"));
+    xhtml.addElement(script(JAVASCRIPT_PATH + "richEditor/vendor/markdown-it-15.0.3.min.js"));
+    xhtml.addElement(script(JAVASCRIPT_PATH + "richEditor/silverpeas-markdown.js"));
+    xhtml.addElement(script(JAVASCRIPT_PATH + "richEditor/silverpeas-rich-content.js"));
+    xhtml.addElement(script(JAVASCRIPT_PATH + "richEditor/vendor/tiptap-3.32.2.min.js"));
+    xhtml.addElement(script(JAVASCRIPT_PATH + "richEditor/silverpeas-rich-editor.js"));
+  }
+
   private static final int NB_MONTHS = 12;
   private static final int NB_WEEK_DAYS = 7;
   private static final int SCRIPT_CONTENT_KEY_LENGTH = 150;
@@ -1074,8 +1083,8 @@ public class JavascriptPluginInclusion {
         xhtml.addElement(script(chatDir + "converse-plugins/screencast.min.js"));
       }
       final Element link = link(converseDir + "converse.min.css");
-      if (link instanceof link) {
-        ((link) link).setMedia("screen");
+      if (link instanceof link stylesheet) {
+        stylesheet.setMedia("screen");
         xhtml.addElement(link);
       }
       xhtml.addElement(script(chatDir + "js/silverpeas-converse.js"));

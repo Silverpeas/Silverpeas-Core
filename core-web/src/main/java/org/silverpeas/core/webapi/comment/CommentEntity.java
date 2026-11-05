@@ -77,6 +77,10 @@ public class CommentEntity implements WebEntity {
   @XmlElement(required = true)
   @NotNull
   private String text;
+  @XmlElement(defaultValue = "PLAIN")
+  private String format = "PLAIN";
+  @XmlElement
+  private String richText;
   @XmlElement(required = true)
   @NotNull
   private UserProfileEntity author;
@@ -111,6 +115,11 @@ public class CommentEntity implements WebEntity {
         new Comment(commentId, getAuthor().getId(), getResourceType(), resourceRef, authoredDate);
     comment.setLastUpdateDate(updateDate);
     comment.setMessage(getText());
+    if ("MARKDOWN".equals(format)) {
+      if (richText == null) { throw new IllegalArgumentException("Missing Markdown comment source"); }
+      comment.setRichText(richText);
+    }
+    else if (!"PLAIN".equals(format)) { throw new IllegalArgumentException("Unknown comment format"); }
     return comment;
   }
 
@@ -178,10 +187,16 @@ public class CommentEntity implements WebEntity {
     return author;
   }
 
-  /**
-   * Gets the text of the comment.
-   * @return the text of the comment.
-   */
+  /** Opts in to the rich representation while keeping the legacy text readable. */
+  public CommentEntity withRichRepresentation(boolean rich) {
+    if (!rich) { this.format = "PLAIN"; this.richText = null; }
+    return this;
+  }
+
+  public String getFormat() { return format; }
+  public String getRichText() { return richText; }
+
+  /** Gets the plain projection consumed by historical clients. */
   public String getText() {
     return text;
   }
@@ -243,7 +258,9 @@ public class CommentEntity implements WebEntity {
     this.id = comment.getIdentifier().getLocalId();
     this.resourceType = comment.getResourceType();
     this.resourceId = comment.getResourceReference().getLocalId();
+    this.format = comment.getRichText() == null ? "PLAIN" : "MARKDOWN";
     this.text = comment.getMessage();
+    this.richText = comment.getRichText();
     this.author = UserProfileEntity.fromUser(comment.getCreator());
     //we don't even know the language of the current user (the currentUserLanguage attribute has
     // not been yet initialized
@@ -265,7 +282,7 @@ public class CommentEntity implements WebEntity {
     return Objects.equals(uri, that.uri) &&
         Objects.equals(id, that.id) && Objects.equals(componentId, that.componentId) &&
         Objects.equals(resourceType, that.resourceType) &&
-        Objects.equals(resourceId, that.resourceId) && Objects.equals(text, that.text) &&
+        Objects.equals(resourceId, that.resourceId) && Objects.equals(format, that.format) && Objects.equals(richText, that.richText) && Objects.equals(text, that.text) &&
         Objects.equals(author, that.author) &&
         Objects.equals(currentUserLanguage, that.currentUserLanguage) &&
         Objects.equals(creationDate, that.creationDate) &&
@@ -274,7 +291,7 @@ public class CommentEntity implements WebEntity {
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, id, componentId, resourceType, resourceId, text, author,
+    return Objects.hash(uri, id, componentId, resourceType, resourceId, text, richText, format, author,
         currentUserLanguage, creationDate, modificationDate, indexed);
   }
 

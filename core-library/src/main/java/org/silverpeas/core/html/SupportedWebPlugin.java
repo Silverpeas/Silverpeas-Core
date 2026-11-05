@@ -304,6 +304,8 @@ public interface SupportedWebPlugin {
      * Silverpeas plugin to manage search of addresses.
      */
     public static final SupportedWebPlugin ADDRESSSEARCH = () -> "ADDRESSSEARCH";
+    /** Lightweight visual Markdown editor and safe renderer. */
+    public static final SupportedWebPlugin RICHEDITOR = () -> "RICHEDITOR";
     /**
      * Silverpeas plugin to manage a map.
      */

@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "@tiptap/core": "3.32.2",
+    "@tiptap/starter-kit": "3.32.2",
+    "prosemirror-markdown": "1.13.4"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.12"
+  },
+  "private": true,
+  "scripts": {
+    "build": "esbuild tiptap-entry.js --bundle --minify --format=iife --global-name=SilverpeasTiptap --target=es2020 --outfile=../../webapp/util/javaScript/richEditor/vendor/tiptap-3.32.2.min.js"
+  }
+}

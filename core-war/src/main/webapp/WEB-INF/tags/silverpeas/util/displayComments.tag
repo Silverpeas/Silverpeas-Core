@@ -80,6 +80,7 @@
   </silverpeas-comments>
 </div>
 
+<view:includePlugin name="richEditor"/>
 <view:script src="/util/javaScript/checkForm.js"/>
 <view:script src="/util/javaScript/jquery/autoresize.jquery.min.js"/>
 <view:script src="/util/javaScript/vuejs/components/comments/silverpeas-comments.js"/>

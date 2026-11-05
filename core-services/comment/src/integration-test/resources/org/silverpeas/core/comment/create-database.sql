@@ -5,6 +5,7 @@ CREATE TABLE sb_comment_comment
   commentCreationDate     CHAR(10)      NOT NULL,
   commentModificationDate CHAR(10),
   commentComment          VARCHAR(2000) NOT NULL,
+  commentRichText         CLOB,
   instanceId              VARCHAR(50)   NOT NULL,
   resourceType            VARCHAR(50)   NOT NULL,
   resourceId              VARCHAR(50)   NOT NULL

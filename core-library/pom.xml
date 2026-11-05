@@ -40,6 +40,11 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.commonmark</groupId>
+      <artifactId>commonmark-ext-gfm-strikethrough</artifactId>
+      <version>0.32.0</version>
+    </dependency>
+    <dependency>
       <groupId>org.silverpeas.core</groupId>
       <artifactId>silverpeas-core-api</artifactId>
       <version>${project.version}</version>

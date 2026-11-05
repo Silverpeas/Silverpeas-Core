@@ -33,6 +33,9 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentId;
 import org.silverpeas.core.comment.service.CommentService;
+import org.silverpeas.core.comment.service.CommentMentionService;
+import org.silverpeas.core.comment.service.CommentMentionNotification;
+import org.silverpeas.core.text.RichText;
 import org.silverpeas.core.comment.service.CommentUserNotification;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
@@ -78,6 +81,9 @@ public class CommentUserNotificationService extends CDIResourceEventListener<Com
   @Inject
   private ApplicationServiceProvider serviceProvider;
 
+  @Inject
+  private CommentMentionService mentions;
+
   @Override
   public void onCreation(final CommentEvent event) {
     Comment comment = event.getTransition().getAfter();
@@ -94,6 +100,7 @@ public class CommentUserNotificationService extends CDIResourceEventListener<Com
                   () -> new NotFoundException("No such contribution " + contributionId.asString()));
           final Set<String> recipients = getInterestedUsers(comment.getCreator()
               .getId(), commentedContent);
+          recipients.addAll(mentions.recipients(comment, commentedContent));
           if (!recipients.isEmpty()) {
             String componentName = getComponentName(componentInstanceId);
             Comment newComment =
@@ -108,6 +115,30 @@ public class CommentUserNotificationService extends CDIResourceEventListener<Com
           SilverLogger.getLogger(this).error(ex.getMessage(), ex);
         }
       });
+    }
+  }
+
+  @Override
+  public void onUpdate(final CommentEvent event) {
+    var comment = event.getTransition().getAfter();
+    var previous = event.getTransition().getBefore();
+    if (comment.getRichText() == null) { return; }
+    try {
+      serviceProvider.getApplicationServiceById(comment.getComponentInstanceId()).ifPresent(service -> {
+        var target = ContributionIdentifier.from(comment.getResourceReference(), comment.getResourceType());
+        service.<Contribution>getContributionById(target).ifPresent(resource -> {
+          var oldIds = previous == null ? Set.<String>of()
+              : RichText.mentionIds(previous.getRichText());
+          var recipients = new LinkedHashSet<>(mentions.recipients(comment, resource));
+          recipients.removeAll(oldIds);
+          if (!recipients.isEmpty()) {
+            UserNotificationHelper.buildAndSend(new CommentMentionNotification(
+                commentService, comment, resource, recipients));
+          }
+        });
+      });
+    } catch (Exception error) {
+      SilverLogger.getLogger(this).error(error.getMessage(), error);
     }
   }
 
