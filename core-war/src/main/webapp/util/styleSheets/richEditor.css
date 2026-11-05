@@ -34,13 +34,14 @@
 .sp-rich-editor pre { background:#f3f3f3; padding:.65rem; overflow:auto; white-space:pre; }
 .sp-rich-editor ul, .sp-rich-editor ol { padding-left:1.6rem; }
 .sp-rich-editor .sp-mention { font-weight:600; }
-.sp-rich-host .sp-icon-button { display:inline-flex; align-items:center; justify-content:center; min-width:2rem; height:2rem; padding:.25rem; border:0; background:transparent; color:inherit; cursor:pointer; }
+.sp-rich-host .sp-icon-button { box-sizing:border-box; margin:0; display:inline-flex; align-items:center; justify-content:center; min-width:2rem; height:2rem; padding:.25rem; border:0; background:transparent; color:inherit; cursor:pointer; }
 .sp-rich-host .sp-icon-button:hover, .sp-rich-host .sp-icon-button[aria-pressed=true] { background:var(--bgColor-bloc-fond-clair,#eee); }
 .sp-rich-host .sp-icon-button:focus-visible { outline:2px solid var(--color-link,#609b00); outline-offset:1px; }
 .sp-editor-tools, .sp-format-tools { display:flex; flex-wrap:wrap; align-items:center; gap:.25rem; padding:.25rem; }
 .sp-mention-list, .sp-emoji-picker { position:absolute; z-index:20; max-height:15rem; overflow:auto; background:var(--bgColor-card,#fff); border:1px solid #ccc; box-shadow:0 2px 6px #0002; }
 .sp-mention-list .sp-mention-option { display:block; width:100%; text-align:left; }
 .sp-emoji-picker { display:grid; grid-template-columns:repeat(6,2rem); }
+.sp-rich-host .sp-emoji-picker > .sp-icon-button { width:100%; min-width:0; }
 .sp-link-editor:not([hidden]) { display:flex; flex-wrap:wrap; gap:.4rem; padding:.4rem; }
 .sp-link-editor input { flex:1 1 10rem; min-width:0; }
 .sp-rich-error, .sp-link-editor [role=status] { color:#a00; }

@@ -10,7 +10,9 @@ bibliothèques restent distribuées avec les bundles.
 Inclure `<view:includePlugin name="richEditor"/>` dans la page JSP. Le plugin
 charge une seule implémentation : Markdown-it, Tiptap, le sérialiseur Markdown,
 le rendu et les styles Core. Les libellés traduits sont disponibles dans
-`org.silverpeas.richEditor.multilang.richEditorBundle`.
+`org.silverpeas.richEditor.multilang.richEditorBundle`. Dans les JSP, utiliser
+`view:setBundle` pour les charger depuis la configuration externe Silverpeas ;
+`fmt:setBundle` seul ne trouve pas ces fichiers hors du classpath.
 
 L'initialisation s'effectue dans un fichier JavaScript externe :
 

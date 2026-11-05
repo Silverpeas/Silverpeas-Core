@@ -60,7 +60,7 @@
   </c:otherwise>
 </c:choose>
 
-<fmt:setBundle basename="org.silverpeas.richEditor.multilang.richEditorBundle" var="richEditorBundle"/>
+<view:setBundle basename="org.silverpeas.richEditor.multilang.richEditorBundle" var="richEditorBundle"/>
 <c:url var="deletionIcon" value="/util/icons/delete.gif"/>
 <c:url var="updateIcon" value="/util/icons/update.gif"/>
 <c:url var="loginUrl" value="/Login"/>
