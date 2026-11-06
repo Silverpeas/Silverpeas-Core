@@ -60,6 +60,7 @@ import org.silverpeas.web.jobdomain.UserRequestData;
 import org.silverpeas.web.jobdomain.control.JobDomainPeasSessionController;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.NotAllowedException;
 import java.util.*;
 
 import static java.util.Collections.emptySet;
@@ -121,7 +122,7 @@ public class JobDomainPeasRequestRouter extends
   private static final String DOMAIN_USER_FILTER_MANAGEMENT_DEST = "domainUserFilterManagement.jsp";
   private static final String IS_ONLY_SPACE_MANAGER_ATTR = "isOnlySpaceManager";
   private static final String WRITE_OPERATION_PARTS =
-      "(?i)^.*(create|update|modify|delete|remove|block|activate|import|synchro|copy|cut|paste).*$";
+      "(?i)^.*(create|update|modify|delete|remove|block|activate|reset|import|synchro|copy|cut|paste).*$";
 
   @Override
   public JobDomainPeasSessionController createComponentSessionController(
@@ -284,6 +285,8 @@ public class JobDomainPeasRequestRouter extends
           request.setAttribute(ADMIN_TOKEN, jobDomainSC.generateToken());
           if (isDefined(userId)) {
             jobDomainSC.setTargetUser(userId);
+            request.setAttribute("twoFactorAuthenticationEnabled",
+                jobDomainSC.isTwoFactorAuthenticationEnabled(userId));
           }
         } else if ("userGetP12".equals(function)) {
           jobDomainSC.getP12(userId);
@@ -333,6 +336,13 @@ public class JobDomainPeasRequestRouter extends
         } else if (function.startsWith("userActivate")) {
           jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN),
               () -> jobDomainSC.activateUser(userId));
+        } else if (function.startsWith("userResetTwoFactor")) {
+          if (!"POST".equals(request.getMethod())) {
+            throw new NotAllowedException("POST");
+          }
+          jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN),
+              () -> jobDomainSC.resetTwoFactorAuthentication(userId));
+          destination = USER_CONTENT_DEST;
         } else if (function.startsWith("userDelete")) {
           jobDomainSC.securelyApply(request.getParameter(ADMIN_TOKEN),
               () -> jobDomainSC.deleteUser(userId));

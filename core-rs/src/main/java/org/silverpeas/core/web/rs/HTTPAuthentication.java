@@ -7,9 +7,9 @@
  * License, or (at your option) any later version.
  *
  * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Lib
- * Open Source Software ("FLOSS") applications as described in Silverpeas
- * FLOSS exception. You should have received a copy of the text describing
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
@@ -18,9 +18,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public Licence
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *
  */
 package org.silverpeas.core.web.rs;
 
@@ -86,16 +85,18 @@ import static org.silverpeas.core.web.rs.UserPrivilegeValidation.*;
  * The failure of the authentication throws a {@link WebApplicationException} exception with the
  * status {@link Response.Status#UNAUTHORIZED}.
  * </p>
+ * A successful password check can require a second factor. In that case no authenticated
+ * session is opened and the response is unauthorized until the challenge is completed.
+ *
  * @author mmoquillon
  */
 @Service
 public class HTTPAuthentication {
 
   private static final Pattern AUTHORIZATION_PATTERN = Pattern.compile("(?i)^(Basic|Bearer) (.*)");
-
   // the first ':' character is the separator according to the RFC 2617 in basic digest
   private static final Pattern AUTHENTICATION_PATTERN =
-      Pattern.compile("(?i)^\\s*(\\S+)\\s*@domain([0-9]+):(.+)$");
+      Pattern.compile("(?i)^\\s*(\\S+)\\s*@domain(\\d+):(.+)$");
 
   private static final Map<AuthenticationScheme, Function<AuthenticationContext, SessionInfo>>
       schemeHandlers = new EnumMap<>(AuthenticationScheme.class);
@@ -149,6 +150,9 @@ public class HTTPAuthentication {
    * the {@code access_token} parameter, the authentication scheme in the context is set as
    * a bearer authentication scheme.
    * </p>
+   * A pending second factor also returns UNAUTHORIZED; the authentication resource can then
+   * inspect the pending {@link RestTwoFactorChallenge}.
+   *
    * @param context the context of the authentication with the HTTP request and with the HTTP
    * response.
    * @return the created session for the request if the authentication succeeds or throws a
@@ -184,6 +188,9 @@ public class HTTPAuthentication {
           session.set(schemeHandlers.get(AuthenticationScheme.BEARER).apply(context));
         }
       }
+      if (RestTwoFactorChallenge.isRequired(context.getHttpServletRequest())) {
+        throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+      }
       return session.orElseThrow(() -> new WebApplicationException(Response.Status.UNAUTHORIZED));
     } catch (final AuthenticationInternalException ex) {
       throw new WebApplicationException(ex, Response.Status.SERVICE_UNAVAILABLE);
@@ -201,14 +208,20 @@ public class HTTPAuthentication {
     final int passwordPart = 3;
     final int domainIdPart = 2;
     if (matcher.matches() && matcher.groupCount() == credentialPartCount) {
-      // All expected parts detected, so getting an authentication key
       try {
+        final String login = matcher.group(loginPart);
+        final String password = matcher.group(passwordPart);
+        final String domainId = matcher.group(domainIdPart);
         AuthenticationCredential credential =
-            AuthenticationCredential.newWithAsLogin(matcher.group(loginPart))
-                .withAsPassword(matcher.group(passwordPart))
-                .withAsDomainId(matcher.group(domainIdPart));
+            AuthenticationCredential.newWithAsLogin(login)
+                .withAsPassword(password)
+                .withAsDomainId(domainId);
         Authentication authenticator = Authentication.get();
         AuthenticationResponse result = authenticator.authenticate(credential);
+        if (result.getStatus() == AuthenticationResponse.Status.TWO_FACTOR_REQUIRED) {
+          RestTwoFactorChallenge.start(context.getHttpServletRequest(), login, domainId);
+          return SessionInfo.NoneSession;
+        }
         if (result.getStatus().succeeded()) {
           User user = authenticator.getUserByAuthToken(result.getToken());
           final SessionInfo session;
@@ -217,8 +230,7 @@ public class HTTPAuthentication {
                 .openSession(user, context.getHttpServletRequest());
             context.getHttpServletResponse().setHeader(HTTP_SESSIONKEY, session.getSessionId());
             context.getHttpServletResponse()
-                .addHeader("Access-Control-Expose-Headers",
-                    UserPrivilegeValidation.HTTP_SESSIONKEY);
+                .addHeader("Access-Control-Expose-Headers", UserPrivilegeValidation.HTTP_SESSIONKEY);
             SynchronizerTokenService tokenService = SynchronizerTokenService.getInstance();
             tokenService.setUpSessionTokens(session);
             Token token = tokenService.getSessionToken(session);
@@ -298,7 +310,6 @@ public class HTTPAuthentication {
   }
 
   private static class AuthenticationInternalException extends SilverpeasRuntimeException {
-
     public AuthenticationInternalException(final String message, final Throwable cause) {
       super(message, cause);
     }
