@@ -24,6 +24,8 @@
 package org.silverpeas.core.web.util.viewgenerator.html;
 
 import org.junit.jupiter.api.Test;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.core.util.URLUtil;
 import static org.mockito.Mockito.*;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -37,13 +39,22 @@ class RichEditorPluginTest {
   @Test
   void nativePluginLoadsDependenciesInOrderAndDeduplicatesRepeatedInclusions() {
     CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
-    try (var urls = mockStatic(URLUtil.class, CALLS_REAL_METHODS)) {
+    try (var urls = mockStatic(URLUtil.class, CALLS_REAL_METHODS);
+        var resources = mockStatic(ResourceLocator.class, CALLS_REAL_METHODS)) {
+      var labels = mock(LocalizationBundle.class);
+      when(labels.getString(anyString())).thenAnswer(call -> "FR:" + call.getArgument(0));
+      resources.when(() -> ResourceLocator.getLocalizationBundle(
+          "org.silverpeas.richEditor.multilang.richEditorBundle", "fr")).thenReturn(labels);
       urls.when(() -> URLUtil.getMinifiedWebResourceUrl(anyString())).thenAnswer(call -> call.getArgument(0));
       urls.when(() -> URLUtil.addFingerprintVersionOn(anyString())).thenAnswer(call -> call.getArgument(0));
       var plugin = new DefaultWebPlugin();
       plugin.init();
       var html = plugin.getHtml("richEditor", "fr").toString();
       assertTrue(html.contains("richEditor"));
+      assertTrue(html.contains("RichEditorBundle"));
+      assertTrue(html.contains("FR:richEditor.formatLabel"));
+      assertTrue(html.contains("FR:richEditor.removeQuote"));
+      assertTrue(html.indexOf("RichEditorBundle") < html.indexOf("silverpeas-rich-editor.js"));
       int previous = -1;
       for (var resource : new String[]{"richEditor", "markdown-it-15.0.3", "silverpeas-markdown",
           "silverpeas-rich-content", "tiptap-3.32.2", "silverpeas-rich-editor"}) {

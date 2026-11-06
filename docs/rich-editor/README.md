@@ -118,3 +118,15 @@ mvn -pl discussion/discussion-configuration,discussion/discussion-library,discus
 Le build npm reproductible du bundle est dans `core-war/src/main/frontend/richEditor`.
 Maven utilise le bundle embarqué sans exécuter npm. Les tests Discussion extraient
 les ressources partagées du WAR Core installé dans Maven, sans deuxième copie source.
+
+## Libellés et internationalisation
+
+Le plugin natif `richEditor` charge `RichEditorBundle` depuis
+`org.silverpeas.richEditor.multilang.richEditorBundle`, dans la langue de l’utilisateur,
+avant le script de l’éditeur. Les libellés par défaut (outils, infobulles, accessibilité,
+validation et édition des liens) proviennent de ce bundle ; aucun texte de secours
+anglais n’est conservé dans le JavaScript. Un adaptateur peut remplacer les valeurs
+avec `configuration.labels`, comme le font Discussion et les commentaires.
+
+Les tests vérifient les traductions française, anglaise et allemande, leur inclusion
+par le plugin et le comportement du navigateur sans remplacement par l’adaptateur.
