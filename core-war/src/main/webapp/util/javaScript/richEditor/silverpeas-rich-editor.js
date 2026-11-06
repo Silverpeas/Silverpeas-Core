@@ -30,11 +30,12 @@
     const fold = value => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase();
     return people.filter(person => fold(person.name).includes(fold(query))).slice(0, 8);
   };
-  const DEFAULT_LABELS = {formatLabel:'Formatting', emojiLabel:'Emoji', mentionLabel:'Mention',
-    lengthError:'Text is too long', messageRequired:'Enter a message', linkText:'Link text', linkUrl:'URL',
-    linkApply:'Apply', linkInvalid:'Invalid URL', closeImage:'Close', formatBold:'Bold', formatItalic:'Italic',
-    formatStrike:'Strikethrough', formatBullets:'Bullet list', formatNumbers:'Numbered list',
-    formatQuote:'Quotation', formatCode:'Code', formatLink:'Link', removeQuote:'Remove quotation'};
+  const LABEL_KEYS = [
+    'formatLabel', 'emojiLabel', 'mentionLabel', 'lengthError', 'messageRequired',
+    'linkText', 'linkUrl', 'linkApply', 'linkInvalid', 'closeImage',
+    'formatBold', 'formatItalic', 'formatStrike', 'formatBullets', 'formatNumbers',
+    'formatQuote', 'formatCode', 'formatLink', 'removeQuote'
+  ];
   const editors = new Map();
   let editorNumber = 0;
   const nodes = defaultMarkdownSerializer.nodes;
@@ -81,7 +82,8 @@
     }
     const isQuotation = () => configuration.quotation?.isQuotation(editor.state.doc.firstChild) || false;
     if (editors.has(textarea)) { return; }
-    const labels = {...DEFAULT_LABELS, ...configuration.labels};
+    const labels = Object.fromEntries(LABEL_KEYS.map(key =>
+      [key, configuration.labels?.[key] ?? window.RichEditorBundle?.get('richEditor.' + key)]));
     const original = {name:textarea.name, hidden:textarea.hidden, disabled:textarea.disabled, required:textarea.required};
     const abort = new AbortController();
     const maximum = textarea.maxLength > 0 ? textarea.maxLength : (configuration.maxLength || 8000);

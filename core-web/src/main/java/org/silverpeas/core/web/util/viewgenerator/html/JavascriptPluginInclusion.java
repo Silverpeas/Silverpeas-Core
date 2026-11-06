@@ -90,12 +90,22 @@ import static org.silverpeas.kernel.util.StringUtil.getBooleanValue;
 @SuppressWarnings("UnusedReturnValue")
 public class JavascriptPluginInclusion {
 
-  public static void includeRichEditor(final ElementContainer xhtml) {
+  public static void includeRichEditor(final ElementContainer xhtml, final String language) {
     xhtml.addElement(link(getApplicationURL() + "/util/styleSheets/richEditor.css"));
     xhtml.addElement(script(JAVASCRIPT_PATH + "richEditor/vendor/markdown-it-15.0.3.min.js"));
     xhtml.addElement(script(JAVASCRIPT_PATH + "richEditor/silverpeas-markdown.js"));
     xhtml.addElement(script(JAVASCRIPT_PATH + "richEditor/silverpeas-rich-content.js"));
     xhtml.addElement(script(JAVASCRIPT_PATH + "richEditor/vendor/tiptap-3.32.2.min.js"));
+    var bundle = ResourceLocator.getLocalizationBundle(
+        "org.silverpeas.richEditor.multilang.richEditorBundle", language);
+    xhtml.addElement(scriptContent(bundleVariableName("RichEditorBundle").add(bundle,
+        "richEditor.formatLabel", "richEditor.emojiLabel", "richEditor.mentionLabel",
+        "richEditor.lengthError", "richEditor.messageRequired", "richEditor.linkText",
+        "richEditor.linkUrl", "richEditor.linkApply", "richEditor.linkInvalid",
+        "richEditor.closeImage", "richEditor.formatBold", "richEditor.formatItalic",
+        "richEditor.formatStrike", "richEditor.formatBullets", "richEditor.formatNumbers",
+        "richEditor.formatQuote", "richEditor.formatCode", "richEditor.formatLink",
+        "richEditor.removeQuote").produce()));
     xhtml.addElement(script(JAVASCRIPT_PATH + "richEditor/silverpeas-rich-editor.js"));
   }
 
