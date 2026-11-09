@@ -84,11 +84,6 @@
   // Password
   $(document).ready(function(){
     $('#userPasswordId').password();
-    // Chrome can offer to save another user's password even with autocomplete disabled.
-    // Keep the inputs as text fields, visually masked only in this admin form.
-    $('#userPasswordId, #userPasswordAgainId')
-        .attr('type', 'text')
-        .addClass('admin-password-masked');
 
     <c:if test="${currentUser.accessAdmin and USER_MANUAL_NOTIFICATION_MAX_RECIPIENT_LIMITATION_ENABLED}">
     $("input[name='userAccessLevel']").on("change", function() {
@@ -321,14 +316,14 @@ out.println(window.printBefore());
     <div class="field" id="form-row-password">
         <label class="txtlibform"><fmt:message key="GML.password"/></label>
         <div class="champs">
-          <input type="password" autocomplete="new-password" name="userPassword" id="userPasswordId" data-password-confirmation="userPasswordAgainId" size="50" value=""/>
+          <input type="text" class="admin-password-masked" autocomplete="off" name="userPassword" id="userPasswordId" data-password-confirmation="userPasswordAgainId" size="50" value=""/>
         </div>
       </div>
       <!--Password again-->
     <div class="field" id="form-row-passwordAgain">
         <label class="txtlibform"><fmt:message key="GML.passwordAgain"/></label>
         <div class="champs">
-          <input type="password" autocomplete="new-password" name="userPasswordAgain" id="userPasswordAgainId" size="50" value=""/>
+          <input type="text" class="admin-password-masked" autocomplete="off" name="userPasswordAgain" id="userPasswordAgainId" size="50" value=""/>
         </div>
       </div>
       <!--Send Email-->
