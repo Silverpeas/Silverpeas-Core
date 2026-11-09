@@ -203,6 +203,8 @@
         SilverpeasSecret.addControls(this, {
           generate: () => SilverpeasSecret.generate('password'),
           labels: {
+            show: __getFromBundleKey('password.show'),
+            hide: __getFromBundleKey('password.hide'),
             generate: __getFromBundleKey('password.generate'),
             copy: __getFromBundleKey('password.copy'),
             generated: __getFromBundleKey('password.generated'),
