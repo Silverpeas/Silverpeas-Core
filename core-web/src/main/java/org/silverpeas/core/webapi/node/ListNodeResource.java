@@ -40,7 +40,6 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -93,6 +92,12 @@ public class ListNodeResource extends RESTWebService {
    * a 401 HTTP code is returned. If the user isn't authorized to save the node, a 403 is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
    *
+   * <p>
+   * The nodes are received and sent back as a list, not as a Java array: the JSON provider of the
+   * SCIM library, registered for the whole REST API, fails with any Java array.
+   * </p>
+   *
+   * @param newListNode the nodes in the order they have to be displayed.
    * @return the new list of node after update
    */
   @Operation(summary = "Updates the order of the nodes in the list.")
@@ -100,17 +105,15 @@ public class ListNodeResource extends RESTWebService {
   @PUT
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  public NodeEntity[] updateListNode(final NodeEntity[] newListNode) {
+  public List<NodeEntity> updateListNode(final List<NodeEntity> newListNode) {
     // Verify that the current user has the Admin role to execute this REST service
     if (isUserAdmin()) {
-      //Update list Node
-      List<NodePK> nodePKs = new ArrayList<>();
-      for (NodeEntity nodeEntity : newListNode) {
-        // the nodes to sort are the ones of the component instance the user has been checked to
-        // administrate, so the instance is taken from the URL: taking it from the request body,
-        // which the entity carries, would let sort the nodes of any other component instance
-        nodePKs.add(new NodePK(nodeEntity.getAttr().getId(), getComponentId()));
-      }
+      // the nodes to sort are the ones of the component instance the user has been checked to
+      // administrate, so the instance is taken from the URL: taking it from the request body,
+      // which the entity carries, would let sort the nodes of any other component instance
+      List<NodePK> nodePKs = newListNode.stream()
+          .map(nodeEntity -> new NodePK(nodeEntity.getAttr().getId(), getComponentId()))
+          .toList();
       getNodeService().sortNodes(nodePKs);
     }
     return newListNode;
