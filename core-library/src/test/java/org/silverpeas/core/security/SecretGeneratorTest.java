@@ -103,6 +103,79 @@ class SecretGeneratorTest {
   }
 
   @Test
+  void combinedRulesRequireThreeOfFourCharacterFamilies() {
+    var groups = List.of(
+        new SecretGenerator.CharacterGroup("a", 1, false, true),
+        new SecretGenerator.CharacterGroup("A", 1, false, true),
+        new SecretGenerator.CharacterGroup("1", 1, false, true),
+        new SecretGenerator.CharacterGroup("!", 1, false, true));
+    var policy = new SecretGenerator.Policy(new SecretGenerator.Lengths(12, 12),
+        groups, 3, value -> "aA1!".chars()
+            .filter(c -> value.indexOf(c) >= 0).count() >= 3);
+    for (int i = 0; i < 100; i++) {
+      String password = SecretGenerator.generate(policy);
+      assertEquals(12, password.length());
+      assertTrue(password.chars().allMatch(c -> "aA1!".indexOf(c) >= 0));
+      assertTrue("aA1!".chars().filter(c -> password.indexOf(c) >= 0).count() >= 3);
+    }
+  }
+
+  @Test
+  void requiredRuleAlsoParticipatingInCombinationCountsOnce() {
+    var policy = new SecretGenerator.Policy(new SecretGenerator.Lengths(10, 10),
+        List.of(new SecretGenerator.CharacterGroup("A", 1, true, true),
+            new SecretGenerator.CharacterGroup("1", 1, false, true),
+            new SecretGenerator.CharacterGroup("!", 1, false, true)),
+        2, value -> value.contains("A") &&
+            (value.contains("1") || value.contains("!")));
+    for (int i = 0; i < 100; i++) {
+      String password = SecretGenerator.generate(policy);
+      assertEquals(10, password.length());
+      assertTrue(password.contains("A"));
+      assertTrue(password.contains("1") || password.contains("!"));
+    }
+  }
+
+  @Test
+  void combinedRulesRespectMultipleRequiredOccurrences() {
+    var policy = new SecretGenerator.Policy(new SecretGenerator.Lengths(12, 12),
+        List.of(new SecretGenerator.CharacterGroup("A", 2, false, true),
+            new SecretGenerator.CharacterGroup("1", 3, false, true),
+            new SecretGenerator.CharacterGroup("!", 2, false, true)),
+        2, value -> {
+          long matching = List.of('A', '1', '!').stream()
+              .filter(c -> value.chars().filter(v -> v == c).count() >=
+                  (c == '1' ? 3 : 2)).count();
+          return matching >= 2;
+        });
+    for (int i = 0; i < 100; i++) {
+      String password = SecretGenerator.generate(policy);
+      assertEquals(12, password.length());
+      long matching = List.of('A', '1', '!').stream()
+          .filter(c -> password.chars().filter(v -> v == c).count() >=
+              (c == '1' ? 3 : 2)).count();
+      assertTrue(matching >= 2);
+    }
+  }
+
+  @Test
+  void disabledMaximumLengthDoesNotUseItsConfiguredValue() {
+    var policy = new SecretGenerator.Policy(new SecretGenerator.Lengths(16, Integer.MAX_VALUE),
+        List.of(new SecretGenerator.CharacterGroup("abc", 0, false, false),
+            new SecretGenerator.CharacterGroup("ABC", 1, true, false),
+            new SecretGenerator.CharacterGroup("123", 1, true, false),
+            new SecretGenerator.CharacterGroup("%*!?$-+#&=.,;", 1, true, false)),
+        0, value -> true);
+    for (int i = 0; i < 100; i++) {
+      String password = SecretGenerator.generate(policy);
+      assertEquals(16, password.length());
+      assertTrue(password.chars().anyMatch(c -> c >= 'A' && c <= 'Z'));
+      assertTrue(password.chars().anyMatch(c -> c >= '0' && c <= '9'));
+      assertTrue(password.chars().anyMatch(c -> "%*!?$-+#&=.,;".indexOf(c) >= 0));
+    }
+  }
+
+  @Test
   void impossibleValidatorNeverReturnsAnInvalidSecret() {
     var policy = new SecretGenerator.Policy(new SecretGenerator.Lengths(8, 8),
         List.of(new SecretGenerator.CharacterGroup("ab", 0, false, false)), 0, value -> false);
