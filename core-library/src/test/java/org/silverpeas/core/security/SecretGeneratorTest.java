@@ -74,6 +74,35 @@ class SecretGeneratorTest {
   }
 
   @Test
+  void rejectsExcessiveMinimumLength() {
+    assertThrows(IllegalStateException.class, () -> new SecretGenerator.Policy(
+        new SecretGenerator.Lengths(1025, Integer.MAX_VALUE),
+        List.of(new SecretGenerator.CharacterGroup("abc", 0, false, false)), 0,
+        value -> true));
+  }
+
+  @Test
+  void rejectsExcessiveCharacterRequirement() {
+    assertThrows(IllegalStateException.class, () ->
+        new SecretGenerator.CharacterGroup("abc", 1025, true, false));
+  }
+
+  @Test
+  void rejectsExcessiveCombinedRuleCount() {
+    assertThrows(IllegalStateException.class, () -> new SecretGenerator.Policy(
+        new SecretGenerator.Lengths(8, 8),
+        List.of(new SecretGenerator.CharacterGroup("abc", 1, false, true)), 2,
+        value -> true));
+  }
+
+  @Test
+  void rejectsImpossibleRequiredCountBeforeGenerating() {
+    var policy = new SecretGenerator.Policy(new SecretGenerator.Lengths(4, 4),
+        List.of(new SecretGenerator.CharacterGroup("a", 5, true, false)), 0, value -> true);
+    assertThrows(IllegalStateException.class, () -> SecretGenerator.generate(policy));
+  }
+
+  @Test
   void impossibleValidatorNeverReturnsAnInvalidSecret() {
     var policy = new SecretGenerator.Policy(new SecretGenerator.Lengths(8, 8),
         List.of(new SecretGenerator.CharacterGroup("ab", 0, false, false)), 0, value -> false);
