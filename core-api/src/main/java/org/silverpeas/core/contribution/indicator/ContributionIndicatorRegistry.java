@@ -71,12 +71,18 @@ public class ContributionIndicatorRegistry {
   /**
    * Gets the {@link NewContributionIndicator} according to {@link ContributionIdentifier} instance.
    * @param cId a {@link ContributionIdentifier} instance aiming the contribution.
-   * @return an optional {@link NewContributionIndicator} indicator implementation.
+   * @return an optional {@link NewContributionIndicator} indicator implementation. Empty if no
+   * indicator is registered for the contribution or if the contribution isn't in a component
+   * instance (like the spaces found by the search engine, whose instance identifier is a pseudo
+   * one).
    */
   protected Optional<NewContributionIndicator> getNewContributionIndicatorBy(
       final ContributionIdentifier cId) {
-    final String componentName = SilverpeasComponentInstance
-        .getIdentity(cId.getComponentInstanceId())
+    final String instanceId = cId.getComponentInstanceId();
+    if (!SilverpeasComponentInstance.isIdentityValid(instanceId)) {
+      return Optional.empty();
+    }
+    final String componentName = SilverpeasComponentInstance.getIdentity(instanceId)
         .getComponentName();
     return ofNullable(newRegistry.get(componentName + "@" + cId.getType()));
   }
