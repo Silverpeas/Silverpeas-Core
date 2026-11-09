@@ -101,6 +101,22 @@ window.SilverpeasSecret = (() => {
       wrapper.append(input, controls);
       status.className = 'password-action-status';
       wrapper.insertAdjacentElement('afterend', status);
+      const confirmation = input.form?.querySelector(
+          '[id="' + input.dataset.passwordConfirmation + '"]');
+      if (confirmation) {
+        confirmation.classList.add('password-confirmation-matched');
+        const syncWidth = () => {
+          if (confirmation.isConnected) {
+            wrapper.style.width = confirmation.getBoundingClientRect().width + 'px';
+          }
+        };
+        syncWidth();
+        if (typeof ResizeObserver !== 'undefined') {
+          new ResizeObserver(syncWidth).observe(confirmation);
+        } else {
+          window.addEventListener('resize', syncWidth);
+        }
+      }
     } else {
       controls.append(status);
       input.insertAdjacentElement('afterend', controls);
