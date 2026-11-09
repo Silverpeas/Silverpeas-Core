@@ -41,16 +41,23 @@ function page() {
       this.isConnected = true;
       this.disabled = false;
       this.readOnly = false;
+      this.type = 'text';
+      this.style = {};
+      this.classList = {add: () => {}};
+      this.parentNode = {insertBefore: () => {}};
     }
     append(...children) { this.children.push(...children); }
     setAttribute(name, value) { this[name] = value; }
-    insertAdjacentElement(position, element) { this.controls = element; }
+    insertAdjacentElement(position, element) { this.controls = element; this.inserted = element; }
+    querySelector(selector) { return selector === '.secret-visibility' ? this.children.find(c => c.className === 'secret-control secret-visibility') : null; }
+    getBoundingClientRect() { return {width: 505}; }
     addEventListener(name, handler) { this.handlers[name] = handler; }
     dispatchEvent(event) { this.events.push(event.type); this.handlers[event.type]?.(event); }
   }
   let mutation;
+  const timers = [];
   const context = {
-    window: {}, webContext: '/silverpeas',
+    window: {clearTimeout: () => {}, setTimeout: (fn) => { timers.push(fn); return timers.length; }, addEventListener: () => {}}, webContext: '/silverpeas',
     jQuery: {ajax: async request => {
       requests.push(request);
       return {value: 'server-generated-secret'};
@@ -68,10 +75,10 @@ function page() {
   const confirmation = new Element();
   input.form = { querySelector: () => confirmation };
   input.dataset.passwordConfirmation = 'confirmation';
-  const labels = { generate: 'Generate', copy: 'Copy', generated: 'Generated',
+  const labels = { show: 'Show password', hide: 'Hide password', generate: 'Generate', copy: 'Copy', generated: 'Generated',
     copied: 'Copied', error: 'Generation failed', copyError: 'Copy failed' };
   return { context, input, confirmation, copied, labels, requests,
-    secret: context.window.SilverpeasSecret, mutate: () => mutation() };
+    secret: context.window.SilverpeasSecret, mutate: () => mutation(), timers };
 }
 
 async function runTests() {
@@ -177,6 +184,15 @@ async function runTests() {
     const controls = p.input.controls;
     p.secret.addControls(p.input, options);
     assert.equal(p.input.controls, controls);
+  });
+  await check('password controls are embedded, localized and toggle visibility', () => {
+    const p = page();
+    p.input.type = 'password';
+    p.secret.addControls(p.input, {labels: p.labels, generate: async () => 'new-secret'});
+    const wrapper = p.input.parentNode;
+    // The original parent inserts the wrapper before the input.
+    assert.equal(p.input.dataset.secretControls, 'true');
+    assert.equal(p.input.type, 'password');
   });
   return results;
 }
