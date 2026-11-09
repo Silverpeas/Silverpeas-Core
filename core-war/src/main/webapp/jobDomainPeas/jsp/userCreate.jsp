@@ -218,7 +218,7 @@ function saveUser() {
 out.println(window.printBefore());
 %>
 <view:frame>
-  <form name="userForm" action="<%=action%>" method="post" enctype="multipart/form-data">
+  <form name="userForm" action="<%=action%>" method="post" enctype="multipart/form-data" autocomplete="off">
       <input type="hidden" name="X-ATKN" value="${requestScope['X-ATKN']}"/>
     <input type="hidden" name="Iduser" value="<% if (userObject.getId() != null) {
         out.print(userObject.getId());
