@@ -25,33 +25,24 @@
 window.SilverpeasSecret = (() => {
   "use strict";
 
-  function randomIndex(max) {
-    const limit = Math.floor(0x100000000 / max) * max;
-    const value = new Uint32Array(1);
-    do {
-      crypto.getRandomValues(value);
-    } while (value[0] >= limit);
-    return value[0] % max;
-  }
-
-  function generateSecureCode(length = 32) {
-    const groups = [
-      "abcdefghijklmnopqrstuvwxyz",
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-      "0123456789",
-      "!@#$%^&*()_+-=[]{}|;:'\",.<>?/\\~`"
-    ];
-    const all = groups.join("");
-    const result = groups.map(group => group[randomIndex(group.length)]);
-
-    for (let i = result.length; i < length; i++) {
-      result.push(all[randomIndex(all.length)]);
+  async function generate(profile) {
+    const paths = {
+      password: '/password/generate',
+      sharing: '/secrets/sharing-code'
+    };
+    if (!Object.hasOwn(paths, profile)) {
+      throw new TypeError('Unknown secret generation profile');
     }
-    for (let i = result.length - 1; i > 0; i--) {
-      const j = randomIndex(i + 1);
-      [result[i], result[j]] = [result[j], result[i]];
+    const secret = await jQuery.ajax({
+      url: webContext + '/services' + paths[profile],
+      type: 'POST',
+      dataType: 'json',
+      cache: false
+    });
+    if (typeof secret?.value !== 'string' || !secret.value) {
+      throw new TypeError('Missing generated secret');
     }
-    return result.join("");
+    return secret.value;
   }
 
   async function copy(input) {
@@ -133,5 +124,5 @@ window.SilverpeasSecret = (() => {
     update();
   }
 
-  return Object.freeze({generate: generateSecureCode, copy, addControls});
+  return Object.freeze({generate, copy, addControls});
 })();

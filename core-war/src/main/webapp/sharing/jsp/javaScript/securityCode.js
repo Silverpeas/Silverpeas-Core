@@ -27,7 +27,23 @@
   document.addEventListener("click", async function (event) {
     const generateButton = event.target.closest("#generateSharingSecurityCode");
     if (generateButton) {
-      document.getElementById("securityCode").value = SilverpeasSecret.generate();
+      if (generateButton.disabled) {
+        return;
+      }
+      const input = document.getElementById("securityCode");
+      generateButton.disabled = true;
+      try {
+        const value = await SilverpeasSecret.generate('sharing');
+        if (input.isConnected) {
+          input.value = value;
+          input.dispatchEvent(new Event('input', {bubbles: true}));
+          input.dispatchEvent(new Event('change', {bubbles: true}));
+        }
+      } catch (error) {
+        notyError(generateButton.dataset.errorMessage);
+      } finally {
+        generateButton.disabled = false;
+      }
       return;
     }
     const copyButton = event.target.closest("#copySharingSecurityCode");

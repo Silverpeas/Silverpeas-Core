@@ -26,6 +26,7 @@ package org.silverpeas.core.security.authentication.password.service;
 import jakarta.annotation.PostConstruct;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
+import org.silverpeas.core.security.SecretGenerator;
 import org.silverpeas.core.security.authentication.password.constant.PasswordRuleType;
 import org.silverpeas.core.security.authentication.password.rule.*;
 import org.silverpeas.core.template.SilverpeasTemplates;
@@ -34,7 +35,6 @@ import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.cache.model.ExternalCache;
 import org.silverpeas.kernel.util.StringUtil;
 
-import java.security.SecureRandom;
 import java.util.*;
 
 /**
@@ -59,8 +59,6 @@ public class DefaultPasswordRulesService implements PasswordRulesService {
   /* All combined server password rules */
   private final Map<PasswordRuleType, PasswordRule> combinedPasswordRules =
       LinkedHashMap.newLinkedHashMap(PasswordRuleType.values().length);
-
-  private final SecureRandom random = new SecureRandom();
 
   /**
    * Loading just after the server is started all activated server password rules.
@@ -136,46 +134,25 @@ public class DefaultPasswordRulesService implements PasswordRulesService {
 
   @Override
   public String generate() {
-    final int minLength = Math.max(1, getRule(PasswordRuleType.MIN_LENGTH).<Integer>getValue());
-    final PasswordRule maximum = getRule(PasswordRuleType.MAX_LENGTH);
-    final int maxLength = maximum.isRequired() ? maximum.<Integer>getValue() : Integer.MAX_VALUE;
-    if (maxLength < minLength) {
-      throw new IllegalStateException("Inconsistent password length constraints");
-    }
-    for (int attempt = 0; attempt < 256; attempt++) {
-      final String candidate = generateCandidate(minLength, maxLength);
-      if (candidate != null && satisfiesPolicy(candidate)) {
-        return candidate;
-      }
-    }
-    throw new IllegalStateException("Unable to generate a password satisfying the configured policy");
+    final int minimum = Math.max(1, getRule(PasswordRuleType.MIN_LENGTH).<Integer>getValue());
+    final PasswordRule maximumRule = getRule(PasswordRuleType.MAX_LENGTH);
+    final int maximum = maximumRule.isRequired() ? maximumRule.<Integer>getValue() : Integer.MAX_VALUE;
+    final int preferredLength = Math.max(minimum, Math.min(16, maximum));
+    return SecretGenerator.generate(new SecretGenerator.Policy(
+        new SecretGenerator.Lengths(preferredLength, maximum), List.of(
+            characterGroup(PasswordRuleType.AT_LEAST_X_LOWERCASE, SecretGenerator.LOWERCASE),
+            characterGroup(PasswordRuleType.AT_LEAST_X_UPPERCASE, SecretGenerator.UPPERCASE),
+            characterGroup(PasswordRuleType.AT_LEAST_X_DIGIT, SecretGenerator.DIGITS),
+            characterGroup(PasswordRuleType.AT_LEAST_X_SPECIAL_CHAR,
+                getRule(PasswordRuleType.AT_LEAST_X_SPECIAL_CHAR).getValue())),
+        nbMatchingCombinedRules, this::satisfiesPolicy));
   }
 
-  private String generateCandidate(int minLength, int maxLength) {
-    final Set<PasswordRule> selected = new LinkedHashSet<>(getRequiredRules());
-    final List<PasswordRule> combined = new ArrayList<>(getCombinedRules());
-    Collections.shuffle(combined, random);
-    long alreadySelected = combined.stream().filter(selected::contains).count();
-    combined.stream().filter(rule -> !selected.contains(rule))
-        .limit(Math.max(0L, nbMatchingCombinedRules - alreadySelected)).forEach(selected::add);
-    final StringBuilder candidate = new StringBuilder();
-    selected.forEach(rule -> candidate.append(rule.random()));
-    if (candidate.length() > maxLength) {
-      return null;
-    }
-    final String alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" +
-        getRule(PasswordRuleType.AT_LEAST_X_SPECIAL_CHAR).<String>getValue();
-    final int length = Math.min(maxLength, Math.max(16, Math.max(minLength, candidate.length())));
-    while (candidate.length() < length) {
-      candidate.append(alphabet.charAt(random.nextInt(alphabet.length())));
-    }
-    for (int i = candidate.length() - 1; i > 0; i--) {
-      int j = random.nextInt(i + 1);
-      char value = candidate.charAt(i);
-      candidate.setCharAt(i, candidate.charAt(j));
-      candidate.setCharAt(j, value);
-    }
-    return candidate.toString();
+  private SecretGenerator.CharacterGroup characterGroup(PasswordRuleType type, String alphabet) {
+    final PasswordRule rule = getRule(type);
+    final int count = rule instanceof AtLeastXSpecialCharPasswordRule special ?
+        special.getMinimumOccurrences() : rule.<Integer>getValue();
+    return new SecretGenerator.CharacterGroup(alphabet, count, rule.isRequired(), rule.isCombined());
   }
 
   private boolean satisfiesPolicy(String password) {

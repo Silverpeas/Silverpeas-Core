@@ -25,12 +25,12 @@ const assert = require('node:assert/strict');
 const { readFileSync } = require('node:fs');
 const { resolve } = require('node:path');
 const { runInNewContext } = require('node:vm');
-const { webcrypto } = require('node:crypto');
 const script = readFileSync(resolve(__dirname,
     '../../main/webapp/util/javaScript/silverpeas-secret.js'), 'utf8');
 
 function page() {
   const copied = [];
+  const requests = [];
   class Element {
     constructor() {
       this.dataset = {};
@@ -50,7 +50,11 @@ function page() {
   }
   let mutation;
   const context = {
-    window: {}, crypto: webcrypto,
+    window: {}, webContext: '/silverpeas',
+    jQuery: {ajax: async request => {
+      requests.push(request);
+      return {value: 'server-generated-secret'};
+    }},
     navigator: { clipboard: { writeText: async value => copied.push(value) } },
     document: { createElement: () => new Element() },
     Event: class { constructor(type) { this.type = type; } },
@@ -66,31 +70,35 @@ function page() {
   input.dataset.passwordConfirmation = 'confirmation';
   const labels = { generate: 'Generate', copy: 'Copy', generated: 'Generated',
     copied: 'Copied', error: 'Generation failed', copyError: 'Copy failed' };
-  return { context, input, confirmation, copied, labels,
+  return { context, input, confirmation, copied, labels, requests,
     secret: context.window.SilverpeasSecret, mutate: () => mutation() };
 }
 
 async function runTests() {
   const results = [];
   async function check(name, run) { await run(); results.push(name); }
-  await check('sharing codes keep their length, four character families and diversity', () => {
-    const {secret} = page();
-    const values = new Set();
-    for (let i = 0; i < 500; i++) {
-      const value = secret.generate();
-      assert.equal(value.length, 32);
-      assert.match(value, /[a-z]/);
-      assert.match(value, /[A-Z]/);
-      assert.match(value, /[0-9]/);
-      assert.match(value, /[^a-zA-Z0-9]/);
-      values.add(value);
-    }
-    assert.equal(values.size, 500);
-  });
-  await check('generation has no insecure fallback when Web Crypto is unavailable', () => {
+  await check('both profiles delegate generation to the server', async () => {
     const p = page();
-    p.context.crypto = undefined;
-    assert.throws(() => p.secret.generate());
+    assert.equal(await p.secret.generate('sharing'), 'server-generated-secret');
+    assert.equal(await p.secret.generate('password'), 'server-generated-secret');
+    assert.equal(p.requests[0].url, '/silverpeas/services/secrets/sharing-code');
+    assert.equal(p.requests[1].url, '/silverpeas/services/password/generate');
+    for (const request of p.requests) {
+      assert.equal(request.type, 'POST');
+      assert.equal(request.cache, false);
+    }
+  });
+  await check('a server error has no local generation fallback', async () => {
+    const p = page();
+    p.context.jQuery.ajax = async () => { throw new Error('unavailable'); };
+    await assert.rejects(p.secret.generate('sharing'), /unavailable/);
+  });
+  await check('invalid profiles and empty server values are rejected', async () => {
+    const p = page();
+    await assert.rejects(p.secret.generate('unknown'), /Unknown secret generation profile/);
+    assert.equal(p.requests.length, 0);
+    p.context.jQuery.ajax = async () => ({value: ''});
+    await assert.rejects(p.secret.generate('password'), /Missing generated secret/);
   });
   await check('generation fills both fields and emits events without submitting', async () => {
     const p = page();

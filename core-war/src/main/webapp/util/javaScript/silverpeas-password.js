@@ -201,8 +201,7 @@
       __uiReady.then(function() {
         __prepareUI($(this));
         SilverpeasSecret.addControls(this, {
-          generate: () => __postJSonData($.password.webServiceContext + '/password/generate', {})
-              .then(password => password.value),
+          generate: () => SilverpeasSecret.generate('password'),
           labels: {
             generate: __getFromBundleKey('password.generate'),
             copy: __getFromBundleKey('password.copy'),
