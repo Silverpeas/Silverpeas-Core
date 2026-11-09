@@ -328,11 +328,10 @@ out.println(window.printBefore());
       </div>
       <!--Send Email-->
     <div class="field" id="sendEmailTRid">
-        <label class="txtlibform"><fmt:message key="JDP.sendEmail"/></label>
+        <label class="txtlibform"><fmt:message key="JDP.sendEmail"/> <fmt:message key="JDP.sendEmail.help" var="sendEmailHelp"/><img class="infoBulle" title="${sendEmailHelp}" src="<c:url value="/util/icons/help.png"/>" alt="${sendEmailHelp}"/></label>
         <div class="champs">
           <input type="checkbox" name="sendEmail" id="sendEmailId" value="true" />
           &nbsp;<fmt:message key="GML.yes" />
-          <div class="send-email-help"><fmt:message key="JDP.sendEmail.help"/></div>
         </div>
       </div>
       <div class="field" id="form-row-extra-message">
