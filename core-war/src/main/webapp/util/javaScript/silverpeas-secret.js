@@ -62,16 +62,45 @@ window.SilverpeasSecret = (() => {
     status.setAttribute('role', 'status');
     const generate = document.createElement('button');
     generate.type = 'button';
-    generate.textContent = options.labels.generate;
+    generate.title = options.labels.generate;
+    generate.setAttribute('aria-label', options.labels.generate);
+    generate.className = 'secret-control secret-generate';
+    generate.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14-5L4 8m0-5v5h5M4 13a8 8 0 0 0 14 5l2-2m0 5v-5h-5"/></svg>';
     const copyButton = document.createElement('button');
     copyButton.type = 'button';
-    copyButton.textContent = options.labels.copy;
+    copyButton.title = options.labels.copy;
+    copyButton.setAttribute('aria-label', options.labels.copy);
+    copyButton.className = 'secret-control secret-copy';
+    copyButton.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>';
+    if (input.type === 'password') {
+      const visibility = document.createElement('button');
+      visibility.type = 'button';
+      visibility.className = 'secret-control secret-visibility';
+      const eye = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>';
+      const eyeOff = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 3 18 18M10.6 5.1A11 11 0 0 1 12 5c6.5 0 10 7 10 7a16 16 0 0 1-3.2 4.1M6.3 6.3C3.5 8.1 2 12 2 12s3.5 7 10 7a10 10 0 0 0 4.1-.9"/><path d="M10 10a3 3 0 0 0 4 4"/></svg>';
+      const refreshVisibility = () => {
+        const shown = input.type === 'text';
+        const label = shown ? options.labels.hide : options.labels.show;
+        visibility.title = label;
+        visibility.setAttribute('aria-label', label);
+        visibility.setAttribute('aria-pressed', String(shown));
+        visibility.innerHTML = shown ? eyeOff : eye;
+      };
+      visibility.addEventListener('click', () => {
+        input.type = input.type === 'password' ? 'text' : 'password';
+        refreshVisibility();
+      });
+      refreshVisibility();
+      controls.append(visibility);
+    }
     controls.append(generate, copyButton, status);
     input.insertAdjacentElement('afterend', controls);
 
     let busy = false;
     const update = () => {
       generate.disabled = busy || input.disabled || input.readOnly;
+      const visibility = controls.querySelector('.secret-visibility');
+      if (visibility) visibility.disabled = input.disabled;
       copyButton.disabled = generate.disabled || !input.value;
     };
     const observer = new MutationObserver(update);
