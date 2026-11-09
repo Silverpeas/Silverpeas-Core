@@ -186,6 +186,9 @@ body {
   --bgColor-im-neutre:#ebebeb;
   --border-color-im-neutre:#d8d7d7;
 
+  /* color key pass by fill, here with 3975b5 the --color-lien-action */
+  --ico-generate-key:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%233975b5' d='M21 10h-8.35A5.99 5.99 0 0 0 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6a5.99 5.99 0 0 0 5.65-4H13l2 2l2-2l2 2l4-4.04zM7 15c-1.65 0-3-1.35-3-3s1.35-3 3-3s3 1.35 3 3s-1.35 3-3 3'/%3E%3C/svg%3E");
+
 
   /* FORMULAIRE & CO */
   --height-input:22px;
@@ -3054,13 +3057,18 @@ button.link {
 }
 
 .twoFA_button {
-  background: var(--bgColor-btn-secondaire);
-  border-radius: var(--radius-btn);
-  border: 1px solid var(--border-color-btn-secondaire);
-  color: var(--color-text-btn-secondaire);
-  font-size: 1em;
-  padding: 0.5em 1em;
+  margin:1em 0 ;
+}
+.twoFA_button.generate-key::before {
+  content: '';
   display: inline-block;
+  width: 1.5em;
+  height: 1em;
+  background-image:var(--ico-generate-key);
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 100% auto;
+  vertical-align: text-bottom;
 }
 
 div#publicProfileContenu > div#settings > form > p.twoFA_infos {
@@ -3071,11 +3079,13 @@ div#publicProfileContenu > div#settings > form > p.twoFA_infos {
 .two-factor-profile-qr-code {
   margin-top: 15px;
 }
+
 .two-factor-recovery-grid {
+  margin-top: 1em;
   display: grid;
-  grid-template-columns: repeat(2, minmax(140px, 1fr));
-  gap: 8px;
-  max-width: 420px;
+  grid-template-columns: repeat(2, minmax(15ch, 1fr));
+  gap: 1em;
+  max-width: 40ch;
 }
 .two-factor-otp-uri {
   word-break: break-all;

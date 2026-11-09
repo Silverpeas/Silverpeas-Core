@@ -28,8 +28,9 @@
   --surface: #ffffff;
   --bg-top: #eef2f5;
   --bg-bottom: #dfe6ea;
-  --accent: #0d5c63;
-  --accent-dark: #094a50;
+  --accent: #7eb73b;
+  --accent-dark: #598a22;
+  --color-lien-action:#3975b5;
   --accent-soft: #e4f0ef;
   --error: #b3261e;
   --error-soft: #fbeceb;
@@ -48,7 +49,7 @@ html, body {
 body {
   font-family: var(--font);
   color: var(--ink);
-  background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+  background:#e6e6e6;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -203,7 +204,7 @@ a.submit:focus-visible {
 }
 
 .two-factor-switch a {
-  color: var(--accent);
+  color: var(--color-lien-action);
   text-decoration: none;
   font-weight: 500;
 }
