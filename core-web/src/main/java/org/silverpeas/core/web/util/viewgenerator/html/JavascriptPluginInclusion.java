@@ -765,8 +765,8 @@ public class JavascriptPluginInclusion {
 
   static ElementContainer includePassword(final ElementContainer xhtml) {
     includePopup(xhtml);
-    xhtml.addElement(link(STYLESHEET_PATH + STYLESHEET_PASSWORD + "?v=10955-icons"));
-    xhtml.addElement(script(JAVASCRIPT_PATH + "silverpeas-secret.js"));
+    xhtml.addElement(link(STYLESHEET_PATH + STYLESHEET_PASSWORD + "?v=10955-inline"));
+    xhtml.addElement(script(JAVASCRIPT_PATH + "silverpeas-secret.js?v=10955-inline"));
     xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_PASSWORD));
     return xhtml;
   }
