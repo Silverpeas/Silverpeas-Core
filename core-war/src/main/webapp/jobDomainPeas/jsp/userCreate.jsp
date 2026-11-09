@@ -84,6 +84,11 @@
   // Password
   $(document).ready(function(){
     $('#userPasswordId').password();
+    // Chrome can offer to save another user's password even with autocomplete disabled.
+    // Keep the inputs as text fields, visually masked only in this admin form.
+    $('#userPasswordId, #userPasswordAgainId')
+        .attr('type', 'text')
+        .addClass('admin-password-masked');
 
     <c:if test="${currentUser.accessAdmin and USER_MANUAL_NOTIFICATION_MAX_RECIPIENT_LIMITATION_ENABLED}">
     $("input[name='userAccessLevel']").on("change", function() {
