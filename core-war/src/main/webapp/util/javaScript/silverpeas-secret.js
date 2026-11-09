@@ -93,8 +93,18 @@ window.SilverpeasSecret = (() => {
       refreshVisibility();
       controls.append(visibility);
     }
-    controls.append(generate, copyButton, status);
-    input.insertAdjacentElement('afterend', controls);
+    controls.append(generate, copyButton);
+    if (controls.querySelector('.secret-visibility')) {
+      const wrapper = document.createElement('span');
+      wrapper.className = 'password-input-with-actions';
+      input.parentNode.insertBefore(wrapper, input);
+      wrapper.append(input, controls);
+      status.className = 'password-action-status';
+      wrapper.insertAdjacentElement('afterend', status);
+    } else {
+      controls.append(status);
+      input.insertAdjacentElement('afterend', controls);
+    }
 
     let busy = false;
     const update = () => {
