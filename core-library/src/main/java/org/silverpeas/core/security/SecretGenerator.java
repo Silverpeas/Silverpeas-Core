@@ -43,6 +43,8 @@ public final class SecretGenerator {
   private static final String SHARING_SPECIAL_CHARACTERS = "!@#$%^&*()_+-=[]{}|;:'\",.<>?/\\~`";
   private static final SecureRandom RANDOM = new SecureRandom();
   private static final int MAX_ATTEMPTS = 256;
+  private static final int MAX_SECRET_LENGTH = 1024;
+  private static final int MAX_ALPHABET_LENGTH = 4096;
 
   private SecretGenerator() {
     // Utility class.
@@ -56,7 +58,8 @@ public final class SecretGenerator {
   public record CharacterGroup(String alphabet, int count, boolean required, boolean combined) {
     public CharacterGroup {
       Objects.requireNonNull(alphabet);
-      if (count < 0 || (count > 0 && alphabet.isEmpty() && (required || combined))) {
+      if (count < 0 || count > MAX_SECRET_LENGTH || alphabet.length() > MAX_ALPHABET_LENGTH ||
+          (count > 0 && alphabet.isEmpty() && (required || combined))) {
         throw new IllegalStateException("Invalid secret character group");
       }
     }
@@ -68,8 +71,12 @@ public final class SecretGenerator {
     public Policy {
       Objects.requireNonNull(lengths);
       groups = List.copyOf(groups);
+      if (groups.size() > 64 || combinedCount < 0 || combinedCount > groups.size()) {
+        throw new IllegalStateException("Invalid secret character group combination");
+      }
       Objects.requireNonNull(validator);
-      if (lengths.minimum() < 1 || lengths.maximum() < lengths.minimum()) {
+      if (lengths.minimum() < 1 || lengths.maximum() < lengths.minimum() ||
+          lengths.minimum() > MAX_SECRET_LENGTH) {
         throw new IllegalStateException("Inconsistent secret length constraints");
       }
     }
@@ -84,8 +91,13 @@ public final class SecretGenerator {
   public static String generate(Policy policy) {
     final String alphabet = policy.groups().stream().map(CharacterGroup::alphabet)
         .collect(Collectors.joining());
-    if (alphabet.isEmpty()) {
+    if (alphabet.isEmpty() || alphabet.length() > MAX_ALPHABET_LENGTH) {
       throw new IllegalStateException("No characters available for secret generation");
+    }
+    long requiredSize = policy.groups().stream().filter(CharacterGroup::required)
+        .mapToLong(CharacterGroup::count).sum();
+    if (requiredSize > policy.lengths().maximum()) {
+      throw new IllegalStateException("Required characters exceed maximum secret length");
     }
     for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
       String candidate = candidate(policy, alphabet);
@@ -124,6 +136,9 @@ public final class SecretGenerator {
     final StringBuilder result = new StringBuilder();
     selected.forEach(group -> appendRandom(result, group.alphabet(), group.count()));
     int length = Math.max(policy.lengths().minimum(), result.length());
+    if (length > MAX_SECRET_LENGTH) {
+      throw new IllegalStateException("Generated secret exceeds safe length limit");
+    }
     appendRandom(result, alphabet, length - result.length());
     for (int i = result.length() - 1; i > 0; i--) {
       int j = RANDOM.nextInt(i + 1);
