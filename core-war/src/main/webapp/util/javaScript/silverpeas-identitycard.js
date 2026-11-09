@@ -22,74 +22,107 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-(function(){
+(function() {
+  let templatePromise;
+
+  function getTemplate() {
+    if (!templatePromise) {
+      templatePromise = new Promise(function(resolve) {
+        $.ajax({
+          url : '/weblib/ckeditor/identitycard/template.html',
+          dataType : 'html',
+          success : resolve,
+          error : function() {
+            // The editor uses these fields when no custom template is available.
+            resolve('<div class="user-card"><div class="avatar"><img alt="avatar"></div>' +
+                ['userToZoom', 'emailAddress', 'title', 'phone', 'cellularPhone'].map(function(field) {
+                  return '<span class="field ' + field + '"></span>';
+                }).join('') + '</div>');
+          }
+        });
+      });
+    }
+    return templatePromise;
+  }
+
+  function restoreFields(card, template) {
+    const container = document.createElement('div');
+    container.innerHTML = template;
+    const model = container.querySelector('.user-card');
+    if (!model) {
+      return;
+    }
+    const missingField = Array.from(model.querySelectorAll('.field')).some(function(field) {
+      return !Array.from(card.querySelectorAll('.field')).some(function(existing) {
+        return existing.className === field.className;
+      });
+    });
+    if (missingField) {
+      // Rebuild from the model to preserve the order and nesting of custom templates.
+      card.innerHTML = model.innerHTML;
+    }
+  }
+
+  function textValue(value) {
+    return value == null ? '' : String(value).unescapeHTML();
+  }
+
+  function updateCard(card, user) {
+    const values = Object.assign({}, user, user.moreData, {
+      userToZoom : textValue(user.firstName) + ' ' + textValue(user.lastName)
+    });
+    card.querySelectorAll('.field').forEach(function(field) {
+      const key = Array.from(field.classList).find(function(name) {
+        return name !== 'field' && Object.hasOwn(values, name);
+      });
+      if (!key) {
+        return;
+      }
+      const value = key === 'userToZoom' ? values[key] : textValue(values[key]);
+      // Keep the connection indicator and other children added by user zoom.
+      if (field.firstChild && field.firstChild.nodeType === 3) {
+        field.firstChild.textContent = value;
+      } else {
+        field.prepend(document.createTextNode(value));
+      }
+      if (key === 'userToZoom') {
+        field.setAttribute('rel', card.getAttribute('rel'));
+      }
+    });
+    const avatar = card.querySelector('.avatar img');
+    if (avatar && user.avatar && avatar.getAttribute('src') !== user.avatar) {
+      sp.element.cloneAndReplace(avatar, function(clone) {
+        clone.setAttribute('src', user.avatar);
+      });
+    }
+  }
+
   window.activateIDCards = function() {
     whenSilverpeasEntirelyLoaded(function() {
       const promises = [];
-      sp.element.querySelectorAll('.user-card')
-          .filter(function($userCard) {
-            return !$userCard.__userCardActivated;
-          }).forEach(function($userCard) {
-              clearTimeout(__timer);
-              $userCard.__userCardActivated = true;
-              promises.push(User.getExtended($userCard.getAttribute('rel')).then(function(user) {
-                const nodeToUpdate = [{
-                  element : sp.element.querySelector('.userToZoom', $userCard),
-                  textValue : user.firstName.unescapeHTML() + ' ' + user.lastName.unescapeHTML()
-                }];
-                for (let key in user) {
-                  if (user.hasOwnProperty(key)) {
-                    const val = user[key];
-                    if (key === 'avatar') {
-                      nodeToUpdate.push({
-                        element : sp.element.querySelector('.' + key + ' img', $userCard),
-                        srcValue : val
-                      });
-                    } else if (key === 'moreData') {
-                      for (let keyMore in val) {
-                        if (val.hasOwnProperty(keyMore)) {
-                          nodeToUpdate.push({
-                            element : sp.element.querySelector('.' + keyMore, $userCard),
-                            textValue : typeof val[keyMore] === 'string' ?
-                                val[keyMore].unescapeHTML() : val[keyMore]
-                          });
-                        }
-                      }
-                    } else {
-                      nodeToUpdate.push({
-                        element : sp.element.querySelector('.' + key, $userCard),
-                        textValue : typeof user[key] === 'string' ?
-                            user[key].unescapeHTML() : user[key]
-                      });
-                    }
-                  }
-                }
-                nodeToUpdate.filter(function(data) {
-                  return !!data.element;
-                }).forEach(function(data) {
-                  if (data.srcValue) {
-                    if (data.element.getAttribute('src') !== data.srcValue) {
-                      sp.element.cloneAndReplace(data.element, function(clone) {
-                        clone.setAttribute('src', data.srcValue);
-                      });
-                    }
-                  } else if (data.element.childNodes.length) {
-                    data.element.childNodes[0].textContent = data.textValue.unescapeHTML();
-                  } else {
-                    data.element.innerText = data.textValue.unescapeHTML();
-                  }
-                });
-              }));
-          });
+      sp.element.querySelectorAll('.user-card').filter(function(card) {
+        return !card.__userCardActivated;
+      }).forEach(function(card) {
+        clearTimeout(timer);
+        card.__userCardActivated = true;
+        promises.push(Promise.all([getTemplate(), User.getExtended(card.getAttribute('rel'))])
+            .then(function(results) {
+              restoreFields(card, results[0]);
+              updateCard(card, results[1]);
+            }).catch(function() {
+              card.__userCardActivated = false;
+              console.warn('Unable to refresh an identity card.');
+            }));
+      });
       if (promises.length) {
         sp.promise.whenAllResolved(promises).then(activateUserZoom);
       }
     });
-  }
+  };
 
   /**
-   * Populate all identity card in page.
+   * Populate all identity cards in the page.
    */
-  const __timer = setTimeout(activateIDCards, 1000);
+  const timer = setTimeout(activateIDCards, 1000);
   setTimeout(activateIDCards, 100);
 })();

@@ -23,7 +23,8 @@
  */
 
 // Register the plugin within the editor.
-customTemplate =
+// Shared by the template loader and the widget registration.
+let customTemplate =
     '<div class="user-card">' + '<div class="avatar"><img src="" alt="avatar"/></div>' +
     '<span class="field userToZoom">firstName lastName</span>' +
     '<span class="field emailAddress">email</span>' + '<span class="field title">title</span>' +
@@ -90,11 +91,12 @@ CKEDITOR.plugins.add('identitycard', {
 });
 
 function updateContent(widget) {
-  if (!widget.data.userId)
+  if (!widget.data.userId) {
     return;
+  }
 
-  let widgetUI = widget.element;
-  let widgetData = widget.data;
+  const widgetUI = widget.element;
+  const widgetData = widget.data;
   widgetUI.setAttribute('rel', widget.data.userId);
 
   $.ajax({
@@ -102,7 +104,7 @@ function updateContent(widget) {
     url : '/silverpeas/services/profile/users/' + $(widgetUI).attr('rel') + '?extended=true',
     dataType : "json",
     cache : false,
-    success : function(user, status, jqXHR) {
+    success : function(user) {
       for (let i = 0; i < widgetUI.getChildCount(); i++) {
         const item = widgetUI.getChildren().getItem(i);
         if (item.type === 1) {
@@ -125,14 +127,15 @@ function updateContent(widget) {
                   const itemMore = widgetUI.getChildren().getItem(j);
                   if (itemMore.type === 1) {
                     if (itemMore.getAttribute('class') === 'field ' + keyMore) {
-                      itemMore.setHtml(valMore);
+                      // CKEditor removes empty spans when serializing the content.
+                      itemMore.setHtml(valMore == null || valMore === '' ? '&nbsp;' : String(valMore));
                       break;
                     }
                   }
                 }
               });
             } else if (item.getAttribute('class') === 'field ' + key) {
-              item.setHtml(val);
+              item.setHtml(val == null || val === '' ? '&nbsp;' : String(val));
               break;
             }
           }
@@ -140,7 +143,7 @@ function updateContent(widget) {
       });
     },
 
-    error : function(jqXHR, status) {
+    error : function() {
       // do nothing
     }
   });
