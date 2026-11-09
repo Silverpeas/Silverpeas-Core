@@ -229,59 +229,59 @@ out.println(window.printBefore());
     <fieldset id="identity-main" class="skinFieldset">
       <legend><fmt:message key="myProfile.identity.fieldset.main" bundle="${profile}" /></legend>
       <div class="fields">
-		<!--Last name-->
-	<div class="field" id="form-row-name">
-			<label class="txtlibform"><fmt:message key="GML.lastName"/></label>
-			<div class="champs">
-				<% if (action.equals("userMS")) { %>
+    <!--Last name-->
+  <div class="field" id="form-row-name">
+      <label class="txtlibform"><fmt:message key="GML.lastName"/></label>
+      <div class="champs">
+        <% if (action.equals("userMS")) { %>
                 <%=userObject.getLastName()%>
               <% } else { %>
                 <input type="text" name="userLastName" id="userLastName" size="50" maxlength="99"
-			value="<%=WebEncodeHelper.javaStringToHtmlString(userObject.getLastName())%>" />
-			&nbsp;<img border="0" src="${context}${mandatoryIcon}" width="5" height="5"/>
+      value="<%=WebEncodeHelper.javaStringToHtmlString(userObject.getLastName())%>" />
+      &nbsp;<img border="0" src="${context}${mandatoryIcon}" width="5" height="5"/>
               <% } %>
-			</div>
-		</div>
-		<!--Surname-->
-	<div class="field" id="form-row-surname">
-			<label class="txtlibform"><fmt:message key="GML.surname"/></label>
-			<div class="champs">
-				<% if (action.equals("userMS")) { %>
-		<%=userObject.getFirstName()%>
-		<% } else { %>
-		<input type="text" name="userFirstName" id="userFirstName" size="50" maxlength="99"
-			value="<%=WebEncodeHelper.javaStringToHtmlString(userObject.getFirstName())%>" />
-		<% } %>
-			</div>
-		</div>
-		<!--Login-->
-	<div class="field" id="form-row-login">
-			<label class="txtlibform"><fmt:message key="GML.login"/></label>
-			<div class="champs">
-				<% if (userCreation) { %>
+      </div>
+    </div>
+    <!--Surname-->
+  <div class="field" id="form-row-surname">
+      <label class="txtlibform"><fmt:message key="GML.surname"/></label>
+      <div class="champs">
+        <% if (action.equals("userMS")) { %>
+    <%=userObject.getFirstName()%>
+    <% } else { %>
+    <input type="text" name="userFirstName" id="userFirstName" size="50" maxlength="99"
+      value="<%=WebEncodeHelper.javaStringToHtmlString(userObject.getFirstName())%>" />
+    <% } %>
+      </div>
+    </div>
+    <!--Login-->
+  <div class="field" id="form-row-login">
+      <label class="txtlibform"><fmt:message key="GML.login"/></label>
+      <div class="champs">
+        <% if (userCreation) { %>
                   <input type="text" name="userLogin" size="50" maxlength="50"
-			value="<%=WebEncodeHelper.javaStringToHtmlString(userObject.getLogin())%>"/>
-			&nbsp;<img border="0" src="${context}${mandatoryIcon}" width="5" height="5"/>
+      value="<%=WebEncodeHelper.javaStringToHtmlString(userObject.getLogin())%>"/>
+      &nbsp;<img border="0" src="${context}${mandatoryIcon}" width="5" height="5"/>
                 <% } else { %>
                   <%=WebEncodeHelper.javaStringToHtmlString(userObject.getLogin())%>
                 <% } %>
-			</div>
-		</div>
-		<!--Email-->
-	<div class="field" id="form-row-email">
-			<label class="txtlibform"><fmt:message key="GML.eMail"/></label>
-			<div class="champs">
-				<% if (action.equals("userMS")) { %>
-      		<%=userObject.getEmailAddress()%>
-		  <% } else { %>
+      </div>
+    </div>
+    <!--Email-->
+  <div class="field" id="form-row-email">
+      <label class="txtlibform"><fmt:message key="GML.eMail"/></label>
+      <div class="champs">
+        <% if (action.equals("userMS")) { %>
+          <%=userObject.getEmailAddress()%>
+      <% } else { %>
           <input type="text" name="userEMail" id="userEMail" size="50" maxlength="99" value="<%=WebEncodeHelper.javaStringToHtmlString(userObject.getEmailAddress())%>" />
       <% } %>
-			</div>
-		</div>
+      </div>
+    </div>
 
-	<div class="field" id="form-row-rights">
-			<label class="txtlibform"><fmt:message key="JDP.userRights"/></label>
-			<div class="champs">
+  <div class="field" id="form-row-rights">
+      <label class="txtlibform"><fmt:message key="JDP.userRights"/></label>
+      <div class="champs">
         <c:if test="${currentUser.accessAdmin}">
           <input type="radio" name="userAccessLevel" value="ADMINISTRATOR" <%=checkedAdmin%>/>&nbsp;<%=resource.getString("GML.administrateur") %><br/>
           <input type="radio" name="userAccessLevel" value="PDC_MANAGER" <%=checkedPdcManager%>/>&nbsp;<%=resource.getString("GML.kmmanager") %><br/>
@@ -298,8 +298,8 @@ out.println(window.printBefore());
             <input type="radio" name="userAccessLevel" value="GUEST" <%=checkedGuest%>/>&nbsp;<%=resource.getString("GML.guest") %>
           </c:if>
         </c:if>
-			</div>
-		</div>
+      </div>
+    </div>
     <c:if test="${userObject.passwordAvailable}">
       <!--Password Silverpeas ?-->
     <div class="field" id="form-row-passwordsp">
@@ -400,7 +400,7 @@ out.println(window.printBefore());
     <view:directoryExtraForm userId="${userObject.id}" edition="true" skippable="true" domainId="<%=domObject.getId()%>"/>
 
     <div class="legend">
-	<img border="0" src="${context}${mandatoryIcon}" width="5" height="5"/> : <fmt:message key="GML.requiredField"/>
+  <img border="0" src="${context}${mandatoryIcon}" width="5" height="5"/> : <fmt:message key="GML.requiredField"/>
     </div>
   </form>
 <br/>

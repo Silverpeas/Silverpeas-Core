@@ -73,7 +73,7 @@
 </style>
 
 <div class="sousNavBulle">
-	<p><fmt:message key="profil.subnav.display" /> <a class="active" href="#"><fmt:message key="profil.subnav.identity" /></a> <!-- <a href="#">Personnelles</a> <a href="#">Personnelles</a> --></p>
+  <p><fmt:message key="profil.subnav.display" /> <a class="active" href="#"><fmt:message key="profil.subnav.identity" /></a> <!-- <a href="#">Personnelles</a> <a href="#">Personnelles</a> --></p>
 </div>
 
 <c:if test="${not empty messageOK}">
@@ -91,59 +91,59 @@
     <tr id="lastName">
         <td class="txtlibform"><%=resource.getString("GML.lastName")%> :</td>
         <td>
-		<%if (updateIsAllowed && updateLastNameIsAllowed) {%>
-			<input type="text" name="userLastName" size="50" maxlength="99" value="<%=userFull.getLastName()%>"/>&nbsp;<img src="<%=resource.getIcon("socialNetwork.mandatory")%>" width="5" height="5"/>
-			<%} else {%>
-				<%=userFull.getLastName()%>
-			<%}%>
-		</td>
+    <%if (updateIsAllowed && updateLastNameIsAllowed) {%>
+      <input type="text" name="userLastName" size="50" maxlength="99" value="<%=userFull.getLastName()%>"/>&nbsp;<img src="<%=resource.getIcon("socialNetwork.mandatory")%>" width="5" height="5"/>
+      <%} else {%>
+        <%=userFull.getLastName()%>
+      <%}%>
+    </td>
     </tr>
     <tr id="firstName">
         <td class="txtlibform"><%=resource.getString("GML.firstName")%> :</td>
         <td>
-		<%if (updateIsAllowed && updateFirstNameIsAllowed) {%>
-			<input type="text" name="userFirstName" size="50" maxlength="99" value="<%=userFull.getFirstName()%>"/>
-			<%} else {%>
-				<%=userFull.getFirstName()%>
-			<%}%>
-		</td>
+    <%if (updateIsAllowed && updateFirstNameIsAllowed) {%>
+      <input type="text" name="userFirstName" size="50" maxlength="99" value="<%=userFull.getFirstName()%>"/>
+      <%} else {%>
+        <%=userFull.getFirstName()%>
+      <%}%>
+    </td>
     </tr>
-	<tr id="login">
+  <tr id="login">
         <td class="txtlibform"><%=resource.getString("GML.login")%> :</td>
-		<td><%=userFull.getLogin()%></td>
+    <td><%=userFull.getLogin()%></td>
     </tr>
     <tr id="email">
-	<td class="txtlibform"><%=resource.getString("GML.eMail")%> :</td>
+  <td class="txtlibform"><%=resource.getString("GML.eMail")%> :</td>
         <td>
-		<%if (updateIsAllowed && updateEmailIsAllowed) {%>
-			<input type="text" name="userEMail" size="50" maxlength="99" value="<%=userFull.getEmailAddress()%>"/>
-			<%} else {%>
-				<%=userFull.getEmailAddress()%>
-			<%}%>
-		</td>
+    <%if (updateIsAllowed && updateEmailIsAllowed) {%>
+      <input type="text" name="userEMail" size="50" maxlength="99" value="<%=userFull.getEmailAddress()%>"/>
+      <%} else {%>
+        <%=userFull.getEmailAddress()%>
+      <%}%>
+    </td>
     </tr>
-	<tr id="accessLevel">
-		<td class="txtlibform"><%=resource.getString("myProfile.UserRights") %> :</td>
-		<td><%=resource.getString("GML.user.type."+userFull.getAccessLevel().code()) %></td>
-	</tr>
-	<%if (updateIsAllowed && isPasswordChangeAllowed) {%>
-		<tr id="oldPassword">
-	        <td class="txtlibform"><%=resource.getString("myProfile.OldPassword")%> :</td>
-	        <td><input <%=fieldAttribute%> type="password" autocomplete="new-password" name="OldPassword" size="50" maxlength="32"/></td>
-	    </tr>
-		<tr>
-	        <td class="txtlibform"><%=resource.getString("myProfile.NewPassword")%> :</td>
-	        <td><input <%=fieldAttribute%> type="password" autocomplete="new-password" id="newPassword" name="NewPassword" size="50" maxlength="32"/>&nbsp;(<a tabindex="-1" href="#" onclick="$('#newPassword').focus()"><%=authRs.getString("authentication.password.showRules") %></a>)</td>
-	    </tr>
-		<tr>
-	        <td class="txtlibform"><%=resource.getString("myProfile.NewPasswordConfirm")%> :</td>
-	        <td><input <%=fieldAttribute%>  autocomplete="new-password" id="newPasswordConfirmation" name="NewPasswordConfirm" type="password" size="50" maxlength="32"/></td>
-	    </tr>
+  <tr id="accessLevel">
+    <td class="txtlibform"><%=resource.getString("myProfile.UserRights") %> :</td>
+    <td><%=resource.getString("GML.user.type."+userFull.getAccessLevel().code()) %></td>
+  </tr>
+  <%if (updateIsAllowed && isPasswordChangeAllowed) {%>
+    <tr id="oldPassword">
+          <td class="txtlibform"><%=resource.getString("myProfile.OldPassword")%> :</td>
+          <td><input <%=fieldAttribute%> type="password" autocomplete="new-password" name="OldPassword" size="50" maxlength="32"/></td>
+      </tr>
+    <tr>
+          <td class="txtlibform"><%=resource.getString("myProfile.NewPassword")%> :</td>
+          <td><input <%=fieldAttribute%> type="password" autocomplete="new-password" id="newPassword" name="NewPassword" size="50" maxlength="32"/>&nbsp;(<a tabindex="-1" href="#" onclick="$('#newPassword').focus()"><%=authRs.getString("authentication.password.showRules") %></a>)</td>
+      </tr>
+    <tr>
+          <td class="txtlibform"><%=resource.getString("myProfile.NewPasswordConfirm")%> :</td>
+          <td><input <%=fieldAttribute%>  autocomplete="new-password" id="newPasswordConfirmation" name="NewPasswordConfirm" type="password" size="50" maxlength="32"/></td>
+      </tr>
     <%} else { %>
-	    <tr>
-	        <td class="txtlibform"><%=resource.getString("myProfile.NewPassword")%> :</td>
-	        <td><%=resource.getString("myProfile.ModifyPasswordNotAllowed1")+"<br/>"+resource.getString("myProfile.ModifyPasswordNotAllowed2")%></td>
-	    </tr>
+      <tr>
+          <td class="txtlibform"><%=resource.getString("myProfile.NewPassword")%> :</td>
+          <td><%=resource.getString("myProfile.ModifyPasswordNotAllowed1")+"<br/>"+resource.getString("myProfile.ModifyPasswordNotAllowed2")%></td>
+      </tr>
     <% } %>
       <tr id="token">
             <td class="txtlibform"><%=resource.getString("myProfile.Token")%> :</td>
@@ -188,14 +188,14 @@
  </div>
  <br clear="all"/>
  <%
-		ButtonPane buttonPane = gef.getButtonPane();
-		if (updateIsAllowed) {
-			Button validateButton = gef.getFormButton(resource.getString("GML.validate"), "javascript:onclick=saveUser();", false);
-			buttonPane.addButton(validateButton);
-		}
-		Button cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "javascript:onclick=history.back();", false);
-		buttonPane.addButton(cancelButton);
-		out.println(buttonPane.print());
+    ButtonPane buttonPane = gef.getButtonPane();
+    if (updateIsAllowed) {
+      Button validateButton = gef.getFormButton(resource.getString("GML.validate"), "javascript:onclick=saveUser();", false);
+      buttonPane.addButton(validateButton);
+    }
+    Button cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "javascript:onclick=history.back();", false);
+    buttonPane.addButton(cancelButton);
+    out.println(buttonPane.print());
 %>
 
 <script type="text/javascript">
