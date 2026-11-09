@@ -89,8 +89,10 @@ window.SilverpeasSecret = (() => {
       visibility.addEventListener('click', () => {
         if (input.classList.contains('admin-password-masked')) {
           input.classList.remove('admin-password-masked');
+          input.style.webkitTextSecurity = 'none';
         } else if (input.type === 'text') {
           input.classList.add('admin-password-masked');
+          input.style.webkitTextSecurity = 'disc';
         } else {
           input.type = input.type === 'password' ? 'text' : 'password';
         }
