@@ -122,6 +122,17 @@ window.SilverpeasSecret = (() => {
       input.insertAdjacentElement('afterend', controls);
     }
 
+    let statusTimeout;
+    const notify = (message) => {
+      window.clearTimeout(statusTimeout);
+      status.textContent = message;
+      if (message) {
+        statusTimeout = window.setTimeout(() => {
+          status.textContent = '';
+        }, 4000);
+      }
+    };
+
     let busy = false;
     const update = () => {
       generate.disabled = busy || input.disabled || input.readOnly;
@@ -139,7 +150,7 @@ window.SilverpeasSecret = (() => {
       }
       busy = true;
       update();
-      status.textContent = '';
+      notify('');
       try {
         const value = await options.generate();
         if (typeof value !== 'string' || !value) {
@@ -156,10 +167,10 @@ window.SilverpeasSecret = (() => {
           }
           input.dispatchEvent(new Event('input', {bubbles: true}));
           input.dispatchEvent(new Event('change', {bubbles: true}));
-          status.textContent = options.labels.generated;
+          notify(options.labels.generated);
         }
       } catch (error) {
-        status.textContent = options.labels.error;
+        notify(options.labels.error);
       } finally {
         busy = false;
         update();
@@ -171,9 +182,9 @@ window.SilverpeasSecret = (() => {
       }
       try {
         await copy(input);
-        status.textContent = options.labels.copied;
+        notify(options.labels.copied);
       } catch (error) {
-        status.textContent = options.labels.copyError;
+        notify(options.labels.copyError);
       }
     });
     update();
