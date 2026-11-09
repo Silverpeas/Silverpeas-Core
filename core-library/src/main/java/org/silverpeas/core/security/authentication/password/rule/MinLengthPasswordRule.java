@@ -42,7 +42,7 @@ public class MinLengthPasswordRule extends AbstractPasswordRule {
   public MinLengthPasswordRule() {
     super(PasswordRuleType.MIN_LENGTH);
     value = settings.getInteger(getType().getSettingKey(), DEFAULT_LENGTH);
-    if (settings
+    if (settings.getBoolean(PasswordRuleType.MAX_LENGTH.getSettingKey(), false) && settings
         .getInteger(PasswordRuleType.MAX_LENGTH.getSettingKey() + ".value", DEFAULT_LENGTH) <
         value) {
       value = DEFAULT_LENGTH;

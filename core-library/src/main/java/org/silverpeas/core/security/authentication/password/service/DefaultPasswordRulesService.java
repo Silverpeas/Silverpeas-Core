@@ -24,7 +24,6 @@
 package org.silverpeas.core.security.authentication.password.service;
 
 import jakarta.annotation.PostConstruct;
-import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.security.authentication.password.constant.PasswordRuleType;
@@ -51,17 +50,17 @@ public class DefaultPasswordRulesService implements PasswordRulesService {
 
   /* All server password rules */
   private final Map<PasswordRuleType, PasswordRule> allPasswordRules =
-      new LinkedHashMap<>(PasswordRuleType.values().length);
+      LinkedHashMap.newLinkedHashMap(PasswordRuleType.values().length);
 
   /* All required server password rules */
   private final Map<PasswordRuleType, PasswordRule> requiredPasswordRules =
-      new LinkedHashMap<>(PasswordRuleType.values().length);
+      LinkedHashMap.newLinkedHashMap(PasswordRuleType.values().length);
 
   /* All combined server password rules */
   private final Map<PasswordRuleType, PasswordRule> combinedPasswordRules =
-      new LinkedHashMap<>(PasswordRuleType.values().length);
+      LinkedHashMap.newLinkedHashMap(PasswordRuleType.values().length);
 
-  private final Random random = new SecureRandom();
+  private final SecureRandom random = new SecureRandom();
 
   /**
    * Loading just after the server is started all activated server password rules.
@@ -137,100 +136,55 @@ public class DefaultPasswordRulesService implements PasswordRulesService {
 
   @Override
   public String generate() {
-    long start = System.currentTimeMillis();
-    PasswordRule sequentialForbidden = getRule(PasswordRuleType.SEQUENTIAL_FORBIDDEN);
-    String generatedPassword = generate(sequentialForbidden);
-    if (sequentialForbidden.isRequired()) {
-      // Trying during 5 seconds to generate a not sequential password before returning the result
-      while ((System.currentTimeMillis() - start) <= 5000) {
-        if (sequentialForbidden.check(generatedPassword)) {
-          break;
-        }
-        generatedPassword = generate(sequentialForbidden);
+    final int minLength = Math.max(1, getRule(PasswordRuleType.MIN_LENGTH).<Integer>getValue());
+    final PasswordRule maximum = getRule(PasswordRuleType.MAX_LENGTH);
+    final int maxLength = maximum.isRequired() ? maximum.<Integer>getValue() : Integer.MAX_VALUE;
+    if (maxLength < minLength) {
+      throw new IllegalStateException("Inconsistent password length constraints");
+    }
+    for (int attempt = 0; attempt < 256; attempt++) {
+      final String candidate = generateCandidate(minLength, maxLength);
+      if (candidate != null && satisfiesPolicy(candidate)) {
+        return candidate;
       }
     }
-    return generatedPassword;
+    throw new IllegalStateException("Unable to generate a password satisfying the configured policy");
   }
 
-  private String generate(PasswordRule sequentialForbidden) {
-
-    // Context
-    final List<PasswordRule> rules = new ArrayList<>(getRules());
-    final List<PasswordRule> requiredRules = new ArrayList<>(getRequiredRules());
-    final List<PasswordRule> combinedRules = new ArrayList<>(getCombinedRules());
-    int minLength = getRule(PasswordRuleType.MIN_LENGTH).getValue();
-    int maxLength = getRule(PasswordRuleType.MAX_LENGTH).getValue();
-
-    // Length of the random password
-    int requiredPasswordLength = minLength + random(maxLength - minLength + 1);
-
-    // Random parts of the password
-    int currentPasswordLength = 0;
-    List<String> randomPasswordParts = new ArrayList<>();
-    PasswordRule currentRule;
-    String currentRandomPasswordPart;
-    Set<PasswordRule> combinedRulesPerformed = new HashSet<>();
-    while (currentPasswordLength < requiredPasswordLength) {
-
-      // Gets a password rule
-      currentRule = getPasswordRule(requiredRules, combinedRules, combinedRulesPerformed, rules);
-
-      // Storing combined rule performed
-      if (currentRule.isCombined()) {
-        combinedRulesPerformed.add(currentRule);
-      }
-
-      // Generate and store a random part of the password
-      currentRandomPasswordPart = currentRule.random();
-      if (StringUtil.isDefined(currentRandomPasswordPart)) {
-        while ((currentPasswordLength + currentRandomPasswordPart.length()) > maxLength) {
-          currentRandomPasswordPart =
-              currentRandomPasswordPart.substring(0, (currentRandomPasswordPart.length() - 1));
-        }
-        randomPasswordParts.add(currentRandomPasswordPart);
-      }
-
-      // Add the current length of the random password part to the current password length
-      currentPasswordLength += currentRandomPasswordPart.length();
+  private String generateCandidate(int minLength, int maxLength) {
+    final Set<PasswordRule> selected = new LinkedHashSet<>(getRequiredRules());
+    final List<PasswordRule> combined = new ArrayList<>(getCombinedRules());
+    Collections.shuffle(combined, random);
+    long alreadySelected = combined.stream().filter(selected::contains).count();
+    combined.stream().filter(rule -> !selected.contains(rule))
+        .limit(Math.max(0L, nbMatchingCombinedRules - alreadySelected)).forEach(selected::add);
+    final StringBuilder candidate = new StringBuilder();
+    selected.forEach(rule -> candidate.append(rule.random()));
+    if (candidate.length() > maxLength) {
+      return null;
     }
-
-    // The generated random password
-    // Trying 10 times to generate a not sequential password before returning the result
-    Collections.shuffle(randomPasswordParts);
-    String generatedPassword = StringUtils.join(randomPasswordParts, "");
-    for (int i = 0; i < 10 && sequentialForbidden.isRequired(); i++) {
-      if (sequentialForbidden.check(generatedPassword)) {
-        break;
-      }
-      randomPasswordParts = Arrays.asList(generatedPassword.split(""));
-      Collections.shuffle(randomPasswordParts);
-      generatedPassword = StringUtils.join(randomPasswordParts, "");
+    final String alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" +
+        getRule(PasswordRuleType.AT_LEAST_X_SPECIAL_CHAR).<String>getValue();
+    final int length = Math.min(maxLength, Math.max(16, Math.max(minLength, candidate.length())));
+    while (candidate.length() < length) {
+      candidate.append(alphabet.charAt(random.nextInt(alphabet.length())));
     }
-    return generatedPassword;
+    for (int i = candidate.length() - 1; i > 0; i--) {
+      int j = random.nextInt(i + 1);
+      char value = candidate.charAt(i);
+      candidate.setCharAt(i, candidate.charAt(j));
+      candidate.setCharAt(j, value);
+    }
+    return candidate.toString();
   }
 
-  private PasswordRule getPasswordRule(List<PasswordRule> requiredRules,
-      List<PasswordRule> combinedRules,
-      Set<PasswordRule> combinedRulesPerformed,
-      List<PasswordRule> rules) {
-    PasswordRule currentRule;
-    if (!requiredRules.isEmpty()) {
-      currentRule = requiredRules.remove(random(requiredRules.size()));
-    } else if (!combinedRules.isEmpty() &&
-        combinedRulesPerformed.size() < nbMatchingCombinedRules) {
-      currentRule = combinedRules.remove(random(combinedRules.size()));
-    } else {
-      currentRule = rules.get(random(rules.size()));
+  private boolean satisfiesPolicy(String password) {
+    if (!getRequiredRules().stream().allMatch(rule -> rule.check(password))) {
+      return false;
     }
-    return currentRule;
-  }
-
-  /**
-   * Returns a random integer value included between 0 and (given maxValue - 1).
-   * @return a random integer.
-   */
-  private int random(int maxValue) {
-    return random.nextInt(maxValue);
+    final Collection<PasswordRule> combined = getCombinedRules();
+    final long matching = combined.stream().filter(rule -> rule.check(password)).count();
+    return matching == combined.size() || matching >= nbMatchingCombinedRules;
   }
 
   @Override

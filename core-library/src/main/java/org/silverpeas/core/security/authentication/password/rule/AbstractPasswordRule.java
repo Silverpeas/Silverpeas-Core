@@ -28,7 +28,7 @@ import org.silverpeas.core.security.authentication.password.constant.PasswordRul
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 
-import java.util.Random;
+import java.security.SecureRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,7 +43,7 @@ public abstract class AbstractPasswordRule implements PasswordRule {
   protected static SettingBundle settings =
       ResourceLocator.getSettingBundle("org.silverpeas.password.settings.password");
   private final PasswordRuleType passwordRuleType;
-  private final Random random = new Random();
+  private final SecureRandom random = new SecureRandom();
 
   protected AbstractPasswordRule(final PasswordRuleType passwordRuleType) {
     this.passwordRuleType = passwordRuleType;
@@ -64,12 +64,12 @@ public abstract class AbstractPasswordRule implements PasswordRule {
   @Override
   public boolean isRequired() {
     final Object value = getValue();
-    if (value instanceof String) {
-      return isDefined((String) value);
-    } else if (value instanceof Boolean) {
-      return (Boolean) value;
-    } else if (value instanceof Number) {
-      return ((Number) value).doubleValue() > 0;
+    if (value instanceof String string) {
+      return isDefined(string);
+    } else if (value instanceof Boolean bool) {
+      return bool;
+    } else if (value instanceof Number number) {
+      return number.doubleValue() > 0;
     }
     return value != null;
   }
@@ -84,7 +84,7 @@ public abstract class AbstractPasswordRule implements PasswordRule {
    * @return a random integer value.
    */
   protected int random(int maxValue) {
-    return (int) (maxValue * random.nextDouble());
+    return random.nextInt(maxValue);
   }
 
   /**

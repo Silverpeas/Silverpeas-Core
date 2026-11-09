@@ -129,6 +129,7 @@
   <div id="emailAddressMessage" style="display: none; max-width: 400px; text-align: left;">
     <view:applyTemplate locationBase="${templateLocationBase}" name="${titleTemplate}"/></div>
 </c:if>
+<view:script src="/util/javaScript/silverpeas-secret.js"/>
 <view:loadScript src="/util/javaScript/silverpeas-password.js" jsPromiseName="loadingPromise"/>
 <script type="text/javascript">
   loadingPromise.then(function() {

@@ -200,6 +200,18 @@
     return $targets.each(function() {
       __uiReady.then(function() {
         __prepareUI($(this));
+        SilverpeasSecret.addControls(this, {
+          generate: () => __postJSonData($.password.webServiceContext + '/password/generate', {})
+              .then(password => password.value),
+          labels: {
+            generate: __getFromBundleKey('password.generate'),
+            copy: __getFromBundleKey('password.copy'),
+            generated: __getFromBundleKey('password.generated'),
+            copied: __getFromBundleKey('password.copied'),
+            error: __getFromBundleKey('password.generation.error'),
+            copyError: __getFromBundleKey('password.copy.error')
+          }
+        });
       }.bind(this));
     });
   }

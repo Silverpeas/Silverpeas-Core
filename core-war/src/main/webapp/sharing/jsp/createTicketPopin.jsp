@@ -48,6 +48,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <view:link href="/util/styleSheets/fieldset.css"/>
 <view:link href="/sharing/jsp/styleSheets/createTicketPopin.css"/>
 <view:script src="/util/javaScript/checkForm.js"/>
+<view:script src="/util/javaScript/silverpeas-secret.js"/>
 <view:script src="/sharing/jsp/javaScript/securityCode.js"/>
 
 <view:script src="/sharing/jsp/javaScript/createTicketPopin.js"/>
