@@ -44,7 +44,7 @@ function page() {
       this.type = 'text';
       this.style = {};
       this.classList = {add: () => {}};
-      this.parentNode = {insertBefore: () => {}};
+      this.parentNode = {insertBefore: (wrapper) => { this.wrapper = wrapper; }};
     }
     append(...children) { this.children.push(...children); }
     setAttribute(name, value) { this[name] = value; }
@@ -193,6 +193,26 @@ async function runTests() {
     // The original parent inserts the wrapper before the input.
     assert.equal(p.input.dataset.secretControls, 'true');
     assert.equal(p.input.type, 'password');
+    assert.equal(p.input.wrapper.className, 'password-input-with-actions');
+    assert.equal(p.input.wrapper.children[0], p.input);
+    const controls = p.input.wrapper.children[1];
+    const visibility = controls.children[0];
+    assert.equal(visibility['aria-label'], 'Show password');
+    visibility.handlers.click();
+    assert.equal(p.input.type, 'text');
+    assert.equal(visibility['aria-label'], 'Hide password');
+    visibility.handlers.click();
+    assert.equal(p.input.type, 'password');
+    assert.equal(p.input.wrapper.style.width, '505px');
+  });
+  await check('temporary feedback clears after timeout', async () => {
+    const p = page();
+    p.secret.addControls(p.input, {labels: p.labels, generate: async () => 'secret'});
+    const [generate, , status] = p.input.controls.children;
+    await generate.handlers.click();
+    assert.equal(status.textContent, 'Generated');
+    p.timers.at(-1)();
+    assert.equal(status.textContent, '');
   });
   return results;
 }
