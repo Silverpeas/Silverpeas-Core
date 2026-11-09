@@ -331,7 +331,8 @@ out.println(window.printBefore());
         <label class="txtlibform"><fmt:message key="JDP.sendEmail"/></label>
         <div class="champs">
           <input type="checkbox" name="sendEmail" id="sendEmailId" value="true" />
-          &nbsp;<fmt:message key="GML.yes" /> <br/>
+          &nbsp;<fmt:message key="GML.yes" />
+          <div class="send-email-help"><fmt:message key="JDP.sendEmail.help"/></div>
         </div>
       </div>
       <div class="field" id="form-row-extra-message">
