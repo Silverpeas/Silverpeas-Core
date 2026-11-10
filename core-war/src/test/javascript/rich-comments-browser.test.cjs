@@ -218,3 +218,30 @@ test('emoji grid fits every button without horizontal overflow with the native c
     assert.deepEqual(errors, []);
   } finally {await browser.close();}
 });
+
+test('the comment emoji icon has a stable SVG size in creation and editing with the native theme', async () => {
+  const {browser, page, errors} = await setup([{id:'1', text:'Bonjour', format:'PLAIN', author:{id:'2', fullName:'Alice'}, creationDate:'Yesterday'}]);
+  try {
+    await page.getByRole('button', {name:'commentUpdateAction', exact:true}).click();
+    for (const host of ['#edition-box', '.test-popin']) {
+      const button = page.locator(host + ' .sp-editor-tools > button').first();
+      const icon = button.locator('svg');
+      assert.equal(await icon.count(), 1);
+      assert.equal(await icon.getAttribute('aria-hidden'), 'true');
+      assert.equal(await button.getAttribute('title'), 'richEditor.emojiLabel');
+      for (const width of [1024,320]) {
+        await page.setViewportSize({width,height:800});
+        const geometry = await icon.evaluate(svg => {
+          const icon = svg.getBoundingClientRect();
+          const controls = [...svg.closest('.sp-editor-tools').children].filter(node => node.tagName === 'BUTTON')
+            .map(node => {const {width,height} = node.getBoundingClientRect();return {width,height};});
+          return {width:icon.width,height:icon.height,controls};
+        });
+        assert.ok(geometry.width >= 18 && geometry.height >= 18, JSON.stringify(geometry));
+        assert.equal(geometry.width, geometry.height);
+        assert.ok(geometry.controls.every(control => control.height === geometry.controls[0].height));
+      }
+    }
+    assert.deepEqual(errors, []);
+  } finally {await browser.close();}
+});

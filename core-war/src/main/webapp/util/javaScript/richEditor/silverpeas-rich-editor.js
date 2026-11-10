@@ -66,7 +66,24 @@
   });
   function enhance(textarea, configuration = {}) {
     const {people = [], filterPeople = filter, emoji = EMOJI} = configuration;
-    const tool = configuration.tool || ((label, icon) => button(label, icon === 'emoji' ? '☺' : '@', '', () => {}));
+    const tool = configuration.tool || ((label, icon) => {
+      const control = button(label, icon === 'emoji' ? '' : '@', '', () => {});
+      if (icon === 'emoji') {
+        const namespace = 'http://www.w3.org/2000/svg';
+        const svg = document.createElementNS(namespace, 'svg');
+        for (const [name, value] of Object.entries({viewBox:'0 0 24 24', 'aria-hidden':'true',
+          focusable:'false', fill:'none', stroke:'currentColor', 'stroke-width':'1.6', 'stroke-linecap':'round'})) {
+          svg.setAttribute(name, value);
+        }
+        const circle = document.createElementNS(namespace, 'circle');
+        for (const [name, value] of Object.entries({cx:'12', cy:'12', r:'9'})) { circle.setAttribute(name, value); }
+        const smile = document.createElementNS(namespace, 'path');
+        smile.setAttribute('d', 'M8 9h.01M16 9h.01M7.5 14a5 5 0 0 0 9 0');
+        svg.append(circle, smile);
+        control.append(svg);
+      }
+      return control;
+    });
     const classes = names => names + (configuration.classPrefix
         ? ' ' + names.split(' ').filter(name => name.startsWith('sp-')).map(name => configuration.classPrefix + name.slice(2)).join(' ') : '');
     function button(label, text, className, action) {
