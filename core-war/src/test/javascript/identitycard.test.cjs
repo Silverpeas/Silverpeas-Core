@@ -46,7 +46,7 @@ function field(name, value = '') {
 function card(fields) {
   return {
     fields,
-    getAttribute: () => '2',
+    getAttribute: name => name === 'rel' ? '2' : null,
     querySelectorAll: () => fields,
     querySelector: () => null
   };
@@ -54,6 +54,9 @@ function card(fields) {
 
 async function render(user, fields, modelFields = fields, config = {}) {
   const rendered = card(fields);
+  if (config.currentVersion) {
+    rendered.getAttribute = name => name === 'data-identitycard-version' ? '1' : '2';
+  }
   // This fixture represents the DOM parsed from a custom template, including its wrapper.
   const template = '<div class="user-card"><section>custom layout</section></div>';
   Object.defineProperty(rendered, 'innerHTML', {
@@ -67,10 +70,12 @@ async function render(user, fields, modelFields = fields, config = {}) {
   let requests = 0;
   let templateRequests = 0;
   let loadedTemplate;
+  let finishTemplate;
   const warnings = [];
   const context = {
     console: { warn: (...args) => warnings.push(args) },
     Promise,
+    webContext: '/silverpeas',
     whenSilverpeasEntirelyLoaded: callback => callback(),
     setTimeout: () => 1,
     clearTimeout: () => {},
@@ -84,7 +89,10 @@ async function render(user, fields, modelFields = fields, config = {}) {
     },
     $: { ajax: options => {
       templateRequests++;
-      if (config.templateError) { options.error(); } else { options.success(template); }
+      if (config.deferTemplate) { finishTemplate = () => options.success(template); }
+      else if (config.templateError && options.url.startsWith('/weblib/')) { options.error(); }
+      else { options.success(config.templateError ? readFileSync(resolve(webRoot,
+          'wysiwyg/jsp/ckeditor/plugins/identitycard/template.html'), 'utf8') : template); }
     } },
     User: { getExtended: () => {
       requests++;
@@ -101,8 +109,13 @@ async function render(user, fields, modelFields = fields, config = {}) {
   context.window = context;
   runInNewContext('String.prototype.unescapeHTML = function() { return String(this).replaceAll("&amp;", "&"); };\n' + viewerScript, context);
   context.window.activateIDCards();
-  await Promise.all(pending);
-  return { rendered, context, pending, requests, templateRequests, loadedTemplate, warnings };
+  if (config.deferTemplate) {
+    await Promise.resolve();
+    await Promise.resolve();
+  } else {
+    await Promise.all(pending);
+  }
+  return { finishTemplate, rendered, context, pending, requests, templateRequests, loadedTemplate, warnings };
 }
 
 const user = { firstName: 'lulu', lastName: 'lulu', moreData: { title: 'Nouveau titre' } };
@@ -163,49 +176,52 @@ test('updating a name preserves the connection indicator and restores its user r
   assert.equal(result.requests, 1);
 });
 
-function edit(user) {
-  const title = {
-    type: 1,
-    getAttribute: () => 'field title',
-    setHtml(value) { this.html = value; }
-  };
-  const email = {
-    type: 1,
-    getAttribute: () => 'field emailAddress',
-    setHtml(value) { this.html = value; }
-  };
+async function edit(user, config = {}) {
+  const title = field('title', 'title');
+  const email = field('emailAddress', 'email');
   const fields = [title, email];
-  const widget = {
-    data: { userId: '2' },
-    element: {
-      setAttribute: () => {},
-      getChildCount: () => fields.length,
-      getChildren: () => ({ getItem: index => fields[index] })
-    }
+  fields.forEach(function(item) {
+    Object.defineProperty(item, 'textContent', {
+      get() { return this.firstChild.textContent; },
+      set(value) { this.firstChild.textContent = value; }
+    });
+  });
+  const rendered = card(fields);
+  rendered.setAttribute = (name, value) => { rendered[name] = value; };
+  const widget = { data: { userId: '2' }, element: { $: rendered } };
+  const context = {
+    CKEDITOR: { plugins: { add: () => {} } },
+    document: { createElement: () => ({ querySelector: () => ({ querySelectorAll: () => fields }) }) },
+    webContext: '/silverpeas',
+    $: { ajax: options => {
+      if (config.staleProfile) { widget.data.userId = '3'; }
+      options.success(user);
+    } },
+    console
   };
-  const jquery = () => ({ attr: () => '2' });
-  jquery.ajax = options => options.success(user);
-  jquery.each = (object, callback) => Object.entries(object).forEach(([key, value]) => callback(key, value));
-  const context = { CKEDITOR: { plugins: { add: () => {} } }, $: jquery, jQuery: jquery };
-  runInNewContext(editorScript, context);
+  runInNewContext('String.prototype.unescapeHTML = function() { return String(this).replaceAll("&amp;", "&"); };\n' + editorScript +
+      '\nidentityCardTemplatePromise = Promise.resolve("template");', context);
   context.updateContent(widget);
-  return { title: title.html, email: email.html };
+  await Promise.resolve();
+  await Promise.resolve();
+  return { title: title.textContent, email: email.textContent, version: rendered['data-identitycard-version'] };
 }
 
-test('the editor keeps empty extended and standard fields with a non-breaking space', () => {
+test('the editor keeps empty extended and standard fields without adding spaces', async () => {
   for (const value of ['', null]) {
-    const result = edit({ emailAddress: value, moreData: { title: value } });
-    assert.equal(result.title, '&nbsp;');
-    assert.equal(result.email, '&nbsp;');
+    const result = await edit({ emailAddress: value, moreData: { title: value } });
+    assert.equal(result.title, '');
+    assert.equal(result.email, '');
+    assert.equal(result.version, '1');
   }
 });
 
-test('the editor preserves populated fields', () => {
-  const result = edit({ emailAddress: 'lulu@example.org', moreData: { title: 'Direction' } });
+test('the editor preserves populated fields and clears missing properties', async () => {
+  const result = await edit({ emailAddress: 'lulu@example.org', moreData: { title: 'Direction' } });
   assert.equal(result.title, 'Direction');
   assert.equal(result.email, 'lulu@example.org');
+  assert.equal((await edit({})).title, '');
 });
-
 
 test('the default template restores a missing title when no custom template is available', async () => {
   const result = await render(user, [field('userToZoom')], [field('userToZoom'), field('title')], { templateError: true });
@@ -238,6 +254,79 @@ test('a later explicit activation retries a failed card', async () => {
   result.context.window.activateIDCards();
   await Promise.all(result.pending);
   assert.equal(result.pending.length, 2);
-  assert.equal(result.templateRequests, 1);
+  assert.equal(result.templateRequests, 0);
   assert.equal(result.warnings.length, 2);
+});
+
+test('cards saved by the new editor require no template request', async () => {
+  const result = await render(user, [field('title')], undefined, { currentVersion: true });
+  assert.equal(result.templateRequests, 0);
+  assert.equal(result.rendered.fields[0].firstChild.textContent, 'Nouveau titre');
+});
+
+test('legacy cards are populated before the template request finishes', async () => {
+  const result = await render(user, [field('title', 'old')], undefined, { deferTemplate: true });
+  assert.equal(result.rendered.fields[0].firstChild.textContent, 'Nouveau titre');
+  result.finishTemplate();
+  await Promise.all(result.pending);
+});
+
+test('the editor loads the same shipped default when no custom template exists', async () => {
+  let plugin;
+  const urls = [];
+  const context = {
+    document: { createElement: () => ({ querySelector: () => ({ outerHTML: 'default' }) }) },
+    CKEDITOR: { plugins: { add: (name, definition) => { plugin = definition; } }, dtd: { $removeEmpty: { span: 1 } } },
+    $: { ajax: options => {
+      urls.push(options.url);
+      if (urls.length === 1) { options.error(); } else { options.success('default'); }
+    } }
+  };
+  runInNewContext(editorScript, context);
+  plugin.beforeInit.call({ path: '/silverpeas/wysiwyg/jsp/ckeditor/plugins/identitycard/' });
+  assert.equal(context.CKEDITOR.dtd.$removeEmpty.span, false);
+  assert.deepEqual(urls, ['/weblib/ckeditor/identitycard/template.html',
+    '/silverpeas/wysiwyg/jsp/ckeditor/plugins/identitycard/template.html']);
+});
+
+test('insertion waits for the configured template to finish loading', async () => {
+  let plugin;
+  let finishTemplate;
+  let beforeCommand;
+  let executions = 0;
+  let cancelled = false;
+  const editor = {
+    widgets: {
+      registered: {},
+      add(name, definition) { this.registered[name] = { template: { source: definition.template } }; }
+    },
+    ui: { addButton: () => {} },
+    lang: { identitycard: {} },
+    on(name, callback) { if (name === 'beforeCommandExec') { beforeCommand = callback; } },
+    execCommand() { executions++; }
+  };
+  const context = {
+    document: { createElement: () => ({ querySelector: () => ({ outerHTML: 'configured template' }) }) },
+    CKEDITOR: { plugins: { add: (name, definition) => { plugin = definition; } },
+      dtd: { $removeEmpty: {} }, dialog: { add: () => {} } },
+    $: { ajax: options => { finishTemplate = options.success; } }
+  };
+  runInNewContext(editorScript, context);
+  plugin.beforeInit.call({ path: '/plugin/' });
+  plugin.init.call({ path: '/plugin/' }, editor);
+  beforeCommand({ data: { name: 'identitycard' }, cancel() { cancelled = true; } });
+  assert.equal(cancelled, true);
+  assert.equal(executions, 0);
+  finishTemplate('template');
+  await Promise.resolve();
+  await Promise.resolve();
+  await Promise.resolve();
+  assert.equal(editor.widgets.registered.identitycard.template.source, 'configured template');
+  assert.equal(executions, 1);
+});
+
+test('a profile response for a previous selection cannot overwrite the current widget', async () => {
+  const result = await edit({ moreData: { title: 'old selection' } }, { staleProfile: true });
+  assert.equal(result.title, 'title');
+  assert.equal(result.version, undefined);
 });

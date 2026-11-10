@@ -32,12 +32,13 @@ const script = readFileSync(resolve(__dirname,
 const directory = mkdtempSync(join(tmpdir(), 'identitycard-'));
 const run = async function(viewer) {
   const checks = [];
-  async function render(markup, template, user) {
+  async function render(markup, template, user, options = {}) {
     const frame = document.createElement('iframe');
     document.body.append(frame);
     const w = frame.contentWindow;
     w.document.body.innerHTML = '<div class="user-card" rel="2">' + markup + '</div>';
     w.eval("String.prototype.unescapeHTML = function() { const t = document.createElement('textarea'); t.innerHTML = this; return t.value; };");
+    w.webContext = '/silverpeas';
     w.setTimeout = () => 1;
     w.clearTimeout = () => {};
     w.whenSilverpeasEntirelyLoaded = fn => fn();
@@ -49,9 +50,23 @@ const run = async function(viewer) {
     w.eval(viewer);
     const card = w.document.querySelector('.user-card');
     const original = card.firstChild;
+    if (options.currentVersion) { card.setAttribute('data-identitycard-version', '1'); }
+    let requests = 0;
+    let finishTemplate;
+    w.$.ajax = request => {
+      requests++;
+      if (options.delayed) { finishTemplate = () => request.success('<div class="user-card">' + template + '</div>'); }
+      else { request.success('<div class="user-card">' + template + '</div>'); }
+    };
     w.activateIDCards();
+    if (options.delayed) {
+      await Promise.resolve();
+      await Promise.resolve();
+      check('legacy profile renders before its template loads', card.querySelector('.title').textContent === 'R&amp;D');
+      finishTemplate();
+    }
     await finished;
-    return { card, original };
+    return { card, original, requests };
   }
   function check(name, condition) {
     if (!condition) { throw new Error(name); }
@@ -73,6 +88,12 @@ const run = async function(viewer) {
       '<span class="field userToZoom">name</span>', user);
   check('indicator-only field gets its name', result.card.firstChild.firstChild.textContent === 'Ada Lovelace');
   check('connection indicator survives', result.card.querySelector('.userzoom-infoConnection').textContent === 'online');
+  result = await render('<span class="field title">old</span>',
+      '<span class="field title">title</span>', user, { currentVersion: true });
+  check('current cards require no template HTTP request', result.requests === 0);
+  check('current cards still refresh their profile', result.card.querySelector('.title').textContent === 'R&amp;D');
+  await render('<span class="field title">old</span>',
+      '<span class="field title">title</span>', user, { delayed: true });
   document.getElementById('result').textContent = JSON.stringify({ checks });
 };
 try {

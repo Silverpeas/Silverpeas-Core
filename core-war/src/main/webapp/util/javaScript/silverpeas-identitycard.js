@@ -27,17 +27,18 @@
 
   function getTemplate() {
     if (!templatePromise) {
-      templatePromise = new Promise(function(resolve) {
+      templatePromise = new Promise(function(resolve, reject) {
         $.ajax({
           url : '/weblib/ckeditor/identitycard/template.html',
           dataType : 'html',
           success : resolve,
           error : function() {
-            // The editor uses these fields when no custom template is available.
-            resolve('<div class="user-card"><div class="avatar"><img alt="avatar"></div>' +
-                ['userToZoom', 'emailAddress', 'title', 'phone', 'cellularPhone'].map(function(field) {
-                  return '<span class="field ' + field + '"></span>';
-                }).join('') + '</div>');
+            $.ajax({
+              url : webContext + '/wysiwyg/jsp/ckeditor/plugins/identitycard/template.html',
+              dataType : 'html',
+              success : resolve,
+              error : reject
+            });
           }
         });
       });
@@ -107,15 +108,22 @@
       }).forEach(function(card) {
         clearTimeout(timer);
         card.__userCardActivated = true;
-        promises.push(Promise.all([getTemplate(), User.getExtended(card.getAttribute('rel'))])
-            .then(function(results) {
-              restoreFields(card, results[0]);
-              updateCard(card, results[1]);
-            }).catch(function(error) {
-              card.__userCardActivated = false;
-              // A later explicit activation can retry this card.
-              console.warn('Unable to refresh an identity card.', error);
-            }));
+        promises.push(User.getExtended(card.getAttribute('rel')).then(function(user) {
+          // Populate immediately, including legacy cards whose template still needs loading.
+          updateCard(card, user);
+          if (card.getAttribute('data-identitycard-version') === '1') {
+            return;
+          }
+          // Only old content can have lost empty fields during CKEditor serialization.
+          return getTemplate().then(function(template) {
+            restoreFields(card, template);
+            updateCard(card, user);
+          });
+        }).catch(function(error) {
+          card.__userCardActivated = false;
+          // A later explicit activation can retry this card.
+          console.warn('Unable to refresh an identity card.', error);
+        }));
       });
       if (promises.length) {
         sp.promise.whenAllResolved(promises).then(activateUserZoom);

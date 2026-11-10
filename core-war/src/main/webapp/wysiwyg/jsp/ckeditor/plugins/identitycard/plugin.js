@@ -22,14 +22,31 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-// Register the plugin within the editor.
-// Shared by the template loader and the widget registration.
-let customTemplate =
-    '<div class="user-card">' + '<div class="avatar"><img src="" alt="avatar"/></div>' +
-    '<span class="field userToZoom">firstName lastName</span>' +
-    '<span class="field emailAddress">email</span>' + '<span class="field title">title</span>' +
-    '<span class="field phone">phone</span>' +
-    '<span class="field cellularPhone">cellularPhone</span>' + '</div>';
+let identityCardTemplatePromise;
+
+function loadIdentityCardTemplate(defaultUrl) {
+  if (!identityCardTemplatePromise) {
+    identityCardTemplatePromise = new Promise(function(resolve, reject) {
+      $.ajax({
+        url : '/weblib/ckeditor/identitycard/template.html',
+        dataType : 'html',
+        success : resolve,
+        error : function() {
+          $.ajax({url : defaultUrl, dataType : 'html', success : resolve, error : reject});
+        }
+      });
+    }).then(function(template) {
+      const container = document.createElement('div');
+      container.innerHTML = template;
+      const model = container.querySelector('.user-card');
+      if (!model) {
+        throw new Error('The identity card template must contain a user-card element.');
+      }
+      return model.outerHTML;
+    });
+  }
+  return identityCardTemplatePromise;
+}
 
 CKEDITOR.plugins.add('identitycard', {
   // This plugin requires the Widgets System defined in the 'widget' plugin.
@@ -41,16 +58,33 @@ CKEDITOR.plugins.add('identitycard', {
 
   lang : 'en,fr',
 
-  beforeInit : function(editor) {
-    $.get("/weblib/ckeditor/identitycard/template.html", function(data) {
-      customTemplate = data;
-      editor.widgets.registered.identitycard.template.source = data;
-
-    });
+  beforeInit : function() {
+    // The DTD is shared by CKEditor instances. Empty spans carry identity-card field keys.
+    CKEDITOR.dtd.$removeEmpty.span = false;
+    loadIdentityCardTemplate(this.path + 'template.html');
   },
 
   // The plugin initialization logic goes inside this method.
   init : function(editor) {
+
+    let templateReady = false;
+    identityCardTemplatePromise.then(function(template) {
+      editor.widgets.registered.identitycard.template.source = template;
+      templateReady = true;
+    }).catch(function(error) {
+      console.warn('Unable to load the identity card template.', error);
+    });
+    // A first insertion must wait for the configured template rather than create an empty widget.
+    editor.on('beforeCommandExec', function(event) {
+      if (event.data.name === 'identitycard' && !templateReady) {
+        event.cancel();
+        identityCardTemplatePromise.then(function() {
+          editor.execCommand('identitycard');
+        }).catch(function(error) {
+          console.warn('Unable to insert an identity card.', error);
+        });
+      }
+    });
 
     // Register the editing dialog.
     CKEDITOR.dialog.add('identitycard', this.path + 'dialogs/identitycard.js');
@@ -66,7 +100,7 @@ CKEDITOR.plugins.add('identitycard', {
       requiredContent : 'div(user-card)',
 
       // Define the template of a new Identity Card widget.
-      template : customTemplate,
+      template : '<div class="user-card"></div>',
 
       dialog : 'identitycard',
 
@@ -95,56 +129,65 @@ function updateContent(widget) {
     return;
   }
 
-  const widgetUI = widget.element;
-  const widgetData = widget.data;
-  widgetUI.setAttribute('rel', widget.data.userId);
-
-  $.ajax({
-    type : "GET",
-    url : '/silverpeas/services/profile/users/' + $(widgetUI).attr('rel') + '?extended=true',
-    dataType : "json",
-    cache : false,
-    success : function(user) {
-      for (let i = 0; i < widgetUI.getChildCount(); i++) {
-        const item = widgetUI.getChildren().getItem(i);
-        if (item.type === 1) {
-          if (item.getAttribute('class') === 'field userToZoom') {
-            item.setAttribute('rel', widgetData.userId);
-            item.setHtml(user.firstName + ' ' + user.lastName);
-          } else if (item.getAttribute('class') === 'avatar') {
-            const avatar = item.getChildren().getItem(0);
-            avatar.setAttribute('src', user.avatar);
-          }
-        }
-      }
-      jQuery.each(user, function(key, val) {
-        for (let i = 0; i < widgetUI.getChildCount(); i++) {
-          const item = widgetUI.getChildren().getItem(i);
-          if (item.type === 1) {
-            if (key === 'moreData') {
-              jQuery.each(val, function(keyMore, valMore) {
-                for (let j = 0; j < widgetUI.getChildCount(); j++) {
-                  const itemMore = widgetUI.getChildren().getItem(j);
-                  if (itemMore.type === 1) {
-                    if (itemMore.getAttribute('class') === 'field ' + keyMore) {
-                      // CKEditor removes empty spans when serializing the content.
-                      itemMore.setHtml(valMore == null || valMore === '' ? '&nbsp;' : String(valMore));
-                      break;
-                    }
-                  }
-                }
-              });
-            } else if (item.getAttribute('class') === 'field ' + key) {
-              item.setHtml(val == null || val === '' ? '&nbsp;' : String(val));
-              break;
-            }
-          }
-        }
-      });
-    },
-
-    error : function() {
-      // do nothing
+  const card = widget.element.$;
+  const userId = widget.data.userId;
+  card.setAttribute('rel', userId);
+  // Repair older widgets before marking them as safe to display without loading a template.
+  identityCardTemplatePromise.then(function(template) {
+    if (widget.data.userId !== userId) {
+      return;
     }
+    const container = document.createElement('div');
+    container.innerHTML = template;
+    const model = container.querySelector('.user-card');
+    if (!model) {
+      throw new Error('The identity card template must contain a user-card element.');
+    }
+    const existingKeys = new Set(Array.from(card.querySelectorAll('.field'))
+        .flatMap(function(field) { return Array.from(field.classList); }));
+    const missingField = Array.from(model.querySelectorAll('.field')).some(function(field) {
+      const key = Array.from(field.classList).find(function(name) { return name !== 'field'; });
+      return key && !existingKeys.has(key);
+    });
+    if (missingField) {
+      card.innerHTML = model.innerHTML;
+    }
+    $.ajax({
+      type : 'GET',
+      url : webContext + '/services/profile/users/' + encodeURIComponent(userId) + '?extended=true',
+      dataType : 'json',
+      cache : false,
+      success : function(user) {
+        if (widget.data.userId !== userId) {
+          return;
+        }
+        const values = Object.assign({}, user, user.moreData, {
+          userToZoom : identityCardText(user.firstName) + ' ' + identityCardText(user.lastName)
+        });
+        card.querySelectorAll('.field').forEach(function(field) {
+          const key = Array.from(field.classList).find(function(name) {
+            return name !== 'field' && Object.hasOwn(values, name);
+          });
+          field.textContent = key === 'userToZoom' ? values[key] : identityCardText(values[key]);
+          if (key === 'userToZoom') {
+            field.setAttribute('rel', userId);
+          }
+        });
+        const avatar = card.querySelector('.avatar img');
+        if (avatar && user.avatar) {
+          avatar.setAttribute('src', user.avatar);
+        }
+        card.setAttribute('data-identitycard-version', '1');
+      },
+      error : function(error) {
+        console.warn('Unable to update an identity card in the editor.', error);
+      }
+    });
+  }).catch(function(error) {
+    console.warn('Unable to prepare an identity card in the editor.', error);
   });
+}
+
+function identityCardText(value) {
+  return value == null ? '' : String(value).unescapeHTML();
 }
