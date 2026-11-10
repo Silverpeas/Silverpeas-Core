@@ -73,7 +73,7 @@
 </style>
 
 <div class="sousNavBulle">
-	<p><fmt:message key="profil.subnav.display" /> <a class="active" href="#"><fmt:message key="profil.subnav.identity" /></a> <!-- <a href="#">Personnelles</a> <a href="#">Personnelles</a> --></p>
+  <p><fmt:message key="profil.subnav.display" /> <a class="active" href="#"><fmt:message key="profil.subnav.identity" /></a> <!-- <a href="#">Personnelles</a> <a href="#">Personnelles</a> --></p>
 </div>
 
 <c:if test="${not empty messageOK}">
@@ -91,64 +91,141 @@
     <tr id="lastName">
         <td class="txtlibform"><%=resource.getString("GML.lastName")%> :</td>
         <td>
-		<%if (updateIsAllowed && updateLastNameIsAllowed) {%>
-			<input type="text" name="userLastName" size="50" maxlength="99" value="<%=userFull.getLastName()%>"/>&nbsp;<img src="<%=resource.getIcon("socialNetwork.mandatory")%>" width="5" height="5"/>
-			<%} else {%>
-				<%=userFull.getLastName()%>
-			<%}%>
-		</td>
+    <%if (updateIsAllowed && updateLastNameIsAllowed) {%>
+      <input type="text" name="userLastName" size="50" maxlength="99" value="<%=userFull.getLastName()%>"/>&nbsp;<img src="<%=resource.getIcon("socialNetwork.mandatory")%>" width="5" height="5"/>
+      <%} else {%>
+        <%=userFull.getLastName()%>
+      <%}%>
+    </td>
     </tr>
     <tr id="firstName">
         <td class="txtlibform"><%=resource.getString("GML.firstName")%> :</td>
         <td>
-		<%if (updateIsAllowed && updateFirstNameIsAllowed) {%>
-			<input type="text" name="userFirstName" size="50" maxlength="99" value="<%=userFull.getFirstName()%>"/>
-			<%} else {%>
-				<%=userFull.getFirstName()%>
-			<%}%>
-		</td>
+    <%if (updateIsAllowed && updateFirstNameIsAllowed) {%>
+      <input type="text" name="userFirstName" size="50" maxlength="99" value="<%=userFull.getFirstName()%>"/>
+      <%} else {%>
+        <%=userFull.getFirstName()%>
+      <%}%>
+    </td>
     </tr>
-	<tr id="login">
+  <tr id="login">
         <td class="txtlibform"><%=resource.getString("GML.login")%> :</td>
-		<td><%=userFull.getLogin()%></td>
+    <td><%=userFull.getLogin()%></td>
     </tr>
     <tr id="email">
-	<td class="txtlibform"><%=resource.getString("GML.eMail")%> :</td>
+  <td class="txtlibform"><%=resource.getString("GML.eMail")%> :</td>
         <td>
-		<%if (updateIsAllowed && updateEmailIsAllowed) {%>
-			<input type="text" name="userEMail" size="50" maxlength="99" value="<%=userFull.getEmailAddress()%>"/>
-			<%} else {%>
-				<%=userFull.getEmailAddress()%>
-			<%}%>
-		</td>
+    <%if (updateIsAllowed && updateEmailIsAllowed) {%>
+      <input type="text" name="userEMail" size="50" maxlength="99" value="<%=userFull.getEmailAddress()%>"/>
+      <%} else {%>
+        <%=userFull.getEmailAddress()%>
+      <%}%>
+    </td>
     </tr>
-	<tr id="accessLevel">
-		<td class="txtlibform"><%=resource.getString("myProfile.UserRights") %> :</td>
-		<td><%=resource.getString("GML.user.type."+userFull.getAccessLevel().code()) %></td>
-	</tr>
-	<%if (updateIsAllowed && isPasswordChangeAllowed) {%>
-		<tr id="oldPassword">
-	        <td class="txtlibform"><%=resource.getString("myProfile.OldPassword")%> :</td>
-	        <td><input <%=fieldAttribute%> type="password" autocomplete="new-password" name="OldPassword" size="50" maxlength="32"/></td>
-	    </tr>
-		<tr>
-	        <td class="txtlibform"><%=resource.getString("myProfile.NewPassword")%> :</td>
-	        <td><input <%=fieldAttribute%> type="password" autocomplete="new-password" id="newPassword" name="NewPassword" size="50" maxlength="32"/>&nbsp;(<a tabindex="-1" href="#" onclick="$('#newPassword').focus()"><%=authRs.getString("authentication.password.showRules") %></a>)</td>
-	    </tr>
-		<tr>
-	        <td class="txtlibform"><%=resource.getString("myProfile.NewPasswordConfirm")%> :</td>
-	        <td><input <%=fieldAttribute%>  autocomplete="new-password" id="newPasswordConfirmation" name="NewPasswordConfirm" type="password" size="50" maxlength="32"/></td>
-	    </tr>
+  <tr id="accessLevel">
+    <td class="txtlibform"><%=resource.getString("myProfile.UserRights") %> :</td>
+    <td><%=resource.getString("GML.user.type."+userFull.getAccessLevel().code()) %></td>
+  </tr>
+  <%if (updateIsAllowed && isPasswordChangeAllowed) {%>
+    <tr id="oldPassword">
+          <td class="txtlibform"><%=resource.getString("myProfile.OldPassword")%> :</td>
+          <td><input <%=fieldAttribute%> type="password" autocomplete="new-password" name="OldPassword" size="50" maxlength="32"/></td>
+      </tr>
+    <tr>
+          <td class="txtlibform"><%=resource.getString("myProfile.NewPassword")%> :</td>
+          <td><input <%=fieldAttribute%> type="password" autocomplete="new-password" id="newPassword" name="NewPassword" size="50" maxlength="32"/>&nbsp;(<a tabindex="-1" href="#" onclick="$('#newPassword').focus()"><%=authRs.getString("authentication.password.showRules") %></a>)</td>
+      </tr>
+    <tr>
+          <td class="txtlibform"><%=resource.getString("myProfile.NewPasswordConfirm")%> :</td>
+          <td><input <%=fieldAttribute%>  autocomplete="new-password" id="newPasswordConfirmation" name="NewPasswordConfirm" type="password" size="50" maxlength="32"/></td>
+      </tr>
     <%} else { %>
-	    <tr>
-	        <td class="txtlibform"><%=resource.getString("myProfile.NewPassword")%> :</td>
-	        <td><%=resource.getString("myProfile.ModifyPasswordNotAllowed1")+"<br/>"+resource.getString("myProfile.ModifyPasswordNotAllowed2")%></td>
-	    </tr>
+      <tr>
+          <td class="txtlibform"><%=resource.getString("myProfile.NewPassword")%> :</td>
+          <td><%=resource.getString("myProfile.ModifyPasswordNotAllowed1")+"<br/>"+resource.getString("myProfile.ModifyPasswordNotAllowed2")%></td>
+      </tr>
     <% } %>
       <tr id="token">
             <td class="txtlibform"><%=resource.getString("myProfile.Token")%> :</td>
       <td><%=userFull.getToken()%></td>
       </tr>
+  <c:if test="${requestScope['twoFactorAvailable']}">
+    <tr id="two-factor-user-form">
+      <td colspan="2">
+        <h4><fmt:message key="myProfile.twoFactor.title"/></h4>
+        <p><fmt:message key="myProfile.twoFactor.description"/></p>
+
+        <c:if test="${not empty requestScope['twoFactorMessage']}">
+          <p class="txtlibform"><fmt:message key="${requestScope['twoFactorMessage']}"/></p>
+        </c:if>
+        <c:if test="${not empty requestScope['twoFactorError']}">
+          <p class="txtlibform"><fmt:message key="${requestScope['twoFactorError']}"/></p>
+        </c:if>
+
+        <c:choose>
+          <c:when test="${requestScope['twoFactorEnabled']}">
+            <p><fmt:message key="myProfile.twoFactor.enabled"/></p>
+            <fmt:message key="myProfile.twoFactor.recoveryCodes" var="recoveryCodesLabel"/>
+            <button type="submit" form="two-factor-form" class="twoFA_button generate-key simple-button"
+                    formaction="<%=MyProfileRoutes.GenerateRecoveryCodes %>">
+              <c:out value="${recoveryCodesLabel}"/>
+            </button>
+            <c:if test="${not empty requestScope['twoFactorRecoveryCodes']}">
+              <div class="two-factor-recovery-codes">
+                <p><strong><fmt:message key="myProfile.twoFactor.recoveryCodesGenerated"/></strong></p>
+                <p><fmt:message key="myProfile.twoFactor.recoveryCodesWarning"/></p>
+                <div class="two-factor-recovery-grid">
+                  <c:forEach items="${requestScope['twoFactorRecoveryCodes']}" var="recoveryCode">
+                    <code><c:out value="${recoveryCode}"/></code>
+                  </c:forEach>
+                </div>
+              </div>
+            </c:if>
+            <c:if test="${not requestScope['twoFactorMandatory']}">
+              <fmt:message key="myProfile.twoFactor.disable" var="disableTwoFactorLabel"/>
+              <button type="submit" form="two-factor-form" class="twoFA_button disable-twoFactor simple-button"
+                      formaction="<%=MyProfileRoutes.DisableTwoFactor %>">
+                <c:out value="${disableTwoFactorLabel}"/>
+              </button>
+            </c:if>
+          </c:when>
+          <c:when test="${requestScope['twoFactorPending']}">
+            <p class="twoFA_infos"><strong><fmt:message key="myProfile.twoFactor.secret"/></strong></p>
+            <p class="twoFA_infos"><code><c:out value="${requestScope['twoFactorAuthentication'].secret}"/></code></p>
+            <p class="twoFA_infos"><fmt:message key="myProfile.twoFactor.authenticatorUri"/></p>
+            <p class="twoFA_infos two-factor-otp-uri">
+              <code><c:out value="${requestScope['twoFactorOtpAuthUri']}"/></code>
+            </p>
+            <div class="two-factor-profile-qr-code">
+              <p><strong><fmt:message key="myProfile.twoFactor.qrCode"/></strong></p>
+              <p><fmt:message key="myProfile.twoFactor.qrCodeDescription"/></p>
+              <img src="${pageContext.request.contextPath}/services/two-factor/qrcode"
+                   width="256" height="256"
+                   alt="<fmt:message key='myProfile.twoFactor.qrCodeAlt'/>"
+                   class="two-factor-qr-image"/>
+            </div>
+            <label for="twoFactorCode"><fmt:message key="myProfile.twoFactor.code"/></label>
+            <input form="two-factor-form" id="twoFactorCode" name="twoFactorCode" type="text" inputmode="numeric"
+                   autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6"/>
+            <fmt:message key="myProfile.twoFactor.confirm" var="confirmTwoFactorLabel"/>
+            <button type="submit" form="two-factor-form" class="twoFA_button simple-button"
+                    formaction="<%=MyProfileRoutes.ConfirmTwoFactor %>">
+              <c:out value="${confirmTwoFactorLabel}"/>
+            </button>
+          </c:when>
+          <c:otherwise>
+            <c:if test="${not requestScope['twoFactorMandatory']}">
+              <fmt:message key="myProfile.twoFactor.enable" var="enableTwoFactorLabel"/>
+              <button type="submit" form="two-factor-form" class="twoFA_button simple-button"
+                      formaction="<%=MyProfileRoutes.StartTwoFactor %>">
+                <c:out value="${enableTwoFactorLabel}"/>
+              </button>
+            </c:if>
+          </c:otherwise>
+        </c:choose>
+      </td>
+    </tr>
+  </c:if>
     <%
     if ("personalQuestion".equals(general.getString("forgottenPwdActive"))) {
         String userLoginQuestion = userFull.getLoginQuestion();
@@ -185,17 +262,20 @@
   <view:directoryExtraForm userId="<%=userFull.getId()%>" edition="true" skippable="false"/>
 
  </form>
+ <c:if test="${requestScope['twoFactorAvailable']}">
+   <form id="two-factor-form" action="<%=MyProfileRoutes.ConfirmTwoFactor %>" method="post"></form>
+ </c:if>
  </div>
  <br clear="all"/>
  <%
-		ButtonPane buttonPane = gef.getButtonPane();
-		if (updateIsAllowed) {
-			Button validateButton = gef.getFormButton(resource.getString("GML.validate"), "javascript:onclick=saveUser();", false);
-			buttonPane.addButton(validateButton);
-		}
-		Button cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "javascript:onclick=history.back();", false);
-		buttonPane.addButton(cancelButton);
-		out.println(buttonPane.print());
+    ButtonPane buttonPane = gef.getButtonPane();
+    if (updateIsAllowed) {
+      Button validateButton = gef.getFormButton(resource.getString("GML.validate"), "javascript:onclick=saveUser();", false);
+      buttonPane.addButton(validateButton);
+    }
+    Button cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "javascript:onclick=history.back();", false);
+    buttonPane.addButton(cancelButton);
+    out.println(buttonPane.print());
 %>
 
 <script type="text/javascript">
