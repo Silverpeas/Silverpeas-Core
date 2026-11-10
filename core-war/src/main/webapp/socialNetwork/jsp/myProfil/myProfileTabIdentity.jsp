@@ -171,7 +171,7 @@
               <c:out value="${recoveryCodesLabel}"/>
             </button>
             <c:if test="${not empty requestScope['twoFactorRecoveryCodes']}">
-              <div class="tableBoard two-factor-recovery-codes">
+              <div class="two-factor-recovery-codes">
                 <p><strong><fmt:message key="myProfile.twoFactor.recoveryCodesGenerated"/></strong></p>
                 <p><fmt:message key="myProfile.twoFactor.recoveryCodesWarning"/></p>
                 <div class="two-factor-recovery-grid">
@@ -196,7 +196,7 @@
             <p class="twoFA_infos two-factor-otp-uri">
               <code><c:out value="${requestScope['twoFactorOtpAuthUri']}"/></code>
             </p>
-            <div class="tableBoard two-factor-profile-qr-code">
+            <div class="two-factor-profile-qr-code">
               <p><strong><fmt:message key="myProfile.twoFactor.qrCode"/></strong></p>
               <p><fmt:message key="myProfile.twoFactor.qrCodeDescription"/></p>
               <img src="${pageContext.request.contextPath}/services/two-factor/qrcode"

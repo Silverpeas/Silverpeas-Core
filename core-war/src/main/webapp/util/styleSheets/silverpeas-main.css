@@ -3077,7 +3077,11 @@ div#publicProfileContenu > div#settings > form > p.twoFA_infos {
 
 .two-factor-recovery-codes,
 .two-factor-profile-qr-code {
-  margin-top: 15px;
+  margin-top: 1em;
+  border-radius:var(--radius-bloc);
+  border:1px solid  var(--border-color-bloc-fond-clair);
+  background-color: var(--bgColor-bloc-fond-clair);
+  padding: 1em;
 }
 
 .two-factor-recovery-grid {
