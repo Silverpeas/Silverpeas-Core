@@ -52,10 +52,11 @@
     if (!model) {
       return;
     }
+    const existingKeys = new Set(Array.from(card.querySelectorAll('.field'))
+        .flatMap(function(field) { return Array.from(field.classList); }));
     const missingField = Array.from(model.querySelectorAll('.field')).some(function(field) {
-      return !Array.from(card.querySelectorAll('.field')).some(function(existing) {
-        return existing.className === field.className;
-      });
+      const key = Array.from(field.classList).find(function(name) { return name !== 'field'; });
+      return key && !existingKeys.has(key);
     });
     if (missingField) {
       // Rebuild from the model to preserve the order and nesting of custom templates.
@@ -75,13 +76,14 @@
       const key = Array.from(field.classList).find(function(name) {
         return name !== 'field' && Object.hasOwn(values, name);
       });
-      if (!key) {
-        return;
-      }
       const value = key === 'userToZoom' ? values[key] : textValue(values[key]);
-      // Keep the connection indicator and other children added by user zoom.
-      if (field.firstChild && field.firstChild.nodeType === 3) {
-        field.firstChild.textContent = value;
+      // Replace old content, including formatting, while preserving the user-zoom indicator.
+      const content = Array.from(field.childNodes).filter(function(node) {
+        return node.nodeType !== 1 || !node.matches('.userzoom-infoConnection');
+      });
+      if (content.length) {
+        content[0].textContent = value;
+        content.slice(1).forEach(function(node) { field.removeChild(node); });
       } else {
         field.prepend(document.createTextNode(value));
       }
@@ -109,9 +111,10 @@
             .then(function(results) {
               restoreFields(card, results[0]);
               updateCard(card, results[1]);
-            }).catch(function() {
+            }).catch(function(error) {
               card.__userCardActivated = false;
-              console.warn('Unable to refresh an identity card.');
+              // A later explicit activation can retry this card.
+              console.warn('Unable to refresh an identity card.', error);
             }));
       });
       if (promises.length) {

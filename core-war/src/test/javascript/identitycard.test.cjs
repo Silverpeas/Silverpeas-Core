@@ -37,6 +37,7 @@ function field(name, value = '') {
     classList: ['field', name],
     childNodes: [{ nodeType: 3, textContent: value }],
     get firstChild() { return this.childNodes[0]; },
+    removeChild(node) { this.childNodes.splice(this.childNodes.indexOf(node), 1); },
     prepend(node) { this.childNodes.unshift(node); },
     setAttribute(name, value) { this[name] = value; }
   };
@@ -68,7 +69,7 @@ async function render(user, fields, modelFields = fields, config = {}) {
   let loadedTemplate;
   const warnings = [];
   const context = {
-    console: { warn: message => warnings.push(message) },
+    console: { warn: (...args) => warnings.push(args) },
     Promise,
     whenSilverpeasEntirelyLoaded: callback => callback(),
     setTimeout: () => 1,
@@ -118,6 +119,27 @@ test('fields excluded from a custom template are not added', async () => {
   assert.equal(result.rendered.restoredMarkup, undefined);
 });
 
+test('a field absent from the profile has its placeholder cleared', async () => {
+  const result = await render(user, [field('cellularPhone', 'cellularPhone')]);
+  assert.equal(result.rendered.fields[0].firstChild.textContent, '');
+});
+
+test('formatted leading content is replaced instead of duplicated', async () => {
+  const title = field('title');
+  title.childNodes[0] = { nodeType: 1, textContent: 'old title', matches: () => false };
+  await render(user, [title]);
+  assert.equal(title.childNodes.length, 1);
+  assert.equal(title.firstChild.textContent, 'Nouveau titre');
+});
+
+test('class order and extra styling do not trigger rebuilding', async () => {
+  const title = field('title');
+  title.className = 'styled title field';
+  title.classList = ['styled', 'title', 'field'];
+  const result = await render(user, [title], [field('title')]);
+  assert.equal(result.rendered.restoredMarkup, undefined);
+});
+
 test('an existing title is updated and HTML entities are decoded once', async () => {
   const result = await render({ ...user, moreData: { title: 'R&amp;amp;D' } }, [field('title', 'ancien')]);
   assert.equal(result.rendered.fields[0].firstChild.textContent, 'R&amp;D');
@@ -132,7 +154,7 @@ test('empty and numeric profile fields do not interrupt the update', async () =>
 
 test('updating a name preserves the connection indicator and restores its user reference', async () => {
   const name = field('userToZoom', 'ancien');
-  const indicator = { nodeType: 1 };
+  const indicator = { nodeType: 1, matches: selector => selector === '.userzoom-infoConnection' };
   name.childNodes.push(indicator);
   const result = await render(user, [name]);
   assert.equal(name.firstChild.textContent, 'lulu lulu');
@@ -204,4 +226,18 @@ test('a profile request failure leaves the card available for another activation
   assert.equal(result.rendered.__userCardActivated, false);
   assert.equal(result.rendered.fields[0].firstChild.textContent, 'ancien');
   assert.equal(result.warnings.length, 1);
+});
+
+test('a failed profile request logs the original error', async () => {
+  const result = await render(user, [field('title')], undefined, { profileError: true });
+  assert.equal(result.warnings[0][1].message, 'Unavailable');
+});
+
+test('a later explicit activation retries a failed card', async () => {
+  const result = await render(user, [field('title')], undefined, { profileError: true });
+  result.context.window.activateIDCards();
+  await Promise.all(result.pending);
+  assert.equal(result.pending.length, 2);
+  assert.equal(result.templateRequests, 1);
+  assert.equal(result.warnings.length, 2);
 });
