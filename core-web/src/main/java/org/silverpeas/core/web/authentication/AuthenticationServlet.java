@@ -611,7 +611,14 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws
       ServletException, IOException {
     if ("qrcode".equals(request.getParameter("TwoFactorResource"))) {
-      writeTwoFactorQrCode(request, response);
+      try {
+        writeTwoFactorQrCode(request, response);
+      } catch (IOException e) {
+        logger.error("Unable to send the two-factor enrollment QR code", e);
+        if (!response.isCommitted()) {
+          response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+      }
     } else {
       doPost(request, response);
     }

@@ -29,6 +29,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import jakarta.servlet.http.HttpServletRequest;
@@ -228,6 +229,28 @@ class AuthenticationServletTwoFactorTest {
     assertArrayEquals((byte[]) alice.get("Silverpeas_TwoFactor_QrCode"), alicesImage.toByteArray());
     assertArrayEquals(bobsPng, bobsImage.toByteArray());
     verifyNoInteractions(authenticationService);
+  }
+
+  @ParameterizedTest
+  @ValueSource(booleans = {false, true})
+  void imageWriteFailureShouldNotEscapeTheServlet(boolean committed) throws Exception {
+    HttpServletRequest request = imageRequest(enrollmentState());
+    HttpServletResponse response = mock(HttpServletResponse.class);
+    ServletOutputStream output = mock(ServletOutputStream.class);
+    when(response.getOutputStream()).thenReturn(output);
+    when(response.isCommitted()).thenReturn(committed);
+    doThrow(new IOException("Simulated image write failure"))
+        .when(output).write(any(byte[].class));
+
+    assertDoesNotThrow(() -> servlet.doGet(request, response));
+
+    if (committed) {
+      verify(response, never()).setStatus(anyInt());
+    } else {
+      verify(response).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    }
+    verify(response, never()).sendError(anyInt());
+    verifyNoInteractions(authenticationService, opener, totpService);
   }
 
   private Map<String, Object> enrollmentState() {
