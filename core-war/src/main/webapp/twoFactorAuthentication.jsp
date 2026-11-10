@@ -61,7 +61,10 @@
               <c:when test="${requestScope.twoFactorEnrollment}">
                 <p><fmt:message key="authentication.logon.twoFactor.enrollmentInstructions"/></p>
                 <p class="two-factor-qr-code">
-                  <img src="data:image/png;base64,${requestScope.twoFactorQrCode}"
+                  <c:url var="twoFactorQrCodeUrl" value="/AuthenticationServlet">
+                    <c:param name="TwoFactorResource" value="qrcode"/>
+                  </c:url>
+                  <img src="${twoFactorQrCodeUrl}"
                        width="256" height="256" alt="QR Code"/>
                 </p>
                 <p><fmt:message key="authentication.logon.twoFactor.secret"/>:

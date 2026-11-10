@@ -58,7 +58,6 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URLEncoder;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -247,7 +246,7 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
         session.setAttribute(TWO_FACTOR_OTP_URI, otpUri);
         session.setAttribute(TWO_FACTOR_SECRET, authentication.getSecret());
         session.setAttribute(TWO_FACTOR_QR_CODE,
-            Base64.getEncoder().encodeToString(qrCodeGenerator.generate(otpUri, 256)));
+            qrCodeGenerator.generate(otpUri, 256));
       } catch (AuthenticationException e) {
         logger.error(e.getMessage(), e);
         clearTwoFactorChallenge(session);
@@ -267,7 +266,6 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
     if (enrollment) {
       request.setAttribute("twoFactorOtpAuthUri", session.getAttribute(TWO_FACTOR_OTP_URI));
       request.setAttribute("twoFactorSecret", session.getAttribute(TWO_FACTOR_SECRET));
-      request.setAttribute("twoFactorQrCode", session.getAttribute(TWO_FACTOR_QR_CODE));
     }
     forward(request, response, TWO_FACTOR_PAGE);
   }
@@ -601,7 +599,9 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
   }
 
   /**
-   * Ask for an authentication for the user behind the incoming HTTP request.
+   * Serves the current enrollment QR image, or delegates other GET requests to authentication.
+   * The image is available only within the unexpired session challenge created after the first
+   * authentication factor has been accepted.
    * @param request the HTTP request.
    * @param response the HTTP response.
    * @throws ServletException if the servlet fails to answer the request.
@@ -610,9 +610,44 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws
       ServletException, IOException {
-    doPost(request, response);
+    if ("qrcode".equals(request.getParameter("TwoFactorResource"))) {
+      writeTwoFactorQrCode(request, response);
+    } else {
+      doPost(request, response);
+    }
   }
 
+  /**
+   * Writes the PNG already generated for this session's ongoing enrollment without extending it.
+   * An absent, expired, completed or non-enrollment challenge never exposes an image.
+   * @param request the image request, which must already have an enrollment session.
+   * @param response the non-cacheable PNG response, or HTTP 404 if no image is available.
+   * @throws IOException if the image cannot be written to the response.
+   */
+  private void writeTwoFactorQrCode(final HttpServletRequest request,
+      final HttpServletResponse response) throws IOException {
+    response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+    response.setHeader("Pragma", "no-cache");
+    response.setDateHeader("Expires", 0);
+    response.setHeader("X-Content-Type-Options", "nosniff");
+    final HttpSession session = request.getSession(false);
+    if (session == null || !Boolean.TRUE.equals(session.getAttribute(TWO_FACTOR_ENROLLMENT)) ||
+        !StringUtil.isDefined((String) session.getAttribute(TWO_FACTOR_LOGIN)) ||
+        !StringUtil.isDefined((String) session.getAttribute(TWO_FACTOR_DOMAIN))) {
+      response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+      return;
+    }
+    final Long expiresAt = (Long) session.getAttribute(TWO_FACTOR_EXPIRES_AT);
+    final Object image = session.getAttribute(TWO_FACTOR_QR_CODE);
+    if (expiresAt == null || expiresAt <= System.currentTimeMillis() ||
+        !(image instanceof byte[] png) || png.length == 0) {
+      response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+      return;
+    }
+    response.setContentType("image/png");
+    response.setContentLength(png.length);
+    response.getOutputStream().write(png);
+  }
 
   private Cookie getCookie(final HttpServletRequest request, final String name) {
     if (request.getCookies() == null) {
