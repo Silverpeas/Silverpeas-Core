@@ -136,16 +136,16 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
           WebMessager.getInstance().addError(
               myProfilSC.getString("myProfile.twoFactor.encryptionKeyMissing"));
         }
-        return getDestination(MySettings.toString(), myProfilSC, request);
+        return getDestination(MyInfos.toString(), myProfilSC, request);
       } else if (route == ConfirmTwoFactor) {
         confirmTwoFactor(request, myProfilSC);
-        return getDestination(MySettings.toString(), myProfilSC, request);
+        return getDestination(MyInfos.toString(), myProfilSC, request);
       } else if (route == DisableTwoFactor) {
         disableTwoFactor(request, myProfilSC);
-        return getDestination(MySettings.toString(), myProfilSC, request);
+        return getDestination(MyInfos.toString(), myProfilSC, request);
       } else if (route == GenerateRecoveryCodes) {
         generateRecoveryCodes(request, myProfilSC);
-        return getDestination(MySettings.toString(), myProfilSC, request);
+        return getDestination(MyInfos.toString(), myProfilSC, request);
       } else if (route == MyNetworks) {
         request.setAttribute("View", function);
         destination = "/socialNetwork/jsp/myProfil/myProfile.jsp";

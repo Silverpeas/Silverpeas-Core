@@ -30,6 +30,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authentication.twofactor.MissingTwoFactorEncryptionKeyException;
 import org.silverpeas.core.security.authentication.twofactor.TwoFactorAuthenticationService;
 import org.silverpeas.core.security.totp.TotpService;
+import org.silverpeas.core.security.authentication.twofactor.model.TwoFactorAuthentication;
 import org.silverpeas.core.test.unit.extention.JEETestContext;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
@@ -51,7 +52,7 @@ import static org.mockito.Mockito.*;
 class MyProfilTwoFactorEnrollmentTest {
   private static final String MESSAGE = "The Silverpeas content encryption key must be configured " +
       "before enrolling in two-factor authentication";
-  private static final String SETTINGS = "/socialNetwork/jsp/myProfil/myProfile.jsp";
+  private static final String PROFILE = "/socialNetwork/jsp/myProfil/myProfile.jsp";
 
   @TestManagedMock
   private TwoFactorAuthenticationService twoFactorService;
@@ -75,7 +76,7 @@ class MyProfilTwoFactorEnrollmentTest {
         .thenReturn(expectedMessage);
     when(twoFactorService.startEnrollment(42))
         .thenThrow(new MissingTwoFactorEncryptionKeyException());
-    doReturn(SETTINGS).when(router).getDestination("MySettings", controller, request);
+    doReturn(PROFILE).when(router).getDestination("MyInfos", controller, request);
     WebMessager messager = mock(WebMessager.class);
     SilverLogger logger = mock(SilverLogger.class);
     SettingBundle settings = mock(SettingBundle.class);
@@ -90,7 +91,7 @@ class MyProfilTwoFactorEnrollmentTest {
       messages.when(WebMessager::getInstance).thenReturn(messager);
       logs.when(() -> SilverLogger.getLogger(router)).thenReturn(logger);
 
-      assertEquals(SETTINGS, router.getDestination("StartTwoFactor", controller, request));
+      assertEquals(PROFILE, router.getDestination("StartTwoFactor", controller, request));
 
       verify(messager).addError(expectedMessage);
       verify(logger).warn(MESSAGE);
@@ -98,6 +99,40 @@ class MyProfilTwoFactorEnrollmentTest {
       verifyNoInteractions(totpService);
       verify(request, never()).setAttribute(eq("jakarta.servlet.jsp.jspException"), any());
       verify(request, never()).setAttribute(eq("twoFactorAuthentication"), any());
+    }
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"StartTwoFactor", "ConfirmTwoFactor", "DisableTwoFactor", "GenerateRecoveryCodes"})
+  void twoFactorActionsShouldReturnToTheIdentityTab(String route) {
+    router = spy(router);
+    HttpRequest request = mock(HttpRequest.class);
+    MyProfilSessionController controller = mock(MyProfilSessionController.class);
+    when(controller.getUserDetail()).thenReturn(mock(UserDetail.class));
+    when(controller.getUserId()).thenReturn("42");
+    doReturn(PROFILE).when(router).getDestination("MyInfos", controller, request);
+    SettingBundle settings = mock(SettingBundle.class);
+    when(settings.getBoolean("twoFactorTotpEnabled", false)).thenReturn(true);
+    var authentication = mock(TwoFactorAuthentication.class);
+    when(twoFactorService.startEnrollment(42)).thenReturn(authentication);
+    when(request.getParameter("twoFactorCode")).thenReturn("123456");
+
+    try (var resources = mockStatic(ResourceLocator.class, CALLS_REAL_METHODS);
+         var users = mockConstruction(SNFullUser.class)) {
+      resources.when(() -> ResourceLocator.getSettingBundle(
+          "org.silverpeas.authentication.settings.authenticationSettings")).thenReturn(settings);
+
+      assertEquals(PROFILE, router.getDestination(route, controller, request));
+
+      verify(router).getDestination("MyInfos", controller, request);
+      verify(router, never()).getDestination(eq("MySettings"), any(), any());
+      switch (route) {
+        case "StartTwoFactor" -> verify(twoFactorService).startEnrollment(42);
+        case "ConfirmTwoFactor" -> verify(twoFactorService).confirmEnrollment(42, "123456");
+        case "DisableTwoFactor" -> verify(twoFactorService).disable(42);
+        case "GenerateRecoveryCodes" -> verify(twoFactorService).generateRecoveryCodes(42);
+        default -> throw new AssertionError("Unexpected route: " + route);
+      }
     }
   }
 
