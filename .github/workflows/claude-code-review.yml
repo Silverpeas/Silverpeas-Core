@@ -2,13 +2,13 @@ name: Claude Code Review
 
 on:
   pull_request:
-    # Only once per pull request: the built-in review covers the whole PR and would
-    # post its findings again on each push.
-    types: [opened, ready_for_review, reopened]
+    types: [opened, ready_for_review, reopened, synchronize]
 
 jobs:
+  # Once per pull request: the built-in review covers the whole PR and would post its
+  # findings again on each push.
   claude-review:
-    if: ${{ !github.event.pull_request.draft }}
+    if: ${{ !github.event.pull_request.draft && github.event.action != 'synchronize' }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -34,3 +34,52 @@ jobs:
             --allowedTools "Read,Grep,Glob,Agent,Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh api:*),Bash(git fetch:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),mcp__github_inline_comment__create_inline_comment"
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           # or https://code.claude.com/docs/en/cli-reference for available options
+
+  # On each push to a reviewed pull request: check that the open review findings are fixed and
+  # review the new commits only.
+  claude-review-followup:
+    if: ${{ !github.event.pull_request.draft && github.event.action == 'synchronize' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+      issues: read
+      id-token: write
+
+    steps:
+      - name: Look for open review findings
+        id: findings
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+        run: |
+          count=$(gh api graphql -F owner='${{ github.repository_owner }}' \
+            -F repo='${{ github.event.repository.name }}' \
+            -F n=${{ github.event.pull_request.number }} -f query='
+            query($owner:String!,$repo:String!,$n:Int!){
+              repository(owner:$owner,name:$repo){ pullRequest(number:$n){
+                reviewThreads(first:100){ nodes{ isResolved comments(first:1){ nodes{ author{login} } } } }
+              } } }' \
+            --jq "[.data.repository.pullRequest.reviewThreads.nodes[]
+                   | select(.isResolved | not)
+                   | .comments.nodes[0].author.login
+                   | select(. != \"$PR_AUTHOR\" and (IN(\"github-advanced-security\", \"sonarqubecloud\") | not))]
+                   | length")
+          echo "Open review findings: $count"
+          echo "open=$count" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout repository
+        if: ${{ steps.findings.outputs.open != '0' }}
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Claude Code Review follow-up
+        if: ${{ steps.findings.outputs.open != '0' }}
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # Project skill in .claude/skills/review-followup-ci
+          prompt: '/review-followup-ci --comment ${{ github.repository }}/pull/${{ github.event.pull_request.number }}'
+          claude_args: >-
+            --allowedTools "Read,Grep,Glob,Bash(gh pr view:*),Bash(gh pr comment:*),Bash(gh repo view:*),Bash(gh api:*),Bash(git fetch:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(git merge-base:*),Bash(git ls-files:*),Bash(grep:*),Bash(sed -n:*),Bash(head:*),Bash(tail:*),Bash(wc:*),Write"
