@@ -26,20 +26,21 @@ package org.silverpeas.core.notification.system;
 import jakarta.inject.Singleton;
 import org.silverpeas.core.annotation.Bean;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * A bucket to receive the different {@code org.silverpeas.core.notification.system.TestResourceEvent}
- * events coming from the different way of notifications.
+ * events coming from the different way of notifications. As the events are poured concurrently by
+ * the listeners of the asynchronous notifications, the bucket is thread-safe.
  * @author mmoquillon
  */
 @Bean
 @Singleton
 public class TestResourceEventBucket {
 
-  private final List<TestResourceEvent> events = new ArrayList<>(2);
+  private final List<TestResourceEvent> events = new CopyOnWriteArrayList<>();
 
   public void pour(final TestResourceEvent event) {
     events.add(event);
