@@ -66,24 +66,31 @@
   });
   function enhance(textarea, configuration = {}) {
     const {people = [], filterPeople = filter, emoji = EMOJI} = configuration;
-    const tool = configuration.tool || ((label, icon) => {
-      const control = button(label, icon === 'emoji' ? '' : '@', '', () => {});
-      if (icon === 'emoji') {
-        const namespace = 'http://www.w3.org/2000/svg';
-        const svg = document.createElementNS(namespace, 'svg');
-        for (const [name, value] of Object.entries({viewBox:'0 0 24 24', 'aria-hidden':'true',
-          focusable:'false', fill:'none', stroke:'currentColor', 'stroke-width':'1.6', 'stroke-linecap':'round'})) {
-          svg.setAttribute(name, value);
-        }
-        const circle = document.createElementNS(namespace, 'circle');
-        for (const [name, value] of Object.entries({cx:'12', cy:'12', r:'9'})) { circle.setAttribute(name, value); }
-        const smile = document.createElementNS(namespace, 'path');
-        smile.setAttribute('d', 'M8 9h.01M16 9h.01M7.5 14a5 5 0 0 0 9 0');
-        svg.append(circle, smile);
-        control.append(svg);
-      }
+    const tool = configuration.tool || ((label, name) => {
+      const control = button(label, '', '', () => {});
+      control.append(icon(name));
       return control;
     });
+    function icon(name) {
+      const namespace = 'http://www.w3.org/2000/svg';
+      const svg = document.createElementNS(namespace, 'svg');
+      for (const [attribute, value] of Object.entries({viewBox:'0 0 24 24', 'aria-hidden':'true',
+        focusable:'false', fill:'none', stroke:'currentColor', 'stroke-width':'1.6', 'stroke-linecap':'round',
+        'stroke-linejoin':'round'})) {
+        svg.setAttribute(attribute, value);
+      }
+      const shapes = {
+        emoji:[['circle', {cx:'12', cy:'12', r:'9'}], ['path', {d:'M8 9h.01M16 9h.01M7.5 14a5 5 0 0 0 9 0'}]],
+        mention:[['circle', {cx:'12', cy:'12', r:'4'}], ['path', {d:'M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8'}]],
+        format:[['path', {d:'M2 19 7 5l5 14M4 14h6M21 13v6'}], ['circle', {cx:'18', cy:'16', r:'3'}]]
+      };
+      for (const [tag, attributes] of shapes[name]) {
+        const shape = document.createElementNS(namespace, tag);
+        for (const [attribute, value] of Object.entries(attributes)) { shape.setAttribute(attribute, value); }
+        svg.append(shape);
+      }
+      return svg;
+    }
     const classes = names => names + (configuration.classPrefix
         ? ' ' + names.split(' ').filter(name => name.startsWith('sp-')).map(name => configuration.classPrefix + name.slice(2)).join(' ') : '');
     function button(label, text, className, action) {
@@ -200,10 +207,11 @@
     format.hidden = true;
     format.setAttribute('role', 'toolbar');
     format.setAttribute('aria-label', labels.formatLabel);
-    const toggle = button(labels.formatLabel, 'Aa', 'sp-format-toggle', () => {
+    const toggle = button(labels.formatLabel, '', 'sp-format-toggle', () => {
       format.hidden = !format.hidden;
       toggle.setAttribute('aria-expanded', String(!format.hidden));
     });
+    toggle.append(icon('format'));
     toggle.setAttribute('aria-expanded', 'false');
     const commands = [
       ['bold','B','bold',chain => chain.toggleBold()], ['italic','I','italic',chain => chain.toggleItalic()],
@@ -351,7 +359,8 @@
           event.preventDefault();
           event.stopPropagation();
           format.hidden = true;
-          toggle.setAttribute('aria-expanded', 'false');
+          toggle.append(icon('format'));
+    toggle.setAttribute('aria-expanded', 'false');
           closeLink();
         } else if (event.key === 'Enter' && panel === linkForm) { event.preventDefault(); apply.click(); }
       });
