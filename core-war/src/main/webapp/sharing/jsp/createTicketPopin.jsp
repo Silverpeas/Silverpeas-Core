@@ -48,6 +48,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <view:link href="/util/styleSheets/fieldset.css"/>
 <view:link href="/sharing/jsp/styleSheets/createTicketPopin.css"/>
 <view:script src="/util/javaScript/checkForm.js"/>
+<view:script src="/util/javaScript/silverpeas-secret.js"/>
 <view:script src="/sharing/jsp/javaScript/securityCode.js"/>
 
 <view:script src="/sharing/jsp/javaScript/createTicketPopin.js"/>
@@ -96,7 +97,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
           <span><fmt:message key="sharing.copy.code" bundle="${fsBundle}" /></span>
         </button>
       </div>
-      <button type="button" id="generateSharingSecurityCode" class="simple-button btn-ui-dialog"><fmt:message key="sharing.generation.code" bundle="${fsBundle}" /></button>
+      <button type="button" id="generateSharingSecurityCode" data-error-message="<fmt:message key='sharing.generation.error' bundle='${fsBundle}'/>" class="simple-button btn-ui-dialog"><fmt:message key="sharing.generation.code" bundle="${fsBundle}" /></button>
     </fieldset>
 
     <fieldset class="filedset-ui-dialog notification">

@@ -31,6 +31,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.security.authentication.password.rule.PasswordRule;
@@ -58,6 +59,25 @@ public class PasswordResource extends AbstractPasswordResource {
   @Override
   protected String getResourceBasePath() {
     return PasswordResourceURIs.PASSWORD_BASE_URI;
+  }
+
+  /**
+   * Generates a password satisfying the platform policy without changing any account.
+   * @return a non-cacheable response containing the generated password.
+   */
+  @POST
+  @Path("generate")
+  @Produces(MediaType.APPLICATION_JSON)
+  @Operation(summary = "Generates a password satisfying the platform password policy.")
+  public Response generate() {
+    try {
+      return Response.ok(PasswordEntity.createFrom(service.generate()))
+          .header("Cache-Control", "no-store")
+          .header("Pragma", "no-cache")
+          .build();
+    } catch (IllegalStateException e) {
+      throw new WebApplicationException(e, Status.SERVICE_UNAVAILABLE);
+    }
   }
 
   /**

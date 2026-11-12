@@ -59,11 +59,13 @@ class MinLengthPasswordRuleTest extends AbstractPasswordRuleTest<MinLengthPasswo
   @Disabled("Doesn't apply in this test class")
   @Override
   public void testDefinedMoreThanOnePropertyValues() {
+    // The minimum length has no count of character occurrences.
   }
 
   @Disabled("Doesn't apply in this test class")
   @Override
   public void testCombinationDefinedMoreThanOnePropertyValues() {
+    // The minimum length is a required rule, never a combined rule.
   }
 
   @Test
@@ -84,12 +86,13 @@ class MinLengthPasswordRuleTest extends AbstractPasswordRuleTest<MinLengthPasswo
   public void testBadDefinedPropertyValues() {
     setBadDefinedSettings();
     MinLengthPasswordRule rule = newRuleInstanceForTest();
-    assertThat(rule.getValue(), is(8));
+    // An inactive maximum must not silently lower the configured minimum.
+    assertThat(rule.getValue(), is(16));
     assertThat(rule.isRequired(), is(true));
     assertThat(rule.isCombined(), is(false));
-    assertThat(rule.check("1234567"), is(false));
-    assertThat(rule.check("12345678"), is(true));
-    assertThat(rule.check("1234567890"), is(true));
+    assertThat(rule.check("123456789012345"), is(false));
+    assertThat(rule.check("1234567890123456"), is(true));
+    assertThat(rule.check("12345678901234567"), is(true));
   }
 
   @Test
