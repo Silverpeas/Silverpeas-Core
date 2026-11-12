@@ -249,6 +249,9 @@ public class CommentRequesterIT {
     ResourceReference targetResourceRef = new ResourceReference(DUMMY_COMMENT_ID, DUMMY_INSTANCE_ID);
     commentRequester.moveComments(con, srcResourceType, result.getResourceReference(),
         targetResourceType, targetResourceRef);
+    // the comments now belong to the target component instance
+    assertNull(commentRequester.getComment(con, id));
+    id = new CommentId(targetResourceRef.getComponentInstanceId(), "1000");
     result = commentRequester.getComment(con, id);
     assertNotNull(result);
     assertEquals("10", result.getCreatorId());
@@ -262,7 +265,7 @@ public class CommentRequesterIT {
     assertEquals("1000", result.getIdentifier().getLocalId());
     assertEquals(targetResourceRef.getComponentInstanceId(), result.getIdentifier().getComponentInstanceId());
 
-    CommentId newId = new CommentId("instanceId10", "1001");
+    CommentId newId = new CommentId(targetResourceRef.getComponentInstanceId(), "1001");
     result = commentRequester.getComment(con, newId);
     assertNotNull(result);
     assertEquals("12", result.getCreatorId());

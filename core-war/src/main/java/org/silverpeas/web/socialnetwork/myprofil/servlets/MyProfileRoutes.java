@@ -23,10 +23,12 @@
  */
 package org.silverpeas.web.socialnetwork.myprofil.servlets;
 
+// Route names are part of existing case-sensitive URLs and are parsed with valueOf.
+@SuppressWarnings("java:S115")
 public enum MyProfileRoutes {
 
   Main, MyInfos, MySettings, MyInvitations, MySentInvitations, LinkToSVP, UnlinkFromSVP,
   AddLinkToSVP, PublishStatus, DoPublishStatus, UpdatePhoto, UpdateMyInfos, UpdateMySettings,
-  MyWall, MyFeed, MyNetworks, DELETE_MY_ACCOUNT;
+  MyWall, MyFeed, MyNetworks, StartTwoFactor, ConfirmTwoFactor, DisableTwoFactor, GenerateRecoveryCodes, DELETE_MY_ACCOUNT;
 
 }

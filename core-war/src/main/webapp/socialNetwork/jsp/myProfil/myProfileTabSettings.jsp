@@ -40,7 +40,9 @@
   pageContext.setAttribute("availableLooks", gef.getAvailableLooksForUser());
 %>
 <div id="settings">
-<form name="UserForm" action="<%=MyProfileRoutes.UpdateMySettings %>" method="post">
+<fmt:message key="myProfile.settings.ChangeLookAlert" var="changeLookAlert"/>
+<form name="UserForm" data-current-look="<c:out value="${preferences.look}"/>"
+      data-change-look-alert="<c:out value="${changeLookAlert}"/>" action="<%=MyProfileRoutes.UpdateMySettings %>" method="post">
   <table border="0" cellspacing="0" cellpadding="5" width="100%">
     <tr id="language">
       <td class="txtlibform"><fmt:message key="${'myProfile.settings.FavoriteLanguage'}"/> :</td>
@@ -136,24 +138,16 @@
       </td>
     </tr>
   </table>
-  <br/>
+
+
   <fmt:message key="GML.validate" var="validate"/>
   <fmt:message key="GML.cancel" var="cancel"/>
   <center>
     <view:buttonPane>
-      <view:button action="javascript:onClick=submitForm();" label="${validate}" disabled="false"/>
-      <view:button action="javascript:onClick=history.back();" label="${cancel}" disabled="false"/>
+      <view:button action="#" classes="my-profile-settings-save" label="${validate}" disabled="false"/>
+      <view:button action="#" classes="my-profile-settings-cancel" label="${cancel}" disabled="false"/>
     </view:buttonPane>
   </center>
 </form>
 </div>
-<script type="text/javascript">
-  function submitForm() {
-    var currentLook = '<caption:out balue="${preferences.look}"/>';
-    if (document.UserForm.SelectedLook.value != currentLook) {
-      alert("<fmt:message key="${'myProfile.settings.ChangeLookAlert'}"/>");
-    }
-
-    document.UserForm.submit();
-  }
-</script>
+<script src="<c:url value="/socialNetwork/jsp/js/myProfileSettings.js"/>"></script>
