@@ -2966,12 +2966,6 @@ if (typeof window.sp === 'undefined') {
                 spLayout.getBody().addEventListener('click', function() {
                   spSearchHelpApi.hide();
                 }, '__sp_search_help');
-                const muteEvent = function(e) {
-                  e.stopPropagation();
-                  e.preventDefault();
-                };
-                jQuery(elt).bind('mousedown', muteEvent);
-                jQuery(elt).bind('mouseup', muteEvent);
                 $help.spSearchHelpApi = spSearchHelpApi;
               }));
         }
