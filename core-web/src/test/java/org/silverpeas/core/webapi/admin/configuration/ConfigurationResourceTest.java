@@ -74,6 +74,27 @@ class ConfigurationResourceTest {
   }
 
   @Test
+  void savesTheFileIdentifiedInTheJsonBodyWithoutAQueryParameter() throws IOException {
+    var file = new ConfigurationFile("org/general.properties", "revision", Map.of("flag", "true"));
+    when(service.update(file.path(), "revision", file.properties())).thenReturn(file);
+    var response = resource.update(null,
+        new ConfigurationResource.Update(file.path(), "revision", file.properties()));
+    assertEquals(file, response.getEntity());
+    verify(service).update(file.path(), "revision", file.properties());
+  }
+
+  @Test
+  void rejectsMissingAndConflictingPathsBeforeCallingTheService() {
+    assertStatus(400, () -> resource.update(null,
+        new ConfigurationResource.Update("revision", Map.of())));
+    assertStatus(400, () -> resource.update(null,
+        new ConfigurationResource.Update(" ", "revision", Map.of())));
+    assertStatus(400, () -> resource.update("first.properties",
+        new ConfigurationResource.Update("second.properties", "revision", Map.of())));
+    verifyNoInteractions(service);
+  }
+
+  @Test
   void refusesNonAdministratorsAndAnonymousUsersBeforeCallingTheService() {
     when(resource.user.isAccessAdmin()).thenReturn(false);
     assertForbidden();
@@ -118,8 +139,9 @@ class ConfigurationResourceTest {
     var json = mapper.readTree(mapper.writeValueAsString(file));
     assertEquals("true", json.at("/properties/flag").asText());
     assertEquals("Property help", json.at("/documentation/properties/flag").asText());
-    var update = mapper.readValue("{\"revision\":\"revision\",\"properties\":{\"flag\":\"false\"}}",
+    var update = mapper.readValue("{\"path\":\"file.properties\",\"revision\":\"revision\",\"properties\":{\"flag\":\"false\"}}",
         ConfigurationResource.Update.class);
+    assertEquals("file.properties", update.path());
     assertEquals(Map.of("flag", "false"), update.properties());
     assertFalse(update.toString().contains("false"));
   }

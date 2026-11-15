@@ -55,9 +55,12 @@ relatifs au contexte web :
 |---|---|---|
 | GET | `/services/admin/configuration/files` | Chemins relatifs triés des fichiers |
 | GET | `/services/admin/configuration/file?path=...` | Révision, propriétés et documentation |
-| PUT | `/services/admin/configuration/file?path=...` | Mise à jour de clés existantes |
+| PUT | `/services/admin/configuration/file` | Mise à jour de clés existantes |
 
-Le corps du PUT contient `revision` et `properties` (objet clé/valeur). Les chemins invalides et
+Le corps du PUT contient `path` (chemin relatif), `revision` et `properties` (objet clé/valeur).
+Le chemin en paramètre de requête reste accepté pour les clients existants ; si les deux sont
+présents, ils doivent être identiques. La console transmet le chemin dans le JSON : le
+constructeur de requêtes AJAX Silverpeas remplace les paramètres de corps lors de l’envoi du JSON. Les chemins invalides et
 les corps incomplets donnent 400, les accès interdits 403, les fichiers absents 404, les conflits
 409 et les erreurs d'entrée/sortie 500. L'authentification préalable relève du mécanisme
 `@Authorized` du framework.
@@ -103,7 +106,7 @@ mvn -pl core-configuration,core-war -PskipMinify \
   -Dtest=JobManagerConfigurationMenuTest -Dsurefire.failIfNoSpecifiedTests=false package
 ```
 
-Les tests navigateur utilisent le balisage de la vraie JSP, les vrais JS/CSS et une API isolée
+Les tests navigateur utilisent le balisage de la vraie JSP, les vrais JS/CSS, le constructeur de requêtes AJAX Silverpeas et une API isolée
 en mémoire. Ils couvrent les aides au clavier, l'affichage texte, les filtres, la sauvegarde,
 l'annulation, les conflits, les erreurs et la navigation avec une saisie non enregistrée.
 Ils nécessitent Node.js et Playwright (avec Chromium installé, ou `CHROME_PATH` pointant

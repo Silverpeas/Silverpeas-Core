@@ -383,8 +383,9 @@
       }
       this.setBusy(true);
       try {
-        const saved = await sp.ajaxRequest(this.api + '/file').withParam('path', this.file.path)
+        const saved = await sp.ajaxRequest(this.api + '/file')
             .byPutMethod().sendAndPromiseJsonResponse({
+              path : this.file.path,
               revision : this.file.revision,
               properties : Object.fromEntries(this.changes)
             });

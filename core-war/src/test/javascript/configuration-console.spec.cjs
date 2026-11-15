@@ -52,6 +52,31 @@ const markup = jsp.replace(/<%--[\s\S]*?--%>/g, '').replace(/<%[\s\S]*?%>/g, '')
     .replaceAll('${configurationApi}', '/services/admin/configuration')
     .replaceAll("${sessionScope['SilverSessionController'].favoriteLanguage}", 'fr');
 
+// Exercise the real request builder, JSON body handling and XMLHttpRequest transport.
+// Only the surrounding utility functions are reduced; never simulate withParam/send behavior.
+const silverpeas = fs.readFileSync(path.join(webapp, 'util/javaScript/silverpeas.js'), 'utf8');
+function fragment(start, end) {
+  const from = silverpeas.indexOf(start);
+  const until = silverpeas.indexOf(end, from);
+  assert.ok(from >= 0 && until > from, 'Silverpeas transport source boundaries must exist');
+  return silverpeas.slice(from, until);
+}
+const urlStart = silverpeas.indexOf('    url : {');
+const urlSource = silverpeas.slice(silverpeas.indexOf('{', urlStart),
+    silverpeas.indexOf('    loadScript :', urlStart)).trim().replace(/,$/, '');
+const ajaxHarness = `
+  window.whenSilverpeasReady = callback => document.addEventListener('DOMContentLoaded', callback);
+  window.StringUtil = {isDefined : value => value !== undefined && value !== null && String(value).length > 0};
+  window.extendsObject = (...values) => Object.assign(...values.filter(value => typeof value === 'object'));
+  window.sp = {};
+  window.sp.url = ${urlSource};
+  ${fragment("if (typeof window.SilverpeasClass === 'undefined')", 'if (!window.SilverpeasCache)')}
+  ${fragment('if (!window.SilverpeasAjaxConfig)', "if (typeof window.silverpeasAjax === 'undefined')")}
+  ${fragment("if (typeof window.silverpeasAjax === 'undefined')", '  window.silverpeasFormSubmit =')}
+  }
+  window.sp.ajaxRequest = url => new SilverpeasAjaxConfig(url);
+`;
+
 let browser;
 before(async () => {
   browser = await chromium.launch({headless : true, executablePath : process.env.CHROME_PATH,
@@ -70,25 +95,8 @@ async function fixture() {
   }}};
   let failSave = false;
   const writes = [];
-  await page.addInitScript(() => {
-    window.whenSilverpeasReady = callback => document.addEventListener('DOMContentLoaded', callback);
-    window.sp = {ajaxRequest(url) {
-      const params = new URLSearchParams();
-      let method = 'GET';
-      return {
-        withParam(key, value) { params.set(key, value); return this; },
-        byPutMethod() { method = 'PUT'; return this; },
-        async sendAndPromiseJsonResponse(body) {
-          const response = await fetch(url + '?' + params, {method,
-            headers : {'Content-Type' : 'application/json'}, body : body ? JSON.stringify(body) : undefined});
-          if (!response.ok) {
-            throw {status : response.status};
-          }
-          return response.json();
-        }
-      };
-    }};
-  });
+  page.setDefaultTimeout(4000);
+  await page.addInitScript({content : ajaxHarness});
   await page.route('http://configuration.test/**', async route => {
     const url = new URL(route.request().url());
     if (url.pathname === '/') {
@@ -105,6 +113,9 @@ async function fixture() {
       if (route.request().method() === 'PUT') {
         const body = route.request().postDataJSON();
         writes.push(body);
+        if ((body.path || url.searchParams.get('path')) !== file.path) {
+          return route.fulfill({status : 400, json : {error : 'configuration.invalid'}});
+        }
         if (failSave) {
           return route.fulfill({status : 500, json : {error : 'configuration.ioError'}});
         }
@@ -161,7 +172,7 @@ test('edits, filters, undoes and saves only changed keys with the revision', asy
     assert.equal(await page.locator('#configuration-properties tbody tr:visible').count(), 1);
     await page.locator('#configuration-save').click();
     await page.waitForFunction(() => document.querySelector('#configuration-message').textContent.includes('enregistrés'));
-    assert.deepEqual(writes, [{revision : 'initial', properties : {enabled : 'true'}}]);
+    assert.deepEqual(writes, [{path : 'org/silverpeas/general.properties', revision : 'initial', properties : {enabled : 'true'}}]);
     assert.equal(await page.locator('#configuration-save').isDisabled(), true);
     await page.locator('#configuration-modified-only').uncheck();
     await inputFor(page, 'enabled').fill('false');

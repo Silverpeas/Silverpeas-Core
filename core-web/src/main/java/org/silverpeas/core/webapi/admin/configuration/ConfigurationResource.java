@@ -77,7 +77,12 @@ public class ConfigurationResource extends RESTWebService {
           update.properties() == null) {
         throw new IllegalArgumentException("A revision and property changes are required");
       }
-      return service.update(path, update.revision(), update.properties());
+      var filePath = path != null ? path : update.path();
+      if (filePath == null || filePath.isBlank() ||
+          (path != null && update.path() != null && !path.equals(update.path()))) {
+        throw new IllegalArgumentException("A consistent configuration file path is required");
+      }
+      return service.update(filePath, update.revision(), update.properties());
     });
   }
 
@@ -131,11 +136,16 @@ public class ConfigurationResource extends RESTWebService {
   }
 
   /**
-   * A patch of raw values; file paths and documentation cannot be supplied through the body.
+   * A patch of raw values and its relative file path. Documentation cannot be changed.
+   * @param path relative configuration file path; query paths remain supported for API clients
    * @param revision revision of the file opened by the administrator
    * @param properties only the existing keys to modify
    */
-  public record Update(String revision, Map<String, String> properties) {
+  public record Update(String path, String revision, Map<String, String> properties) {
+    public Update(String revision, Map<String, String> properties) {
+      this(null, revision, properties);
+    }
+
     @Override
     public String toString() {
       return "Configuration update";
