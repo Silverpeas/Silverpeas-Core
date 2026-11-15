@@ -92,6 +92,7 @@ public class JobManagerPeasSessionController extends AbstractAdminComponentSessi
     JobManagerSettings jobManagerSettings = JobManagerSettings.get();
     if (getUserDetail().isAccessAdmin()) {
       pdcServicesAdded = setAdminLevelServices(webContext, jobManagerSettings);
+      setConfigurationServices(webContext);
     } else if (isManager) {
       pdcServicesAdded = setManagerLevelServices(webContext, jobManagerSettings);
       jDesignerServicesCounter++;
@@ -124,6 +125,14 @@ public class JobManagerPeasSessionController extends AbstractAdminComponentSessi
           LEVEL_SERVICE, null, id1, false);
       setServices(jKM, jKM1);
     }
+  }
+
+  private void setConfigurationServices(String webContext) {
+    var properties = new JobManagerService("55", "CONFIGURATION_PROPERTIES", LEVEL_OPERATION,
+        webContext + "/jobManagerPeas/jsp/configuration.jsp", null, false);
+    var configuration = new JobManagerService("5", "CONFIGURATION", LEVEL_SERVICE, null,
+        new String[]{properties.getId()}, false);
+    setServices(configuration, properties);
   }
 
   private boolean setManagerLevelServices(final String webContext,

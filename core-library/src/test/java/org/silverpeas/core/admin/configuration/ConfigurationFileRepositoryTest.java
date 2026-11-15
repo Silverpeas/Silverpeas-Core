@@ -54,6 +54,32 @@ class ConfigurationFileRepositoryTest {
   }
 
   @Test
+  void exposesFileAndPropertyHelpWithoutChangingTheComments() throws IOException {
+    var content = "# General configuration\n\n# Enable this option\n! Restart is not needed\n"
+        + "flag=false\n\n# Dur\\u00e9e en secondes\ntimeout=60\nplain=value\n";
+    var path = create("settings.properties", content);
+    var file = repository.read("settings.properties");
+    assertEquals("General configuration", file.documentation().file());
+    assertEquals("Enable this option\n Restart is not needed",
+        file.documentation().properties().get("flag"));
+    assertEquals("Durée en secondes", file.documentation().properties().get("timeout"));
+    assertFalse(file.documentation().properties().containsKey("plain"));
+    assertThrows(UnsupportedOperationException.class,
+        () -> file.documentation().properties().put("flag", "other"));
+    var updated = repository.update(file.path(), file.revision(), Map.of("flag", "true"));
+    assertEquals(file.documentation(), updated.documentation());
+    assertEquals(content.replace("flag=false", "flag=true"), Files.readString(path));
+  }
+
+  @Test
+  void associatesInitialHelpWithTheFirstKeyWhenThereIsNoHeaderSeparator() throws IOException {
+    create("settings.properties", "# First key help\nflag=false\n# No following key\n");
+    var file = repository.read("settings.properties");
+    assertEquals("", file.documentation().file());
+    assertEquals(Map.of("flag", "First key help"), file.documentation().properties());
+  }
+
+  @Test
   void listsOnlyPropertiesRecursivelyWithRelativeSortedPaths() throws IOException {
     create("org/silverpeas/general.properties", "name=Silverpeas\n");
     create("looks/aurora/skin.properties", "enabled=true\n");

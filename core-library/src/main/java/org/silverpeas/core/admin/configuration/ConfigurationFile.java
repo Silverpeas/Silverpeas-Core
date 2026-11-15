@@ -34,11 +34,33 @@ import java.util.TreeMap;
  * @param path slash-separated path relative to the configuration root
  * @param revision opaque content revision required when updating this file
  * @param properties properties sorted by key; values can contain sensitive information
+ * @param documentation file-level and per-property comments for contextual help
  */
-public record ConfigurationFile(String path, String revision, Map<String, String> properties) {
+public record ConfigurationFile(String path, String revision, Map<String, String> properties,
+                                Documentation documentation) {
 
   public ConfigurationFile {
     properties = Collections.unmodifiableMap(new TreeMap<>(properties));
+  }
+
+  public ConfigurationFile(String path, String revision, Map<String, String> properties) {
+    this(path, revision, properties, new Documentation("", Map.of()));
+  }
+
+  /**
+   * Human-readable comments; they must be rendered as plain text, never as HTML.
+   * @param file header comments separated from the first property by a blank line
+   * @param properties consecutive comments immediately preceding each property
+   */
+  public record Documentation(String file, Map<String, String> properties) {
+    public Documentation {
+      properties = Collections.unmodifiableMap(new TreeMap<>(properties));
+    }
+
+    @Override
+    public String toString() {
+      return "Configuration documentation";
+    }
   }
 
   @Override

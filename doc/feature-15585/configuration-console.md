@@ -1,116 +1,116 @@
-# Feature #15585 — Socle de configuration et proposition d'IHM
+# Feature #15585 — Console de configuration
 
-## Périmètre de ce premier incrément
+## Accès à l'écran
 
-Le service `org.silverpeas.core.admin.configuration.ConfigurationService` constitue le point
-d'entrée métier de la future console. Il vérifie les droits d'administrateur général pour
-chaque lecture, énumération et modification. Il est indépendant d'une présentation web.
+Après reconstruction et déploiement de la branche `feature-15585`, ouvrir
+**Administration → Configuration → Paramètres Silverpeas** avec un administrateur général.
+La rubrique Configuration est indépendante de l'activation des outils optionnels.
+Une nouvelle session d'administration peut être nécessaire : les menus sont conservés dans
+le contrôleur de session.
 
-Le dépôt parcourt récursivement la racine fournie par `SilverpeasResourcesLocation`, soit
-`$SILVERPEAS_HOME/properties` dans Silverpeas Core. Les chemins retournés sont relatifs,
-triés et conservent tous les niveaux de dossiers. L'énumération ne retourne aucune valeur.
-Le service lit les valeurs brutes : une expression `${...}` n'est pas remplacée par sa valeur
-calculée lors de l'édition.
+L'écran se trouve à `/silverpeas/jobManagerPeas/jsp/configuration.jsp` lorsque le contexte
+web est `/silverpeas`. Cet accès direct vérifie lui aussi les droits d'administrateur général.
+Les utilisateurs ordinaires et les gestionnaires d'espaces ou de domaines ne peuvent pas
+consulter ou modifier les fichiers.
 
-Une sauvegarde porte sur un fichier existant et sur un ensemble de clés existantes. Elle reçoit
-la révision obtenue lors de la lecture, contrôle les changements concurrents et remplace le
-fichier atomiquement. Elle conserve les commentaires, l'ordre et les lignes non modifiées,
-ainsi que les permissions POSIX lorsque le système de fichiers les supporte. Les clés et
-valeurs modifiées sont sérialisées avec l'échappement Java Properties. UTF-8 et les fichiers
-historiques ISO-8859-1 sont pris en charge, selon le comportement par défaut de
-`PropertyResourceBundle`. Les chemins sortant de la racine et les liens symboliques sont refusés.
-Les valeurs ne figurent pas dans la représentation textuelle du résultat.
+## Fonctionnement
 
-Ce premier incrément ne fournit pas encore d'endpoint REST, d'écran, de création de clés,
-de suppression de clés, de description typée des paramètres, d'historique ou de sauvegarde
-permettant un retour à une ancienne version. Les valeurs restent des chaînes : les règles
-métier (bornes numériques, URL, dépendances entre paramètres) devront être ajoutées avant
-l'exposition des paramètres concernés dans des formulaires spécialisés.
+- L'arbre reproduit les dossiers contenant des `.properties` sous
+  `$SILVERPEAS_HOME/properties`. Une recherche filtre les chemins et ouvre les dossiers
+  correspondants. Les valeurs ne sont chargées qu'à l'ouverture du fichier.
+- Le tableau affiche les clés et les valeurs brutes : les expressions `${...}` sont conservées.
+  Les filtres portent sur les clés et sur les seules lignes modifiées.
+- Les commentaires `#` et `!` qui précèdent immédiatement une clé deviennent son aide.
+  L'icône `?` propose une infobulle au survol et une aide ouvrable au clic ou au clavier.
+  Les commentaires d'en-tête séparés de la première propriété par une ligne vide figurent
+  dans « Documentation du fichier ». Les échappements Unicode des commentaires sont décodés
+  pour l'affichage. Les fichiers conservent leurs commentaires d'origine à la sauvegarde.
+- Les clés contenant `password`, `passwd`, `secret`, `credential`, `token` ou `privateKey`
+  (avec les séparateurs usuels pour ce dernier) sont masquées par défaut, avec un bouton
+  Afficher/Masquer. Cette détection par nom n'est pas un catalogue exhaustif des secrets.
+- Annuler une ligne ou toutes les modifications restaure l'état ouvert, pas une valeur par
+  défaut fournie par Silverpeas. Quitter un fichier modifié demande confirmation.
+- Enregistrer et appliquer transmet les seules clés modifiées avec la révision du fichier.
+  Un fichier modifié entre-temps produit un conflit et conserve la saisie. La comparaison
+  affiche les valeurs à l'ouverture, les valeurs courantes et les valeurs saisies. Les valeurs
+  sensibles restent masquées dans cette comparaison.
+- « Conserver ma saisie sur cette version » reprend explicitement les modifications sur la
+  version comparée, sans les enregistrer. L'administrateur vérifie puis enregistre.
+  Les clés supprimées par un éditeur externe doivent être traitées avant cette reprise.
 
-## Application immédiate : comportement vérifié et limites
+Les aides et valeurs sont affichées en texte brut, sans interprétation HTML. La console utilise
+les requêtes AJAX Silverpeas pour bénéficier de la protection de session et des jetons CSRF
+existants. Les réponses de configuration, y compris les erreurs, portent `Cache-Control: no-store`.
+Aucune valeur n'est placée dans les URL, dans les messages d'erreur ou dans la représentation
+textuelle des objets de configuration.
 
-Après une modification effective, le service invalide le cache du Kernel avec
-`ResourceLocator.resetCache()`. Les lectures suivantes de `SettingBundle`, y compris sur
-une instance conservée avant la modification, voient les nouvelles valeurs. Un test utilise
-le vrai Kernel et un fichier créé uniquement dans le répertoire de sortie des tests pour
-vérifier ce comportement. Aucune configuration d'une installation existante n'est modifiée
-par les tests.
+## Socle et API REST
 
-Cette invalidation s'applique au nœud JVM courant. Elle ne réinitialise pas les valeurs copiées
-dans des champs, les propriétés système chargées au démarrage, les services externes ou les
-caches des autres nœuds. Le ticket #15585 ne sera terminé qu'après identification et traitement
-de ces cas : prévoir des adaptateurs de reconfiguration et, pour un déploiement multi-nœuds,
-la propagation des changements. L'écran devra distinguer une sauvegarde d'une application
-réellement terminée ; il ne devra pas annoncer une application immédiate qui n'a pas eu lieu.
+Le point d'entrée métier est
+`org.silverpeas.core.admin.configuration.ConfigurationService`. Chaque opération vérifie
+l'identité et les droits de l'administrateur général. L'API protégée utilise les chemins suivants,
+relatifs au contexte web :
 
-Les révisions empêchent l'écrasement d'une version déjà modifiée et les mises à jour sont
-sérialisées dans le dépôt singleton de cette JVM. Elles ne constituent pas un verrou distribué
-avec les éditeurs externes ou d'autres JVM : une course reste possible entre la dernière
-vérification et le remplacement atomique du fichier.
+| Méthode | Chemin | Objet |
+|---|---|---|
+| GET | `/services/admin/configuration/files` | Chemins relatifs triés des fichiers |
+| GET | `/services/admin/configuration/file?path=...` | Révision, propriétés et documentation |
+| PUT | `/services/admin/configuration/file?path=...` | Mise à jour de clés existantes |
 
-## Proposition d'IHM
+Le corps du PUT contient `revision` et `properties` (objet clé/valeur). Les chemins invalides et
+les corps incomplets donnent 400, les accès interdits 403, les fichiers absents 404, les conflits
+409 et les erreurs d'entrée/sortie 500. L'authentification préalable relève du mécanisme
+`@Authorized` du framework.
 
-Entrée proposée : **Administration → Configuration → Paramètres Silverpeas**,
-visible uniquement aux administrateurs généraux.
+Le dépôt remplace atomiquement les fichiers existants et conserve les commentaires, l'ordre
+et les lignes inchangées, ainsi que les modes POSIX lorsque le système les supporte. UTF-8
+et les fichiers historiques ISO-8859-1 sont pris en charge suivant le comportement par défaut
+de `PropertyResourceBundle`. Les chemins sortant de la racine et les liens symboliques sont
+refusés. Aucune création ou suppression de clé n'est proposée ; une chaîne vide reste une valeur.
 
-```text
-Paramètres Silverpeas                         [Rechercher un fichier…]
+## Application immédiate et limites restantes
 
-Dossiers / fichiers         │ org / silverpeas / general.properties
-                            │
-▾ org                       │ [Filtrer les clés…]  [Modifiés uniquement]
-  ▾ silverpeas              │
-      general.properties    │ Clé                 Valeur                 État
-    ▸ lookAndFeel           │ …                   …                      …
-    ▸ …                     │ …                   …                      Modifié
-▸ …                         │
-                            │ 2 modifications non enregistrées
-                            │ [Annuler les modifications] [Enregistrer et appliquer]
-```
+Après une modification effective, `ResourceLocator.resetCache()` invalide le cache du Kernel.
+Une instance de `SettingBundle` déjà conservée voit la nouvelle valeur lors de sa lecture
+suivante ; ce comportement est testé avec le vrai Kernel.
 
-- **À gauche :** arbre repliable reproduisant les dossiers physiques, fichiers triés par nom.
-  Charger les valeurs uniquement lors de l'ouverture d'un fichier ; l'arbre utilise la liste
-  des chemins relatifs. Conserver le dossier ouvert et la sélection pendant la navigation.
-- **À droite :** fil d'Ariane, nom du fichier, filtre local et tableau des clés triées.
-  Pour cette première interface générique, proposer des champs texte et des zones multiligne.
-  Les interrupteurs, listes et contrôles numériques viendront des descriptions de paramètres,
-  sans déduire arbitrairement leur type d'une valeur existante.
-- **Édition :** signaler les lignes modifiées, proposer l'annulation locale d'une ligne et
-  de l'ensemble des modifications. Une valeur vide est une valeur valide ; ce n'est pas une
-  suppression. Prévenir avant de quitter un fichier contenant des modifications non enregistrées.
-- **Sauvegarde :** envoyer uniquement les clés modifiées avec la révision du fichier lu.
-  En cas de conflit, conserver les modifications locales et proposer de recharger/comparer
-  la version courante. Ne jamais réessayer automatiquement en écrasant celle-ci.
-- **Valeurs sensibles :** les champs concernés devront être explicitement identifiés et masqués
-  par défaut. Aucun contenu sensible dans les URL, notifications ou journaux. La réponse web
-  devra empêcher la mise en cache des configurations.
-- **Recherche transversale, ensuite :** rechercher un nom de clé et retrouver son chemin dans
-  l'arbre. Cela demandera un contrat de recherche supplémentaire ; le socle actuel expose la
-  liste des fichiers et la lecture à la demande.
+Cela concerne la JVM courante. Les valeurs copiées dans les champs des services, les propriétés
+système chargées au démarrage et les autres nœuds d'un déploiement ne sont pas reconfigurés
+par cette seule invalidation. L'écran indique cette limite. Le ticket #15585 nécessite encore
+l'inventaire de ces usages et leurs adaptateurs de reconfiguration, ainsi que la propagation
+multi-nœuds si elle est nécessaire au déploiement.
 
-Le bouton « Annuler les modifications » ne restaure que l'état lu lors de l'ouverture. Un vrai
-retour aux valeurs livrées par Silverpeas suppose une source de valeurs par défaut identifiable ;
-elle ne se déduit pas du fichier actuellement installé.
+Les mises à jour du dépôt singleton sont sérialisées et les révisions détectent les modifications
+externes depuis l'ouverture et pendant la préparation de la sauvegarde. Elles ne constituent
+pas un verrou distribué : un éditeur externe peut encore intervenir entre la dernière vérification
+et le remplacement atomique.
 
-## Suite de l'implémentation
+Restent également à traiter les descriptions typées et leurs validations métier, l'identification
+explicite des paramètres sensibles, l'historique et un véritable retour aux valeurs livrées.
+Le module graphique Aurora/skins (#14174) reste pour une étape ultérieure ; il pourra réutiliser
+le service métier. Les médias et variables CSS demandent un traitement distinct des properties.
 
-1. Définir les paramètres éligibles à l'application immédiate et les reconfigurations nécessaires.
-2. Exposer le service dans une ressource REST protégée, avec les erreurs adaptées : accès refusé,
-   chemin invalide, fichier absent, conflit de révision et erreur de sauvegarde.
-3. Intégrer l'écran dans la console existante avec ses composants de navigation et de formulaire,
-   en conservant les protections de session et CSRF du framework.
-4. Ajouter descriptions, validations, masquage des valeurs sensibles et suivi des changements.
-5. Pour #14174, réutiliser le même service depuis des formulaires Aurora/skins adaptés aux usages.
-   Les variables CSS et les médias demandent un traitement distinct de celui des `.properties`.
+## Validation
 
-## Validation de ce socle
+Les tests Java couvrent le dépôt, les commentaires, les conflits, le cache, l'accès REST,
+les erreurs et le contrat JSON, ainsi que la visibilité du menu selon les droits.
 
 ```sh
-mvn -o -pl core-library -PskipMinify \
-  -Dtest=ConfigurationFileRepositoryTest,ConfigurationServiceTest test
+mvn -pl core-library,core-web -PskipMinify \
+  -Dtest=ConfigurationFileRepositoryTest,ConfigurationServiceTest,ConfigurationResourceTest \
+  -Dsurefire.failIfNoSpecifiedTests=false install
+mvn -pl core-configuration,core-war -PskipMinify \
+  -Dtest=JobManagerConfigurationMenuTest -Dsurefire.failIfNoSpecifiedTests=false package
 ```
 
-Les tests couvrent l'accès, l'arborescence, les formats Properties, les encodages, les
-commentaires, les valeurs brutes, les conflits, les chemins et liens interdits, les permissions,
-les échecs de sauvegarde et la prise en compte immédiate par une instance de `SettingBundle`
-déjà chargée.
+Les tests navigateur utilisent le balisage de la vraie JSP, les vrais JS/CSS et une API isolée
+en mémoire. Ils couvrent les aides au clavier, l'affichage texte, les filtres, la sauvegarde,
+l'annulation, les conflits, les erreurs et la navigation avec une saisie non enregistrée.
+Ils nécessitent Node.js et Playwright (avec Chromium installé, ou `CHROME_PATH` pointant
+sur un exécutable local).
+
+```sh
+node --test core-war/src/test/javascript/configuration-console.spec.cjs
+```
+
+Ces validations ne remplacent pas une recette de l'application déployée dans WildFly.

@@ -168,8 +168,9 @@ public class ConfigurationFileRepository {
   }
 
   private static ConfigurationFile snapshot(String relativePath, byte[] content) throws IOException {
-    return new ConfigurationFile(relativePath, revision(content),
-        new PropertiesDocument(content).values());
+    var document = new PropertiesDocument(content);
+    return new ConfigurationFile(relativePath, revision(content), document.values(),
+        document.documentation());
   }
 
   private static void checkRevision(byte[] content, String expectedRevision) {

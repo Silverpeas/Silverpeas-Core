@@ -35,6 +35,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -44,6 +46,8 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  * Uses the same UTF-8 / ISO-8859-1 fallback as {@link java.util.PropertyResourceBundle}.
  */
 final class PropertiesDocument {
+
+  private static final Pattern UNICODE_ESCAPE = Pattern.compile("\\\\u([0-9a-fA-F]{4})");
 
   private final Charset charset;
   private final List<Entry> entries;
@@ -59,6 +63,39 @@ final class PropertiesDocument {
 
   Map<String, String> values() {
     return values;
+  }
+
+  ConfigurationFile.Documentation documentation() {
+    var comments = new TreeMap<String, String>();
+    var pending = new StringBuilder();
+    var header = new StringBuilder();
+    var beforeFirstProperty = true;
+    for (var entry : entries) {
+      if (entry.key() != null) {
+        if (!pending.isEmpty()) {
+          comments.put(entry.key(), pending.toString().strip());
+        }
+        pending.setLength(0);
+        beforeFirstProperty = false;
+      } else if (entry.content().isBlank()) {
+        if (beforeFirstProperty && !pending.isEmpty()) {
+          header.append(pending).append('\n');
+        }
+        pending.setLength(0);
+      } else {
+        var text = entry.content().stripLeading().substring(1).stripTrailing();
+        pending.append(decodeComment(text)).append('\n');
+      }
+    }
+    if (beforeFirstProperty) {
+      header.append(pending);
+    }
+    return new ConfigurationFile.Documentation(header.toString().strip(), comments);
+  }
+
+  private static String decodeComment(String comment) {
+    return UNICODE_ESCAPE.matcher(comment).replaceAll(match -> Matcher.quoteReplacement(
+        Character.toString((char) Integer.parseInt(match.group(1), 16))));
   }
 
   byte[] update(Map<String, String> changes) throws IOException {
