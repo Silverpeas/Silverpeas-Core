@@ -24,7 +24,7 @@
 
 #configuration-console {
   --configuration-border: #d5dce2;
-  --configuration-accent: #176d8c;
+  --configuration-accent: var(--color-flashy-principale, #176d8c);
   padding: 1.5rem;
   color: #253541;
 }
@@ -208,21 +208,6 @@
   vertical-align: middle;
 }
 
-.configuration-help > button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.3rem;
-  height: 1.3rem;
-  border: 1px solid var(--configuration-accent);
-  border-radius: 50%;
-  color: var(--configuration-accent);
-  font-weight: bold;
-  cursor: help;
-  padding: 0;
-  background: #fff;
-}
-
 .configuration-help pre,
 #configuration-file-help pre {
   white-space: pre-wrap;
@@ -252,8 +237,15 @@
   background: #f3f6f8;
 }
 
-.configuration-reveal {
-  margin-top: 0.4rem;
+.configuration-value-control {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.configuration-value-control input {
+  flex: 1;
+  min-width: 0;
 }
 
 .configuration-actions {
@@ -263,14 +255,6 @@
 
 #configuration-count {
   margin-right: auto;
-}
-
-#configuration-save {
-  background: var(--configuration-accent);
-  color: #fff;
-  border: 1px solid var(--configuration-accent);
-  border-radius: 3px;
-  padding: 0.55rem 0.8rem;
 }
 
 #configuration-conflict {
@@ -333,4 +317,77 @@
   width: auto;
   padding: 0;
   margin: 0 0.5rem 0 0;
+}
+
+/* Use Silverpeas button classes and theme variables for every command. */
+#configuration-console .configuration-command {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: 2.25em;
+  margin: 0;
+  font: inherit;
+}
+
+#configuration-console .configuration-icon-button {
+  flex: 0 0 2.25em;
+  width: 2.25em;
+  padding: 0.4em;
+  background: var(--bgColor-btn-secondaire, #f3f3f3);
+  color: var(--color-text-btn-secondaire, #4c4c4c);
+}
+
+#configuration-console .configuration-icon-button:not(:disabled):hover {
+  background: var(--bgColor-btn-secondaire-hover, #e4e4e4);
+}
+
+.configuration-icon-button::before {
+  content: '';
+  display: block;
+  width: 17px;
+  height: 16px;
+  background: var(--configuration-icon) center / contain no-repeat;
+}
+
+.configuration-icon-button[data-icon="refresh"] {
+  --configuration-icon: url('../../util/icons/refresh.gif');
+}
+
+.configuration-icon-button[data-icon="undo"] {
+  --configuration-icon: url('../../util/icons/back.png');
+}
+
+.configuration-icon-button[data-icon="show"] {
+  --configuration-icon: url('../../util/icons/visible.gif');
+}
+
+.configuration-icon-button[data-icon="hide"] {
+  --configuration-icon: url('../../util/icons/lock.gif');
+}
+
+.configuration-icon-button[data-icon="help"] {
+  --configuration-icon: url('../../util/icons/help2.png');
+}
+
+.configuration-modified-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  line-height: normal;
+}
+
+.configuration-modified-filter input[type="checkbox"] {
+  margin: 0;
+}
+
+.configuration-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }

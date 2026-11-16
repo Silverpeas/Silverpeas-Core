@@ -73,8 +73,8 @@
       <div class="configuration-filters">
         <label for="configuration-key-filter"><fmt:message key="filterKeys"/></label>
         <input id="configuration-key-filter" type="search" autocomplete="off" disabled>
-        <label><input id="configuration-modified-only" type="checkbox" disabled>
-          <fmt:message key="modifiedOnly"/>
+        <label class="configuration-modified-filter"><input id="configuration-modified-only" type="checkbox" disabled>
+          <span><fmt:message key="modifiedOnly"/></span>
         </label>
       </div>
       <div class="configuration-table-scroll">
@@ -91,7 +91,7 @@
       <section id="configuration-conflict" hidden aria-label="<fmt:message key='conflict'/>">
         <h3><fmt:message key="conflict"/></h3>
         <p><fmt:message key="conflictExplanation"/></p>
-        <button id="configuration-compare" type="button"><fmt:message key="compare"/></button>
+        <button id="configuration-compare" class="sp_button configuration-command" type="button"><fmt:message key="compare"/></button>
         <div id="configuration-comparison" hidden>
           <table>
             <thead><tr>
@@ -102,23 +102,23 @@
             </tr></thead>
             <tbody></tbody>
           </table>
-          <button id="configuration-rebase" type="button"><fmt:message key="rebase"/></button>
+          <button id="configuration-rebase" class="sp_button configuration-command" type="button"><fmt:message key="rebase"/></button>
         </div>
       </section>
       <footer class="configuration-actions">
         <span id="configuration-count" aria-live="polite"></span>
-        <button id="configuration-reload" type="button" disabled><fmt:message key="reload"/></button>
-        <button id="configuration-cancel" type="button" disabled><fmt:message key="cancel"/></button>
-        <button id="configuration-save" type="button" disabled><fmt:message key="save"/></button>
+        <button id="configuration-reload" type="button" class="sp_button configuration-command configuration-icon-button" data-icon="refresh" title="<fmt:message key='reload'/>" disabled><span class="configuration-visually-hidden"><fmt:message key="reload"/></span></button>
+        <button id="configuration-cancel" type="button" class="sp_button configuration-command configuration-icon-button" data-icon="undo" title="<fmt:message key='cancel'/>" disabled><span class="configuration-visually-hidden"><fmt:message key="cancel"/></span></button>
+        <button id="configuration-save" class="sp_button configuration-command" type="button" disabled><fmt:message key="save"/></button>
       </footer>
       <section class="configuration-persistence" aria-label="<fmt:message key='persistenceTitle'/>">
         <h3><fmt:message key="persistenceTitle"/></h3>
         <p><fmt:message key="persistenceExplanation"/></p>
         <label for="configuration-persistence-target"><fmt:message key="persistenceTarget"/></label>
         <select id="configuration-persistence-target" disabled></select>
-        <button id="configuration-persistence-refresh" type="button"><fmt:message key="persistenceRefresh"/></button>
+        <button id="configuration-persistence-refresh" type="button" class="sp_button configuration-command configuration-icon-button" data-icon="refresh" title="<fmt:message key='persistenceRefresh'/>"><span class="configuration-visually-hidden"><fmt:message key="persistenceRefresh"/></span></button>
         <p id="configuration-persistence-count" aria-live="polite"></p>
-        <button id="configuration-persist" type="button" disabled><fmt:message key="persist"/></button>
+        <button id="configuration-persist" class="sp_button configuration-command" type="button" disabled><fmt:message key="persist"/></button>
         <p id="configuration-persistence-message" role="status" aria-live="polite"></p>
       </section>
       <p class="configuration-application-note"><fmt:message key="applicationNote"/></p>

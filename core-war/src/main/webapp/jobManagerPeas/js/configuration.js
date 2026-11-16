@@ -240,14 +240,18 @@
         }
         input.value = this.changes.has(key) ? this.changes.get(key) : value;
         input.addEventListener('input', () => this.changed(key, input.value));
-        valueCell.append(input);
         if (sensitive) {
-          valueCell.append(this.revealButton(input));
+          const control = document.createElement('div');
+          control.className = 'configuration-value-control';
+          control.append(input, this.revealButton(input));
+          valueCell.append(control);
+        } else {
+          valueCell.append(input);
         }
         const actions = document.createElement('td');
         const reset = document.createElement('button');
         reset.type = 'button';
-        reset.textContent = this.text('reset');
+        this.setIconButton(reset, 'reset', 'undo');
         reset.addEventListener('click', () => {
           input.value = value;
           this.changed(key, value);
@@ -265,7 +269,7 @@
       container.className = 'configuration-help';
       const button = document.createElement('button');
       button.type = 'button';
-      button.textContent = '?';
+      this.setIconButton(button, 'help', 'help');
       button.setAttribute('aria-label', this.text('help') + ' : ' + key);
       button.setAttribute('aria-expanded', 'false');
       const content = document.createElement('pre');
@@ -331,16 +335,24 @@
       return container;
     }
 
+    setIconButton(button, label, icon) {
+      button.classList.add('sp_button', 'configuration-command', 'configuration-icon-button');
+      button.dataset.icon = icon;
+      button.title = this.text(label);
+      button.setAttribute('aria-label', this.text(label));
+      button.replaceChildren();
+    }
+
     revealButton(input) {
       const button = document.createElement('button');
       button.type = 'button';
       button.className = 'configuration-reveal';
-      button.textContent = this.text('reveal');
+      this.setIconButton(button, 'reveal', 'show');
       button.setAttribute('aria-pressed', 'false');
       button.addEventListener('click', () => {
         const reveal = input.type === 'password';
         input.type = reveal ? 'text' : 'password';
-        button.textContent = this.text(reveal ? 'hide' : 'reveal');
+        this.setIconButton(button, reveal ? 'hide' : 'reveal', reveal ? 'hide' : 'show');
         button.setAttribute('aria-pressed', String(reveal));
       });
       return button;

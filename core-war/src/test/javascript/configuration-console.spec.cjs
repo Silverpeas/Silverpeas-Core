@@ -48,6 +48,7 @@ const markup = jsp.replace(/<%--[\s\S]*?--%>/g, '').replace(/<%[\s\S]*?%>/g, '')
         (_, keys) => keys.split(',').map(key => `<span data-message="${key}">${escape(labels[key])}</span>`).join(''))
     .replace(/<fmt:message key=["']([^"']+)["']\s*\/>/g, (_, key) => escape(labels[key]))
     .replace(/<c:url value=["']([^"']+)["']\s*\/>/g, (_, value) => value)
+    .replace('<view:looknfeel/>', '<link rel="stylesheet" href="/util/styleSheets/silverpeas-main.css">')
     .replace(/<(?:fmt|view|c):[^>]+\/>/g, '')
     .replaceAll('${configurationApi}', '/services/admin/configuration')
     .replaceAll("${sessionScope['SilverSessionController'].favoriteLanguage}", 'fr');
@@ -108,6 +109,12 @@ async function fixture(options = {}) {
     if (url.pathname.endsWith('.js') || url.pathname.endsWith('.css')) {
       return route.fulfill({contentType : url.pathname.endsWith('.js') ? 'text/javascript' : 'text/css',
         body : fs.readFileSync(path.join(webapp, url.pathname), 'utf8')});
+    }
+    if (/\.(png|gif)$/.test(url.pathname)) {
+      const image = path.join(webapp, url.pathname);
+      return fs.existsSync(image) ? route.fulfill({body : fs.readFileSync(image),
+        contentType : url.pathname.endsWith('.png') ? 'image/png' : 'image/gif'})
+          : route.fulfill({status : 404, body : ''});
     }
     if (url.pathname.endsWith('/files')) {
       return route.fulfill({json : [file.path, 'looks/aurora/skin.properties']});
@@ -278,5 +285,41 @@ test('offers custom filenames in execution order and preserves selection after X
     await page.waitForFunction(() => document.querySelector('#configuration-persistence-message').textContent.includes('Enregistré'));
     assert.equal(persisted[1].target.name, 'Company.xml');
     assert.equal(persisted[1].target.revision, 'xml-external');
+  } finally { await context.close(); }
+});
+
+
+test('uses Silverpeas buttons and icons with accessible names and centers the checkbox label', async () => {
+  const {context, page} = await fixture();
+  try {
+    const commands = page.locator('#configuration-console button:not(.configuration-file)');
+    for (const button of await commands.all()) {
+      assert.ok((await button.getAttribute('class')).split(' ').includes('sp_button'));
+    }
+    const refresh = page.getByRole('button', {name : 'Recharger le fichier', exact : true});
+    assert.equal(await refresh.getAttribute('title'), 'Recharger le fichier');
+    assert.equal(await refresh.locator('.configuration-visually-hidden').count(), 1);
+    await page.getByRole('button', {name : 'Afficher', exact : true}).click();
+    assert.equal(await inputFor(page, 'apiToken').getAttribute('type'), 'text');
+    const hide = page.getByRole('button', {name : 'Masquer', exact : true});
+    assert.equal(await hide.getAttribute('data-icon'), 'hide');
+    await hide.click();
+    assert.equal(await inputFor(page, 'apiToken').getAttribute('type'), 'password');
+    const checkbox = await page.locator('#configuration-modified-only').boundingBox();
+    const label = await page.locator('.configuration-modified-filter span').boundingBox();
+    assert.ok(Math.abs(checkbox.y + checkbox.height / 2 - label.y - label.height / 2) <= 1);
+    const colors = await page.evaluate(() => {
+      const save = document.querySelector('#configuration-save');
+      const probe = document.createElement('button');
+      probe.className = 'sp_button';
+      document.body.append(probe);
+      const result = [getComputedStyle(save).backgroundColor, getComputedStyle(probe).backgroundColor];
+      probe.remove();
+      return result;
+    });
+    assert.equal(colors[0], colors[1]);
+    if (process.env.CONFIGURATION_SCREENSHOT) {
+      await page.screenshot({path : process.env.CONFIGURATION_SCREENSHOT, fullPage : true});
+    }
   } finally { await context.close(); }
 });
