@@ -352,3 +352,42 @@ test('offers a single global undo action and uses scalable refresh and undo icon
     }
   } finally { await context.close(); }
 });
+
+
+test('shows standalone information and refresh icons without a button background', async () => {
+  const {context, page} = await fixture();
+  try {
+    const icons = page.locator('.configuration-help button, #configuration-reload, #configuration-persistence-refresh');
+    for (const icon of await icons.all()) {
+      const background = await icon.evaluate(node => {
+        const css = getComputedStyle(node);
+        return [css.backgroundColor, css.backgroundImage, css.boxShadow];
+      });
+      assert.deepEqual(background, ['rgba(0, 0, 0, 0)', 'none', 'none']);
+    }
+    const modernIcons = await page.evaluate(() => Array.from(
+      document.querySelectorAll('.configuration-icon-button'),
+      node => getComputedStyle(node, '::before').maskImage));
+    assert.ok(modernIcons.every(mask => mask.includes('/jobManagerPeas/icons/') && mask.includes('.svg')));
+    const reveal = page.getByRole('button', {name : 'Afficher', exact : true});
+    await reveal.click();
+    const visibilityMask = await page.getByRole('button', {name : 'Masquer', exact : true})
+        .evaluate(node => getComputedStyle(node, '::before').maskImage);
+    assert.ok(visibilityMask.includes('/visibility-off.svg'));
+    await page.getByRole('button', {name : 'Masquer', exact : true}).click();
+    const refresh = page.locator('#configuration-reload');
+    await refresh.hover();
+    assert.equal(await refresh.evaluate(node => getComputedStyle(node).backgroundColor), 'rgba(0, 0, 0, 0)');
+    await refresh.focus();
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Shift+Tab');
+    assert.equal(await refresh.evaluate(node => document.activeElement === node), true);
+    assert.equal(await refresh.evaluate(node => getComputedStyle(node).outlineStyle), 'solid');
+    assert.equal(await refresh.evaluate(node => getComputedStyle(node).outlineWidth), '2px');
+    await refresh.evaluate(node => node.blur());
+    await page.locator('.configuration-heading').hover();
+    if (process.env.CONFIGURATION_SCREENSHOT) {
+      await page.screenshot({path : process.env.CONFIGURATION_SCREENSHOT, fullPage : true});
+    }
+  } finally { await context.close(); }
+});

@@ -326,13 +326,11 @@
   font: inherit;
 }
 
-#configuration-console .configuration-icon-button,
 #configuration-console .configuration-secondary-command {
   background: var(--bgColor-btn-secondaire, #f3f3f3);
   color: var(--color-text-btn-secondaire, #4c4c4c);
 }
 
-#configuration-console .configuration-icon-button:not(:disabled):hover,
 #configuration-console .configuration-secondary-command:not(:disabled):hover {
   background: var(--bgColor-btn-secondaire-hover, #e4e4e4);
 }
@@ -340,23 +338,38 @@
 .configuration-icon-button::before {
   content: '';
   display: block;
-  width: 17px;
-  height: 16px;
-  background: var(--configuration-icon) center / contain no-repeat;
+  width: 20px;
+  height: 20px;
+  background: currentColor;
+  -webkit-mask: var(--configuration-icon) center / contain no-repeat;
+  mask: var(--configuration-icon) center / contain no-repeat;
 }
 
 #configuration-console .configuration-icon-button {
   flex: 0 0 2.25em;
   width: 2.25em;
   padding: 0.4em;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--color-text-btn-secondaire, #4c4c4c);
+  transition: color 0.15s, opacity 0.15s;
 }
 
-.configuration-icon-button[data-icon="refresh"]::before {
-  width: 20px;
-  height: 20px;
-  background: currentColor;
-  -webkit-mask: url('../icons/refresh.svg') center / contain no-repeat;
-  mask: url('../icons/refresh.svg') center / contain no-repeat;
+#configuration-console .configuration-icon-button:not(:disabled):hover {
+  background: transparent;
+  color: var(--color-flashy-principale, #176d8c);
+  opacity: 0.8;
+}
+
+#configuration-console .configuration-icon-button:focus-visible {
+  outline: 2px solid var(--color-flashy-principale, #176d8c);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+.configuration-icon-button[data-icon="refresh"] {
+  --configuration-icon: url('../icons/refresh.svg');
 }
 
 .configuration-command-icon {
@@ -370,15 +383,15 @@
 }
 
 .configuration-icon-button[data-icon="show"] {
-  --configuration-icon: url('../../util/icons/visible.gif');
+  --configuration-icon: url('../icons/visibility.svg');
 }
 
 .configuration-icon-button[data-icon="hide"] {
-  --configuration-icon: url('../../util/icons/lock.gif');
+  --configuration-icon: url('../icons/visibility-off.svg');
 }
 
 .configuration-icon-button[data-icon="help"] {
-  --configuration-icon: url('../../util/icons/help2.png');
+  --configuration-icon: url('../icons/information.svg');
 }
 
 .configuration-modified-filter {
