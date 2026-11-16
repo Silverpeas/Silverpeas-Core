@@ -391,3 +391,34 @@ test('shows standalone information and refresh icons without a button background
     }
   } finally { await context.close(); }
 });
+
+test('explains persistence selection and aligns row controls and XML refresh vertically', async () => {
+  const {context, page} = await fixture();
+  try {
+    assert.equal(await page.locator('#configuration-selection-help').textContent(),
+        'Cases à cocher : sélectionner les paramètres à conserver après réinstallation.');
+    for (const control of await page.locator('.configuration-key-control').all()) {
+      const checkbox = control.locator('input[type="checkbox"]');
+      assert.equal(await checkbox.getAttribute('aria-describedby'), 'configuration-selection-help');
+      const box = await checkbox.boundingBox();
+      const label = await control.locator('label').boundingBox();
+      assert.ok(Math.abs(box.y + box.height / 2 - label.y - label.height / 2) <= 1);
+      const info = control.locator('.configuration-help button');
+      if (await info.count()) {
+        const icon = await info.boundingBox();
+        assert.ok(Math.abs(box.y + box.height / 2 - icon.y - icon.height / 2) <= 1);
+      }
+    }
+    for (const width of [1280, 600]) {
+      await page.setViewportSize({width, height : 900});
+      const select = await page.locator('#configuration-persistence-target').boundingBox();
+      const refresh = await page.locator('#configuration-persistence-refresh').boundingBox();
+      assert.ok(Math.abs(select.y + select.height / 2 - refresh.y - refresh.height / 2) <= 1);
+    }
+    if (process.env.CONFIGURATION_SCREENSHOT) {
+      await page.setViewportSize({width : 1280, height : 900});
+      await page.waitForLoadState('networkidle');
+      await page.screenshot({path : process.env.CONFIGURATION_SCREENSHOT, fullPage : true});
+    }
+  } finally { await context.close(); }
+});

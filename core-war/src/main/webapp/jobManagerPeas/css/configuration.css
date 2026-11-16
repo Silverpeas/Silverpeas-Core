@@ -302,7 +302,7 @@
 
 .configuration-persistence select {
   max-width: 100%;
-  margin: 0.5rem;
+  margin: 0;
 }
 
 .configuration-persistence .configuration-error {
@@ -312,7 +312,8 @@
 #configuration-properties input.configuration-persistence-check {
   width: auto;
   padding: 0;
-  margin: 0 0.5rem 0 0;
+  margin: 0;
+  flex: 0 0 auto;
 }
 
 /* Use Silverpeas button classes and theme variables for every command. */
@@ -414,4 +415,48 @@
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
+}
+
+.configuration-key-control,
+.configuration-persistence-target-control,
+.configuration-persistence-target-picker {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.configuration-key-control > label {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  line-height: 1.4;
+}
+
+.configuration-key-control .configuration-help {
+  display: inline-flex;
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+.configuration-persistence-target-control {
+  flex-wrap: wrap;
+}
+
+.configuration-persistence-target-control > label {
+  margin: 0;
+}
+
+.configuration-persistence-target-picker {
+  min-width: 0;
+  max-width: 100%;
+  gap: 0.25rem;
+}
+
+.configuration-persistence-target-picker select {
+  min-width: 0;
+}
+
+.configuration-selection-help {
+  color: var(--color-text-second-niveau, #626262);
+  line-height: 1.5;
 }

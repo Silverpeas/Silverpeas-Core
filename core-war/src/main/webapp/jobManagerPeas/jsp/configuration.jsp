@@ -77,6 +77,7 @@
           <span><fmt:message key="modifiedOnly"/></span>
         </label>
       </div>
+      <p id="configuration-selection-help" class="configuration-selection-help"><fmt:message key="selectionHelp"/></p>
       <div class="configuration-table-scroll">
         <table id="configuration-properties">
           <thead><tr>
@@ -113,9 +114,13 @@
       <section class="configuration-persistence" aria-label="<fmt:message key='persistenceTitle'/>">
         <h3><fmt:message key="persistenceTitle"/></h3>
         <p><fmt:message key="persistenceExplanation"/></p>
-        <label for="configuration-persistence-target"><fmt:message key="persistenceTarget"/></label>
-        <select id="configuration-persistence-target" disabled></select>
-        <button id="configuration-persistence-refresh" type="button" class="sp_button configuration-command configuration-icon-button" data-icon="refresh" title="<fmt:message key='persistenceRefresh'/>"><span class="configuration-visually-hidden"><fmt:message key="persistenceRefresh"/></span></button>
+        <div class="configuration-persistence-target-control">
+          <label for="configuration-persistence-target"><fmt:message key="persistenceTarget"/></label>
+          <div class="configuration-persistence-target-picker">
+            <select id="configuration-persistence-target" disabled></select>
+            <button id="configuration-persistence-refresh" type="button" class="sp_button configuration-command configuration-icon-button" data-icon="refresh" title="<fmt:message key='persistenceRefresh'/>"><span class="configuration-visually-hidden"><fmt:message key="persistenceRefresh"/></span></button>
+          </div>
+        </div>
         <p id="configuration-persistence-count" aria-live="polite"></p>
         <button id="configuration-persist" class="sp_button configuration-command" type="button" disabled><fmt:message key="persist"/></button>
         <p id="configuration-persistence-message" role="status" aria-live="polite"></p>

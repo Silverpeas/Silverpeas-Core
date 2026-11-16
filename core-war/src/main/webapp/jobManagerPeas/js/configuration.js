@@ -212,6 +212,8 @@
         selection.type = 'checkbox';
         selection.className = 'configuration-persistence-check';
         selection.setAttribute('aria-label', this.text('persist') + ' : ' + key);
+        selection.setAttribute('aria-describedby', 'configuration-selection-help');
+        selection.title = this.text('persist') + ' : ' + key;
         selection.checked = this.selectedKeys.has(key);
         selection.addEventListener('change', () => {
           if (selection.checked) {
@@ -221,11 +223,14 @@
           }
           this.updateControls();
         });
-        keyCell.append(selection, label);
+        const keyControl = document.createElement('div');
+        keyControl.className = 'configuration-key-control';
+        keyControl.append(selection, label);
+        keyCell.append(keyControl);
         const documentation = this.file.documentation?.properties || {};
         const comment = Object.hasOwn(documentation, key) ? documentation[key] : '';
         if (comment) {
-          keyCell.append(this.help(comment, key));
+          keyControl.append(this.help(comment, key));
         }
         const valueCell = document.createElement('td');
         const sensitive = this.isSensitive(key);
