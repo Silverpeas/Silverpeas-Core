@@ -6,7 +6,7 @@ CREATE TABLE ST_User_2FA
     createdAt  TIMESTAMP     NOT NULL,
     updatedAt  TIMESTAMP     NOT NULL,
     lastUsedAt TIMESTAMP,
-    failedAttempts INT NOT NULL DEFAULT 0,
+    failedAttempts INT DEFAULT (0) NOT NULL,
     lockedUntil TIMESTAMP
 );
 

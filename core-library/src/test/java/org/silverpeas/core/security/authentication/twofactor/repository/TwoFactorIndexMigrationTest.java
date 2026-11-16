@@ -70,7 +70,7 @@ class TwoFactorIndexMigrationTest {
       assertEquals(Set.of("IDX_USER_2FA_RECOVERY_USER"),
           indexNames(connection, "ST_USER_2FA_RECOVERY"));
       assertEquals(List.of("USERID"), indexColumns(connection, "ST_USER_2FA_RECOVERY"));
-      assertEquals(Set.of("IDX_USER_2FA_TRUSTED_DEVICE_USER_TOKEN"),
+      assertEquals(Set.of("IDX_USER_2FA_TRUSTED_DEV_USER"),
           indexNames(connection, "ST_USER_2FA_TRUSTED_DEVICE"));
       assertEquals(List.of("USERID", "TOKENHASH"),
           indexColumns(connection, "ST_USER_2FA_TRUSTED_DEVICE"));
