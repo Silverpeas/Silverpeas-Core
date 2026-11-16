@@ -111,11 +111,21 @@
         <button id="configuration-cancel" type="button" disabled><fmt:message key="cancel"/></button>
         <button id="configuration-save" type="button" disabled><fmt:message key="save"/></button>
       </footer>
+      <section class="configuration-persistence" aria-label="<fmt:message key='persistenceTitle'/>">
+        <h3><fmt:message key="persistenceTitle"/></h3>
+        <p><fmt:message key="persistenceExplanation"/></p>
+        <label for="configuration-persistence-target"><fmt:message key="persistenceTarget"/></label>
+        <select id="configuration-persistence-target" disabled></select>
+        <button id="configuration-persistence-refresh" type="button"><fmt:message key="persistenceRefresh"/></button>
+        <p id="configuration-persistence-count" aria-live="polite"></p>
+        <button id="configuration-persist" type="button" disabled><fmt:message key="persist"/></button>
+        <p id="configuration-persistence-message" role="status" aria-live="polite"></p>
+      </section>
       <p class="configuration-application-note"><fmt:message key="applicationNote"/></p>
     </section>
   </div>
   <div id="configuration-messages" hidden>
-    <c:forTokens var="key" items="select,loading,loadError,saveError,saved,modified,count,discard,help,reset,reveal,hide,noFiles,noKeys,conflict,conflictExplanation,rebased,removed,absent,forbidden,invalid,notFound" delims=",">
+    <c:forTokens var="key" items="select,loading,loadError,saveError,saved,modified,count,discard,help,reset,reveal,hide,noFiles,noKeys,conflict,conflictExplanation,rebased,removed,absent,forbidden,invalid,notFound,persist,persistenceCount,persistenceNew,persistenceSaved,persistenceError,persistenceConflict,persistenceLoadError,persistenceSaveFirst" delims=",">
       <span data-message="${key}"><fmt:message key="${key}"/></span>
     </c:forTokens>
   </div>

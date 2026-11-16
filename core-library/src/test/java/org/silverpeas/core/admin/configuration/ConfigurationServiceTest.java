@@ -49,6 +49,8 @@ class ConfigurationServiceTest {
 
   @TestManagedMock
   private ConfigurationFileRepository repository;
+  @TestManagedMock
+  private CustomSettingsRepository customSettings;
   private UserProvider users;
   @TestedBean
   private ConfigurationService service;
@@ -69,7 +71,7 @@ class ConfigurationServiceTest {
     when(users.getCurrentRequester()).thenReturn(administrator);
     when(administrator.isAccessAdmin()).thenReturn(false);
     assertAccessDenied();
-    verifyNoInteractions(repository);
+    verifyNoInteractions(repository, customSettings);
   }
 
   @Test
@@ -153,5 +155,35 @@ class ConfigurationServiceTest {
     assertThrows(SecurityException.class, () -> service.list());
     assertThrows(SecurityException.class, () -> service.read("general.properties"));
     assertThrows(SecurityException.class, () -> service.update("general.properties", "", Map.of()));
+    assertThrows(SecurityException.class, () -> service.getPersistenceTargets());
+    assertThrows(SecurityException.class,
+        () -> service.persist("general.properties", "", java.util.Set.of("flag"), null));
+  }
+
+  @Test
+  void persistsOnlySelectedSavedValuesAndDoesNotUpdateRuntimeProperties() throws IOException {
+    var target = new CustomSettingsTarget("Company.xml", "xml-before", true);
+    var saved = new CustomSettingsTarget("Company.xml", "xml-after", true);
+    when(customSettings.list()).thenReturn(List.of(target));
+    when(repository.read("general.properties")).thenReturn(new ConfigurationFile(
+        "general.properties", "current", Map.of("flag", "true", "unselected", "retained")));
+    when(customSettings.persist(target, "general.properties", Map.of("flag", "true"))).thenReturn(saved);
+    assertEquals(List.of(target), service.getPersistenceTargets());
+    assertEquals(saved, service.persist("general.properties", "current", java.util.Set.of("flag"), target));
+    verify(customSettings).persist(target, "general.properties", Map.of("flag", "true"));
+    verify(repository, never()).update(anyString(), anyString(), anyMap());
+  }
+
+  @Test
+  void rejectsStaleOrInvalidSelectionsBeforeWritingXml() throws IOException {
+    when(repository.read("general.properties")).thenReturn(new ConfigurationFile(
+        "general.properties", "current", Map.of("flag", "true")));
+    assertThrows(ConcurrentModificationException.class,
+        () -> service.persist("general.properties", "stale", java.util.Set.of("flag"), null));
+    assertThrows(IllegalArgumentException.class,
+        () -> service.persist("general.properties", "current", java.util.Set.of(), null));
+    assertThrows(IllegalArgumentException.class,
+        () -> service.persist("general.properties", "current", java.util.Set.of("unknown"), null));
+    verifyNoInteractions(customSettings);
   }
 }

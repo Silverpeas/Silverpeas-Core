@@ -28,12 +28,14 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.silverpeas.core.admin.configuration.ConfigurationService;
+import org.silverpeas.core.admin.configuration.CustomSettingsTarget;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.UserPrivilegeValidation;
@@ -43,6 +45,7 @@ import java.io.IOException;
 import java.nio.file.NoSuchFileException;
 import java.util.ConcurrentModificationException;
 import java.util.Map;
+import java.util.Set;
 
 /** General-administrator access to installed configuration files and their documentation. */
 @WebService
@@ -58,6 +61,26 @@ public class ConfigurationResource extends RESTWebService {
   @jakarta.ws.rs.Produces(MediaType.APPLICATION_JSON)
   public Response list() {
     return respond(service::list);
+  }
+
+  @GET
+  @Path("persistence")
+  @jakarta.ws.rs.Produces(MediaType.APPLICATION_JSON)
+  public Response persistenceTargets() {
+    return respond(service::getPersistenceTargets);
+  }
+
+  @POST
+  @Path("persistence")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @jakarta.ws.rs.Produces(MediaType.APPLICATION_JSON)
+  public Response persist(PersistenceRequest request) {
+    return respond(() -> {
+      if (request == null) {
+        throw new IllegalArgumentException("A persistence selection is required");
+      }
+      return service.persist(request.path(), request.revision(), request.keys(), request.target());
+    });
   }
 
   @GET
@@ -150,6 +173,17 @@ public class ConfigurationResource extends RESTWebService {
     public String toString() {
       return "Configuration update";
     }
+  }
+
+  /**
+   * A selection of saved values to merge into an installation script, without client-supplied values.
+   * @param path relative properties path
+   * @param revision expected runtime file revision
+   * @param keys selected existing property keys
+   * @param target selected XML file and expected revision
+   */
+  public record PersistenceRequest(String path, String revision, Set<String> keys,
+                                   CustomSettingsTarget target) {
   }
 
   @FunctionalInterface

@@ -303,3 +303,34 @@
     max-height: none;
   }
 }
+
+.configuration-persistence {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--configuration-border);
+  border-radius: 4px;
+  background: #f3f6f8;
+}
+
+.configuration-persistence h3 {
+  margin-top: 0;
+}
+
+.configuration-persistence p {
+  line-height: 1.5;
+}
+
+.configuration-persistence select {
+  max-width: 100%;
+  margin: 0.5rem;
+}
+
+.configuration-persistence .configuration-error {
+  color: #a62828;
+}
+
+#configuration-properties input.configuration-persistence-check {
+  width: auto;
+  padding: 0;
+  margin: 0 0.5rem 0 0;
+}

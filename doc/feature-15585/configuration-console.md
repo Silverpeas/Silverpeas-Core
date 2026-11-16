@@ -44,6 +44,43 @@ existants. Les réponses de configuration, y compris les erreurs, portent `Cache
 Aucune valeur n'est placée dans les URL, dans les messages d'erreur ou dans la représentation
 textuelle des objets de configuration.
 
+## Pérenniser les paramètres après un `clean install`
+
+L'installation peut reconstruire les properties à partir des valeurs livrées. Le bloc
+**Conserver après réinstallation** utilise le mécanisme XML natif de Silverpeas Setup :
+
+1. Modifier puis enregistrer les paramètres courants.
+2. Cocher les clés à conserver. Les clés modifiées sont présélectionnées après enregistrement.
+3. Choisir le XML de personnalisation puis cliquer sur **Pérenniser la sélection**.
+
+La console découvre les XML `silverpeas-settings` de personnalisation dans
+`$SILVERPEAS_HOME/configuration/silverpeas`, même s'ils portent un autre nom que
+`CustomerSettings.xml`. Le fichier standard `00-SilverpeasSettings.xml`, le préfixe réservé
+`00-` et les documents déclarés `product="Silverpeas"` ne sont pas proposés comme cibles.
+Si aucun XML personnalisé n'existe, elle propose la création de `CustomerSettings.xml`.
+S'il en existe plusieurs, le dernier dans l'ordre alphabétique d'exécution est présélectionné ;
+l'administrateur peut choisir une autre cible. Un XML exécuté plus tard qui redéfinit les clés
+avec d'autres valeurs empêche la pérennisation dans une cible antérieure.
+
+La fusion met à jour les paramètres sélectionnés dans les `fileset` / `configfile` existants,
+ou ajoute les entrées manquantes. Les racines telles que
+`${SILVERPEAS_HOME}/properties/org/silverpeas/` et leurs noms de fichiers relatifs sont reconnus.
+Les autres règles, les éléments `xmlfile`, les commentaires XML et l'encodage déclaré restent
+conservés. La mise en forme du document peut être normalisée par la sérialisation XML.
+
+Seules les clés explicitement sélectionnées sont exportées. Les valeurs sont relues côté serveur
+dans le properties enregistré et ne proviennent pas du corps de la requête. Cette action ne change
+pas le fichier properties courant et ne lance pas une installation. Les révisions du properties
+et du XML sont contrôlées avant la fusion ; si elles ont changé, la sélection est conservée et
+il faut recharger le fichier ou actualiser la liste des XML avant de réessayer.
+Un XML mal formé, contenant une DTD, ou inaccessible n'est pas écrasé. Les liens symboliques
+et les chemins sortant des répertoires de configuration ne sont pas acceptés.
+
+La compatibilité a été vérifiée avec le véritable `XmlSettingsScript` de Silverpeas Setup :
+un XML généré a été réappliqué sur un répertoire de test dont les properties avaient été remis
+aux valeurs par défaut, avec contrôle des valeurs rétablies et des propriétés non sélectionnées.
+Cela ne constitue pas l'exécution d'un `clean install` complet sur une installation utilisateur.
+
 ## Socle et API REST
 
 Le point d'entrée métier est
@@ -56,6 +93,8 @@ relatifs au contexte web :
 | GET | `/services/admin/configuration/files` | Chemins relatifs triés des fichiers |
 | GET | `/services/admin/configuration/file?path=...` | Révision, propriétés et documentation |
 | PUT | `/services/admin/configuration/file` | Mise à jour de clés existantes |
+| GET | `/services/admin/configuration/persistence` | XML cibles : nom, révision, existence |
+| POST | `/services/admin/configuration/persistence` | Pérennisation des clés sélectionnées |
 
 Le corps du PUT contient `path` (chemin relatif), `revision` et `properties` (objet clé/valeur).
 Le chemin en paramètre de requête reste accepté pour les clients existants ; si les deux sont
@@ -70,6 +109,11 @@ et les lignes inchangées, ainsi que les modes POSIX lorsque le système les sup
 et les fichiers historiques ISO-8859-1 sont pris en charge suivant le comportement par défaut
 de `PropertyResourceBundle`. Les chemins sortant de la racine et les liens symboliques sont
 refusés. Aucune création ou suppression de clé n'est proposée ; une chaîne vide reste une valeur.
+
+Le POST de pérennisation reçoit `path`, `revision`, `keys` et `target` ; `target` contient
+`name`, `revision` et `exists`, issus de la découverte. Il retourne la nouvelle révision XML.
+Il n'accepte aucune valeur de propriété fournie par le client. Ses erreurs utilisent les mêmes
+statuts et protections que les autres opérations de configuration.
 
 ## Application immédiate et limites restantes
 
@@ -100,14 +144,14 @@ les erreurs et le contrat JSON, ainsi que la visibilité du menu selon les droit
 
 ```sh
 mvn -pl core-library,core-web -PskipMinify \
-  -Dtest=ConfigurationFileRepositoryTest,ConfigurationServiceTest,ConfigurationResourceTest \
+  -Dtest=CustomSettingsRepositoryTest,ConfigurationFileRepositoryTest,ConfigurationServiceTest,ConfigurationResourceTest \
   -Dsurefire.failIfNoSpecifiedTests=false install
 mvn -pl core-configuration,core-war -PskipMinify \
   -Dtest=JobManagerConfigurationMenuTest -Dsurefire.failIfNoSpecifiedTests=false package
 ```
 
 Les tests navigateur utilisent le balisage de la vraie JSP, les vrais JS/CSS, le constructeur de requêtes AJAX Silverpeas et une API isolée
-en mémoire. Ils couvrent les aides au clavier, l'affichage texte, les filtres, la sauvegarde,
+en mémoire. Ils couvrent la pérennisation XML, les aides au clavier, l'affichage texte, les filtres, la sauvegarde,
 l'annulation, les conflits, les erreurs et la navigation avec une saisie non enregistrée.
 Ils nécessitent Node.js et Playwright (avec Chromium installé, ou `CHROME_PATH` pointant
 sur un exécutable local).

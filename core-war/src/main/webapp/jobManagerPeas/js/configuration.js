@@ -39,8 +39,12 @@
       this.paths = [];
       this.openFolders = new Map();
       this.activeHelp = null;
+      this.selectedKeys = new Set();
+      this.targets = [];
+      this.persistenceBusy = false;
       this.bindEvents();
       this.loadFiles();
+      this.loadPersistenceTargets();
     }
 
     element(id) {
@@ -66,6 +70,8 @@
       this.element('save').addEventListener('click', () => this.save());
       this.element('compare').addEventListener('click', () => this.compare());
       this.element('rebase').addEventListener('click', () => this.rebase());
+      this.element('persist').addEventListener('click', () => this.persist());
+      this.element('persistence-refresh').addEventListener('click', () => this.loadPersistenceTargets());
       window.addEventListener('scroll', () => this.activeHelp?.position(), true);
       window.addEventListener('resize', () => this.activeHelp?.position());
       window.addEventListener('beforeunload', event => {
@@ -149,7 +155,7 @@
     }
 
     async loadFile(path) {
-      if (this.busy || (this.changes.size && !window.confirm(this.text('discard')))) {
+      if (this.busy || this.persistenceBusy || (this.changes.size && !window.confirm(this.text('discard')))) {
         return;
       }
       this.setBusy(true);
@@ -166,9 +172,13 @@
       }
     }
 
-    displayFile(file) {
+    displayFile(file, selectedKeys = []) {
       this.activeHelp?.hide();
       this.file = file;
+      this.selectedKeys = new Set(Array.from(selectedKeys).filter(key => Object.hasOwn(file.properties, key)));
+      if (this.targets.length) {
+        this.persistenceMessage('');
+      }
       this.latest = null;
       this.element('conflict').hidden = true;
       this.element('comparison').hidden = true;
@@ -198,7 +208,20 @@
         const label = document.createElement('label');
         label.htmlFor = 'configuration-value-' + index;
         label.textContent = key;
-        keyCell.append(label);
+        const selection = document.createElement('input');
+        selection.type = 'checkbox';
+        selection.className = 'configuration-persistence-check';
+        selection.setAttribute('aria-label', this.text('persist') + ' : ' + key);
+        selection.checked = this.selectedKeys.has(key);
+        selection.addEventListener('change', () => {
+          if (selection.checked) {
+            this.selectedKeys.add(key);
+          } else {
+            this.selectedKeys.delete(key);
+          }
+          this.updateControls();
+        });
+        keyCell.append(selection, label);
         const documentation = this.file.documentation?.properties || {};
         const comment = Object.hasOwn(documentation, key) ? documentation[key] : '';
         if (comment) {
@@ -232,7 +255,7 @@
         actions.append(reset);
         row.append(keyCell, valueCell, actions);
         body.append(row);
-        this.rows.set(key, {row, input, reset});
+        this.rows.set(key, {row, input, reset, selection});
       });
       this.updateControls();
     }
@@ -333,18 +356,27 @@
     }
 
     updateControls() {
-      this.element('save').disabled = this.busy || !this.changes.size || !this.element('conflict').hidden;
-      this.element('cancel').disabled = this.busy || !this.changes.size;
-      this.element('reload').disabled = this.busy || !this.file;
+      const busy = this.busy || this.persistenceBusy;
+      this.element('save').disabled = busy || !this.changes.size || !this.element('conflict').hidden;
+      this.element('cancel').disabled = busy || !this.changes.size;
+      this.element('reload').disabled = busy || !this.file;
+      this.element('persist').disabled = busy || !this.file || !this.selectedKeys.size ||
+          Boolean(this.changes.size) || !this.targets.length;
+      this.element('persistence-target').disabled = busy || !this.targets.length;
+      this.element('persistence-refresh').disabled = busy;
+      this.element('persistence-count').textContent = this.text('persistenceCount')
+          .replace('{0}', String(this.selectedKeys.size)) + (this.changes.size ? ' ' + this.text('persistenceSaveFirst') : '');
       this.element('key-filter').disabled = !this.file;
       this.element('modified-only').disabled = !this.file;
       this.element('count').textContent = this.text('count').replace('{0}', String(this.changes.size));
       this.root.querySelectorAll('[data-path], #configuration-conflict button').forEach(button => {
-        button.disabled = this.busy;
+        button.disabled = busy;
       });
-      this.rows.forEach(({row, input, reset}, key) => {
-        input.disabled = this.busy;
-        reset.disabled = this.busy || !this.changes.has(key);
+      this.rows.forEach(({row, input, reset, selection}, key) => {
+        input.disabled = busy;
+        reset.disabled = busy || !this.changes.has(key);
+        selection.disabled = busy;
+        selection.checked = this.selectedKeys.has(key);
         row.classList.toggle('configuration-modified', this.changes.has(key));
       });
       this.filterRows();
@@ -367,13 +399,13 @@
 
     setBusy(busy) {
       this.busy = busy;
-      this.root.setAttribute('aria-busy', String(busy));
+      this.root.setAttribute('aria-busy', String(busy || this.persistenceBusy));
       this.updateControls();
     }
 
     cancel() {
       this.changes.clear();
-      this.displayFile(this.file);
+      this.displayFile(this.file, this.selectedKeys);
       this.message('');
     }
 
@@ -389,8 +421,9 @@
               revision : this.file.revision,
               properties : Object.fromEntries(this.changes)
             });
+        const changedKeys = new Set([...this.selectedKeys, ...this.changes.keys()]);
         this.changes.clear();
-        this.displayFile(saved);
+        this.displayFile(saved, changedKeys);
         this.message('saved');
       } catch (error) {
         if (error.status === 409) {
@@ -445,13 +478,78 @@
           this.changes.delete(key);
         }
       });
-      this.displayFile(this.latest);
+      this.displayFile(this.latest, this.selectedKeys);
       this.message('rebased');
     }
 
     showError(error, fallback) {
       const key = new Map([[403, 'forbidden'], [400, 'invalid'], [404, 'notFound']]).get(error.status);
       this.message(key || fallback, true);
+    }
+
+    persistenceMessage(key, error = false, target = '', count = 0) {
+      const node = this.element('persistence-message');
+      node.textContent = key ? this.text(key).replace('{0}', target).replace('{1}', String(count)) : '';
+      node.classList.toggle('configuration-error', error);
+    }
+
+    renderPersistenceTargets(preferred) {
+      const select = this.element('persistence-target');
+      select.replaceChildren();
+      this.targets.forEach(target => {
+        const option = document.createElement('option');
+        option.value = target.name;
+        option.textContent = target.name + (target.exists ? '' : ' ' + this.text('persistenceNew'));
+        select.append(option);
+      });
+      select.value = this.targets.some(target => target.name === preferred) ? preferred
+          : (this.targets.at(-1)?.name || '');
+    }
+
+    async loadPersistenceTargets() {
+      if (this.persistenceBusy) {
+        return;
+      }
+      const preferred = this.element('persistence-target').value;
+      this.persistenceBusy = true;
+      this.updateControls();
+      try {
+        this.targets = await sp.ajaxRequest(this.api + '/persistence').sendAndPromiseJsonResponse();
+        this.renderPersistenceTargets(preferred);
+        this.persistenceMessage('');
+      } catch (error) {
+        this.targets = [];
+        this.renderPersistenceTargets();
+        this.persistenceMessage(error.status === 403 ? 'forbidden' : 'persistenceLoadError', true);
+      } finally {
+        this.persistenceBusy = false;
+        this.setBusy(this.busy);
+      }
+    }
+
+    async persist() {
+      const target = this.targets.find(item => item.name === this.element('persistence-target').value);
+      if (this.busy || this.persistenceBusy || this.changes.size || !this.selectedKeys.size || !target) {
+        return;
+      }
+      this.persistenceBusy = true;
+      this.updateControls();
+      const count = this.selectedKeys.size;
+      try {
+        const saved = await sp.ajaxRequest(this.api + '/persistence').byPostMethod()
+            .sendAndPromiseJsonResponse({path : this.file.path, revision : this.file.revision,
+              keys : Array.from(this.selectedKeys), target});
+        this.targets = this.targets.map(item => item.name === saved.name ? saved : item);
+        this.renderPersistenceTargets(saved.name);
+        this.selectedKeys.clear();
+        this.persistenceMessage('persistenceSaved', false, saved.name, count);
+      } catch (error) {
+        const key = error.status === 409 ? 'persistenceConflict' : 'persistenceError';
+        this.persistenceMessage(error.status === 403 ? 'forbidden' : key, true);
+      } finally {
+        this.persistenceBusy = false;
+        this.setBusy(this.busy);
+      }
     }
   }
 

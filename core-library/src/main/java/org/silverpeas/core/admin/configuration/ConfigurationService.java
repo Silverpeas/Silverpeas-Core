@@ -32,6 +32,9 @@ import org.silverpeas.kernel.bundle.ResourceLocator;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.ConcurrentModificationException;
 
 /**
  * Administrative entry point shared by the generic configuration console and future specialized
@@ -46,6 +49,8 @@ public class ConfigurationService {
 
   @Inject
   private ConfigurationFileRepository repository;
+  @Inject
+  private CustomSettingsRepository customSettings;
   @Inject
   private UserProvider users;
 
@@ -97,5 +102,41 @@ public class ConfigurationService {
     if (requester == null || !requester.isAccessAdmin()) {
       throw new SecurityException("Configuration requires a general administrator");
     }
+  }
+
+  /**
+   * Lists custom XML installation scripts that can retain settings across a clean installation.
+   * @return targets in installation execution order, or the proposed default filename
+   * @throws IOException if discovery fails
+   */
+  public List<CustomSettingsTarget> getPersistenceTargets() throws IOException {
+    checkAdministrator();
+    return customSettings.list();
+  }
+
+  /**
+   * Retains selected saved settings in an installation XML script. Values are read on the server,
+   * never supplied by the caller, and the runtime properties file is not modified.
+   * @param path relative properties file path
+   * @param revision revision of the saved file shown in the editor
+   * @param keys existing keys explicitly selected by the administrator
+   * @param target XML destination and expected revision
+   * @return updated XML destination and revision
+   * @throws IOException if reading or writing fails
+   */
+  public CustomSettingsTarget persist(String path, String revision, Set<String> keys,
+      CustomSettingsTarget target) throws IOException {
+    checkAdministrator();
+    var file = repository.read(path);
+    if (!file.revision().equals(revision)) {
+      throw new ConcurrentModificationException("Runtime configuration changed; reload before persisting");
+    }
+    if (keys == null || keys.isEmpty() || keys.stream().anyMatch(java.util.Objects::isNull) ||
+        !file.properties().keySet().containsAll(keys)) {
+      throw new IllegalArgumentException("Select existing saved properties");
+    }
+    var selected = new TreeMap<String, String>();
+    keys.forEach(key -> selected.put(key, file.properties().get(key)));
+    return customSettings.persist(target, path, selected);
   }
 }

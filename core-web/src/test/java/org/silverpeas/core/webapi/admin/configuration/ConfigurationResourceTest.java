@@ -30,6 +30,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.configuration.ConfigurationFile;
 import org.silverpeas.core.admin.configuration.ConfigurationService;
+import org.silverpeas.core.admin.configuration.CustomSettingsTarget;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.test.unit.extention.JEETestContext;
 import org.silverpeas.kernel.test.annotations.TestManagedMock;
@@ -151,6 +152,34 @@ class ConfigurationResourceTest {
     assertStatus(403, () -> resource.read("file"));
     assertStatus(403, () -> resource.update("file", null));
     assertStatus(403, () -> resource.validateUserAuthorization(null));
+    assertStatus(403, () -> resource.persistenceTargets());
+    assertStatus(403, () -> resource.persist(null));
+  }
+
+  @Test
+  void discoversAndUpdatesCustomXmlWithOnlyASelectionOfKeys() throws IOException {
+    var target = new CustomSettingsTarget("Company.xml", "before", true);
+    var saved = new CustomSettingsTarget("Company.xml", "after", true);
+    var keys = java.util.Set.of("flag");
+    when(service.getPersistenceTargets()).thenReturn(List.of(target));
+    when(service.persist("general.properties", "revision", keys, target)).thenReturn(saved);
+    assertEquals(List.of(target), resource.persistenceTargets().getEntity());
+    var response = resource.persist(new ConfigurationResource.PersistenceRequest(
+        "general.properties", "revision", keys, target));
+    assertEquals(saved, response.getEntity());
+    assertEquals("no-store", response.getHeaderString("Cache-Control"));
+    verify(service).persist("general.properties", "revision", keys, target);
+  }
+
+  @Test
+  void persistenceRejectsNullPayloadAndReportsXmlConflicts() throws IOException {
+    assertStatus(400, () -> resource.persist(null));
+    var target = new CustomSettingsTarget("Company.xml", "old", true);
+    var keys = java.util.Set.of("flag");
+    when(service.persist("general.properties", "revision", keys, target))
+        .thenThrow(new ConcurrentModificationException("private XML content"));
+    assertStatus(409, () -> resource.persist(new ConfigurationResource.PersistenceRequest(
+        "general.properties", "revision", keys, target)));
   }
 
   private void assertStatus(int status, org.junit.jupiter.api.function.Executable operation) {
