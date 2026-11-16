@@ -110,10 +110,11 @@ async function fixture(options = {}) {
       return route.fulfill({contentType : url.pathname.endsWith('.js') ? 'text/javascript' : 'text/css',
         body : fs.readFileSync(path.join(webapp, url.pathname), 'utf8')});
     }
-    if (/\.(png|gif)$/.test(url.pathname)) {
+    if (/\.(png|gif|svg)$/.test(url.pathname)) {
       const image = path.join(webapp, url.pathname);
       return fs.existsSync(image) ? route.fulfill({body : fs.readFileSync(image),
-        contentType : url.pathname.endsWith('.png') ? 'image/png' : 'image/gif'})
+        contentType : url.pathname.endsWith('.svg') ? 'image/svg+xml'
+            : (url.pathname.endsWith('.png') ? 'image/png' : 'image/gif')})
           : route.fulfill({status : 404, body : ''});
     }
     if (url.pathname.endsWith('/files')) {
@@ -319,6 +320,34 @@ test('uses Silverpeas buttons and icons with accessible names and centers the ch
     });
     assert.equal(colors[0], colors[1]);
     if (process.env.CONFIGURATION_SCREENSHOT) {
+      await page.screenshot({path : process.env.CONFIGURATION_SCREENSHOT, fullPage : true});
+    }
+  } finally { await context.close(); }
+});
+
+
+test('offers a single global undo action and uses scalable refresh and undo icons', async () => {
+  const {context, page} = await fixture();
+  try {
+    assert.equal(await page.locator('#configuration-properties thead th').count(), 2);
+    assert.equal(await page.locator('#configuration-properties tbody td button:not(.configuration-reveal)').count(), 0);
+    const cancel = page.getByRole('button', {name : 'Annuler les modifications', exact : true});
+    assert.equal(await cancel.locator('.configuration-visually-hidden').count(), 0);
+    assert.equal(await cancel.isDisabled(), true);
+    await inputFor(page, 'enabled').fill('true');
+    await inputFor(page, 'description').fill('new description');
+    await cancel.click();
+    assert.equal(await inputFor(page, 'enabled').inputValue(), 'false');
+    assert.equal(await inputFor(page, 'description').inputValue(), '<img src=x onerror=alert(1)>');
+    assert.equal(await cancel.isDisabled(), true);
+    const masks = await page.evaluate(() => [
+      getComputedStyle(document.querySelector('#configuration-reload'), '::before').maskImage,
+      getComputedStyle(document.querySelector('#configuration-cancel .configuration-command-icon')).maskImage
+    ]);
+    assert.ok(masks[0].includes('/jobManagerPeas/icons/refresh.svg'));
+    assert.ok(masks[1].includes('/jobManagerPeas/icons/undo.svg'));
+    if (process.env.CONFIGURATION_SCREENSHOT) {
+      await inputFor(page, 'enabled').fill('true');
       await page.screenshot({path : process.env.CONFIGURATION_SCREENSHOT, fullPage : true});
     }
   } finally { await context.close(); }

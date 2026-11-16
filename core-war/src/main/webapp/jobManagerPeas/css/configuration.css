@@ -164,10 +164,6 @@
   overflow-wrap: anywhere;
 }
 
-#configuration-properties td:last-child {
-  width: 1%;
-}
-
 #configuration-console input[type="search"],
 #configuration-properties textarea,
 #configuration-properties input {
@@ -330,15 +326,14 @@
   font: inherit;
 }
 
-#configuration-console .configuration-icon-button {
-  flex: 0 0 2.25em;
-  width: 2.25em;
-  padding: 0.4em;
+#configuration-console .configuration-icon-button,
+#configuration-console .configuration-secondary-command {
   background: var(--bgColor-btn-secondaire, #f3f3f3);
   color: var(--color-text-btn-secondaire, #4c4c4c);
 }
 
-#configuration-console .configuration-icon-button:not(:disabled):hover {
+#configuration-console .configuration-icon-button:not(:disabled):hover,
+#configuration-console .configuration-secondary-command:not(:disabled):hover {
   background: var(--bgColor-btn-secondaire-hover, #e4e4e4);
 }
 
@@ -350,12 +345,28 @@
   background: var(--configuration-icon) center / contain no-repeat;
 }
 
-.configuration-icon-button[data-icon="refresh"] {
-  --configuration-icon: url('../../util/icons/refresh.gif');
+#configuration-console .configuration-icon-button {
+  flex: 0 0 2.25em;
+  width: 2.25em;
+  padding: 0.4em;
 }
 
-.configuration-icon-button[data-icon="undo"] {
-  --configuration-icon: url('../../util/icons/back.png');
+.configuration-icon-button[data-icon="refresh"]::before {
+  width: 20px;
+  height: 20px;
+  background: currentColor;
+  -webkit-mask: url('../icons/refresh.svg') center / contain no-repeat;
+  mask: url('../icons/refresh.svg') center / contain no-repeat;
+}
+
+.configuration-command-icon {
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  margin-right: 0.4rem;
+  background: currentColor;
+  -webkit-mask: url('../icons/undo.svg') center / contain no-repeat;
+  mask: url('../icons/undo.svg') center / contain no-repeat;
 }
 
 .configuration-icon-button[data-icon="show"] {

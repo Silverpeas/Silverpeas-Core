@@ -248,18 +248,9 @@
         } else {
           valueCell.append(input);
         }
-        const actions = document.createElement('td');
-        const reset = document.createElement('button');
-        reset.type = 'button';
-        this.setIconButton(reset, 'reset', 'undo');
-        reset.addEventListener('click', () => {
-          input.value = value;
-          this.changed(key, value);
-        });
-        actions.append(reset);
-        row.append(keyCell, valueCell, actions);
+        row.append(keyCell, valueCell);
         body.append(row);
-        this.rows.set(key, {row, input, reset, selection});
+        this.rows.set(key, {row, input, selection});
       });
       this.updateControls();
     }
@@ -384,9 +375,8 @@
       this.root.querySelectorAll('[data-path], #configuration-conflict button').forEach(button => {
         button.disabled = busy;
       });
-      this.rows.forEach(({row, input, reset, selection}, key) => {
+      this.rows.forEach(({row, input, selection}, key) => {
         input.disabled = busy;
-        reset.disabled = busy || !this.changes.has(key);
         selection.disabled = busy;
         selection.checked = this.selectedKeys.has(key);
         row.classList.toggle('configuration-modified', this.changes.has(key));

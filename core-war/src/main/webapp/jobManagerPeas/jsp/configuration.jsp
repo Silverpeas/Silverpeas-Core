@@ -82,7 +82,6 @@
           <thead><tr>
             <th scope="col"><fmt:message key="key"/></th>
             <th scope="col"><fmt:message key="value"/></th>
-            <th scope="col"><fmt:message key="actions"/></th>
           </tr></thead>
           <tbody></tbody>
         </table>
@@ -108,7 +107,7 @@
       <footer class="configuration-actions">
         <span id="configuration-count" aria-live="polite"></span>
         <button id="configuration-reload" type="button" class="sp_button configuration-command configuration-icon-button" data-icon="refresh" title="<fmt:message key='reload'/>" disabled><span class="configuration-visually-hidden"><fmt:message key="reload"/></span></button>
-        <button id="configuration-cancel" type="button" class="sp_button configuration-command configuration-icon-button" data-icon="undo" title="<fmt:message key='cancel'/>" disabled><span class="configuration-visually-hidden"><fmt:message key="cancel"/></span></button>
+        <button id="configuration-cancel" type="button" class="sp_button configuration-command configuration-secondary-command" disabled><span class="configuration-command-icon" aria-hidden="true"></span><fmt:message key="cancel"/></button>
         <button id="configuration-save" class="sp_button configuration-command" type="button" disabled><fmt:message key="save"/></button>
       </footer>
       <section class="configuration-persistence" aria-label="<fmt:message key='persistenceTitle'/>">
@@ -125,7 +124,7 @@
     </section>
   </div>
   <div id="configuration-messages" hidden>
-    <c:forTokens var="key" items="select,loading,loadError,saveError,saved,modified,count,discard,help,reset,reveal,hide,noFiles,noKeys,conflict,conflictExplanation,rebased,removed,absent,forbidden,invalid,notFound,persist,persistenceCount,persistenceNew,persistenceSaved,persistenceError,persistenceConflict,persistenceLoadError,persistenceSaveFirst" delims=",">
+    <c:forTokens var="key" items="select,loading,loadError,saveError,saved,modified,count,discard,help,reveal,hide,noFiles,noKeys,conflict,conflictExplanation,rebased,removed,absent,forbidden,invalid,notFound,persist,persistenceCount,persistenceNew,persistenceSaved,persistenceError,persistenceConflict,persistenceLoadError,persistenceSaveFirst" delims=",">
       <span data-message="${key}"><fmt:message key="${key}"/></span>
     </c:forTokens>
   </div>

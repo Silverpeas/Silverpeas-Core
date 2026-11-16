@@ -28,7 +28,7 @@ consulter ou modifier les fichiers.
 - Les clés contenant `password`, `passwd`, `secret`, `credential`, `token` ou `privateKey`
   (avec les séparateurs usuels pour ce dernier) sont masquées par défaut, avec un bouton
   Afficher/Masquer. Cette détection par nom n'est pas un catalogue exhaustif des secrets.
-- Annuler une ligne ou toutes les modifications restaure l'état ouvert, pas une valeur par
+- Annuler toutes les modifications restaure l'état ouvert, pas une valeur par
   défaut fournie par Silverpeas. Quitter un fichier modifié demande confirmation.
 - Enregistrer et appliquer transmet les seules clés modifiées avec la révision du fichier.
   Un fichier modifié entre-temps produit un conflit et conserve la saisie. La comparaison
