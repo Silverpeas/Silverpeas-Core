@@ -48,8 +48,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><fmt:message key="title"/></title>
   <view:looknfeel/>
-  <link rel="stylesheet" href="<c:url value='/jobManagerPeas/css/configuration.css'/>">
-  <script src="<c:url value='/jobManagerPeas/js/configuration.js?v=15585-search-2'/>" defer></script>
+  <link rel="stylesheet" href="<c:url value='/jobManagerPeas/css/configuration.css?v=15585-search-3'/>">
+  <script src="<c:url value='/jobManagerPeas/js/configuration.js?v=15585-search-3'/>" defer></script>
 </head>
 <body>
 <main id="configuration-console" data-api="${configurationApi}">
@@ -62,6 +62,7 @@
     <label for="configuration-global-key"><fmt:message key="globalSearch"/></label>
     <input id="configuration-global-key" type="search" autocomplete="off" required>
     <button id="configuration-search-button" type="button" class="sp_button configuration-command"><fmt:message key="search"/></button>
+    <button id="configuration-search-clear" type="button" class="sp_button configuration-command configuration-secondary-command"><fmt:message key="clearSearch"/></button>
   </div>
   <div id="configuration-search-results" role="region" aria-label="<fmt:message key='searchResults'/>" aria-live="polite"></div>
   <div class="configuration-layout">

@@ -440,10 +440,15 @@ test('global key search opens matching files and handles empty results', async (
   const {context, page} = await fixture();
   try {
     await page.locator('#configuration-global-key').fill('ENABLED');
-    await page.locator('#configuration-search button').click();
+    await page.locator('#configuration-search-button').click();
     const result = page.locator('#configuration-search-results button').filter({hasText : 'skin.enabled'});
     await result.waitFor();
-    assert.equal(await result.textContent(), 'skin.enabled — looks/aurora/skin.properties');
+    assert.equal(await result.locator('strong').textContent(), 'skin.enabled');
+    assert.equal(await result.locator('.configuration-result-path').textContent(), 'looks/aurora/skin.properties');
+    assert.equal(await result.evaluate(node => getComputedStyle(node).display), 'flex');
+    if (process.env.CONFIGURATION_SEARCH_SCREENSHOT) {
+      await page.screenshot({path : process.env.CONFIGURATION_SEARCH_SCREENSHOT, fullPage : true});
+    }
     await page.locator('#configuration-value-2').fill('unsaved');
     page.once('dialog', dialog => dialog.dismiss());
     await result.click();
@@ -454,7 +459,7 @@ test('global key search opens matching files and handles empty results', async (
     assert.equal(await page.locator('#configuration-key-filter').inputValue(), 'skin.enabled');
     assert.equal(await page.locator('#configuration-properties tbody tr:visible').count(), 1);
     await page.locator('#configuration-global-key').fill('missing-key');
-    await page.locator('#configuration-search button').click();
+    await page.locator('#configuration-search-button').click();
     await page.locator('#configuration-search-results').getByText(labels.noSearchResults, {exact : true}).waitFor();
   } finally {
     await context.close();
@@ -482,6 +487,21 @@ test('global search runs by click and Enter when native form submission is block
     assert.equal(new URL((await enteredRequest).url()).searchParams.get('key'), 'missing-key');
     await page.locator('#configuration-search-results').getByText(labels.noSearchResults, {exact : true}).waitFor();
     assert.equal(page.url(), 'http://configuration.test/');
+  } finally {
+    await context.close();
+  }
+});
+
+test('clearing global search removes results and restores keyboard focus', async () => {
+  const {context, page} = await fixture();
+  try {
+    await page.locator('#configuration-global-key').fill('enabled');
+    await page.locator('#configuration-search-button').click();
+    await page.locator('#configuration-search-results button').first().waitFor();
+    await page.locator('#configuration-search-clear').click();
+    assert.equal(await page.locator('#configuration-search-results').textContent(), '');
+    assert.equal(await page.locator('#configuration-global-key').inputValue(), '');
+    assert.equal(await page.locator('#configuration-global-key').evaluate(node => node === document.activeElement), true);
   } finally {
     await context.close();
   }

@@ -63,6 +63,12 @@
     }
 
     bindEvents() {
+      this.element('search-clear').addEventListener('click', () => {
+        this.searchSequence++;
+        this.element('global-key').value = '';
+        this.element('search-results').replaceChildren();
+        this.element('global-key').focus();
+      });
       this.element('search-button').addEventListener('click', () => this.searchKeys());
       this.element('global-key').addEventListener('keydown', event => {
         if (event.key === 'Enter') {
@@ -114,7 +120,13 @@
           const button = document.createElement('button');
           button.type = 'button';
           button.className = 'configuration-file';
-          button.textContent = key + ' — ' + path;
+          const keyLabel = document.createElement('strong');
+          keyLabel.className = 'configuration-result-key';
+          keyLabel.textContent = key;
+          const fileLabel = document.createElement('span');
+          fileLabel.className = 'configuration-result-path';
+          fileLabel.textContent = path;
+          button.append(keyLabel, fileLabel);
           button.addEventListener('click', async () => {
             if (await this.loadFile(path)) {
               this.element('key-filter').value = key;
