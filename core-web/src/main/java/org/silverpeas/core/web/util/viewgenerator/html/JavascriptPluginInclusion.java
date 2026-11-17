@@ -386,6 +386,7 @@ public class JavascriptPluginInclusion {
     includeJQuery(xhtml);
     xhtml.addElement(script(JAVASCRIPT_PATH + "/silverpeas.js"));
     xhtml.addElement(script(JAVASCRIPT_PATH + "/silverpeas-i18n.js"));
+    xhtml.addElement(script(JAVASCRIPT_PATH + "/silverpeas-latest-publications.js"));
     includeSecurityTokenizing(xhtml);
     includeA11y(xhtml, language);
     return xhtml;
@@ -393,7 +394,6 @@ public class JavascriptPluginInclusion {
 
   static ElementContainer includeCkeditorAddOns(final ElementContainer xhtml) {
     xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_IDENTITYCARD));
-    xhtml.addElement(script(JAVASCRIPT_PATH + "silverpeas-latest-publications.js"));
     return xhtml;
   }
 
