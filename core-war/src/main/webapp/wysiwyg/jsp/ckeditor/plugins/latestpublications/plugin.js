@@ -24,6 +24,7 @@
 
 CKEDITOR.plugins.add('latestpublications', {
   requires: 'widget,dialog',
+  icons: 'latestpublications',
   hidpi: true,
   lang: 'en,fr',
   init: function(editor) {
