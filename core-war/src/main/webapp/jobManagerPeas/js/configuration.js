@@ -42,6 +42,7 @@
       this.selectedKeys = new Set();
       this.targets = [];
       this.persistenceBusy = false;
+      this.searchSequence = 0;
       this.bindEvents();
       this.loadFiles();
       this.loadPersistenceTargets();
@@ -62,6 +63,14 @@
     }
 
     bindEvents() {
+      this.element('search').addEventListener('submit', event => {
+        event.preventDefault();
+        this.searchKeys();
+      });
+      this.element('global-key').addEventListener('input', () => {
+        this.searchSequence++;
+        this.element('search-results').replaceChildren();
+      });
       this.element('file-filter').addEventListener('input', () => this.renderTree());
       this.element('key-filter').addEventListener('input', () => this.filterRows());
       this.element('modified-only').addEventListener('change', () => this.filterRows());
@@ -80,6 +89,49 @@
           event.returnValue = '';
         }
       });
+    }
+
+    async searchKeys() {
+      const query = this.element('global-key').value.trim();
+      if (!query) {
+        return;
+      }
+      const sequence = ++this.searchSequence;
+      const container = this.element('search-results');
+      container.textContent = this.text('loading');
+      try {
+        const results = await sp.ajaxRequest(this.api + '/search').withParam('key', query)
+            .sendAndPromiseJsonResponse();
+        if (sequence !== this.searchSequence) {
+          return;
+        }
+        const list = document.createElement('ul');
+        Object.entries(results).forEach(([path, keys]) => keys.forEach(key => {
+          const item = document.createElement('li');
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'configuration-file';
+          button.textContent = key + ' — ' + path;
+          button.addEventListener('click', async () => {
+            if (await this.loadFile(path)) {
+              this.element('key-filter').value = key;
+              this.element('modified-only').checked = false;
+              this.filterRows();
+              this.rows.get(key)?.input.focus();
+            }
+          });
+          item.append(button);
+          list.append(item);
+        }));
+        container.replaceChildren(list);
+        if (!list.childElementCount) {
+          container.textContent = this.text('noSearchResults');
+        }
+      } catch (error) {
+        if (sequence === this.searchSequence) {
+          container.textContent = this.text('loadError');
+        }
+      }
     }
 
     async loadFiles() {
@@ -165,6 +217,7 @@
         this.changes.clear();
         this.displayFile(file);
         this.message('');
+        return true;
       } catch (error) {
         this.showError(error, 'loadError');
       } finally {

@@ -75,6 +75,17 @@ class ConfigurationResourceTest {
   }
 
   @Test
+  void searchesKeysWithoutCachingAndRequiresAdministrator() throws IOException {
+    var matches = Map.of("nested/general.properties", List.of("home.logo"));
+    when(service.search("logo")).thenReturn(matches);
+    var response = resource.search("logo");
+    assertEquals(matches, response.getEntity());
+    assertEquals("no-store", response.getHeaderString("Cache-Control"));
+    when(resource.user.isAccessAdmin()).thenReturn(false);
+    assertThrows(WebApplicationException.class, () -> resource.search("logo"));
+  }
+
+  @Test
   void savesTheFileIdentifiedInTheJsonBodyWithoutAQueryParameter() throws IOException {
     var file = new ConfigurationFile("org/general.properties", "revision", Map.of("flag", "true"));
     when(service.update(file.path(), "revision", file.properties())).thenReturn(file);

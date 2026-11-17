@@ -81,7 +81,8 @@
   margin-bottom: 1rem;
 }
 
-#configuration-tree ul {
+#configuration-tree ul,
+#configuration-search-results ul {
   list-style: none;
   margin: 0;
   padding-left: 1rem;
@@ -96,7 +97,8 @@
   cursor: pointer;
 }
 
-#configuration-tree button {
+#configuration-tree button,
+#configuration-search-results button {
   background: transparent;
   border: 0;
   text-align: left;
@@ -459,4 +461,16 @@
 .configuration-selection-help {
   color: var(--color-text-second-niveau, #626262);
   line-height: 1.5;
+}
+
+#configuration-search-results {
+  max-height: 30vh;
+  overflow: auto;
+  margin-bottom: 1rem;
+}
+
+#configuration-search-results button:hover,
+#configuration-search-results button:focus-visible {
+  background: #e6f2f7;
+  color: #155a75;
 }

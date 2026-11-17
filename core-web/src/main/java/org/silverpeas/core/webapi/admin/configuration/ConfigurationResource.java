@@ -64,6 +64,13 @@ public class ConfigurationResource extends RESTWebService {
   }
 
   @GET
+  @Path("search")
+  @jakarta.ws.rs.Produces(MediaType.APPLICATION_JSON)
+  public Response search(@QueryParam("key") String key) {
+    return respond(() -> service.search(key));
+  }
+
+  @GET
   @Path("persistence")
   @jakarta.ws.rs.Produces(MediaType.APPLICATION_JSON)
   public Response persistenceTargets() {

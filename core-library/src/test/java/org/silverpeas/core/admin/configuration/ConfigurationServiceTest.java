@@ -71,6 +71,7 @@ class ConfigurationServiceTest {
     when(users.getCurrentRequester()).thenReturn(administrator);
     when(administrator.isAccessAdmin()).thenReturn(false);
     assertAccessDenied();
+    assertThrows(SecurityException.class, () -> service.search("logo"));
     verifyNoInteractions(repository, customSettings);
   }
 
@@ -81,6 +82,20 @@ class ConfigurationServiceTest {
     when(repository.read(file.path())).thenReturn(file);
     assertEquals(List.of(file.path()), service.list());
     assertEquals(file, service.read(file.path()));
+  }
+
+  @Test
+  void searchesKeysAcrossFilesWithoutReturningValues() throws IOException {
+    when(repository.list()).thenReturn(List.of("a.properties", "nested/b.properties"));
+    when(repository.read("a.properties")).thenReturn(new ConfigurationFile(
+        "a.properties", "a", Map.of("logo.Path", "secret", "other", "logo")));
+    when(repository.read("nested/b.properties")).thenReturn(new ConfigurationFile(
+        "nested/b.properties", "b", Map.of("home.logo", "value")));
+    assertEquals(Map.of("a.properties", List.of("logo.Path"),
+        "nested/b.properties", List.of("home.logo")), service.search(" LOGO "));
+    assertTrue(service.search("missing").isEmpty());
+    assertThrows(IllegalArgumentException.class, () -> service.search(" "));
+    assertThrows(IllegalArgumentException.class, () -> service.search(null));
   }
 
   @Test

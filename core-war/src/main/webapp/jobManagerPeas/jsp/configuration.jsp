@@ -58,6 +58,12 @@
     <p><fmt:message key="intro"/></p>
   </header>
   <p id="configuration-message" role="status" aria-live="polite"></p>
+  <form id="configuration-search" class="configuration-filters">
+    <label for="configuration-global-key"><fmt:message key="globalSearch"/></label>
+    <input id="configuration-global-key" type="search" autocomplete="off" required>
+    <button type="submit" class="sp_button configuration-command"><fmt:message key="search"/></button>
+  </form>
+  <div id="configuration-search-results" role="region" aria-label="<fmt:message key='searchResults'/>" aria-live="polite"></div>
   <div class="configuration-layout">
     <nav class="configuration-files" aria-label="<fmt:message key='files'/>">
       <label for="configuration-file-filter"><fmt:message key="files"/></label>
@@ -129,7 +135,7 @@
     </section>
   </div>
   <div id="configuration-messages" hidden>
-    <c:forTokens var="key" items="select,loading,loadError,saveError,saved,modified,count,discard,help,reveal,hide,noFiles,noKeys,conflict,conflictExplanation,rebased,removed,absent,forbidden,invalid,notFound,persist,persistenceCount,persistenceNew,persistenceSaved,persistenceError,persistenceConflict,persistenceLoadError,persistenceSaveFirst" delims=",">
+    <c:forTokens var="key" items="noSearchResults,searchResults,select,loading,loadError,saveError,saved,modified,count,discard,help,reveal,hide,noFiles,noKeys,conflict,conflictExplanation,rebased,removed,absent,forbidden,invalid,notFound,persist,persistenceCount,persistenceNew,persistenceSaved,persistenceError,persistenceConflict,persistenceLoadError,persistenceSaveFirst" delims=",">
       <span data-message="${key}"><fmt:message key="${key}"/></span>
     </c:forTokens>
   </div>

@@ -97,6 +97,30 @@ public class ConfigurationService {
     return saved;
   }
 
+  /**
+   * Searches property keys across every installed properties file, without returning values.
+   * @param query case insensitive fragment of a property key
+   * @return matching keys grouped by relative file path
+   * @throws IOException if a configuration file cannot be read
+   */
+  public Map<String, List<String>> search(String query) throws IOException {
+    checkAdministrator();
+    if (query == null || query.isBlank()) {
+      throw new IllegalArgumentException("A property key fragment is required");
+    }
+    var fragment = query.strip().toLowerCase(java.util.Locale.ROOT);
+    var matches = new TreeMap<String, List<String>>();
+    for (var path : repository.list()) {
+      var keys = repository.read(path).properties().keySet().stream()
+          .filter(key -> key.toLowerCase(java.util.Locale.ROOT).contains(fragment))
+          .sorted().toList();
+      if (!keys.isEmpty()) {
+        matches.put(path, keys);
+      }
+    }
+    return matches;
+  }
+
   private void checkAdministrator() {
     var requester = users.getCurrentRequester();
     if (requester == null || !requester.isAccessAdmin()) {

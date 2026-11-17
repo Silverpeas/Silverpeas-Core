@@ -117,6 +117,15 @@ async function fixture(options = {}) {
             : (url.pathname.endsWith('.png') ? 'image/png' : 'image/gif')})
           : route.fulfill({status : 404, body : ''});
     }
+    if (url.pathname.endsWith('/search')) {
+      const key = url.searchParams.get('key').trim().toLowerCase();
+      const matches = Object.keys(file.properties).filter(value => value.toLowerCase().includes(key));
+      const results = matches.length ? {[file.path] : matches} : {};
+      if ('skin.enabled'.includes(key)) {
+        results['looks/aurora/skin.properties'] = ['skin.enabled'];
+      }
+      return route.fulfill({json : results});
+    }
     if (url.pathname.endsWith('/files')) {
       return route.fulfill({json : [file.path, 'looks/aurora/skin.properties']});
     }
@@ -134,6 +143,10 @@ async function fixture(options = {}) {
       return route.fulfill({json : targets});
     }
     if (url.pathname.endsWith('/file')) {
+      if (route.request().method() === 'GET' && url.searchParams.get('path') === 'looks/aurora/skin.properties') {
+        return route.fulfill({json : {path : 'looks/aurora/skin.properties', revision : 'skin',
+          properties : {'skin.enabled' : 'true'}}});
+      }
       if (route.request().method() === 'PUT') {
         const body = route.request().postDataJSON();
         writes.push(body);
@@ -421,4 +434,29 @@ test('explains persistence selection and aligns row controls and XML refresh ver
       await page.screenshot({path : process.env.CONFIGURATION_SCREENSHOT, fullPage : true});
     }
   } finally { await context.close(); }
+});
+
+test('global key search opens matching files and handles empty results', async () => {
+  const {context, page} = await fixture();
+  try {
+    await page.locator('#configuration-global-key').fill('ENABLED');
+    await page.locator('#configuration-search button').click();
+    const result = page.locator('#configuration-search-results button').filter({hasText : 'skin.enabled'});
+    await result.waitFor();
+    assert.equal(await result.textContent(), 'skin.enabled — looks/aurora/skin.properties');
+    await page.locator('#configuration-value-2').fill('unsaved');
+    page.once('dialog', dialog => dialog.dismiss());
+    await result.click();
+    assert.equal(await page.locator('#configuration-key-filter').inputValue(), '');
+    page.once('dialog', dialog => dialog.accept());
+    await result.click();
+    await page.waitForFunction(() => document.querySelector('#configuration-key-filter').value === 'skin.enabled');
+    assert.equal(await page.locator('#configuration-key-filter').inputValue(), 'skin.enabled');
+    assert.equal(await page.locator('#configuration-properties tbody tr:visible').count(), 1);
+    await page.locator('#configuration-global-key').fill('missing-key');
+    await page.locator('#configuration-search button').click();
+    await page.locator('#configuration-search-results').getByText(labels.noSearchResults, {exact : true}).waitFor();
+  } finally {
+    await context.close();
+  }
 });
