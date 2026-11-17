@@ -8,7 +8,7 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.contribution.publication.service.PublicationCriteria;
+import org.silverpeas.core.contribution.publication.dao.PublicationCriteria;
 
 import java.time.OffsetDateTime;
 import java.util.Arrays;
