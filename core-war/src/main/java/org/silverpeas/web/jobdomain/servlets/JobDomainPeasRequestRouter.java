@@ -65,6 +65,7 @@ import java.util.*;
 
 import static java.util.Collections.emptySet;
 import static org.silverpeas.core.admin.domain.DomainDriver.ActionConstants.*;
+import static org.silverpeas.core.web.token.SynchronizerTokenService.NAVIGATION_TOKEN_KEY;
 import static org.silverpeas.kernel.bundle.ResourceLocator.getSettingBundle;
 import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.kernel.util.StringUtil.isDefined;
@@ -378,7 +379,8 @@ public class JobDomainPeasRequestRouter extends
             String paramValue;
             while (parameters.hasMoreElements()) {
               paramName = parameters.nextElement();
-              if (!paramName.startsWith("Pagination") && !paramName.equals(SESSION_TOKEN_KEY)) {
+              if (!paramName.startsWith("Pagination") && !paramName.equals(SESSION_TOKEN_KEY)
+                  && !paramName.equals(ADMIN_TOKEN) && !paramName.equals(NAVIGATION_TOKEN_KEY)) {
                 paramValue = request.getParameter(paramName);
                 if (isDefined(paramValue)) {
                   query.put(paramName, paramValue);
