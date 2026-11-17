@@ -63,9 +63,12 @@
     }
 
     bindEvents() {
-      this.element('search').addEventListener('submit', event => {
-        event.preventDefault();
-        this.searchKeys();
+      this.element('search-button').addEventListener('click', () => this.searchKeys());
+      this.element('global-key').addEventListener('keydown', event => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          this.searchKeys();
+        }
       });
       this.element('global-key').addEventListener('input', () => {
         this.searchSequence++;

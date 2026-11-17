@@ -460,3 +460,29 @@ test('global key search opens matching files and handles empty results', async (
     await context.close();
   }
 });
+
+test('global search runs by click and Enter when native form submission is blocked', async () => {
+  const {context, page} = await fixture();
+  try {
+    await page.evaluate(() => {
+      document.addEventListener('submit', event => {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }, true);
+    });
+    const input = page.locator('#configuration-global-key');
+    await input.fill('ENABLED');
+    const clickedRequest = page.waitForRequest(request => new URL(request.url()).pathname.endsWith('/search'));
+    await page.locator('#configuration-search-button').click();
+    assert.equal(new URL((await clickedRequest).url()).searchParams.get('key'), 'ENABLED');
+    await page.locator('#configuration-search-results button').first().waitFor();
+    await input.fill('missing-key');
+    const enteredRequest = page.waitForRequest(request => new URL(request.url()).pathname.endsWith('/search'));
+    await input.press('Enter');
+    assert.equal(new URL((await enteredRequest).url()).searchParams.get('key'), 'missing-key');
+    await page.locator('#configuration-search-results').getByText(labels.noSearchResults, {exact : true}).waitFor();
+    assert.equal(page.url(), 'http://configuration.test/');
+  } finally {
+    await context.close();
+  }
+});

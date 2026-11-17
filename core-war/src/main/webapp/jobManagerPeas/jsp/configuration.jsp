@@ -49,7 +49,7 @@
   <title><fmt:message key="title"/></title>
   <view:looknfeel/>
   <link rel="stylesheet" href="<c:url value='/jobManagerPeas/css/configuration.css'/>">
-  <script src="<c:url value='/jobManagerPeas/js/configuration.js'/>" defer></script>
+  <script src="<c:url value='/jobManagerPeas/js/configuration.js?v=15585-search-2'/>" defer></script>
 </head>
 <body>
 <main id="configuration-console" data-api="${configurationApi}">
@@ -58,11 +58,11 @@
     <p><fmt:message key="intro"/></p>
   </header>
   <p id="configuration-message" role="status" aria-live="polite"></p>
-  <form id="configuration-search" class="configuration-filters">
+  <div id="configuration-search" class="configuration-filters" role="search">
     <label for="configuration-global-key"><fmt:message key="globalSearch"/></label>
     <input id="configuration-global-key" type="search" autocomplete="off" required>
-    <button type="submit" class="sp_button configuration-command"><fmt:message key="search"/></button>
-  </form>
+    <button id="configuration-search-button" type="button" class="sp_button configuration-command"><fmt:message key="search"/></button>
+  </div>
   <div id="configuration-search-results" role="region" aria-label="<fmt:message key='searchResults'/>" aria-live="polite"></div>
   <div class="configuration-layout">
     <nav class="configuration-files" aria-label="<fmt:message key='files'/>">
