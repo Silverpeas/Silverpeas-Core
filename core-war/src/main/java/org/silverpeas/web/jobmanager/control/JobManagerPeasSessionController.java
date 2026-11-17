@@ -38,6 +38,7 @@ import org.silverpeas.web.jobmanager.JobManagerSettings;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +54,7 @@ import static org.silverpeas.web.jobmanager.JobManagerService.LEVEL_SERVICE;
  */
 public class JobManagerPeasSessionController extends AbstractAdminComponentSessionController {
 
+  private static final List<String> SERVICE_ORDER = List.of("1", "2", "3", "5", "4", "50");
   private static final String DEFAULT_SERVICE_ID = "1";
   private static final String MAIN_OWN_BODY_LAYOUT = "Main?ownBodyLayout=true";
   private transient Map<String, JobManagerService> services;
@@ -211,8 +213,8 @@ public class JobManagerPeasSessionController extends AbstractAdminComponentSessi
             + "/applicationIndexer/jsp/applicationIndexer.jsp", null, false);
     JobManagerService jcipher = new JobManagerService("49", "JCIPHER", LEVEL_OPERATION, webContext
         + "/admin/jsp/cipherkey.jsp", null, false);
-    JobManagerService jabout = new JobManagerService("50", "JAB", LEVEL_OPERATION, webContext
-        + "/silverpeasinfos.jsp", null, false);
+    JobManagerService jabout = new JobManagerService("50", "JAB", LEVEL_SERVICE, webContext
+        + "/silverpeasinfos.jsp", new String[0], false);
     JobManagerService variables = new JobManagerService("51", "JDV", LEVEL_OPERATION, webContext
         + "/Rvariables/jsp/Main", null, false);
     JobManagerService wbe = new JobManagerService("53", "JWBE", LEVEL_OPERATION, webContext
@@ -275,14 +277,13 @@ public class JobManagerPeasSessionController extends AbstractAdminComponentSessi
       setServicesWithIds(ids, jst);
       setServicesWithIds(ids, jindex);
       setServicesWithIds(ids, jcipher);
-      setServicesWithIds(ids, jabout);
 
       jTools = new JobManagerService("4", "JTOOLS", LEVEL_SERVICE, null,
           ids.toArray(new String[0]), false);
       setServices(jTools);
     }
 
-    setServices(jDesigner, jdp, jspp, jsp, jSTAT, jSTAT1, jSTAT2, jSTAT3, jSTAT4);
+    setServices(jDesigner, jdp, jspp, jsp, jSTAT, jSTAT1, jSTAT2, jSTAT3, jSTAT4, jabout);
     return pdcServicesAdded;
   }
 
@@ -374,6 +375,9 @@ public class JobManagerPeasSessionController extends AbstractAdminComponentSessi
         listServices.add(jms);
       }
     }
+    if (level == LEVEL_SERVICE) {
+      listServices.sort(Comparator.comparingInt(service -> SERVICE_ORDER.indexOf(service.getId())));
+    }
     return listServices.toArray(new JobManagerService[0]);
   }
 
@@ -412,6 +416,10 @@ public class JobManagerPeasSessionController extends AbstractAdminComponentSessi
     // initialisation du "idCurrentOperationActif" avec l'opération active
     // correspondant au nouveau service
     JobManagerService[] jms = this.getSubServices(newService);
+    if (jms.length == 0) {
+      idCurrentOperationActif = newService.getId();
+      return;
+    }
     idCurrentOperationActif = null;
     for (JobManagerService jm : jms) {
       if (jm.isActive()) {

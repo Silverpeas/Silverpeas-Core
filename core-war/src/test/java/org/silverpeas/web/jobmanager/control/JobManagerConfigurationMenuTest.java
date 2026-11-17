@@ -28,6 +28,8 @@ import org.junit.jupiter.api.Test;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
+import org.silverpeas.core.documenttemplate.DocumentTemplateSettings;
+import org.silverpeas.core.wbe.WbeSettings;
 import org.silverpeas.core.test.unit.extention.JEETestContext;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -36,6 +38,7 @@ import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.test.annotations.TestManagedMock;
 import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.web.jobmanager.JobManagerSettings;
+import org.silverpeas.web.jobmanager.JobManagerService;
 
 import java.util.Arrays;
 
@@ -71,6 +74,35 @@ class JobManagerConfigurationMenuTest {
     assertNull(controller.getService("55"));
   }
 
+  @Test
+  void configurationPrecedesToolsAndAboutIsLastAtTopLevel() {
+    when(settings.isToolSpecificAuthentVisible()).thenReturn(true);
+    var controller = controller(true);
+    assertEquals(Arrays.asList("JD", "JSTAT", "CONFIGURATION", "JTOOLS", "JAB"),
+        Arrays.stream(controller.getServices(JobManagerService.LEVEL_SERVICE))
+            .map(JobManagerService::getLabel).toList());
+    assertTrue(Arrays.stream(controller.getSubServices("4"))
+        .noneMatch(service -> service.getLabel().equals("JAB")));
+    controller.changeServiceActif("4");
+    controller.changeServiceActif("50");
+    assertEquals("50", controller.getIdServiceActif());
+    assertEquals("50", controller.getIdOperationActif());
+    assertTrue(controller.getService("50").getUrl().endsWith("/silverpeasinfos.jsp"));
+    assertEquals(0, controller.getSubServices("50").length);
+    controller.changeServiceActif("5");
+    assertFalse(controller.getService("50").isActive());
+    assertEquals("55", controller.getIdOperationActif());
+  }
+
+  @Test
+  void aboutRemainsAccessibleWithoutOptionalToolsAndHiddenFromSpaceManagers() {
+    var controller = controller(true);
+    assertNotNull(controller.getService("50"));
+    controller.changeServiceActif("50");
+    assertEquals("50", controller.getIdOperationActif());
+    assertNull(controller(false).getService("50"));
+  }
+
   private JobManagerPeasSessionController controller(boolean administrator) {
     var main = mock(MainSessionController.class);
     var user = mock(UserDetail.class);
@@ -83,7 +115,9 @@ class JobManagerConfigurationMenuTest {
     when(context.getCurrentComponentName()).thenReturn("jobManagerPeas");
     var bundle = mock(LocalizationBundle.class);
     when(bundle.getString(anyString())).thenAnswer(invocation -> invocation.getArgument(0));
-    try (var locator = mockStatic(ResourceLocator.class, CALLS_REAL_METHODS)) {
+    try (var locator = mockStatic(ResourceLocator.class, CALLS_REAL_METHODS);
+        var wbe = mockStatic(WbeSettings.class);
+        var templates = mockStatic(DocumentTemplateSettings.class)) {
       locator.when(() -> ResourceLocator.getLocalizationBundle(
           "org.silverpeas.jobManagerPeas.multilang.jobManagerPeasBundle", "fr"))
           .thenReturn(bundle);
