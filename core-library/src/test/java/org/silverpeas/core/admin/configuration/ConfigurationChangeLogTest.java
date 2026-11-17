@@ -42,7 +42,7 @@ class ConfigurationChangeLogTest {
   private final ConfigurationChangeLog audit = new ConfigurationChangeLog();
 
   @Test
-  void recordsActorChangedKeysAndRevisionsWithoutLeakingSecretsOrInjectingLines() {
+  void recordsActorAndChangedValuesWithoutFingerprintsOrLeakingSecrets() {
     var actor = mock(User.class);
     when(actor.getId()).thenReturn("42");
     when(actor.getLogin()).thenReturn("admin\nforged-entry");
@@ -72,8 +72,8 @@ class ConfigurationChangeLogTest {
       assertEquals(List.of(
           Map.of("key", "a11y.enable", "before", "false", "after", "true\nsecond line"),
           Map.of("key", "apiToken", "before", "[MASKED]", "after", "[MASKED]")), fields.get("changes"));
-      assertEquals("before", fields.get("revisionBefore"));
-      assertEquals("after", fields.get("revisionAfter"));
+      assertFalse(fields.containsKey("revisionBefore"));
+      assertFalse(fields.containsKey("revisionAfter"));
       assertDoesNotThrow(() -> Instant.parse((String) fields.get("timestamp")));
     }
   }
@@ -99,7 +99,12 @@ class ConfigurationChangeLogTest {
           entries.getAllValues().getLast(), Map.class).get("operation"));
       assertEquals("configuration/silverpeas/Company.xml", first.get("file"));
       assertEquals("properties/skin.properties", first.get("source"));
-      assertEquals("properties-revision", first.get("sourceRevision"));
+      entries.getAllValues().forEach(entry -> {
+        var fields = JSONCodec.decode(entry, Map.class);
+        assertFalse(fields.containsKey("sourceRevision"));
+        assertFalse(fields.containsKey("revisionBefore"));
+        assertFalse(fields.containsKey("revisionAfter"));
+      });
       assertEquals(List.of("db.password", "enabled", "logo"), first.get("keys"));
       assertEquals(Map.of("db.password", "[MASKED]", "enabled", "true", "logo", "logo.png"),
           first.get("values"));

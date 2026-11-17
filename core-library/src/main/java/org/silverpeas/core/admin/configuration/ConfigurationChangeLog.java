@@ -51,7 +51,6 @@ public class ConfigurationChangeLog {
         .sorted().toList();
     if (!keys.isEmpty()) {
       record(actor, "UPDATE_PROPERTIES", event -> event.put("file", "properties/" + after.path())
-          .put("revisionBefore", before.revision()).put("revisionAfter", after.revision())
           .putJSONArray("keys", array -> {
             keys.forEach(array::add);
             return array;
@@ -72,8 +71,6 @@ public class ConfigurationChangeLog {
       record(actor, before.exists() ? "UPDATE_CUSTOM_SETTINGS" : "CREATE_CUSTOM_SETTINGS",
           event -> event.put("file", "configuration/silverpeas/" + after.name())
               .put("source", "properties/" + selection.path())
-              .put("sourceRevision", selection.revision())
-              .put("revisionBefore", before.revision()).put("revisionAfter", after.revision())
               .putJSONArray("keys", array -> {
                 selection.properties().keySet().stream().sorted().forEach(array::add);
                 return array;
