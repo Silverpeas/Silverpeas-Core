@@ -129,10 +129,12 @@
           button.append(keyLabel, fileLabel);
           button.addEventListener('click', async () => {
             if (await this.loadFile(path)) {
-              this.element('key-filter').value = key;
+              this.element('key-filter').value = '';
               this.element('modified-only').checked = false;
               this.filterRows();
-              this.rows.get(key)?.input.focus();
+              const input = this.rows.get(key)?.input;
+              input?.scrollIntoView({block : 'center', inline : 'nearest'});
+              input?.focus({preventScroll : true});
             }
           });
           item.append(button);

@@ -20,7 +20,8 @@ consulter ou modifier les fichiers.
   correspondants. Les valeurs ne sont chargées qu'à l'ouverture du fichier.
 - « Rechercher une clé dans tous les fichiers » recherche un fragment de clé sans tenir compte
   de la casse, y compris dans les sous-dossiers. Les résultats indiquent la clé et le chemin,
-  sans exposer les valeurs. Cliquer ouvre le fichier et filtre le tableau sur cette clé.
+  sans exposer les valeurs. Cliquer ouvre le fichier avec toutes ses propriétés visibles,
+  vide les filtres et place le focus sur la valeur de la clé recherchée.
   Les recherches sont exécutées à la demande, sans index conservé en mémoire.
 - Le tableau affiche les clés et les valeurs brutes : les expressions `${...}` sont conservées.
   Les filtres portent sur les clés et sur les seules lignes modifiées.

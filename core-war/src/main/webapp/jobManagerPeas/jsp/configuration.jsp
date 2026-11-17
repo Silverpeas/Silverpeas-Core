@@ -49,7 +49,7 @@
   <title><fmt:message key="title"/></title>
   <view:looknfeel/>
   <link rel="stylesheet" href="<c:url value='/jobManagerPeas/css/configuration.css?v=15585-search-3'/>">
-  <script src="<c:url value='/jobManagerPeas/js/configuration.js?v=15585-search-3'/>" defer></script>
+  <script src="<c:url value='/jobManagerPeas/js/configuration.js?v=15585-search-4'/>" defer></script>
 </head>
 <body>
 <main id="configuration-console" data-api="${configurationApi}">

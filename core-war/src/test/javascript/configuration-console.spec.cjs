@@ -145,7 +145,7 @@ async function fixture(options = {}) {
     if (url.pathname.endsWith('/file')) {
       if (route.request().method() === 'GET' && url.searchParams.get('path') === 'looks/aurora/skin.properties') {
         return route.fulfill({json : {path : 'looks/aurora/skin.properties', revision : 'skin',
-          properties : {'skin.enabled' : 'true'}}});
+          properties : {'skin.enabled' : 'true', 'skin.logo' : 'logo.png'}}});
       }
       if (route.request().method() === 'PUT') {
         const body = route.request().postDataJSON();
@@ -453,11 +453,15 @@ test('global key search opens matching files and handles empty results', async (
     page.once('dialog', dialog => dialog.dismiss());
     await result.click();
     assert.equal(await page.locator('#configuration-key-filter').inputValue(), '');
+    await page.locator('#configuration-key-filter').fill('description');
+    await page.locator('#configuration-modified-only').check();
     page.once('dialog', dialog => dialog.accept());
     await result.click();
-    await page.waitForFunction(() => document.querySelector('#configuration-key-filter').value === 'skin.enabled');
-    assert.equal(await page.locator('#configuration-key-filter').inputValue(), 'skin.enabled');
-    assert.equal(await page.locator('#configuration-properties tbody tr:visible').count(), 1);
+    await page.waitForFunction(() => document.querySelector('#configuration-path').textContent.includes('skin.properties'));
+    assert.equal(await page.locator('#configuration-key-filter').inputValue(), '');
+    assert.equal(await page.locator('#configuration-modified-only').isChecked(), false);
+    assert.equal(await page.locator('#configuration-properties tbody tr:visible').count(), 2);
+    assert.equal(await page.locator('#configuration-value-0').evaluate(node => node === document.activeElement), true);
     await page.locator('#configuration-global-key').fill('missing-key');
     await page.locator('#configuration-search-button').click();
     await page.locator('#configuration-search-results').getByText(labels.noSearchResults, {exact : true}).waitFor();
