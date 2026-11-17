@@ -72,6 +72,8 @@ public class LookAndStyleTag extends TagSupport {
     request.setAttribute(LOOK_CONTEXT_MANAGER_CALLBACK_ONLY_ATTR, lookContextManagerCallbackOnly);
     request.setAttribute(NO_LOOK_CONTEXT_MANAGER_CALLBACK_ATTR, noLookContextManagerCallback);
     elements.addElement(WebCommonLookAndFeel.getInstance().getCommonHeader(request));
+    elements.addElement(script(getApplicationURL() +
+        "/util/javaScript/silverpeas-latest-publications.js"));
     if (withFieldsetStyle) {
       elements.addElement(link(getApplicationURL() + "/util/styleSheets/fieldset.css"));
     }
