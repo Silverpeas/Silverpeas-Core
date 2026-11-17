@@ -69,7 +69,7 @@ public class ConfigurationService {
 
   /**
    * Reads raw properties, including any sensitive values, for the general administrator only.
-   * Values must not be logged or included in error messages.
+   * Sensitive values must not be logged or included in error messages.
    * @param path relative configuration file path
    * @return immutable snapshot
    * @throws IOException if reading fails

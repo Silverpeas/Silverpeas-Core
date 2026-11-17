@@ -173,7 +173,14 @@ Les opérations réussies de la console sont tracées dans
 Chaque entrée contient un horodatage UTC, l'identifiant, le login et le domaine de
 l'administrateur, l'opération, le fichier, les clés et les révisions avant/après.
 Pour un XML, la source properties et sa révision sont également enregistrées.
-Les valeurs ne sont jamais copiées dans les logs, y compris celles non identifiées comme secrètes.
+Pour les properties, `changes` contient pour chaque clé `key`, `before` et `after` en clair.
+Pour les XML, `values` contient les valeurs sélectionnées écrites dans le XML ; les anciennes
+valeurs du XML ne sont pas exposées par cette opération. `revisionBefore` et `revisionAfter`
+restent les empreintes des fichiers complets.
+Les valeurs des clés contenant `password`, `passwd`, `pwd`, `passphrase`, `secret`,
+`credential`, `token`, `privateKey`, `apiKey` ou `accessKey` (avec les séparateurs usuels)
+sont remplacées par `[MASKED]`, sans distinction de casse. La détection par nom ne constitue
+pas un catalogue exhaustif des secrets.
 Le JSON échappe les caractères de contrôle pour conserver une entrée sur une seule ligne.
 
 Les opérations distinguées sont `UPDATE_PROPERTIES`, `CREATE_CUSTOM_SETTINGS` et

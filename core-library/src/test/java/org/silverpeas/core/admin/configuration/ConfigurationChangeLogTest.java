@@ -42,15 +42,15 @@ class ConfigurationChangeLogTest {
   private final ConfigurationChangeLog audit = new ConfigurationChangeLog();
 
   @Test
-  void recordsActorChangedKeysAndRevisionsWithoutLeakingValuesOrInjectingLines() {
+  void recordsActorChangedKeysAndRevisionsWithoutLeakingSecretsOrInjectingLines() {
     var actor = mock(User.class);
     when(actor.getId()).thenReturn("42");
     when(actor.getLogin()).thenReturn("admin\nforged-entry");
     when(actor.getDomainId()).thenReturn("0");
     var before = new ConfigurationFile("nested/settings.properties", "before",
-        Map.of("apiToken", "old-secret", "same", "unchanged"));
+        Map.of("apiToken", "old-secret", "a11y.enable", "false", "same", "unchanged"));
     var after = new ConfigurationFile(before.path(), "after",
-        Map.of("apiToken", "new-secret", "same", "unchanged"));
+        Map.of("apiToken", "new-secret", "a11y.enable", "true\nsecond line", "same", "unchanged"));
     var logger = mock(SilverLogger.class);
     try (var factory = mockStatic(SilverLogger.class)) {
       factory.when(() -> SilverLogger.getLogger(ConfigurationChangeLog.NAMESPACE)).thenReturn(logger);
@@ -68,7 +68,10 @@ class ConfigurationChangeLogTest {
       assertEquals("0", fields.get("domainId"));
       assertEquals("UPDATE_PROPERTIES", fields.get("operation"));
       assertEquals("properties/nested/settings.properties", fields.get("file"));
-      assertEquals(List.of("apiToken"), fields.get("keys"));
+      assertEquals(List.of("a11y.enable", "apiToken"), fields.get("keys"));
+      assertEquals(List.of(
+          Map.of("key", "a11y.enable", "before", "false", "after", "true\nsecond line"),
+          Map.of("key", "apiToken", "before", "[MASKED]", "after", "[MASKED]")), fields.get("changes"));
       assertEquals("before", fields.get("revisionBefore"));
       assertEquals("after", fields.get("revisionAfter"));
       assertDoesNotThrow(() -> Instant.parse((String) fields.get("timestamp")));
@@ -79,7 +82,7 @@ class ConfigurationChangeLogTest {
   void recordsXmlCreationAndUpdatesWithSourceAndSelectedKeysOnly() {
     var actor = mock(User.class);
     var source = new ConfigurationFile("skin.properties", "properties-revision",
-        Map.of("logo", "private-value", "enabled", "true"));
+        Map.of("logo", "logo.png", "enabled", "true", "db.password", "private-value"));
     var absent = new CustomSettingsTarget("Company.xml", "absent", false);
     var created = new CustomSettingsTarget("Company.xml", "first", true);
     var updated = new CustomSettingsTarget("Company.xml", "second", true);
@@ -97,8 +100,29 @@ class ConfigurationChangeLogTest {
       assertEquals("configuration/silverpeas/Company.xml", first.get("file"));
       assertEquals("properties/skin.properties", first.get("source"));
       assertEquals("properties-revision", first.get("sourceRevision"));
-      assertEquals(List.of("enabled", "logo"), first.get("keys"));
+      assertEquals(List.of("db.password", "enabled", "logo"), first.get("keys"));
+      assertEquals(Map.of("db.password", "[MASKED]", "enabled", "true", "logo", "logo.png"),
+          first.get("values"));
       entries.getAllValues().forEach(entry -> assertFalse(entry.contains("private-value")));
+    }
+  }
+
+  @Test
+  void sensitiveKeysAreMaskedOnBothSides() {
+    for (var key : List.of("db.password", "smtp.passwd", "db.pwd", "passphrase", "clientSecret",
+        "credential", "authToken", "PRIVATE_KEY", "api.key", "access-key")) {
+      var before = new ConfigurationFile("test.properties", "before", Map.of(key, "old-sensitive"));
+      var after = new ConfigurationFile(before.path(), "after", Map.of(key, "new-sensitive"));
+      var logger = mock(SilverLogger.class);
+      try (var factory = mockStatic(SilverLogger.class)) {
+        factory.when(() -> SilverLogger.getLogger(ConfigurationChangeLog.NAMESPACE)).thenReturn(logger);
+        audit.propertiesChanged(mock(User.class), before, after);
+        var entry = ArgumentCaptor.forClass(String.class);
+        verify(logger).info(eq("{0}"), entry.capture());
+        assertFalse(entry.getValue().contains("old-sensitive"));
+        assertFalse(entry.getValue().contains("new-sensitive"));
+        assertTrue(entry.getValue().contains("[MASKED]"));
+      }
     }
   }
 

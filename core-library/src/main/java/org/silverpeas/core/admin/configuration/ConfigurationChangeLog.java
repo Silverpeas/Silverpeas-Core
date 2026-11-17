@@ -32,12 +32,17 @@ import org.silverpeas.kernel.logging.SilverLogger;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
 
-/** Successful console changes, without recording configuration values or credentials. */
+/** Successful console changes with readable values and masking of sensitive settings. */
 @Service
 public class ConfigurationChangeLog {
 
   static final String NAMESPACE = "silverpeas.core.admin.configuration.audit";
+
+  private static final Pattern SENSITIVE_KEY = Pattern.compile(
+      "password|passwd|pwd|passphrase|secret|credential|token|private[._-]?key|api[._-]?key|access[._-]?key",
+      Pattern.CASE_INSENSITIVE);
 
   /** Records the keys actually changed by a successful properties replacement. */
   public void propertiesChanged(User actor, ConfigurationFile before, ConfigurationFile after) {
@@ -49,6 +54,12 @@ public class ConfigurationChangeLog {
           .put("revisionBefore", before.revision()).put("revisionAfter", after.revision())
           .putJSONArray("keys", array -> {
             keys.forEach(array::add);
+            return array;
+          })
+          .putJSONArray("changes", array -> {
+            keys.forEach(key -> array.addJSONObject(change -> change.put("key", key)
+                .put("before", loggedValue(key, before.properties().get(key)))
+                .put("after", loggedValue(key, after.properties().get(key)))));
             return array;
           }));
     }
@@ -66,8 +77,17 @@ public class ConfigurationChangeLog {
               .putJSONArray("keys", array -> {
                 selection.properties().keySet().stream().sorted().forEach(array::add);
                 return array;
+              })
+              .putJSONObject("values", values -> {
+                selection.properties().keySet().stream().sorted().forEach(key ->
+                    values.put(key, loggedValue(key, selection.properties().get(key))));
+                return values;
               }));
     }
+  }
+
+  private static String loggedValue(String key, String value) {
+    return SENSITIVE_KEY.matcher(key).find() ? "[MASKED]" : value;
   }
 
   private void record(User actor, String operation, Consumer<JSONCodec.JSONObject> details) {
