@@ -88,7 +88,7 @@ after(async () => browser?.close());
 async function fixture(options = {}) {
   const context = await browser.newContext({viewport : {width : 1280, height : 900}});
   const page = await context.newPage();
-  let file = {path : 'org/silverpeas/general.properties', revision : 'initial', properties : {
+  let file = {path : 'org/silverpeas/general.properties', revision : 'initial', properties : options.properties || {
     enabled : 'false', description : '<img src=x onerror=alert(1)>', apiToken : 'test-value'
   }, documentation : {file : 'Documentation générale', properties : {
     enabled : 'Active cette option.\nEffet immédiat à la prochaine lecture.',
@@ -127,7 +127,7 @@ async function fixture(options = {}) {
       return route.fulfill({json : results});
     }
     if (url.pathname.endsWith('/files')) {
-      return route.fulfill({json : [file.path, 'looks/aurora/skin.properties']});
+      return route.fulfill({json : options.paths || [file.path, 'looks/aurora/skin.properties']});
     }
     if (url.pathname.endsWith('/persistence')) {
       if (route.request().method() === 'POST') {
@@ -506,6 +506,38 @@ test('clearing global search removes results and restores keyboard focus', async
     assert.equal(await page.locator('#configuration-search-results').textContent(), '');
     assert.equal(await page.locator('#configuration-global-key').inputValue(), '');
     assert.equal(await page.locator('#configuration-global-key').evaluate(node => node === document.activeElement), true);
+  } finally {
+    await context.close();
+  }
+});
+
+test('long file trees, properties and search results use only page scrolling', async () => {
+  const properties = Object.fromEntries(Array.from({length : 80}, (_, index) => ['flag.' + index, 'true']));
+  const paths = ['org/silverpeas/general.properties',
+    ...Array.from({length : 80}, (_, index) => 'settings-' + index + '.properties')];
+  const {context, page} = await fixture({properties, paths});
+  try {
+    await page.locator('#configuration-global-key').fill('flag');
+    await page.locator('#configuration-search-button').click();
+    await page.locator('#configuration-search-results button').first().waitFor();
+    for (const width of [1280, 600]) {
+      await page.setViewportSize({width, height : 900});
+      for (const selector of ['.configuration-files', '.configuration-table-scroll', '#configuration-search-results']) {
+        const dimensions = await page.locator(selector).evaluate(node => ({
+          overflow : getComputedStyle(node).overflowY,
+          height : node.clientHeight, content : node.scrollHeight
+        }));
+        assert.equal(dimensions.overflow, 'visible', selector);
+        assert.ok(dimensions.content <= dimensions.height + 1, selector);
+      }
+      assert.ok(await page.evaluate(() => document.scrollingElement.scrollHeight > innerHeight));
+      await page.locator('#configuration-save').scrollIntoViewIfNeeded();
+      assert.ok(await page.evaluate(() => window.scrollY > 0));
+      assert.ok(await page.evaluate(() => document.scrollingElement.scrollWidth <= innerWidth));
+      if (width === 1280 && process.env.CONFIGURATION_SCROLL_SCREENSHOT) {
+        await page.screenshot({path : process.env.CONFIGURATION_SCROLL_SCREENSHOT});
+      }
+    }
   } finally {
     await context.close();
   }

@@ -48,7 +48,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><fmt:message key="title"/></title>
   <view:looknfeel/>
-  <link rel="stylesheet" href="<c:url value='/jobManagerPeas/css/configuration.css?v=15585-search-3'/>">
+  <link rel="stylesheet" href="<c:url value='/jobManagerPeas/css/configuration.css?v=15585-scroll-1'/>">
   <script src="<c:url value='/jobManagerPeas/js/configuration.js?v=15585-search-4'/>" defer></script>
 </head>
 <body>

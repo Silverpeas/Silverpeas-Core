@@ -65,8 +65,6 @@
 .configuration-files {
   padding: 1rem;
   border-right: 1px solid var(--configuration-border);
-  max-height: 72vh;
-  overflow: auto;
 }
 
 .configuration-files > label {
@@ -131,11 +129,6 @@
   flex-wrap: wrap;
   gap: 0.75rem;
   margin: 1rem 0;
-}
-
-.configuration-table-scroll {
-  max-height: 55vh;
-  overflow: auto;
 }
 
 #configuration-console table {
@@ -274,13 +267,8 @@
   }
 
   .configuration-files {
-    max-height: 30vh;
     border-right: 0;
     border-bottom: 1px solid var(--configuration-border);
-  }
-
-  .configuration-table-scroll {
-    max-height: none;
   }
 }
 
@@ -479,8 +467,6 @@
 }
 
 #configuration-search-results {
-  max-height: 35vh;
-  overflow: auto;
   margin-bottom: 1rem;
   border-radius: 4px;
 }
