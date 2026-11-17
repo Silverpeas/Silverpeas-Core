@@ -51,6 +51,8 @@ class ConfigurationServiceTest {
   private ConfigurationFileRepository repository;
   @TestManagedMock
   private CustomSettingsRepository customSettings;
+  @TestManagedMock
+  private ConfigurationChangeLog audit;
   private UserProvider users;
   @TestedBean
   private ConfigurationService service;
@@ -72,7 +74,7 @@ class ConfigurationServiceTest {
     when(administrator.isAccessAdmin()).thenReturn(false);
     assertAccessDenied();
     assertThrows(SecurityException.class, () -> service.search("logo"));
-    verifyNoInteractions(repository, customSettings);
+    verifyNoInteractions(repository, customSettings, audit);
   }
 
   @Test
@@ -102,16 +104,20 @@ class ConfigurationServiceTest {
   void successfulSaveInvalidatesTheKernelCache() throws IOException {
     var saved = new ConfigurationFile("org/general.properties", "after", Map.of("flag", "true"));
     var changes = Map.of("flag", "true");
+    var before = new ConfigurationFile(saved.path(), "before", Map.of("flag", "false"));
+    when(repository.read(saved.path())).thenReturn(before);
     when(repository.update(saved.path(), "before", changes)).thenReturn(saved);
     try (var locator = mockStatic(ResourceLocator.class)) {
       assertEquals(saved, service.update(saved.path(), "before", changes));
       locator.verify(ResourceLocator::resetCache);
+      verify(audit).propertiesChanged(administrator, before, saved);
     }
   }
 
   @Test
   void noChangeDoesNotInvalidateTheKernelCache() throws IOException {
     var file = new ConfigurationFile("general.properties", "same", Map.of());
+    when(repository.read(file.path())).thenReturn(file);
     when(repository.update(file.path(), file.revision(), Map.of())).thenReturn(file);
     try (var locator = mockStatic(ResourceLocator.class)) {
       assertEquals(file, service.update(file.path(), file.revision(), Map.of()));
@@ -121,16 +127,21 @@ class ConfigurationServiceTest {
 
   @Test
   void failedSaveDoesNotInvalidateTheKernelCache() throws IOException {
+    when(repository.read("general.properties")).thenReturn(
+        new ConfigurationFile("general.properties", "old", Map.of()));
     when(repository.update("general.properties", "old", Map.of()))
         .thenThrow(new IOException("Not writable"));
     try (var locator = mockStatic(ResourceLocator.class)) {
       assertThrows(IOException.class, () -> service.update("general.properties", "old", Map.of()));
       locator.verifyNoInteractions();
+      verifyNoInteractions(audit);
     }
   }
 
   @Test
   void conflictingSaveDoesNotInvalidateTheKernelCache() throws IOException {
+    when(repository.read("general.properties")).thenReturn(
+        new ConfigurationFile("general.properties", "old", Map.of()));
     when(repository.update("general.properties", "old", Map.of()))
         .thenThrow(new ConcurrentModificationException("Stale revision"));
     try (var locator = mockStatic(ResourceLocator.class)) {
@@ -138,6 +149,16 @@ class ConfigurationServiceTest {
           () -> service.update("general.properties", "old", Map.of()));
       locator.verifyNoInteractions();
     }
+  }
+
+  @Test
+  void rejectsAnAlreadyStaleSnapshotBeforeWritingOrAuditing() throws IOException {
+    when(repository.read("general.properties")).thenReturn(
+        new ConfigurationFile("general.properties", "newer", Map.of("flag", "false")));
+    assertThrows(ConcurrentModificationException.class,
+        () -> service.update("general.properties", "old", Map.of("flag", "true")));
+    verify(repository, never()).update(anyString(), anyString(), anyMap());
+    verifyNoInteractions(audit);
   }
 
   @Test
@@ -155,6 +176,7 @@ class ConfigurationServiceTest {
       assertFalse(retainedBundle.getBoolean("flag"));
       var before = realRepository.read(relativePath);
       var changes = Map.of("flag", "true");
+      when(repository.read(relativePath)).thenReturn(before);
       when(repository.update(relativePath, before.revision(), changes))
           .thenAnswer(invocation -> realRepository.update(relativePath, before.revision(), changes));
       service.update(relativePath, before.revision(), changes);
@@ -187,6 +209,20 @@ class ConfigurationServiceTest {
     assertEquals(saved, service.persist("general.properties", "current", java.util.Set.of("flag"), target));
     verify(customSettings).persist(target, "general.properties", Map.of("flag", "true"));
     verify(repository, never()).update(anyString(), anyString(), anyMap());
+    verify(audit).settingsPersisted(administrator,
+        new ConfigurationFile("general.properties", "current", Map.of("flag", "true")), target, saved);
+  }
+
+  @Test
+  void failedXmlWriteIsNotAuditedAsSuccessful() throws IOException {
+    var target = new CustomSettingsTarget("CustomerSettings.xml", "old", true);
+    when(repository.read("general.properties")).thenReturn(new ConfigurationFile(
+        "general.properties", "current", Map.of("flag", "true")));
+    when(customSettings.persist(target, "general.properties", Map.of("flag", "true")))
+        .thenThrow(new IOException("Not writable"));
+    assertThrows(IOException.class, () -> service.persist("general.properties", "current",
+        java.util.Set.of("flag"), target));
+    verifyNoInteractions(audit);
   }
 
   @Test
@@ -199,6 +235,6 @@ class ConfigurationServiceTest {
         () -> service.persist("general.properties", "current", java.util.Set.of(), null));
     assertThrows(IllegalArgumentException.class,
         () -> service.persist("general.properties", "current", java.util.Set.of("unknown"), null));
-    verifyNoInteractions(customSettings);
+    verifyNoInteractions(customSettings, audit);
   }
 }

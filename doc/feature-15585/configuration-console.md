@@ -165,3 +165,37 @@ node --test core-war/src/test/javascript/configuration-console.spec.cjs
 ```
 
 Ces validations ne remplacent pas une recette de l'application déployée dans WildFly.
+
+## Journal des changements
+
+Les opérations réussies de la console sont tracées dans
+`$SILVERPEAS_LOG/silverpeas-configuration.log` (habituellement `$SILVERPEAS_HOME/log`).
+Chaque entrée contient un horodatage UTC, l'identifiant, le login et le domaine de
+l'administrateur, l'opération, le fichier, les clés et les révisions avant/après.
+Pour un XML, la source properties et sa révision sont également enregistrées.
+Les valeurs ne sont jamais copiées dans les logs, y compris celles non identifiées comme secrètes.
+Le JSON échappe les caractères de contrôle pour conserver une entrée sur une seule ligne.
+
+Les opérations distinguées sont `UPDATE_PROPERTIES`, `CREATE_CUSTOM_SETTINGS` et
+`UPDATE_CUSTOM_SETTINGS`. Les mises à jour sans changement de contenu ne produisent pas
+d'entrée ; une tentative échouée n'est pas enregistrée comme modification réussie.
+Les clés properties correspondent aux valeurs effectivement changées ; pour un XML,
+il s'agit des clés sélectionnées écrites dans le XML. Les éditions manuelles et les
+modifications effectuées par l'installateur ne passent pas par ce journal de la console.
+
+Le namespace `silverpeas.core.admin.configuration.audit` est configuré en INFO,
+indépendamment du niveau général. Le profil WildFly dans **Silverpeas-Distribution**
+associe ce namespace à un handler synchrone dédié, en ajout et avec autoflush.
+Il utilise les mêmes `SILVERPEAS_LOG_BACKUP_SIZE` et `SILVERPEAS_LOG_BACKUP_MAX` que
+`silverpeas-trace.log`, sans recopier ces entrées dans le journal général.
+La rotation implique une durée de conservation limitée par ces paramètres.
+
+Le déploiement nécessite **les deux branches `feature-15585` de Core et Distribution**.
+Il faut mettre à jour le profil `configuration/jboss/silverpeas-logging-profile.cli`
+et le réappliquer via l'installation Silverpeas ; remplacer uniquement le WAR ne crée
+pas le handler dédié. Les installations existantes doivent conserver leurs réglages locaux
+lors de cette mise à jour. Aucun fichier d'installation local n'est modifié par ces tests.
+
+Vérification du profil avec une instance WildFly embarquée temporaire :
+`JBOSS_HOME=/chemin/vers/wildfly python3 src/test/python/configuration_audit_logging_test.py`
+depuis Silverpeas-Distribution.

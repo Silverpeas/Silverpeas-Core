@@ -53,6 +53,8 @@ public class ConfigurationService {
   private CustomSettingsRepository customSettings;
   @Inject
   private UserProvider users;
+  @Inject
+  private ConfigurationChangeLog audit;
 
   /**
    * Lists configuration file paths, retaining their directory hierarchy.
@@ -90,7 +92,12 @@ public class ConfigurationService {
   public ConfigurationFile update(String path, String revision, Map<String, String> changes)
       throws IOException {
     checkAdministrator();
+    var before = repository.read(path);
+    if (!before.revision().equals(revision)) {
+      throw new ConcurrentModificationException("Runtime configuration changed; reload before saving");
+    }
     var saved = repository.update(path, revision, changes);
+    audit.propertiesChanged(users.getCurrentRequester(), before, saved);
     if (!saved.revision().equals(revision)) {
       ResourceLocator.resetCache();
     }
@@ -161,6 +168,9 @@ public class ConfigurationService {
     }
     var selected = new TreeMap<String, String>();
     keys.forEach(key -> selected.put(key, file.properties().get(key)));
-    return customSettings.persist(target, path, selected);
+    var saved = customSettings.persist(target, path, selected);
+    audit.settingsPersisted(users.getCurrentRequester(),
+        new ConfigurationFile(path, file.revision(), selected), target, saved);
+    return saved;
   }
 }
