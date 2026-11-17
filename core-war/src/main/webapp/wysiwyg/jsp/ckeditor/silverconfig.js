@@ -36,7 +36,7 @@ CKEDITOR.editorConfig = function( config )
     { name: 'basicstyles', items : [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ] },
     { name: 'paragraph',   items : [ 'NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote','CreateDiv','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock' ] },
     { name: 'links',       items : [ 'Link','Unlink','Anchor' ] },
-    { name: 'insert',      items : [ 'Image','mediaofcontribution','imagebank','Video','Html5audio','Iframe','filebank','Table','HorizontalRule','EmojiPanel','SpecialChar','PageBreak', 'identitycard', 'userzoom', 'variables' ] },
+    { name: 'insert',      items : [ 'Image','mediaofcontribution','imagebank','Video','Html5audio','Iframe','filebank','Table','HorizontalRule','EmojiPanel','SpecialChar','PageBreak', 'identitycard', 'userzoom', 'variables', 'Latestpublications' ] },
     '/',
     { name: 'styles',      items : [ 'Styles','Format','Font','FontSize' ] },
     { name: 'colors',      items : [ 'TextColor','BGColor' ] },
@@ -46,7 +46,7 @@ CKEDITOR.editorConfig = function( config )
   config.toolbar_Light = [
     { name: 'clipboard',   items : [ 'Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo' ] },
     { name: 'links',       items : [ 'Link','Unlink' ] },
-    { name: 'insert',      items : [ 'Table','HorizontalRule','EmojiPanel','SpecialChar', 'identitycard', 'userzoom', 'variables' ] },
+    { name: 'insert',      items : [ 'Table','HorizontalRule','EmojiPanel','SpecialChar', 'identitycard', 'userzoom', 'variables', 'Latestpublications' ] },
     '/',
     { name: 'basicstyles', items : [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ] },
     { name: 'paragraph',   items : [ 'NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote','CreateDiv','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock' ] },
