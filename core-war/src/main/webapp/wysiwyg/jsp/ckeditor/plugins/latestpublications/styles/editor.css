@@ -1,0 +1,8 @@
+/* Only loaded inside CKEditor; no styling is added to the saved HTML. */
+.cke_editable .silverpeas-latest-publications {
+  padding: 12px;
+  border: 1px dashed #777;
+  background: #f4f4f4;
+  color: #333;
+  min-height: 24px;
+}
