@@ -30,9 +30,9 @@ consulter ou modifier les fichiers.
   Les commentaires d'en-tête séparés de la première propriété par une ligne vide figurent
   dans « Documentation du fichier ». Les échappements Unicode des commentaires sont décodés
   pour l'affichage. Les fichiers conservent leurs commentaires d'origine à la sauvegarde.
-- Les clés contenant `password`, `passwd`, `secret`, `credential`, `token` ou `privateKey`
-  (avec les séparateurs usuels pour ce dernier) sont masquées par défaut, avec un bouton
-  Afficher/Masquer. Cette détection par nom n'est pas un catalogue exhaustif des secrets.
+- Les propriétés sensibles détectées automatiquement par leur nom sont exclues de la console,
+  de la recherche et des opérations de modification/pérennisation côté serveur.
+  Cette détection par nom n'est pas un catalogue exhaustif des secrets.
 - Annuler toutes les modifications restaure l'état ouvert, pas une valeur par
   défaut fournie par Silverpeas. Quitter un fichier modifié demande confirmation.
 - Enregistrer et appliquer transmet les seules clés modifiées avec la révision du fichier.
@@ -137,8 +137,8 @@ externes depuis l'ouverture et pendant la préparation de la sauvegarde. Elles n
 pas un verrou distribué : un éditeur externe peut encore intervenir entre la dernière vérification
 et le remplacement atomique.
 
-Restent également à traiter les descriptions typées et leurs validations métier, l'identification
-explicite des paramètres sensibles, l'historique et un véritable retour aux valeurs livrées.
+Restent également à traiter les descriptions typées et leurs validations métier,
+l'historique et un véritable retour aux valeurs livrées.
 Le module graphique Aurora/skins (#14174) reste pour une étape ultérieure ; il pourra réutiliser
 le service métier. Les médias et variables CSS demandent un traitement distinct des properties.
 
@@ -208,3 +208,17 @@ lors de cette mise à jour. Aucun fichier d'installation local n'est modifié pa
 Vérification du profil avec une instance WildFly embarquée temporaire :
 `JBOSS_HOME=/chemin/vers/wildfly python3 src/test/python/configuration_audit_logging_test.py`
 depuis Silverpeas-Distribution.
+
+## Exclusion automatique des propriétés sensibles
+
+La console exclut les clés dont le nom évoque un mot de passe, un token, un secret,
+une clé privée/API ou un code de sécurité. La détection ignore la casse, les accents
+et les séparateurs (par exemple `clientSecret`, `api_key`, `security.code`).
+Ces propriétés et leur aide associée sont absentes des réponses de lecture et des
+résultats de recherche. Le serveur refuse leur modification et leur pérennisation XML,
+y compris par appel direct à l'API. Modifier une autre propriété préserve leur valeur.
+La même détection sert au masquage dans le journal.
+
+Cette heuristique porte sur les noms des clés : un secret placé dans une clé au nom
+anodin ne peut pas être identifié de manière fiable. Elle ne nécessite aucun fichier
+de configuration supplémentaire.

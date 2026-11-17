@@ -32,17 +32,12 @@ import org.silverpeas.kernel.logging.SilverLogger;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.function.Consumer;
-import java.util.regex.Pattern;
 
 /** Successful console changes with readable values and masking of sensitive settings. */
 @Service
 public class ConfigurationChangeLog {
 
   static final String NAMESPACE = "silverpeas.core.admin.configuration.audit";
-
-  private static final Pattern SENSITIVE_KEY = Pattern.compile(
-      "password|passwd|pwd|passphrase|secret|credential|token|private[._-]?key|api[._-]?key|access[._-]?key",
-      Pattern.CASE_INSENSITIVE);
 
   /** Records the keys actually changed by a successful properties replacement. */
   public void propertiesChanged(User actor, ConfigurationFile before, ConfigurationFile after) {
@@ -84,7 +79,7 @@ public class ConfigurationChangeLog {
   }
 
   private static String loggedValue(String key, String value) {
-    return SENSITIVE_KEY.matcher(key).find() ? "[MASKED]" : value;
+    return SensitiveConfiguration.isSensitive(key) ? "[MASKED]" : value;
   }
 
   private void record(User actor, String operation, Consumer<JSONCodec.JSONObject> details) {

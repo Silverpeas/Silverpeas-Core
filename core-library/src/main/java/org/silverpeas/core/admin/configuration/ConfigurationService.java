@@ -68,8 +68,7 @@ public class ConfigurationService {
   }
 
   /**
-   * Reads raw properties, including any sensitive values, for the general administrator only.
-   * Sensitive values must not be logged or included in error messages.
+   * Reads properties available to the console, excluding automatically detected sensitive keys.
    * @param path relative configuration file path
    * @return immutable snapshot
    * @throws IOException if reading fails
@@ -77,7 +76,7 @@ public class ConfigurationService {
    */
   public ConfigurationFile read(String path) throws IOException {
     checkAdministrator();
-    return repository.read(path);
+    return visible(repository.read(path));
   }
 
   /**
@@ -92,6 +91,7 @@ public class ConfigurationService {
   public ConfigurationFile update(String path, String revision, Map<String, String> changes)
       throws IOException {
     checkAdministrator();
+    rejectSensitiveKeys(changes.keySet());
     var before = repository.read(path);
     if (!before.revision().equals(revision)) {
       throw new ConcurrentModificationException("Runtime configuration changed; reload before saving");
@@ -101,7 +101,7 @@ public class ConfigurationService {
     if (!saved.revision().equals(revision)) {
       ResourceLocator.resetCache();
     }
-    return saved;
+    return visible(saved);
   }
 
   /**
@@ -119,6 +119,7 @@ public class ConfigurationService {
     var matches = new TreeMap<String, List<String>>();
     for (var path : repository.list()) {
       var keys = repository.read(path).properties().keySet().stream()
+          .filter(key -> !SensitiveConfiguration.isSensitive(key))
           .filter(key -> key.toLowerCase(java.util.Locale.ROOT).contains(fragment))
           .sorted().toList();
       if (!keys.isEmpty()) {
@@ -126,6 +127,21 @@ public class ConfigurationService {
       }
     }
     return matches;
+  }
+
+  private static void rejectSensitiveKeys(Set<String> keys) {
+    if (keys.stream().anyMatch(SensitiveConfiguration::isSensitive)) {
+      throw new SecurityException("Sensitive configuration cannot be changed through the console");
+    }
+  }
+
+  private static ConfigurationFile visible(ConfigurationFile file) {
+    var properties = new TreeMap<>(file.properties());
+    properties.keySet().removeIf(SensitiveConfiguration::isSensitive);
+    var comments = new TreeMap<>(file.documentation().properties());
+    comments.keySet().retainAll(properties.keySet());
+    return new ConfigurationFile(file.path(), file.revision(), properties,
+        new ConfigurationFile.Documentation(file.documentation().file(), comments));
   }
 
   private void checkAdministrator() {
@@ -166,6 +182,7 @@ public class ConfigurationService {
         !file.properties().keySet().containsAll(keys)) {
       throw new IllegalArgumentException("Select existing saved properties");
     }
+    rejectSensitiveKeys(keys);
     var selected = new TreeMap<String, String>();
     keys.forEach(key -> selected.put(key, file.properties().get(key)));
     var saved = customSettings.persist(target, path, selected);

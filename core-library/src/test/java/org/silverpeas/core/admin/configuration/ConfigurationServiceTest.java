@@ -188,6 +188,44 @@ class ConfigurationServiceTest {
     }
   }
 
+  @Test
+  void sensitivePropertiesAreHiddenAndCannotBeChangedOrPersisted() throws IOException {
+    var file = new ConfigurationFile("general.properties", "current",
+        Map.of("smtp.password", "hidden", "logo", "visible"),
+        new ConfigurationFile.Documentation("Help", Map.of("smtp.password", "Secret help",
+            "logo", "Logo help")));
+    when(repository.list()).thenReturn(List.of(file.path()));
+    when(repository.read(file.path())).thenReturn(file);
+    var visible = service.read(file.path());
+    assertEquals(Map.of("logo", "visible"), visible.properties());
+    assertEquals(Map.of("logo", "Logo help"), visible.documentation().properties());
+    assertEquals("current", visible.revision());
+    assertTrue(service.search("password").isEmpty());
+    assertThrows(SecurityException.class, () -> service.update(file.path(), "current",
+        Map.of("logo", "new", "smtp.password", "changed")));
+    assertThrows(SecurityException.class, () -> service.persist(file.path(), "current",
+        java.util.Set.of("smtp.password"), null));
+    verify(repository, never()).update(anyString(), anyString(), anyMap());
+    verifyNoInteractions(customSettings, audit);
+  }
+
+  @Test
+  void savingAnOrdinaryPropertyDoesNotExposeOrOverwriteHiddenProperties() throws IOException {
+    var before = new ConfigurationFile("general.properties", "before",
+        Map.of("token", "hidden", "logo", "old"));
+    var after = new ConfigurationFile(before.path(), "after",
+        Map.of("token", "hidden", "logo", "new"));
+    var changes = Map.of("logo", "new");
+    when(repository.read(before.path())).thenReturn(before);
+    when(repository.update(before.path(), "before", changes)).thenReturn(after);
+    try (var locator = mockStatic(ResourceLocator.class)) {
+      assertEquals(Map.of("logo", "new"),
+          service.update(before.path(), "before", changes).properties());
+      verify(repository).update(before.path(), "before", changes);
+      locator.verify(ResourceLocator::resetCache);
+    }
+  }
+
   private void assertAccessDenied() {
     assertThrows(SecurityException.class, () -> service.list());
     assertThrows(SecurityException.class, () -> service.read("general.properties"));
