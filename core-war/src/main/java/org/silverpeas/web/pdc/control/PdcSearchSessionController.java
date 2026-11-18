@@ -25,9 +25,7 @@ package org.silverpeas.web.pdc.control;
 
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.model.ComponentBehavior;
-import org.silverpeas.core.admin.component.model.ComponentSearchCriteria;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
-import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.UserIndexation;
 import org.silverpeas.core.admin.user.model.User;
@@ -92,7 +90,8 @@ import static org.silverpeas.kernel.util.StringUtil.isDefined;
 import static org.silverpeas.core.util.WebEncodeHelper.javaStringToJsString;
 
 public class PdcSearchSessionController extends AbstractComponentSessionController {
-  private static final long serialVersionUID = 308264856139476541L;
+  @Serial
+  private static final long serialVersionUID = 308264856139476542L;
 
   // only field query
   public static final int SEARCH_SIMPLE = 0;
@@ -129,7 +128,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private final SearchContext searchContext;
   // Current parameters for plain search in PDC
   private QueryParameters queryParameters = null;
-  private final ComponentListProvider componentList = new ComponentListProvider();
+  private SearchScope searchScope;
   private String isSecondaryShowed = "NO";
   private List<GlobalSilverResult> globalSR = new ArrayList<>();
   private List<GlobalSilverResult> filteredSR = new ArrayList<>();
@@ -194,6 +193,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
 
     this.searchContext = new SearchContext(this.getUserId());
+    this.searchScope = SearchScope.of(getUserDetail(), null, emptyList());
 
     // Initialize external search
     isEnableExternalSearch = getSettings().getBoolean("external.search.enable", false);
@@ -1501,14 +1501,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
    * @param components an optional component list of identifier.
    */
   public void buildCustomComponentListWhereToSearch(String space, List<String> components) {
-    final ComponentSearchCriteria searchCriteria = new ComponentSearchCriteria().onUser(getUserDetail());
-    if (isDefined(space)) {
-      searchCriteria.onWorkspace(space);
-    }
-    if (CollectionUtil.isNotEmpty(components)) {
-      searchCriteria.onComponentInstances(components);
-    }
-    componentList.setCriteria(searchCriteria);
+    searchScope = SearchScope.of(getUserDetail(), space, components);
   }
 
   /**
@@ -1864,13 +1857,14 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private QueryDescription getQueryDescription() {
     QueryDescription query = getQueryParameters().getQueryDescription(getUserId(), "*");
 
-    componentList.get().forEach(i -> {
+    final List<String> componentInstanceIds = searchScope.getComponentInstanceIds();
+    componentInstanceIds.forEach(i -> {
       if (isDataTypeSearch(i)) {
         query.addComponent(i);
       }
     });
 
-    if (componentList.get().size() == 1) {
+    if (componentInstanceIds.size() == 1) {
       query.setRequestedFolder(getQueryParameters().getFolder());
     }
 
@@ -1978,45 +1972,5 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       pageContext.setBorderPrinted(false);
     }
     return pageContext;
-  }
-
-  /**
-   * The aim of this provider is to avoid performing several times same component search.<br/>
-   * Another advantage of this provider is to retrieve component data only when it is necessary.
-   */
-  private static class ComponentListProvider implements Serializable {
-    private static final long serialVersionUID = -2487146568792525234L;
-
-    private ComponentSearchCriteria criteria = new ComponentSearchCriteria();
-    private final transient MemoizedSupplier<List<String>> list = new MemoizedSupplier<>(
-        () -> OrganizationController.get().getSearchableComponentsByCriteria(criteria));
-
-    private ComponentListProvider() {
-      // no other way to initialize
-    }
-
-    /**
-     * Sets the search criteria.
-     * <p>
-     *   If criteria are same as previous, then previous search is kept.<br/>
-     *   Otherwise, a new component search will be performed when calling {@link #get()} method.
-     * </p>
-     * @param criteria a component search criteria.
-     */
-    public void setCriteria(@Nonnull final ComponentSearchCriteria criteria) {
-      Objects.requireNonNull(criteria);
-      if (!this.criteria.equals(criteria)) {
-        list.clear();
-        this.criteria = criteria;
-      }
-    }
-
-    /**
-     * Gets the component list corresponding to the last criteria set.
-     * @return a list of string representing a component instance identifier.
-     */
-    public List<String> get() {
-      return list.get();
-    }
   }
 }
