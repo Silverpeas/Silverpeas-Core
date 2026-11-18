@@ -45,6 +45,7 @@ import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -61,7 +62,8 @@ import java.util.Optional;
  */
 public class GenericRecordSet implements RecordSet, Serializable {
 
-  private static final long serialVersionUID = 1L;
+  @Serial
+  private static final long serialVersionUID = 2L;
   private final IdentifiedRecordTemplate recordTemplate;
 
   /**
@@ -260,7 +262,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
   public void delete(String objectId, String language) throws FormException {
     DataRecord data = getRecord(objectId, language);
     if (data != null && data.getLanguage().equals(language)) {
-      // do not fallback on others languages
+      // do not fall back on others languages
       delete(data, language);
     }
   }
@@ -393,7 +395,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
           .listDocumentsByForeignKeyAndType(fromPK, DocumentType.form, null);
       originals.addAll(AttachmentServiceProvider.getAttachmentService()
           .listDocumentsByForeignKeyAndType(fromPK, DocumentType.video, null));
-      Map<String, String> ids = new HashMap<>(originals.size());
+      Map<String, String> ids = HashMap.newHashMap(originals.size());
       for (SimpleDocument original : originals) {
         SimpleDocumentPK clonePk = AttachmentServiceProvider.getAttachmentService().cloneDocument(
             original, cloneExternalId);
@@ -461,7 +463,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
               .filter(o -> o.startsWith(WysiwygFCKFieldDisplayer.DB_KEY))
               .ifPresent(o -> {
                 // Wysiwyg case
-                final String newValue = o.replaceFirst("[0-9]+", record.getId());
+                final String newValue = o.replaceFirst("\\d+", record.getId());
                 setStringValueQuietly(field, newValue);
               });
         }

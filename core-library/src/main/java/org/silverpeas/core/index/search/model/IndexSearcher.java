@@ -441,7 +441,7 @@ public class IndexSearcher {
     indexEntry.setScore(scoreDoc.score);
     final String[] paths = doc.getValues(IndexManager.PATH);
     if (paths != null && paths.length > 0) {
-      indexEntry.setPaths(Stream.of(paths).collect(Collectors.toList()));
+      indexEntry.setPaths(Stream.of(paths).toList());
     }
   }
 
@@ -540,11 +540,9 @@ public class IndexSearcher {
    * component) pairs.
    */
   Set<String> getIndexPathSet(Set<String> componentIds) {
-    Set<String> pathSet = new HashSet<>();
-    for (String componentId : componentIds) {
-      pathSet.add(indexManager.getIndexDirectoryPath(componentId));
-    }
-    return pathSet;
+    return componentIds.stream()
+        .map(componentId -> indexManager.getIndexDirectoryPath(componentId))
+        .collect(Collectors.toSet());
   }
 
   private TermRangeQuery getRangeQueryOnCreationDate(QueryDescription query) {
@@ -607,10 +605,9 @@ public class IndexSearcher {
   }
 
   private TermInSetQuery getScopeQuery(QueryDescription query) {
-    List<BytesRef> terms = new ArrayList<>();
-    for (String scope : query.getWhereToSearch()) {
-      terms.add(new BytesRef(scope));
-    }
+    List<BytesRef> terms = query.getWhereToSearch().stream()
+        .map(BytesRef::new)
+        .toList();
     return new TermInSetQuery(IndexManager.SCOPE, terms);
   }
 }
