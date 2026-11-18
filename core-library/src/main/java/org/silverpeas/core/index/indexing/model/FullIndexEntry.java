@@ -49,6 +49,7 @@ public class FullIndexEntry extends IndexEntry implements Serializable {
   private List<FileDescription> linkedFileList = null;
   private List<FieldDescription> fields = null;
   private Set<String> linkedFileIdsList = null;
+  private Set<String> formNames = null;
 
   public FullIndexEntry(IndexEntryKey pk) {
     super(pk);
@@ -61,6 +62,7 @@ public class FullIndexEntry extends IndexEntry implements Serializable {
     this.linkedFileList = other.linkedFileList != null ? new ArrayList<>(other.linkedFileList) : null;
     this.fields = other.fields != null ? new ArrayList<>(other.fields) : null;
     this.linkedFileIdsList = other.linkedFileIdsList != null ? new HashSet<>(other.linkedFileIdsList) : null;
+    this.formNames = other.formNames != null ? new HashSet<>(other.formNames) : null;
   }
 
   /**
@@ -195,6 +197,29 @@ public class FullIndexEntry extends IndexEntry implements Serializable {
       fields = new ArrayList<>();
     }
     return fields;
+  }
+
+  /**
+   * Marks the indexed content as having data filled with the specified form. A content can have
+   * data from several forms, so this method can be invoked several times.
+   * @param formName the short name of the form (the name of its template file without the
+   * extension), as used to prefix the name of the indexed fields of the form.
+   */
+  public void addFormName(String formName) {
+    if (StringUtil.isDefined(formName)) {
+      getFormNames().add(formName);
+    }
+  }
+
+  /**
+   * Gets the short name of the forms with which the data of the indexed content have been filled.
+   * @return a set of form short names. Empty if the content has no data filled with a form.
+   */
+  public Set<String> getFormNames() {
+    if (formNames == null) {
+      formNames = new HashSet<>();
+    }
+    return formNames;
   }
 
   public FullIndexEntry getCopy() {

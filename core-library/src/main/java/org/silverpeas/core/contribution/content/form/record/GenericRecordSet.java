@@ -164,6 +164,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
     if (data == null) {
       return;
     }
+    indexEntry.addFormName(formName);
     String[] fieldNames = data.getFieldNames();
     Field field;
     for (String fieldName : fieldNames) {

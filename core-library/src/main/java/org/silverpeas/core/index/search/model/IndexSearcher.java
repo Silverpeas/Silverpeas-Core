@@ -208,6 +208,9 @@ public class IndexSearcher {
     if (query.getMultiFieldQuery() != null) {
       booleanQueryBuilder.add(getMultiFieldQuery(query), BooleanClause.Occur.MUST);
     }
+    query.getRequestedFormName()
+        .map(f -> new TermQuery(new Term(IndexManager.FORM_NAME, f)))
+        .ifPresent(q -> booleanQueryBuilder.add(q, BooleanClause.Occur.FILTER));
     parseRangeQuery(query, booleanQueryBuilder, rangeClausesBuilder);
   }
 
