@@ -60,6 +60,7 @@ public class QueryParameters implements java.io.Serializable {
   private LocalDate beforeupdatedate = null;
   private Map<String, String> xmlQuery = null;
   private String folder = null;
+  private String formName = null;
 
   // attributes below are used only to display info in the search page
   private UserDetail creatorDetail = null;
@@ -75,6 +76,7 @@ public class QueryParameters implements java.io.Serializable {
     this.beforeupdatedate = null;
     this.creatorDetail = null;
     this.xmlQuery = null;
+    this.formName = null;
   }
 
   public String getKeywords() {
@@ -173,8 +175,18 @@ public class QueryParameters implements java.io.Serializable {
     xmlQuery.put(field, query);
   }
 
+  /**
+   * Restricts the search to the contents whose data have been filled with the specified form.
+   * @param formName the short name of the form (the name of its template file without the
+   * extension).
+   */
+  public void setFormName(String formName) {
+    this.formName = formName;
+  }
+
   public void clearXmlQuery() {
     xmlQuery = null;
+    formName = null;
   }
 
   /**
@@ -187,7 +199,8 @@ public class QueryParameters implements java.io.Serializable {
    * in the search form and prefixed by the specified namespace (or by the template filename if it's
    * not set). This query parameters is then set by invoking the
    * {@link QueryParameters#addXmlSubQuery(String, String)} method for each field value of the data
-   * record.
+   * record. The search is also restricted to the contents whose data have been filled with that
+   * form, even when no field of the search form is filled.
    * </p>
    * @param template a publication template providing the search form to use to define the data
    * to query
@@ -216,32 +229,40 @@ public class QueryParameters implements java.io.Serializable {
     String namespace = StringUtil.isDefined(fieldsNamespace) ? fieldsNamespace :
         template.getFileName();
     String templateName = namespace.substring(0, namespace.lastIndexOf('.'));
+    setFormName(templateName);
     if (data != null) {
       for (String fieldName : data.getFieldNames()) {
         Field field = data.getField(fieldName);
         String fieldValue = field.getStringValue();
         if (fieldValue != null && !fieldValue.trim().isEmpty()) {
-          String fieldQuery = fieldValue.trim();
-          if (fieldValue.contains("##")) {
-            String operator = FileUploadUtil.getParameter(items,fieldName+"Operator");
-            // Validate operator against whitelist to prevent query injection
-            if (operator == null ||
-                !Arrays.asList("AND", "OR", "NOT").contains(operator.toUpperCase())) {
-              operator = "AND"; // default safe value
-            }
-            context.setSearchOperator(fieldName, operator);
-            fieldQuery = fieldQuery.replace("##", " "+operator+" ");
-          } else if (field instanceof PdcField) {
-            // search on the PdC by a form: in this case the search will be performed against the
-            // index and as such, we need to use a regexp to select all the resources having at least
-            // the queried position(s) on the PdC
-            fieldQuery = "Regexp:([0-9,;]+\\.)*" + Pattern.quote(fieldQuery) + "(\\.[0-9,;]+)*";
-          }
+          String fieldQuery = toFieldQuery(field, fieldName, items, context);
           addXmlSubQuery(templateName + "$$" + fieldName, fieldQuery);
         }
       }
     }
     return data;
+  }
+
+  private static String toFieldQuery(Field field, String fieldName, List<FileItem> items,
+      PagesContext context) {
+    String fieldValue = field.getStringValue();
+    String fieldQuery = fieldValue.trim();
+    if (fieldValue.contains("##")) {
+      String operator = FileUploadUtil.getParameter(items,fieldName+"Operator");
+      // Validate operator against whitelist to prevent query injection
+      if (operator == null ||
+          !Arrays.asList("AND", "OR", "NOT").contains(operator.toUpperCase())) {
+        operator = "AND"; // default safe value
+      }
+      context.setSearchOperator(fieldName, operator);
+      fieldQuery = fieldQuery.replace("##", " "+operator+" ");
+    } else if (field instanceof PdcField) {
+      // search on the PdC by a form: in this case the search will be performed against the
+      // index and as such, we need to use a regexp to select all the resources having at least
+      // the queried position(s) on the PdC
+      fieldQuery = "Regexp:([0-9,;]+\\.)*" + Pattern.quote(fieldQuery) + "(\\.[0-9,;]+)*";
+    }
+    return fieldQuery;
   }
 
   public QueryDescription getQueryDescription(String searchingUser, String searchingLanguage) {
@@ -259,6 +280,7 @@ public class QueryParameters implements java.io.Serializable {
     query.setRequestedCreatedBefore(getBeforeDate());
     query.setRequestedUpdatedAfter(getAfterUpdateDate());
     query.setRequestedUpdatedBefore(getBeforeUpdateDate());
+    query.setRequestedFormName(formName);
 
     if (xmlQuery != null) {
       for (var q : xmlQuery.entrySet()) {

@@ -73,6 +73,7 @@ public final class QueryDescription implements Serializable {
   private LocalDate requestedUpdatedAfter = null;
   private List<FieldDescription> multiFieldQuery = null;
   private String requestedFolder = null;
+  private String requestedFormName = null;
   private String taxonomyPosition = null;
 
   /**
@@ -170,6 +171,24 @@ public final class QueryDescription implements Serializable {
    */
   public Optional<String> getRequestedLanguage() {
     return ofNullable(requestedLang).filter(not("*"::equals));
+  }
+
+  /**
+   * Restricts the search to the contents whose data have been filled with the specified form.
+   * @param formName the short name of the form (the name of its template file without the
+   * extension). If null or empty, the search isn't restricted to any form.
+   */
+  public void setRequestedFormName(String formName) {
+    this.requestedFormName = formName;
+  }
+
+  /**
+   * Gets the form to which the search is restricted.
+   * @return the short name of the form with which the data of the contents to find have to be
+   * filled, or nothing if the search isn't restricted to any form.
+   */
+  public Optional<String> getRequestedFormName() {
+    return ofNullable(requestedFormName).filter(StringUtil::isDefined);
   }
 
   /**
