@@ -129,15 +129,15 @@
   <%if (updateIsAllowed && isPasswordChangeAllowed) {%>
     <tr id="oldPassword">
           <td class="txtlibform"><%=resource.getString("myProfile.OldPassword")%> :</td>
-          <td><input <%=fieldAttribute%> type="password" autocomplete="new-password" name="OldPassword" size="50" maxlength="32"/></td>
+          <td><input <%=fieldAttribute%> type="password" autocomplete="new-password" name="OldPassword" size="50"/></td>
       </tr>
     <tr>
           <td class="txtlibform"><%=resource.getString("myProfile.NewPassword")%> :</td>
-          <td><input <%=fieldAttribute%> type="password" autocomplete="new-password" id="newPassword" name="NewPassword" size="50" maxlength="32"/>&nbsp;(<a tabindex="-1" href="#" onclick="$('#newPassword').focus()"><%=authRs.getString("authentication.password.showRules") %></a>)</td>
+          <td><input <%=fieldAttribute%> type="password" autocomplete="new-password" id="newPassword" data-password-confirmation="newPasswordConfirmation" name="NewPassword" size="50"/>&nbsp;(<a tabindex="-1" href="#" onclick="$('#newPassword').focus()"><%=authRs.getString("authentication.password.showRules") %></a>)</td>
       </tr>
     <tr>
           <td class="txtlibform"><%=resource.getString("myProfile.NewPasswordConfirm")%> :</td>
-          <td><input <%=fieldAttribute%>  autocomplete="new-password" id="newPasswordConfirmation" name="NewPasswordConfirm" type="password" size="50" maxlength="32"/></td>
+          <td><input <%=fieldAttribute%>  autocomplete="new-password" id="newPasswordConfirmation" name="NewPasswordConfirm" type="password" size="50"/></td>
       </tr>
     <%} else { %>
       <tr>
@@ -149,83 +149,6 @@
             <td class="txtlibform"><%=resource.getString("myProfile.Token")%> :</td>
       <td><%=userFull.getToken()%></td>
       </tr>
-  <c:if test="${requestScope['twoFactorAvailable']}">
-    <tr id="two-factor-user-form">
-      <td colspan="2">
-        <h4><fmt:message key="myProfile.twoFactor.title"/></h4>
-        <p><fmt:message key="myProfile.twoFactor.description"/></p>
-
-        <c:if test="${not empty requestScope['twoFactorMessage']}">
-          <p class="txtlibform"><fmt:message key="${requestScope['twoFactorMessage']}"/></p>
-        </c:if>
-        <c:if test="${not empty requestScope['twoFactorError']}">
-          <p class="txtlibform"><fmt:message key="${requestScope['twoFactorError']}"/></p>
-        </c:if>
-
-        <c:choose>
-          <c:when test="${requestScope['twoFactorEnabled']}">
-            <p><fmt:message key="myProfile.twoFactor.enabled"/></p>
-            <fmt:message key="myProfile.twoFactor.recoveryCodes" var="recoveryCodesLabel"/>
-            <button type="submit" form="two-factor-form" class="twoFA_button generate-key simple-button"
-                    formaction="<%=MyProfileRoutes.GenerateRecoveryCodes %>">
-              <c:out value="${recoveryCodesLabel}"/>
-            </button>
-            <c:if test="${not empty requestScope['twoFactorRecoveryCodes']}">
-              <div class="two-factor-recovery-codes">
-                <p><strong><fmt:message key="myProfile.twoFactor.recoveryCodesGenerated"/></strong></p>
-                <p><fmt:message key="myProfile.twoFactor.recoveryCodesWarning"/></p>
-                <div class="two-factor-recovery-grid">
-                  <c:forEach items="${requestScope['twoFactorRecoveryCodes']}" var="recoveryCode">
-                    <code><c:out value="${recoveryCode}"/></code>
-                  </c:forEach>
-                </div>
-              </div>
-            </c:if>
-            <c:if test="${not requestScope['twoFactorMandatory']}">
-              <fmt:message key="myProfile.twoFactor.disable" var="disableTwoFactorLabel"/>
-              <button type="submit" form="two-factor-form" class="twoFA_button disable-twoFactor simple-button"
-                      formaction="<%=MyProfileRoutes.DisableTwoFactor %>">
-                <c:out value="${disableTwoFactorLabel}"/>
-              </button>
-            </c:if>
-          </c:when>
-          <c:when test="${requestScope['twoFactorPending']}">
-            <p class="twoFA_infos"><strong><fmt:message key="myProfile.twoFactor.secret"/></strong></p>
-            <p class="twoFA_infos"><code><c:out value="${requestScope['twoFactorAuthentication'].secret}"/></code></p>
-            <p class="twoFA_infos"><fmt:message key="myProfile.twoFactor.authenticatorUri"/></p>
-            <p class="twoFA_infos two-factor-otp-uri">
-              <code><c:out value="${requestScope['twoFactorOtpAuthUri']}"/></code>
-            </p>
-            <div class="two-factor-profile-qr-code">
-              <p><strong><fmt:message key="myProfile.twoFactor.qrCode"/></strong></p>
-              <p><fmt:message key="myProfile.twoFactor.qrCodeDescription"/></p>
-              <img src="${pageContext.request.contextPath}/services/two-factor/qrcode"
-                   width="256" height="256"
-                   alt="<fmt:message key='myProfile.twoFactor.qrCodeAlt'/>"
-                   class="two-factor-qr-image"/>
-            </div>
-            <label for="twoFactorCode"><fmt:message key="myProfile.twoFactor.code"/></label>
-            <input form="two-factor-form" id="twoFactorCode" name="twoFactorCode" type="text" inputmode="numeric"
-                   autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6"/>
-            <fmt:message key="myProfile.twoFactor.confirm" var="confirmTwoFactorLabel"/>
-            <button type="submit" form="two-factor-form" class="twoFA_button simple-button"
-                    formaction="<%=MyProfileRoutes.ConfirmTwoFactor %>">
-              <c:out value="${confirmTwoFactorLabel}"/>
-            </button>
-          </c:when>
-          <c:otherwise>
-            <c:if test="${not requestScope['twoFactorMandatory']}">
-              <fmt:message key="myProfile.twoFactor.enable" var="enableTwoFactorLabel"/>
-              <button type="submit" form="two-factor-form" class="twoFA_button simple-button"
-                      formaction="<%=MyProfileRoutes.StartTwoFactor %>">
-                <c:out value="${enableTwoFactorLabel}"/>
-              </button>
-            </c:if>
-          </c:otherwise>
-        </c:choose>
-      </td>
-    </tr>
-  </c:if>
     <%
     if ("personalQuestion".equals(general.getString("forgottenPwdActive"))) {
         String userLoginQuestion = userFull.getLoginQuestion();
@@ -262,9 +185,6 @@
   <view:directoryExtraForm userId="<%=userFull.getId()%>" edition="true" skippable="false"/>
 
  </form>
- <c:if test="${requestScope['twoFactorAvailable']}">
-   <form id="two-factor-form" action="<%=MyProfileRoutes.ConfirmTwoFactor %>" method="post"></form>
- </c:if>
  </div>
  <br clear="all"/>
  <%

@@ -75,7 +75,7 @@
               String message = (String) request.getAttribute("message");
               if (message != null) {
             %>
-		<span><%=message%></span><br/>
+    <span><%=message%></span><br/>
             <% } %>
           </p>
           <div class="clear"></div>
@@ -110,6 +110,7 @@
     </div>
   </div>
 </form>
+<view:script src="/util/javaScript/silverpeas-secret.js"/>
 <view:loadScript src="/util/javaScript/silverpeas-password.js" jsPromiseName="loadingPromise"/>
 <script type="text/javascript">
   loadingPromise.then(function() {
