@@ -100,6 +100,10 @@ public class IndexManager {
   public static final String FILENAME = "filename";
   public static final String PATH = "path";
   public static final String ALIAS = "alias";
+  /**
+   * The short name of the forms with which the data of the indexed content have been filled.
+   */
+  public static final String FORM_NAME = "formName";
 
   /**
    * Exhaustive list of indexation's operations Used by objects which must be indexed
@@ -423,6 +427,8 @@ public class IndexManager {
         doc.add(new TextField(fieldName, field.getContent(), storeAction));
       }
     }
+    indexEntry.getFormNames()
+        .forEach(f -> doc.add(new StringField(FORM_NAME, f, Field.Store.NO)));
     if (!fieldsForFacets.isEmpty()) {
       String stringForFacets = buildStringForFacets(fieldsForFacets);
       // adds all fields which generate facets

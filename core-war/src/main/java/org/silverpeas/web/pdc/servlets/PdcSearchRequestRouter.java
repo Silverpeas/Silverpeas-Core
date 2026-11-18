@@ -219,6 +219,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         String templateFileName = request.getParameter("xmlSearchSelectedForm");
 
         String templateName = templateFileName.substring(0, templateFileName.lastIndexOf('.'));
+        pdcSC.getQueryParameters().setFormName(templateName);
 
         // build query
         String fieldParamPrefix = "field_";
