@@ -37,6 +37,7 @@ import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.annotation.Nullable;
 import org.silverpeas.kernel.util.StringUtil;
 
+import java.io.Serial;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -49,7 +50,8 @@ public class QueryParameters implements java.io.Serializable {
 
   public static final String PARAM_FOLDER = "folderSearch";
 
-  private static final long serialVersionUID = -5191736720955151540L;
+  @Serial
+  private static final long serialVersionUID = -5191736720955151539L;
   private String keywords = null;
   private String spaceId = null;
   private String instanceId = null;

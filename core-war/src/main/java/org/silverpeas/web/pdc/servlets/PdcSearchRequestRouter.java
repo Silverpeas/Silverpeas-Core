@@ -23,6 +23,8 @@
  */
 package org.silverpeas.web.pdc.servlets;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
@@ -30,9 +32,7 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
 import org.silverpeas.core.pdc.pdc.model.SearchCriteria;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.WAAttributeValuePair;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -40,12 +40,12 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.web.pdc.QueryParameters;
 import org.silverpeas.web.pdc.control.PdcSearchSessionController;
 import org.silverpeas.web.pdc.vo.ResultFilterVO;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -53,7 +53,6 @@ import java.util.List;
 
 public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSessionController> {
 
-  private static final long serialVersionUID = 1L;
   private static final String CLEAR_MODE = "clear";
   private static final String GLOBAL_RESULT_DEST = "/pdcPeas/jsp/globalResult.jsp";
   private static final String RESULT_PAGE = "ResultPage";

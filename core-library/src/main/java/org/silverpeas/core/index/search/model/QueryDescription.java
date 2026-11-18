@@ -27,6 +27,7 @@ import org.silverpeas.core.index.indexing.model.ExternalComponent;
 import org.silverpeas.core.index.indexing.model.FieldDescription;
 import org.silverpeas.kernel.util.StringUtil;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -44,7 +45,9 @@ import static java.util.function.Predicate.not;
  */
 public final class QueryDescription implements Serializable {
 
-  private static final long serialVersionUID = 1L;
+  @Serial
+  private static final long serialVersionUID = 2L;
+
   /**
    * The searched components' instance is built empty. To be searched any space or component must
    * be explicitly added with the addSpaceComponent() method.
@@ -107,7 +110,7 @@ public final class QueryDescription implements Serializable {
    */
   public void setQuery(String query) {
     this.query = (query == null) ? "" : query.toLowerCase();
-    // string already in lower case, means "and" "And" "AND" will works.
+    // string already in lower case, means "and" "And" "AND" will work.
     this.query = findAndReplace(this.query, " and ", " AND ");
     this.query = findAndReplace(this.query, " or ", " OR ");
     this.query = findAndReplace(this.query, " not ", " NOT ");

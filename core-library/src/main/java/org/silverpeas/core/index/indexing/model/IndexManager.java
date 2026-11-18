@@ -509,7 +509,7 @@ public class IndexManager {
     // The index field 'header' is dedicated to the search in which it should have much weight.
     // This is why the title, the filename (for files), and the keywords are stored in such a field.
     // The preview (or short description) of a contribution isn't stored into this field to ensure
-    // to not weigh to much in the scoring in a search comparing to the contribution's content
+    // to not weigh too much in the scoring in a search comparing to the contribution's content
     // (see bug #13842). Indeed, a preview can contain more than one sentence within which the terms
     // to search can be drowned.
     if (indexEntry.getObjectType() != null && indexEntry.getObjectType().startsWith(

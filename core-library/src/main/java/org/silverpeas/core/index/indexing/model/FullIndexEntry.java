@@ -25,6 +25,7 @@ package org.silverpeas.core.index.indexing.model;
 
 import org.silverpeas.kernel.util.StringUtil;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,7 +39,9 @@ import java.util.Set;
  * extra-content is indexed but not stored in the index.
  */
 public class FullIndexEntry extends IndexEntry implements Serializable {
-  private static final long serialVersionUID = -4955524385769457730L;
+
+  @Serial
+  private static final long serialVersionUID = -4955524385769457729L;
 
   /**
    * All the added texts and files are collected in two lists to be later retrieved by the index
