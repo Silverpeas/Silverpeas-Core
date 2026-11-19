@@ -163,7 +163,7 @@ public class AuthenticationSQL extends AuthenticationProtocol {
         PasswordEncryptionProvider.getDefaultPasswordEncryption());
   }
 
-  static void migratePasswordIfNeeded(Connection connection, String login,
+  void migratePasswordIfNeeded(Connection connection, String login,
       boolean loginIgnoreCase, String password, String previousDigest,
       PasswordEncryption current) throws AuthenticationException {
     if (current.doUnderstandDigest(previousDigest)) {
