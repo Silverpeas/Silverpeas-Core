@@ -43,8 +43,7 @@ import org.silverpeas.core.security.authentication.password.PasswordEncryption;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.text.MessageFormat;
-import java.util.Random;
+import java.security.SecureRandom;
 
 /**
  * A variation of the MD5 algorithm (Message Digest 5) as used in modern Unix systems for hashing
@@ -65,7 +64,7 @@ import java.util.Random;
 @Bean
 public class UnixMD5Encryption implements PasswordEncryption {
 
-  private static final Random random = new Random();
+  private static final SecureRandom random = new SecureRandom();
   private static final String MAGIC = "$1$";
   private static final byte[] ITOA64 =
       "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
@@ -238,7 +237,7 @@ public class UnixMD5Encryption implements PasswordEncryption {
   public void check(String password, String digest) throws AssertionError {
     String encryptedPassword = crypt(getSaltUsedInDigest(digest), password);
     if (!encryptedPassword.equals(digest)) {
-      throw new AssertionError(MessageFormat.format(BAD_PASSWORD_MESSAGE, password, digest));
+      throw new AssertionError(BAD_PASSWORD_MESSAGE);
     }
   }
 
