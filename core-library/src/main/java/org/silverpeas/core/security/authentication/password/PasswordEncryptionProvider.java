@@ -72,8 +72,8 @@ public class PasswordEncryptionProvider {
     PasswordEncryption encryption = availableEncrypts.stream()
         .filter(encrypt -> encrypt.doUnderstandDigest(digest))
         .findFirst()
-        .orElseThrow(() -> new IllegalArgumentException("Digest '" + digest +
-            "' not understand by any of the available encryption in Silverpeas"));
+        .orElseThrow(() -> new IllegalArgumentException(
+            "Unsupported password digest format"));
     return encryption;
   }
 
