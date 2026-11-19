@@ -121,7 +121,7 @@ public class Argon2idEncryption implements PasswordEncryption {
         throw new IllegalArgumentException("Invalid Argon2id digest length");
       }
       return new ParsedDigest(memory, iterations, parallelism, salt, hash);
-    } catch (NumberFormatException | IllegalArgumentException ex) {
+    } catch (IllegalArgumentException ex) {
       throw new IllegalArgumentException("Invalid Argon2id digest", ex);
     }
   }
