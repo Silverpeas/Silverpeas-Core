@@ -159,7 +159,13 @@ public class AuthenticationSQL extends AuthenticationProtocol {
   private void migratePasswordIfNeeded(Connection connection, String login,
       boolean loginIgnoreCase, String password, String previousDigest)
       throws AuthenticationException {
-    PasswordEncryption current = PasswordEncryptionProvider.getDefaultPasswordEncryption();
+    migratePasswordIfNeeded(connection, login, loginIgnoreCase, password, previousDigest,
+        PasswordEncryptionProvider.getDefaultPasswordEncryption());
+  }
+
+  static void migratePasswordIfNeeded(Connection connection, String login,
+      boolean loginIgnoreCase, String password, String previousDigest,
+      PasswordEncryption current) throws AuthenticationException {
     if (current.doUnderstandDigest(previousDigest)) {
       return;
     }
