@@ -23,16 +23,18 @@
  */
 
 CKEDITOR.plugins.add('latestpublications', {
-  requires: 'widget,dialog',
+  requires: 'widget,dialog,button',
   icons: 'latestpublications',
   hidpi: true,
   lang: 'en,fr',
+  onLoad: function() {
+    CKEDITOR.document.appendStyleSheet(this.path + 'styles/toolbar.css');
+  },
   init: function(editor) {
     const label = editor.lang.latestpublications;
     CKEDITOR.dialog.add('latestpublications', this.path + 'dialogs/latestpublications.js');
     editor.addContentsCss(this.path + 'styles/editor.css');
     editor.widgets.add('latestpublications', {
-      button: label.title,
       dialog: 'latestpublications',
       template: '<div class="silverpeas-latest-publications" data-space-id="" data-limit="5" data-include-subspaces="false"></div>',
       allowedContent: 'div(!silverpeas-latest-publications)[data-space-id,data-limit,data-include-subspaces]',
@@ -63,6 +65,11 @@ CKEDITOR.plugins.add('latestpublications', {
         element.children = [];
         return element;
       }
+    });
+    editor.ui.addButton('Latestpublications', {
+      label: label.button,
+      title: label.tooltip,
+      command: 'latestpublications'
     });
   }
 });

@@ -24,6 +24,8 @@
 
 CKEDITOR.plugins.setLang('latestpublications', 'fr', {
   title: 'Dernières publications',
+  button: 'Publications',
+  tooltip: 'Insérer les dernières publications d’un espace',
   spaceId: "Identifiant de l’espace",
   limit: 'Nombre maximum de publications',
   includeSubspaces: 'Inclure les sous-espaces',

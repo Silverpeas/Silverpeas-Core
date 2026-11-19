@@ -107,8 +107,7 @@
     }
   };
 
-  let currentTarget = null;
-  let settingHandlersDone = false;
+  const documentsWithHandlers = new WeakSet();
 
   /**
    * Open the Silverpeas chat WEB page.
@@ -217,8 +216,8 @@
    */
   function __adjustingPositions(aTooltip, target) {
     let picto = $('.userzoom-infoConnection img', target);
-    let tooltipEdgeXOffset = __getCachedArrowCss("right") + picto.width();
-    let tooltipEdgeYOffset = __getCachedArrowCss("height");
+    let tooltipEdgeXOffset = __getCachedArrowCss(aTooltip, "right") + picto.width();
+    let tooltipEdgeYOffset = __getCachedArrowCss(aTooltip, "height");
     aTooltip.position({
       of : target,
       at : 'right-' + tooltipEdgeXOffset + ' bottom+' + tooltipEdgeYOffset,
@@ -247,15 +246,16 @@
    * @return {*}
    * @private
    */
-  function __getCachedArrowCss(css) {
-    let $dataContainer = $(document);
+  function __getCachedArrowCss(tooltip, css) {
+    const doc = tooltip[0].ownerDocument;
+    let $dataContainer = $(doc);
     let dataCssKey = 'tooltip-arrow-' + css + '-value';
     let cachedArrowCssValue = $dataContainer.data(dataCssKey);
     if (typeof cachedArrowCssValue === 'undefined') {
       try {
         let $arrow = $('<div>', {"class" : "userzoom-tooltip-arrow", "style" : "display:none"});
         let $hiddenForComputing = $('<div>', {"class" : "above"}).append($arrow);
-        $(document.body).append($hiddenForComputing);
+        $(doc.body).append($hiddenForComputing);
         cachedArrowCssValue = $arrow.css(css).replace(/[^0-9]/g, '');
       } catch (e) {
         cachedArrowCssValue = css === 'right' ? 30 : 7;
@@ -368,11 +368,7 @@
       __markRenderingInProgress(target);
       __animate(target);
       setTimeout(function() {
-        let $currentTarget = $(currentTarget);
-        if (!$(currentTarget).hasClass('userToZoom')) {
-         $currentTarget = $(currentTarget).parents("span.userToZoom");
-        }
-        if (!__isRenderingInProgress(target) || $currentTarget[0] !== target[0] ||
+        if (!__isRenderingInProgress(target) || !target[0].isConnected ||
             ($.userZoom.target && $.userZoom.target === target)) {
           __markRenderingDone(target);
           return;
@@ -387,8 +383,9 @@
     }, function(){
       __markRenderingDone(target);
     });
-    if (!settingHandlersDone) {
-      $(document).mousedown(function(event) {
+    const doc = target[0].ownerDocument;
+    if (!documentsWithHandlers.has(doc)) {
+      $(doc).mousedown(function(event) {
         if ($.userZoom.currentTooltip !== null && $.userZoom.currentTooltip !== undefined) {
           let eventTarget = $(event.target);
           if (!eventTarget.hasClass('userzoom-tooltip') &&
@@ -397,10 +394,7 @@
           }
         }
       });
-      $(document).mousemove(function(event) {
-        currentTarget = event.target;
-      });
-      settingHandlersDone = true;
+      documentsWithHandlers.add(doc);
     }
   }
 
@@ -424,7 +418,7 @@
                     append($('<div>').addClass('userzoom-tooltip-info-infoConnection').append(connectionStatus(user))).
                     append($('<div>').addClass('userzoom-tooltip-info-status').append(user.status))).
             append(interactionWith(user, chatEnabled)).
-            appendTo($(document.body));
+            appendTo(target[0].ownerDocument.body);
     __adjustingPositions(userinfo, target);
     return userinfo;
   }
