@@ -109,12 +109,12 @@ public class AuthenticationSQL extends AuthenticationProtocol {
     } else {
       checkPassword(login, password, sqlPassword);
     }
-    // Rehash only after successful verification, without overwriting concurrent changes.
-    migratePasswordIfNeeded(getSQLConnection(connection), login, loginIgnoreCase, password,
-        sqlPassword);
     // Verifying if the user must change his password or if user will soon have to change his
     // password
     AuthenticationUserVerifierFactory.getUserMustChangePasswordVerifier(credential).verify();
+    // Rehash only after successful authentication, without overwriting concurrent changes.
+    migratePasswordIfNeeded(getSQLConnection(connection), login, loginIgnoreCase, password,
+        sqlPassword);
 
   }
 
