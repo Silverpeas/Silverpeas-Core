@@ -106,9 +106,11 @@
 
 				// Below line might be removable
 				editor.ui.addToolbarGroup( 'emoji', 'insert' );
-				// Name is responsible for icon name also.
+				// Use the Silverpeas toolbar icon independently of the skin sprite.
 				editor.ui.add( 'EmojiPanel', CKEDITOR.UI_PANELBUTTON, {
 					label: 'emoji',
+					icon: CKEDITOR.getUrl( plugin.path + 'icons/emoji-toolbar.png' ),
+					iconHiDpi: CKEDITOR.getUrl( plugin.path + 'icons/hidpi/emoji-toolbar.png' ),
 					title: lang.title,
 					modes: { wysiwyg: 1 },
 					editorFocus: 0,

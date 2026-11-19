@@ -35,6 +35,20 @@
           ? new URL('../../LatestPublications', script.src)
           : new URL('/silverpeas/LatestPublications', document.baseURI);
 
+  function initializeUserZoom(block) {
+    const frameJQuery = block.ownerDocument.defaultView?.jQuery;
+    const jquery = frameJQuery?.fn?.userZoom ? frameJQuery : window.jQuery;
+    if (!jquery?.fn?.userZoom) {
+      return;
+    }
+    jquery(block).find('.userToZoom').each(function() {
+      const username = jquery(this);
+      if (!username.data('userZoom')) {
+        username.userZoom({id: username.attr('rel')});
+      }
+    });
+  }
+
   function load(block) {
     if (blocks.has(block) || block.closest('[contenteditable="true"], .cke, .cke_widget_wrapper')) {
       return;
@@ -60,6 +74,7 @@
           return response.text();
         }).then(function(html) {
           block.innerHTML = html;
+          initializeUserZoom(block);
           block.dataset.publicationsState = 'loaded';
         }).catch(function(error) {
           block.dataset.publicationsState = 'error';
