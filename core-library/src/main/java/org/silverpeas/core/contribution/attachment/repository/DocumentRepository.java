@@ -87,7 +87,7 @@ public class DocumentRepository {
   }
 
   @PostConstruct
-  void setUpDocumentConverter() {
+  private void setUpDocumentConverter() {
     this.converter = createDocumentConverter(i18n);
   }
 

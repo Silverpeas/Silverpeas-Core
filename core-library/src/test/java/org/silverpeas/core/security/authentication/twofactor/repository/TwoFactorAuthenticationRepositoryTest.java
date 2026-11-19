@@ -30,7 +30,6 @@ import org.silverpeas.core.persistence.datasource.model.jpa.EntityManagerProvide
 import org.silverpeas.core.test.unit.extention.JEETestContext;
 import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.kernel.test.annotations.TestManagedMock;
-import org.silverpeas.kernel.test.annotations.TestManagedBean;
 import org.silverpeas.kernel.test.annotations.TestedBean;
 import java.time.Instant;
 import static org.junit.jupiter.api.Assertions.*;
@@ -42,26 +41,17 @@ import org.silverpeas.core.security.encryption.cipher.CryptoException;
 
 @EnableSilverTestEnv(context = JEETestContext.class)
 class TwoFactorAuthenticationRepositoryTest {
-  // The Silverpeas test container supports no-argument construction only.
-  // Supply constructor dependencies explicitly and register the resulting tested bean.
-  TwoFactorAuthenticationRepositoryTest(
-      @TestManagedMock EntityManagerProvider provider,
-      @TestManagedMock ContentEncryptionService encryptionService,
-      @TestManagedMock TwoFactorSecretRepository keyResetRepository) {
-    this.provider = provider;
-    this.encryptionService = encryptionService;
-    this.keyResetRepository = keyResetRepository;
-    this.repository = new TwoFactorAuthenticationRepositoryImpl(provider, encryptionService, keyResetRepository);
-  }
 
-  @TestManagedBean
+  @TestManagedMock
   private EntityManagerProvider provider;
-  @TestManagedBean
+  @TestManagedMock
   private ContentEncryptionService encryptionService;
+  @TestManagedMock
+  private TwoFactorSecretRepository keyResetRepository;
+
   @TestedBean
   private TwoFactorAuthenticationRepositoryImpl repository;
-  @TestManagedBean
-  private TwoFactorSecretRepository keyResetRepository;
+
   private TwoFactorJpaTestDatabase database;
   private static final Instant NOW = Instant.parse("2026-10-13T08:00:00Z");
 

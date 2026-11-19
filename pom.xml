@@ -32,7 +32,7 @@
   <parent>
     <groupId>org.silverpeas</groupId>
     <artifactId>silverpeas-project</artifactId>
-    <version>2.0-build261118</version>
+    <version>2.0-build261119</version>
   </parent>
 
   <groupId>org.silverpeas</groupId>
@@ -80,7 +80,7 @@
   <properties>
     <!-- property used by the CI to both deploy a build version and release the next stable version -->
     <next.release>6.5</next.release>
-    <kernel.version>2.0-build261020</kernel.version>
+    <kernel.version>2.0-build261119</kernel.version>
   </properties>
 
   <dependencies>

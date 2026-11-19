@@ -36,7 +36,6 @@ import jakarta.persistence.PersistenceException;
 import org.silverpeas.core.test.unit.extention.JEETestContext;
 import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.kernel.test.annotations.TestManagedMock;
-import org.silverpeas.kernel.test.annotations.TestManagedBean;
 import org.silverpeas.kernel.test.annotations.TestedBean;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -53,35 +52,21 @@ import static org.mockito.Mockito.when;
 
 @EnableSilverTestEnv(context = JEETestContext.class)
 class TwoFactorAuthenticationServiceImplTest {
-  // The Silverpeas test container supports no-argument construction only.
-  // Supply constructor dependencies explicitly and register the resulting tested bean.
-  TwoFactorAuthenticationServiceImplTest(
-      @TestManagedMock TwoFactorAuthenticationRepository repository,
-      @TestManagedMock RecoveryCodeRepository recoveryCodeRepository,
-      @TestManagedMock TotpService totpService,
-      @TestManagedMock TrustedDeviceService trustedDeviceService) {
-    this.repository = repository;
-    this.recoveryCodeRepository = recoveryCodeRepository;
-    this.totpService = totpService;
-    this.trustedDeviceService = trustedDeviceService;
-    this.service = new TwoFactorAuthenticationServiceImpl(repository, recoveryCodeRepository, trustedDeviceService, totpService);
-  }
-
 
   private static final int USER_ID = 42;
   private static final String SECRET = "JBSWY3DPEHPK3PXP";
   private static final String CODE = "123456";
 
-  @TestManagedBean
+  @TestManagedMock
   private TwoFactorAuthenticationRepository repository;
 
-  @TestManagedBean
+  @TestManagedMock
   private RecoveryCodeRepository recoveryCodeRepository;
 
-  @TestManagedBean
+  @TestManagedMock
   private TotpService totpService;
 
-  @TestManagedBean
+  @TestManagedMock
   private TrustedDeviceService trustedDeviceService;
 
   @TestedBean

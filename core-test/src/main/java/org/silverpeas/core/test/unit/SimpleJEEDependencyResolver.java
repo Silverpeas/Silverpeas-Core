@@ -12,6 +12,7 @@ import jakarta.enterprise.inject.Instance;
 import jakarta.enterprise.util.TypeLiteral;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
@@ -19,7 +20,9 @@ import java.util.*;
 import static org.mockito.Mockito.mock;
 
 /**
- * A simple resolver for specific CDI types implied in dependencies injection.
+ * A simple resolver for specific CDI types implied in dependencies injection: an {@link Instance}
+ * of managed beans, injected either through a field or through a parameter of the injection
+ * constructor of a bean, is resolved with the beans managed by the unit tests.
  * @author mmoquillon
  */
 public class SimpleJEEDependencyResolver extends DependencyResolver {
@@ -30,15 +33,26 @@ public class SimpleJEEDependencyResolver extends DependencyResolver {
       SilverpeasReflectionException {
     Objects.requireNonNull(dependency);
     Objects.requireNonNull(qualifiers);
-    Optional<Object> bean;
-    if (dependency.getType().equals(Instance.class)) {
-      ParameterizedType type = (ParameterizedType) dependency.getGenericType();
+    return resolveInstance(dependency.getType(), dependency.getGenericType());
+  }
+
+  @Override
+  protected Optional<Object> resolveCustomDependency(@NonNull Parameter dependency,
+      @NonNull Annotation... qualifiers) throws MultipleCandidateException,
+      SilverpeasReflectionException {
+    Objects.requireNonNull(dependency);
+    Objects.requireNonNull(qualifiers);
+    return resolveInstance(dependency.getType(), dependency.getParameterizedType());
+  }
+
+  private static Optional<Object> resolveInstance(final Class<?> dependencyType,
+      final Type dependencyGenericType) {
+    if (dependencyType.equals(Instance.class)) {
+      ParameterizedType type = (ParameterizedType) dependencyGenericType;
       Type beanType = type.getActualTypeArguments()[0];
-      bean = Optional.of(new InstanceImpl<>((Class<?>) beanType));
-    } else {
-      bean = Optional.empty();
+      return Optional.of(new InstanceImpl<>((Class<?>) beanType));
     }
-    return bean;
+    return Optional.empty();
   }
 
   private static class InstanceImpl<T> implements Instance<T> {

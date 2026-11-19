@@ -31,27 +31,18 @@ import org.silverpeas.core.security.encryption.EncryptionContentIterator;
 import org.silverpeas.core.test.unit.extention.JEETestContext;
 import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.kernel.test.annotations.TestManagedMock;
-import org.silverpeas.kernel.test.annotations.TestManagedBean;
 import org.silverpeas.kernel.test.annotations.TestedBean;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @EnableSilverTestEnv(context = JEETestContext.class)
 class TwoFactorAuthenticationInitializationTest {
-  // The Silverpeas test container supports no-argument construction only.
-  // Supply constructor dependencies explicitly and register the resulting tested bean.
-  TwoFactorAuthenticationInitializationTest(
-      @TestManagedMock ContentEncryptionService encryptionService,
-      @TestManagedMock TwoFactorSecretRepository repository) {
-    this.encryptionService = encryptionService;
-    this.repository = repository;
-    this.initialization = new TwoFactorAuthenticationInitialization(encryptionService, repository);
-  }
 
-  @TestManagedBean
+  @TestManagedMock
   private ContentEncryptionService encryptionService;
-  @TestManagedBean
+  @TestManagedMock
   private TwoFactorSecretRepository repository;
+
   @TestedBean
   private TwoFactorAuthenticationInitialization initialization;
 

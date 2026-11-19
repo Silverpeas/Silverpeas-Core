@@ -26,6 +26,7 @@ package org.silverpeas.core.contribution.attachment.repository;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.annotations.TestManagedBean;
 import org.silverpeas.kernel.test.annotations.TestedBean;
 import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
@@ -51,9 +52,8 @@ class DocumentRepositoryTest {
   }
 
   @Test
-  void aSpecificRepositoryCanSetUpItsOwnDocumentConverter() {
-    var specificRepository = new SpecificDocumentRepository();
-    specificRepository.setUpDocumentConverter();
+  void aSpecificRepositoryCanSetUpItsOwnDocumentConverter(
+      @TestManagedBean SpecificDocumentRepository specificRepository) {
     assertThat(specificRepository.converter, instanceOf(SpecificDocumentConverter.class));
     assertThat(specificRepository.converter,
         sameInstance(specificRepository.createdConverter));

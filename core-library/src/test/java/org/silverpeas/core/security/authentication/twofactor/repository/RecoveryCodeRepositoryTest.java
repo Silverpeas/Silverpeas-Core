@@ -30,7 +30,6 @@ import org.silverpeas.core.persistence.datasource.model.jpa.EntityManagerProvide
 import org.silverpeas.core.test.unit.extention.JEETestContext;
 import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.kernel.test.annotations.TestManagedMock;
-import org.silverpeas.kernel.test.annotations.TestManagedBean;
 import org.silverpeas.kernel.test.annotations.TestedBean;
 import java.time.Instant;
 import static org.junit.jupiter.api.Assertions.*;
@@ -42,16 +41,10 @@ import java.util.concurrent.TimeUnit;
 
 @EnableSilverTestEnv(context = JEETestContext.class)
 class RecoveryCodeRepositoryTest {
-  // The Silverpeas test container supports no-argument construction only.
-  // Supply constructor dependencies explicitly and register the resulting tested bean.
-  RecoveryCodeRepositoryTest(
-      @TestManagedMock EntityManagerProvider provider) {
-    this.provider = provider;
-    this.repository = new RecoveryCodeRepositoryImpl(provider);
-  }
 
-  @TestManagedBean
+  @TestManagedMock
   private EntityManagerProvider provider;
+
   @TestedBean
   private RecoveryCodeRepositoryImpl repository;
   private TwoFactorJpaTestDatabase database;

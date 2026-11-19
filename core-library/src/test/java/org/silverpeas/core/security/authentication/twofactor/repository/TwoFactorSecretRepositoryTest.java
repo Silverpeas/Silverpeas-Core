@@ -36,36 +36,25 @@ import org.silverpeas.core.security.encryption.ContentEncryptionService;
 import org.silverpeas.core.test.unit.extention.JEETestContext;
 import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.kernel.test.annotations.TestManagedMock;
-import org.silverpeas.kernel.test.annotations.TestManagedBean;
 import org.silverpeas.kernel.test.annotations.TestedBean;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @EnableSilverTestEnv(context = JEETestContext.class)
 class TwoFactorSecretRepositoryTest {
-  // The Silverpeas test container supports no-argument construction only.
-  // Supply constructor dependencies explicitly and register the resulting tested bean.
-  TwoFactorSecretRepositoryTest(
-      @TestManagedMock EntityManagerProvider provider,
-      @TestManagedMock ContentEncryptionService encryptionService,
-      @TestManagedMock Event<TwoFactorKeyReset> resetEvents) {
-    this.provider = provider;
-    this.encryptionService = encryptionService;
-    this.resetEvents = resetEvents;
-    this.repository = new TwoFactorSecretRepository(provider, resetEvents);
-    this.authenticationRepository = new TwoFactorAuthenticationRepositoryImpl(provider, encryptionService, repository);
-  }
 
-  @TestManagedBean
+  @TestManagedMock
   private EntityManagerProvider provider;
-  @TestManagedBean
+  @TestManagedMock
+  private Event<TwoFactorKeyReset> resetEvents;
+  @TestManagedMock
   private ContentEncryptionService encryptionService;
-  @TestedBean
-  private TwoFactorAuthenticationRepositoryImpl authenticationRepository;
+
   @TestedBean
   private TwoFactorSecretRepository repository;
-  @TestManagedBean
-  private Event<TwoFactorKeyReset> resetEvents;
+  @TestedBean
+  private TwoFactorAuthenticationRepositoryImpl authenticationRepository;
+
   private TwoFactorJpaTestDatabase database;
 
   @BeforeEach
