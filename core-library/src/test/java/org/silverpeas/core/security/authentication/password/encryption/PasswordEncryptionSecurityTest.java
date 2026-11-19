@@ -17,8 +17,9 @@ import org.silverpeas.core.security.authentication.password.PasswordEncryption;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
+import java.util.HashSet;
+import java.util.Set;
 import static org.junit.Assert.fail;
 
 /**
@@ -46,17 +47,17 @@ public class PasswordEncryptionSecurityTest {
 
   @Test
   public void sha512CryptGeneratesDifferentSalts() {
-    assertDifferentSalts(new UnixSHA512Encryption());
+    assertDifferentSalts(new UnixSHA512Encryption(), true);
   }
 
   @Test
   public void md5CryptGeneratesDifferentSalts() {
-    assertDifferentSalts(new UnixMD5Encryption());
+    assertDifferentSalts(new UnixMD5Encryption(), true);
   }
 
   @Test
   public void desCryptGeneratesDifferentSalts() {
-    assertDifferentSalts(new UnixDESEncryption());
+    assertDifferentSalts(new UnixDESEncryption(), false);
   }
 
   private static void assertMismatchDoesNotExposeCredentials(PasswordEncryption encryption) {
@@ -74,13 +75,18 @@ public class PasswordEncryptionSecurityTest {
     }
   }
 
-  private static void assertDifferentSalts(PasswordEncryption encryption) {
-    String first = encryption.encrypt(PASSWORD);
-    String second = encryption.encrypt(PASSWORD);
-    assertNotEquals(first, second);
-    assertTrue(encryption.doUnderstandDigest(first));
-    assertTrue(encryption.doUnderstandDigest(second));
-    encryption.check(PASSWORD, first);
-    encryption.check(PASSWORD, second);
+  private static void assertDifferentSalts(PasswordEncryption encryption,
+      boolean verifyDigestRecognition) {
+    Set<String> digests = new HashSet<>();
+    for (int i = 0; i < 12; i++) {
+      String digest = encryption.encrypt(PASSWORD);
+      digests.add(digest);
+      if (verifyDigestRecognition) {
+        assertTrue(encryption.doUnderstandDigest(digest));
+      }
+      encryption.check(PASSWORD, digest);
+    }
+    // A legacy DES salt has only 12 bits: collisions are possible even with SecureRandom.
+    assertTrue("Random salts should produce multiple distinct digests", digests.size() > 1);
   }
 }
