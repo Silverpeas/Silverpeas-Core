@@ -16,6 +16,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -66,4 +67,39 @@ public class Argon2idEncryptionTest {
       assertFalse(error.getMessage().contains(malformed));
     }
   }
+  @Test
+  public void digestFitsSqlDomainPasswordColumn() {
+    String digest = encryption.encrypt("Secret15599!");
+    assertEquals(97, digest.length());
+    assertTrue("DomainSP_User.password is VARCHAR(123)", digest.length() <= 123);
+  }
+
+  @Test
+  public void unicodePasswordCanBeVerified() {
+    String password = "Mot de passe éà漢字🔒";
+    String digest = encryption.encrypt(password);
+    encryption.check(password, digest);
+    try {
+      encryption.check(password + "!", digest);
+      fail("Different Unicode password accepted");
+    } catch (AssertionError expected) {
+      assertEquals("The password does not match the stored digest", expected.getMessage());
+    }
+  }
+
+  @Test
+  public void malformedOrExcessiveParametersAreRejected() {
+    String valid = encryption.encrypt("Secret15599!");
+    String excessiveMemory = valid.replace("m=19456", "m=999999999");
+    String unsupportedVersion = valid.replace("v=19", "v=16");
+    for (String malformed : new String[]{excessiveMemory, unsupportedVersion}) {
+      try {
+        encryption.check("Secret15599!", malformed);
+        fail("Malformed Argon2id digest accepted");
+      } catch (IllegalArgumentException expected) {
+        assertFalse(expected.getMessage().contains(malformed));
+      }
+    }
+  }
+
 }
