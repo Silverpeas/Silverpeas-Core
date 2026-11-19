@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.security.authentication.password;
 
-import org.silverpeas.core.security.authentication.password.encryption.UnixSHA512Encryption;
+import org.silverpeas.core.security.authentication.password.encryption.Argon2idEncryption;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Set;
@@ -49,7 +49,7 @@ public class PasswordEncryptionProvider {
    * @return the current default password encryption.
    */
   public static PasswordEncryption getDefaultPasswordEncryption() {
-    return ServiceProvider.getService(UnixSHA512Encryption.class);
+    return ServiceProvider.getService(Argon2idEncryption.class);
   }
 
   /**
