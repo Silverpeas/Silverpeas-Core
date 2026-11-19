@@ -37,7 +37,7 @@ import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToInternal;
  */
 @org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentController(
     "TestWebComponentControllerIdentifier")
-public class NotHandledProducesSpecifiedController extends ParentTestWebComponentController {
+public class SeveralProducesSpecifiedController extends ParentTestWebComponentController {
 
   /**
    * Standard Session Controller Constructor
@@ -45,7 +45,7 @@ public class NotHandledProducesSpecifiedController extends ParentTestWebComponen
    * @param componentContext The component's profile
    *
    */
-  public NotHandledProducesSpecifiedController(MainSessionController mainSessionCtrl,
+  public SeveralProducesSpecifiedController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext);
   }
@@ -58,7 +58,7 @@ public class NotHandledProducesSpecifiedController extends ParentTestWebComponen
 
   @GET
   @Homepage
-  @Produces(MediaType.APPLICATION_XML)
-  public void producesNotJson(TestWebComponentRequestContext context) {
+  @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+  public void producesSeveralContentTypes(TestWebComponentRequestContext context) {
   }
 }

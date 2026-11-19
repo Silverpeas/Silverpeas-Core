@@ -80,15 +80,26 @@ public class DocumentRepository {
   @Inject
   private I18n i18n;
 
-  private DocumentConverter converter;
+  DocumentConverter converter;
 
   protected DocumentRepository() {
     // to be used only through the IoD container
   }
 
   @PostConstruct
-  private void setUpDocumentConverter() {
-    this.converter = new DocumentConverter(i18n);
+  void setUpDocumentConverter() {
+    this.converter = createDocumentConverter(i18n);
+  }
+
+  /**
+   * Creates the converter used by this repository to convert the JCR nodes into documents and
+   * conversely. A repository extending this one in the same package can override it to use its own
+   * converter of documents.
+   * @param i18n the I18n bean to use to handle content in several languages in documents.
+   * @return the converter of documents to use.
+   */
+  DocumentConverter createDocumentConverter(final I18n i18n) {
+    return new DocumentConverter(i18n);
   }
 
   private void prepareComponentAttachments(String instanceId, String folder)

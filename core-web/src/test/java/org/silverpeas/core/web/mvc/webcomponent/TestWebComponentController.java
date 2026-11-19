@@ -288,6 +288,22 @@ public class TestWebComponentController extends ParentTestWebComponentController
   }
 
   @GET
+  @Path("/produces/other/manually")
+  @Produces("text/tab-separated-values")
+  public void producesOtherContentTypeByHandlingResponseManually(
+      TestWebComponentRequestContext context) throws Exception {
+    context.getResponse().getWriter().append("column1\tcolumn2");
+  }
+
+  @GET
+  @Path("/produces/other/returned")
+  @Produces(MediaType.APPLICATION_XML)
+  public String producesOtherContentTypeByReturningContent(
+      TestWebComponentRequestContext context) {
+    return "<entity/>";
+  }
+
+  @GET
   @Path("/webApplicationException412")
   @RedirectTo("webApplicationException412")
   public void webApplicationException412(TestWebComponentRequestContext context) {

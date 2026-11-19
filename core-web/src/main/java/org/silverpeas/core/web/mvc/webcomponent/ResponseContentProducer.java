@@ -35,6 +35,8 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 /**
+ * Producer of the content of the response to a request whose path is handled by a method of a
+ * web component controller annotated with {@link jakarta.ws.rs.Produces}.
  * @author Yohann Chastagnier
  */
 public class ResponseContentProducer {
@@ -45,17 +47,31 @@ public class ResponseContentProducer {
   private ResponseContentProducer(){
   }
 
+  /**
+   * Produces the content of the response with the method behind the specified path. The
+   * {@code Content-Type} header of the response is set with the content type declared by the
+   * {@link jakarta.ws.rs.Produces} annotation of the method.
+   * <p>
+   * A JSON content is handled by the web component framework: the value returned by the method,
+   * if any, is written into the response, as is for a string, encoded in JSON for any other
+   * object. Any other content type is delegated to the method itself: it writes the content into
+   * the response, and the value it returns, if any, is ignored.
+   * </p>
+   * @param context the context of the incoming request.
+   * @param pathToPerform the path of the request, handled by a method producing a content.
+   */
   static void produce(WebComponentRequestContext<?> context, Path pathToPerform) {
     final String contentType = pathToPerform.getProduces().value()[0];
     final HttpServletResponse response = context.getResponse();
-    response.setHeader("Content-Type", contentType + "; charset=UTF-8");
     response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
     response.setHeader("Pragma", "no-cache");
     response.setDateHeader("Expires", -1);
     if (contentType.equals(MediaType.APPLICATION_JSON)) {
+      response.setHeader("Content-Type", contentType + "; charset=UTF-8");
       handleJson(context, pathToPerform);
     } else {
-      throw new IllegalArgumentException("only JSON producing is handled");
+      response.setHeader("Content-Type", contentType);
+      invoke(context, pathToPerform);
     }
   }
 

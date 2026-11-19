@@ -39,7 +39,6 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriBuilder;
 
@@ -206,11 +205,10 @@ public class WebComponentManager {
         } else if (annotation instanceof Produces) {
           produces = (Produces) annotation;
           String[] toProduce = produces.value();
-          if (toProduce.length != 1 || !toProduce[0].equals(MediaType.APPLICATION_JSON)) {
+          if (toProduce.length != 1) {
             throw new IllegalArgumentException(
-                "@Produces into WebComponentController can just handle " +
-                    MediaType.APPLICATION_JSON + " data for now (method " +
-                    resourceMethod.getName() + ")");
+                "@Produces into WebComponentController must specify one, and only one, " +
+                    "content type (method " + resourceMethod.getName() + ")");
           }
         } else if (annotation instanceof Invokable) {
           if (invokable != null) {

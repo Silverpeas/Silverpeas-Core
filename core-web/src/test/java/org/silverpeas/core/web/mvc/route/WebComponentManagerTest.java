@@ -33,6 +33,8 @@ import org.silverpeas.core.web.mvc.webcomponent.*;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.HttpMethod;
+import jakarta.ws.rs.core.MediaType;
+import java.io.PrintWriter;
 import java.net.URI;
 import java.util.Map;
 
@@ -397,13 +399,13 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
   }
 
   @Test
-  void notHandledProducesSpecifiedOnHttpMethod() {
+  void severalProducesSpecifiedOnHttpMethod() {
     assertThrows(IllegalArgumentException.class, () -> {
       try {
-        onController(NotHandledProducesSpecifiedController.class).defaultRequest().perform();
+        onController(SeveralProducesSpecifiedController.class).defaultRequest().perform();
       } catch (IllegalArgumentException e) {
-        assertThat(e.getMessage(), is("@Produces into WebComponentController can just handle application/json data for now" +
-            " (method producesNotJson)"));
+        assertThat(e.getMessage(), is("@Produces into WebComponentController must specify one, " +
+            "and only one, content type (method producesSeveralContentTypes)"));
         throw e;
       }
     });
@@ -581,6 +583,36 @@ class WebComponentManagerTest extends WebComponentRequestRouterTest {
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
     verifyPathFound(testResult);
     verifyNoNavigation(testResult);
+    verify(testResult.requestContext.getResponse())
+        .setHeader("Content-Type", MediaType.APPLICATION_JSON + "; charset=UTF-8");
+  }
+
+  @Test
+  void producesOtherContentTypeByHandlingResponseManually() throws Exception {
+    TestResult<?> testResult = onDefaultController().defaultRequest()
+        .changeSuffixPathWith("/produces/other/manually")
+        .perform();
+    final HttpServletResponse response = testResult.requestContext.getResponse();
+    verify(response, times(0)).sendError(anyInt());
+    verifyPathFound(testResult);
+    verifyNoNavigation(testResult);
+    verify(response).setHeader("Content-Type", "text/tab-separated-values");
+    final PrintWriter writer = response.getWriter();
+    writer.flush();
+    assertThat(writer.toString(), is("column1\tcolumn2"));
+  }
+
+  @Test
+  void producesOtherContentTypeIgnoresTheReturnedContent() throws Exception {
+    TestResult<?> testResult = onDefaultController().defaultRequest()
+        .changeSuffixPathWith("/produces/other/returned")
+        .perform();
+    final HttpServletResponse response = testResult.requestContext.getResponse();
+    verify(response, times(0)).sendError(anyInt());
+    verifyPathFound(testResult);
+    verify(testResult.router.getServletContext(), times(0)).getRequestDispatcher(anyString());
+    verify(response).setHeader("Content-Type", MediaType.APPLICATION_XML);
+    verify(response, times(0)).getWriter();
   }
 
   @Test
