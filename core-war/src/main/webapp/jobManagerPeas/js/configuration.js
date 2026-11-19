@@ -117,17 +117,17 @@
         const list = document.createElement('ul');
         Object.entries(results).forEach(([path, keys]) => keys.forEach(key => {
           const item = document.createElement('li');
-          const button = document.createElement('button');
-          button.type = 'button';
-          button.className = 'configuration-file';
+          const link = document.createElement('a');
+          link.href = '#configuration-editor';
           const keyLabel = document.createElement('strong');
           keyLabel.className = 'configuration-result-key';
           keyLabel.textContent = key;
           const fileLabel = document.createElement('span');
           fileLabel.className = 'configuration-result-path';
           fileLabel.textContent = path;
-          button.append(keyLabel, fileLabel);
-          button.addEventListener('click', async () => {
+          link.append(keyLabel, fileLabel);
+          link.addEventListener('click', async event => {
+            event.preventDefault();
             if (await this.loadFile(path)) {
               this.element('key-filter').value = '';
               this.element('modified-only').checked = false;
@@ -137,7 +137,7 @@
               input?.focus({preventScroll : true});
             }
           });
-          item.append(button);
+          item.append(link);
           list.append(item);
         }));
         container.replaceChildren(list);
@@ -205,6 +205,20 @@
           const details = document.createElement('details');
           const summary = document.createElement('summary');
           summary.textContent = name;
+          summary.addEventListener('click', event => {
+            if (!this.file) {
+              return;
+            }
+            if (!this.canLeaveFile()) {
+              event.preventDefault();
+              return;
+            }
+            this.changes.clear();
+            this.element('key-filter').value = '';
+            this.element('modified-only').checked = false;
+            this.displayFile(null);
+            this.message('');
+          });
           details.open = Boolean(filter) || (this.openFolders.get(path) ?? path.split('/').length < 4);
           details.addEventListener('toggle', () => {
             if (!filter) {
@@ -223,8 +237,13 @@
       return sp.ajaxRequest(this.api + '/file').withParam('path', path).sendAndPromiseJsonResponse();
     }
 
+    canLeaveFile() {
+      return !this.busy && !this.persistenceBusy &&
+          (!this.changes.size || window.confirm(this.text('discard')));
+    }
+
     async loadFile(path) {
-      if (this.busy || this.persistenceBusy || (this.changes.size && !window.confirm(this.text('discard')))) {
+      if (!this.canLeaveFile()) {
         return;
       }
       this.setBusy(true);
@@ -245,7 +264,7 @@
     displayFile(file, selectedKeys = []) {
       this.activeHelp?.hide();
       this.file = file;
-      this.selectedKeys = new Set(Array.from(selectedKeys).filter(key => Object.hasOwn(file.properties, key)));
+      this.selectedKeys = new Set(Array.from(selectedKeys).filter(key => file && Object.hasOwn(file.properties, key)));
       if (this.targets.length) {
         this.persistenceMessage('');
       }
@@ -253,13 +272,13 @@
       this.element('conflict').hidden = true;
       this.element('comparison').hidden = true;
       this.element('comparison').querySelector('tbody').replaceChildren();
-      this.element('path').textContent = file.path.split('/').join(' / ');
+      this.element('path').textContent = file ? file.path.split('/').join(' / ') : this.text('select');
       const help = this.element('file-help');
-      help.hidden = !file.documentation?.file;
-      help.querySelector('pre').textContent = file.documentation?.file || '';
+      help.hidden = !file?.documentation?.file;
+      help.querySelector('pre').textContent = file?.documentation?.file || '';
       this.renderRows();
       this.root.querySelectorAll('[data-path]').forEach(button => {
-        button.setAttribute('aria-current', String(button.dataset.path === file.path));
+        button.setAttribute('aria-current', String(button.dataset.path === file?.path));
       });
     }
 
@@ -271,7 +290,7 @@
       const body = this.element('properties').querySelector('tbody');
       body.replaceChildren();
       this.rows.clear();
-      Object.entries(this.file.properties).sort(([a], [b]) => a.localeCompare(b)).forEach(([key, value], index) => {
+      Object.entries(this.file?.properties ?? {}).sort(([a], [b]) => a.localeCompare(b)).forEach(([key, value], index) => {
         const row = document.createElement('tr');
         const keyCell = document.createElement('th');
         keyCell.scope = 'row';
@@ -402,7 +421,7 @@
     }
 
     setIconButton(button, label, icon) {
-      button.classList.add('sp_button', 'configuration-command', 'configuration-icon-button');
+      button.classList.add('simple-button', 'configuration-command', 'configuration-icon-button');
       button.dataset.icon = icon;
       button.title = this.text(label);
       button.setAttribute('aria-label', this.text(label));
@@ -444,6 +463,7 @@
       this.element('persistence-refresh').disabled = busy;
       this.element('persistence-count').textContent = this.text('persistenceCount')
           .replace('{0}', String(this.selectedKeys.size)) + (this.changes.size ? ' ' + this.text('persistenceSaveFirst') : '');
+      this.element('editor').hidden = !this.file;
       this.element('key-filter').disabled = !this.file;
       this.element('modified-only').disabled = !this.file;
       this.element('count').textContent = this.text('count').replace('{0}', String(this.changes.size));
@@ -583,6 +603,10 @@
           : (this.targets.at(-1)?.name || '');
     }
 
+    readPersistenceTargets() {
+      return sp.ajaxRequest(this.api + '/persistence').sendAndPromiseJsonResponse();
+    }
+
     async loadPersistenceTargets() {
       if (this.persistenceBusy) {
         return;
@@ -591,7 +615,7 @@
       this.persistenceBusy = true;
       this.updateControls();
       try {
-        this.targets = await sp.ajaxRequest(this.api + '/persistence').sendAndPromiseJsonResponse();
+        this.targets = await this.readPersistenceTargets();
         this.renderPersistenceTargets(preferred);
         this.persistenceMessage('');
       } catch (error) {
@@ -621,13 +645,31 @@
         this.selectedKeys.clear();
         this.persistenceMessage('persistenceSaved', false, saved.name, count);
       } catch (error) {
-        const key = error.status === 409 ? 'persistenceConflict' : 'persistenceError';
-        this.persistenceMessage(error.status === 403 ? 'forbidden' : key, true);
+        if (error.status === 409) {
+          await this.refreshAfterPersistenceConflict(target.name);
+        } else {
+          this.persistenceMessage(error.status === 403 ? 'forbidden' : 'persistenceError', true);
+        }
       } finally {
         this.persistenceBusy = false;
         this.setBusy(this.busy);
       }
     }
+    async refreshAfterPersistenceConflict(preferredTarget) {
+      try {
+        const [file, targets] = await Promise.all([
+          this.readFile(this.file.path), this.readPersistenceTargets()
+        ]);
+        this.targets = targets;
+        this.renderPersistenceTargets(preferredTarget);
+        this.displayFile(file, this.selectedKeys);
+        this.persistenceMessage('persistenceConflict', true);
+      } catch (error) {
+        this.persistenceMessage(
+            error.status === 403 ? 'forbidden' : 'persistenceConflictRefreshError', true);
+      }
+    }
+
   }
 
   whenSilverpeasReady(function() {

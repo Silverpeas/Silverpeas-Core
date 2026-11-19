@@ -167,11 +167,16 @@ async function fixture(options = {}) {
   });
   await page.goto('http://configuration.test/');
   await page.locator('[data-path="org/silverpeas/general.properties"]').waitFor();
-  await page.locator('[data-path="org/silverpeas/general.properties"]').click();
-  await page.locator('#configuration-properties tbody tr').first().waitFor();
+  if (options.selectFile !== false) {
+    await page.locator('[data-path="org/silverpeas/general.properties"]').click();
+    await page.locator('#configuration-properties tbody tr').first().waitFor();
+  }
   return {context, page, writes, persisted,
-    conflictXml() {persistenceConflict = true;},
-    recoverXml() {persistenceConflict = false; targets = targets.map(t => ({...t, revision : 'xml-external'}));},
+    conflictXml() {
+      persistenceConflict = true;
+      targets = targets.map(target => ({...target, revision : 'xml-external'}));
+    },
+    recoverXml() {persistenceConflict = false;},
     fail() {failSave = true;}, externalChange() {
     file = {...file, revision : 'external', properties : {...file.properties, enabled : 'external'}};
   }};
@@ -279,8 +284,48 @@ test('persists only selected saved keys and automatically selects edited keys af
   } finally { await context.close(); }
 });
 
-test('offers custom filenames in execution order and preserves selection after XML conflicts', async () => {
-  const {context, page, persisted, conflictXml, recoverXml} = await fixture({targets : [
+test('only shows the editor and persistence controls once a file is selected', async () => {
+  const {context, page} = await fixture({selectFile : false});
+  try {
+    const editor = page.locator('#configuration-editor');
+    const persist = page.locator('#configuration-persist');
+    assert.equal(await editor.isVisible(), false);
+    assert.equal(await persist.isVisible(), false);
+    assert.equal(await page.locator('#configuration-global-key').isVisible(), true);
+    await page.locator('[data-path="org/silverpeas/general.properties"]').click();
+    await editor.waitFor({state : 'visible'});
+    assert.equal(await page.locator('#configuration-key-filter').isEnabled(), true);
+    assert.equal(await persist.isVisible(), true);
+    assert.equal(await persist.isDisabled(), true);
+  } finally { await context.close(); }
+});
+
+test('closes the editor on folder navigation after confirming unsaved changes', async () => {
+  const {context, page} = await fixture();
+  try {
+    const editor = page.locator('#configuration-editor');
+    const folder = page.locator('#configuration-tree summary').filter({hasText : /^org$/});
+    const file = page.locator('[data-path="org/silverpeas/general.properties"]');
+    await inputFor(page, 'enabled').fill('true');
+    page.once('dialog', dialog => dialog.dismiss());
+    await folder.click();
+    assert.equal(await editor.isVisible(), true);
+    assert.equal(await inputFor(page, 'enabled').inputValue(), 'true');
+
+    page.once('dialog', dialog => dialog.accept());
+    await folder.click();
+    await editor.waitFor({state : 'hidden'});
+    assert.equal(await file.getAttribute('aria-current'), 'false');
+
+    await folder.click();
+    await file.click();
+    await editor.waitFor({state : 'visible'});
+    assert.equal(await inputFor(page, 'enabled').inputValue(), 'false');
+  } finally { await context.close(); }
+});
+
+test('refreshes the file and XML targets after a conflict while preserving selection', async () => {
+  const {context, page, persisted, conflictXml, recoverXml, externalChange} = await fixture({targets : [
     {name : 'Company.xml', revision : 'one', exists : true},
     {name : 'Z-Overrides.xml', revision : 'two', exists : true}
   ]});
@@ -289,16 +334,19 @@ test('offers custom filenames in execution order and preserves selection after X
     await page.locator('#configuration-persistence-target').selectOption('Company.xml');
     await page.getByRole('checkbox', {name : 'Pérenniser la sélection : enabled', exact : true}).check();
     conflictXml();
+    externalChange();
     await page.locator('#configuration-persist').click();
-    await page.waitForFunction(() => document.querySelector('#configuration-persistence-message').classList.contains('configuration-error'));
+    await page.locator('#configuration-persistence-message').filter({hasText : labels.persistenceConflict}).waitFor();
+    assert.equal(await inputFor(page, 'enabled').inputValue(), 'external');
+    assert.equal(await page.locator('#configuration-persistence-target').inputValue(), 'Company.xml');
     assert.equal(await page.getByRole('checkbox', {name : 'Pérenniser la sélection : enabled', exact : true}).isChecked(), true);
+    assert.equal(persisted.length, 1);
     recoverXml();
-    await page.locator('#configuration-persistence-refresh').click();
-    await page.waitForFunction(() => !document.querySelector('#configuration-persistence-refresh').disabled);
     await page.locator('#configuration-persist').click();
     await page.waitForFunction(() => document.querySelector('#configuration-persistence-message').textContent.includes('Enregistré'));
     assert.equal(persisted[1].target.name, 'Company.xml');
     assert.equal(persisted[1].target.revision, 'xml-external');
+    assert.equal(persisted[1].revision, 'external');
   } finally { await context.close(); }
 });
 
@@ -306,9 +354,18 @@ test('offers custom filenames in execution order and preserves selection after X
 test('uses Silverpeas buttons and icons with accessible names and centers the checkbox label', async () => {
   const {context, page} = await fixture();
   try {
-    const commands = page.locator('#configuration-console button:not(.configuration-file)');
-    for (const button of await commands.all()) {
-      assert.ok((await button.getAttribute('class')).split(' ').includes('sp_button'));
+    const primaryActions = ['configuration-search-button', 'configuration-rebase',
+      'configuration-save', 'configuration-persist'];
+    const commands = await page.locator('#configuration-console .configuration-command')
+        .evaluateAll(buttons => buttons.map(button => ({
+          id : button.id,
+          primary : button.classList.contains('sp_button'),
+          secondary : button.classList.contains('simple-button')
+        })));
+    assert.deepEqual(commands.filter(button => button.primary).map(button => button.id).sort(),
+        primaryActions.sort());
+    for (const command of commands) {
+      assert.notEqual(command.primary, command.secondary);
     }
     const refresh = page.getByRole('button', {name : 'Recharger le fichier', exact : true});
     assert.equal(await refresh.getAttribute('title'), 'Recharger le fichier');
@@ -322,16 +379,23 @@ test('uses Silverpeas buttons and icons with accessible names and centers the ch
     const checkbox = await page.locator('#configuration-modified-only').boundingBox();
     const label = await page.locator('.configuration-modified-filter span').boundingBox();
     assert.ok(Math.abs(checkbox.y + checkbox.height / 2 - label.y - label.height / 2) <= 1);
-    const colors = await page.evaluate(() => {
-      const save = document.querySelector('#configuration-save');
-      const probe = document.createElement('button');
-      probe.className = 'sp_button';
-      document.body.append(probe);
-      const result = [getComputedStyle(save).backgroundColor, getComputedStyle(probe).backgroundColor];
-      probe.remove();
-      return result;
-    });
-    assert.equal(colors[0], colors[1]);
+    for (const [selector, className] of [['#configuration-save', 'sp_button'],
+      ['#configuration-cancel', 'simple-button'], ['#configuration-reload', 'simple-button']]) {
+      const [actual, standard] = await page.locator(selector).evaluate((button, themeClass) => {
+        const probe = document.createElement('button');
+        probe.className = themeClass;
+        probe.disabled = button.disabled;
+        document.body.append(probe);
+        const appearance = node => {
+          const {backgroundColor, color, borderRadius} = getComputedStyle(node);
+          return {backgroundColor, color, borderRadius};
+        };
+        const result = [appearance(button), appearance(probe)];
+        probe.remove();
+        return result;
+      }, className);
+      assert.deepEqual(actual, standard);
+    }
     if (process.env.CONFIGURATION_SCREENSHOT) {
       await page.screenshot({path : process.env.CONFIGURATION_SCREENSHOT, fullPage : true});
     }
@@ -367,17 +431,9 @@ test('offers a single global undo action and uses scalable refresh and undo icon
 });
 
 
-test('shows standalone information and refresh icons without a button background', async () => {
+test('shows information and refresh icons and preserves keyboard focus', async () => {
   const {context, page} = await fixture();
   try {
-    const icons = page.locator('.configuration-help button, #configuration-reload, #configuration-persistence-refresh');
-    for (const icon of await icons.all()) {
-      const background = await icon.evaluate(node => {
-        const css = getComputedStyle(node);
-        return [css.backgroundColor, css.backgroundImage, css.boxShadow];
-      });
-      assert.deepEqual(background, ['rgba(0, 0, 0, 0)', 'none', 'none']);
-    }
     const modernIcons = await page.evaluate(() => Array.from(
       document.querySelectorAll('.configuration-icon-button'),
       node => getComputedStyle(node, '::before').maskImage));
@@ -389,8 +445,6 @@ test('shows standalone information and refresh icons without a button background
     assert.ok(visibilityMask.includes('/visibility-off.svg'));
     await page.getByRole('button', {name : 'Masquer', exact : true}).click();
     const refresh = page.locator('#configuration-reload');
-    await refresh.hover();
-    assert.equal(await refresh.evaluate(node => getComputedStyle(node).backgroundColor), 'rgba(0, 0, 0, 0)');
     await refresh.focus();
     await page.keyboard.press('Tab');
     await page.keyboard.press('Shift+Tab');
@@ -441,7 +495,7 @@ test('global key search opens matching files and handles empty results', async (
   try {
     await page.locator('#configuration-global-key').fill('ENABLED');
     await page.locator('#configuration-search-button').click();
-    const result = page.locator('#configuration-search-results button').filter({hasText : 'skin.enabled'});
+    const result = page.locator('#configuration-search-results').getByRole('link').filter({hasText : 'skin.enabled'});
     await result.waitFor();
     assert.equal(await result.locator('strong').textContent(), 'skin.enabled');
     assert.equal(await result.locator('.configuration-result-path').textContent(), 'looks/aurora/skin.properties');
@@ -456,7 +510,7 @@ test('global key search opens matching files and handles empty results', async (
     await page.locator('#configuration-key-filter').fill('description');
     await page.locator('#configuration-modified-only').check();
     page.once('dialog', dialog => dialog.accept());
-    await result.click();
+    await result.press('Enter');
     await page.waitForFunction(() => document.querySelector('#configuration-path').textContent.includes('skin.properties'));
     assert.equal(await page.locator('#configuration-key-filter').inputValue(), '');
     assert.equal(await page.locator('#configuration-modified-only').isChecked(), false);
@@ -484,7 +538,7 @@ test('global search runs by click and Enter when native form submission is block
     const clickedRequest = page.waitForRequest(request => new URL(request.url()).pathname.endsWith('/search'));
     await page.locator('#configuration-search-button').click();
     assert.equal(new URL((await clickedRequest).url()).searchParams.get('key'), 'ENABLED');
-    await page.locator('#configuration-search-results button').first().waitFor();
+    await page.locator('#configuration-search-results').getByRole('link').first().waitFor();
     await input.fill('missing-key');
     const enteredRequest = page.waitForRequest(request => new URL(request.url()).pathname.endsWith('/search'));
     await input.press('Enter');
@@ -501,7 +555,7 @@ test('clearing global search removes results and restores keyboard focus', async
   try {
     await page.locator('#configuration-global-key').fill('enabled');
     await page.locator('#configuration-search-button').click();
-    await page.locator('#configuration-search-results button').first().waitFor();
+    await page.locator('#configuration-search-results').getByRole('link').first().waitFor();
     await page.locator('#configuration-search-clear').click();
     assert.equal(await page.locator('#configuration-search-results').textContent(), '');
     assert.equal(await page.locator('#configuration-global-key').inputValue(), '');
@@ -519,7 +573,7 @@ test('long file trees, properties and search results use only page scrolling', a
   try {
     await page.locator('#configuration-global-key').fill('flag');
     await page.locator('#configuration-search-button').click();
-    await page.locator('#configuration-search-results button').first().waitFor();
+    await page.locator('#configuration-search-results').getByRole('link').first().waitFor();
     for (const width of [1280, 600]) {
       await page.setViewportSize({width, height : 900});
       for (const selector of ['.configuration-files', '.configuration-table-scroll', '#configuration-search-results']) {

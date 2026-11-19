@@ -62,7 +62,7 @@
     <label for="configuration-global-key"><fmt:message key="globalSearch"/></label>
     <input id="configuration-global-key" type="search" autocomplete="off" required>
     <button id="configuration-search-button" type="button" class="sp_button configuration-command"><fmt:message key="search"/></button>
-    <button id="configuration-search-clear" type="button" class="sp_button configuration-command configuration-secondary-command"><fmt:message key="clearSearch"/></button>
+    <button id="configuration-search-clear" type="button" class="simple-button configuration-command"><fmt:message key="clearSearch"/></button>
   </div>
   <section id="configuration-search-results" aria-label="<fmt:message key='searchResults'/>" aria-live="polite"></section>
   <div class="configuration-layout">
@@ -71,7 +71,7 @@
       <input id="configuration-file-filter" type="search" autocomplete="off">
       <div id="configuration-tree"></div>
     </nav>
-    <section class="configuration-editor" aria-label="<fmt:message key='editor'/>">
+    <section id="configuration-editor" class="configuration-editor" hidden aria-label="<fmt:message key='editor'/>">
       <h2 id="configuration-path"><fmt:message key="select"/></h2>
       <details id="configuration-file-help" hidden>
         <summary><fmt:message key="fileHelp"/></summary>
@@ -98,7 +98,7 @@
       <section id="configuration-conflict" hidden aria-label="<fmt:message key='conflict'/>">
         <h3><fmt:message key="conflict"/></h3>
         <p><fmt:message key="conflictExplanation"/></p>
-        <button id="configuration-compare" class="sp_button configuration-command" type="button"><fmt:message key="compare"/></button>
+        <button id="configuration-compare" class="simple-button configuration-command" type="button"><fmt:message key="compare"/></button>
         <div id="configuration-comparison" hidden>
           <table>
             <thead><tr>
@@ -114,8 +114,8 @@
       </section>
       <footer class="configuration-actions">
         <span id="configuration-count" aria-live="polite"></span>
-        <button id="configuration-reload" type="button" class="sp_button configuration-command configuration-icon-button" data-icon="refresh" title="<fmt:message key='reload'/>" disabled><span class="configuration-visually-hidden"><fmt:message key="reload"/></span></button>
-        <button id="configuration-cancel" type="button" class="sp_button configuration-command configuration-secondary-command" disabled><span class="configuration-command-icon" aria-hidden="true"></span><fmt:message key="cancel"/></button>
+        <button id="configuration-reload" type="button" class="simple-button configuration-command configuration-icon-button" data-icon="refresh" title="<fmt:message key='reload'/>" disabled><span class="configuration-visually-hidden"><fmt:message key="reload"/></span></button>
+        <button id="configuration-cancel" type="button" class="simple-button configuration-command" disabled><span class="configuration-command-icon" aria-hidden="true"></span><fmt:message key="cancel"/></button>
         <button id="configuration-save" class="sp_button configuration-command" type="button" disabled><fmt:message key="save"/></button>
       </footer>
       <section class="configuration-persistence" aria-label="<fmt:message key='persistenceTitle'/>">
@@ -125,7 +125,7 @@
           <label for="configuration-persistence-target"><fmt:message key="persistenceTarget"/></label>
           <div class="configuration-persistence-target-picker">
             <select id="configuration-persistence-target" disabled></select>
-            <button id="configuration-persistence-refresh" type="button" class="sp_button configuration-command configuration-icon-button" data-icon="refresh" title="<fmt:message key='persistenceRefresh'/>"><span class="configuration-visually-hidden"><fmt:message key="persistenceRefresh"/></span></button>
+            <button id="configuration-persistence-refresh" type="button" class="simple-button configuration-command configuration-icon-button" data-icon="refresh" title="<fmt:message key='persistenceRefresh'/>"><span class="configuration-visually-hidden"><fmt:message key="persistenceRefresh"/></span></button>
           </div>
         </div>
         <p id="configuration-persistence-count" aria-live="polite"></p>
@@ -136,7 +136,7 @@
     </section>
   </div>
   <div id="configuration-messages" hidden>
-    <c:forTokens var="key" items="noSearchResults,searchResults,select,loading,loadError,saveError,saved,modified,count,discard,help,reveal,hide,noFiles,noKeys,conflict,conflictExplanation,rebased,removed,absent,forbidden,invalid,notFound,persist,persistenceCount,persistenceNew,persistenceSaved,persistenceError,persistenceConflict,persistenceLoadError,persistenceSaveFirst" delims=",">
+    <c:forTokens var="key" items="noSearchResults,searchResults,select,loading,loadError,saveError,saved,modified,count,discard,help,reveal,hide,noFiles,noKeys,conflict,conflictExplanation,rebased,removed,absent,forbidden,invalid,notFound,persist,persistenceCount,persistenceNew,persistenceSaved,persistenceError,persistenceConflict,persistenceConflictRefreshError,persistenceLoadError,persistenceSaveFirst" delims=",">
       <span data-message="${key}"><fmt:message key="${key}"/></span>
     </c:forTokens>
   </div>

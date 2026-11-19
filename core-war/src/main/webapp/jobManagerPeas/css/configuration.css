@@ -301,7 +301,6 @@
   flex: 0 0 auto;
 }
 
-/* Use Silverpeas button classes and theme variables for every command. */
 #configuration-console .configuration-command {
   display: inline-flex;
   align-items: center;
@@ -309,16 +308,6 @@
   box-sizing: border-box;
   min-height: 2.25em;
   margin: 0;
-  font: inherit;
-}
-
-#configuration-console .configuration-secondary-command {
-  background: var(--bgColor-btn-secondaire, #f3f3f3);
-  color: var(--color-text-btn-secondaire, #4c4c4c);
-}
-
-#configuration-console .configuration-secondary-command:not(:disabled):hover {
-  background: var(--bgColor-btn-secondaire-hover, #e4e4e4);
 }
 
 .configuration-icon-button::before {
@@ -335,17 +324,6 @@
   flex: 0 0 2.25em;
   width: 2.25em;
   padding: 0.4em;
-  border: 0;
-  background: transparent;
-  box-shadow: none;
-  color: var(--color-text-btn-secondaire, #4c4c4c);
-  transition: color 0.15s, opacity 0.15s;
-}
-
-#configuration-console .configuration-icon-button:not(:disabled):hover {
-  background: transparent;
-  color: var(--color-flashy-principale, #176d8c);
-  opacity: 0.8;
 }
 
 #configuration-console .configuration-icon-button:focus-visible {
@@ -479,7 +457,7 @@
   border-top: 1px solid var(--configuration-border);
 }
 
-#configuration-search-results button {
+#configuration-search-results a {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
@@ -487,11 +465,9 @@
   width: 100%;
   box-sizing: border-box;
   padding: 0.8rem 1rem;
-  border: 0;
   background: #fff;
   color: inherit;
-  font: inherit;
-  text-align: left;
+  text-decoration: none;
   overflow-wrap: anywhere;
 }
 
@@ -506,12 +482,12 @@
   font-size: 0.95em;
 }
 
-#configuration-search-results button:hover,
-#configuration-search-results button:focus-visible {
+#configuration-search-results a:hover,
+#configuration-search-results a:focus-visible {
   background: #e6f2f7;
 }
 
-#configuration-search-results button:focus-visible {
+#configuration-search-results a:focus-visible {
   outline: 2px solid var(--configuration-accent);
   outline-offset: -2px;
 }
