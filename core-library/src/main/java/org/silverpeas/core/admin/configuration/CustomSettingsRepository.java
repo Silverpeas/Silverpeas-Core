@@ -63,6 +63,7 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 public class CustomSettingsRepository {
   private static final String DEFAULT_NAME = "CustomerSettings.xml";
   private static final String ABSENT = "absent";
+  private static final String PARAMETER_ELEMENT = "parameter";
   private final Path propertiesRoot;
   private final Path home;
   private final Path directory;
@@ -196,7 +197,7 @@ public class CustomSettingsRepository {
       if (later.exists() && later.name().compareTo(target.name()) > 0) {
         var document = parse(Files.readAllBytes(directory.resolve(later.name())));
         var overridden = matchingFiles(document, propertyFile).stream()
-            .flatMap(config -> children(config, "parameter").stream()).anyMatch(parameter ->
+            .flatMap(config -> children(config, PARAMETER_ELEMENT).stream()).anyMatch(parameter ->
                 values.containsKey(parameter.getAttribute("key")) &&
                     !values.get(parameter.getAttribute("key")).equals(parameter.getTextContent()));
         if (overridden) {
@@ -236,10 +237,10 @@ public class CustomSettingsRepository {
     }
     for (var config : matches) {
       values.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(entry -> {
-        var parameters = children(config, "parameter").stream()
+        var parameters = children(config, PARAMETER_ELEMENT).stream()
             .filter(parameter -> entry.getKey().equals(parameter.getAttribute("key"))).toList();
         if (parameters.isEmpty()) {
-          var parameter = document.createElement("parameter");
+          var parameter = document.createElement(PARAMETER_ELEMENT);
           parameter.setAttribute("key", entry.getKey());
           config.appendChild(parameter);
           parameters = List.of(parameter);

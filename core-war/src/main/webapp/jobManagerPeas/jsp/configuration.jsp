@@ -57,14 +57,14 @@
     <h1><fmt:message key="title"/></h1>
     <p><fmt:message key="intro"/></p>
   </header>
-  <p id="configuration-message" role="status" aria-live="polite"></p>
+  <p><output id="configuration-message" aria-live="polite"></output></p>
   <div id="configuration-search" class="configuration-filters" role="search">
     <label for="configuration-global-key"><fmt:message key="globalSearch"/></label>
     <input id="configuration-global-key" type="search" autocomplete="off" required>
     <button id="configuration-search-button" type="button" class="sp_button configuration-command"><fmt:message key="search"/></button>
     <button id="configuration-search-clear" type="button" class="sp_button configuration-command configuration-secondary-command"><fmt:message key="clearSearch"/></button>
   </div>
-  <div id="configuration-search-results" role="region" aria-label="<fmt:message key='searchResults'/>" aria-live="polite"></div>
+  <section id="configuration-search-results" aria-label="<fmt:message key='searchResults'/>" aria-live="polite"></section>
   <div class="configuration-layout">
     <nav class="configuration-files" aria-label="<fmt:message key='files'/>">
       <label for="configuration-file-filter"><fmt:message key="files"/></label>
@@ -130,7 +130,7 @@
         </div>
         <p id="configuration-persistence-count" aria-live="polite"></p>
         <button id="configuration-persist" class="sp_button configuration-command" type="button" disabled><fmt:message key="persist"/></button>
-        <p id="configuration-persistence-message" role="status" aria-live="polite"></p>
+        <p><output id="configuration-persistence-message" aria-live="polite"></output></p>
       </section>
       <p class="configuration-application-note"><fmt:message key="applicationNote"/></p>
     </section>

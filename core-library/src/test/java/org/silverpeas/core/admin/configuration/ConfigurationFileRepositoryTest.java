@@ -64,8 +64,8 @@ class ConfigurationFileRepositoryTest {
         file.documentation().properties().get("flag"));
     assertEquals("Durée en secondes", file.documentation().properties().get("timeout"));
     assertFalse(file.documentation().properties().containsKey("plain"));
-    assertThrows(UnsupportedOperationException.class,
-        () -> file.documentation().properties().put("flag", "other"));
+    var documentation = file.documentation().properties();
+    assertThrows(UnsupportedOperationException.class, () -> documentation.put("flag", "other"));
     var updated = repository.update(file.path(), file.revision(), Map.of("flag", "true"));
     assertEquals(file.documentation(), updated.documentation());
     assertEquals(content.replace("flag=false", "flag=true"), Files.readString(path));
@@ -96,8 +96,8 @@ class ConfigurationFileRepositoryTest {
     assertEquals("general.properties", file.path());
     assertEquals("${SILVERPEAS_HOME}/data", file.properties().get("path"));
     assertEquals("", file.properties().get("empty"));
-    assertThrows(UnsupportedOperationException.class,
-        () -> file.properties().put("name", "other"));
+    var properties = file.properties();
+    assertThrows(UnsupportedOperationException.class, () -> properties.put("name", "other"));
     assertFalse(file.toString().contains("${SILVERPEAS_HOME}"));
   }
 
@@ -167,8 +167,11 @@ class ConfigurationFileRepositoryTest {
     var path = create("settings.properties", "flag=false\n");
     var before = repository.read("settings.properties");
     Files.writeString(path, "flag=external\n");
+    var changes = Map.of("flag", "true");
+    var relativePath = before.path();
+    var revision = before.revision();
     assertThrows(ConcurrentModificationException.class,
-        () -> repository.update(before.path(), before.revision(), Map.of("flag", "true")));
+        () -> repository.update(relativePath, revision, changes));
     assertEquals("flag=external\n", Files.readString(path));
   }
 
@@ -176,12 +179,15 @@ class ConfigurationFileRepositoryTest {
   void rejectsUnknownKeysAndNullValuesWithoutChangingTheFile() throws IOException {
     var path = create("settings.properties", "flag=false\n");
     var file = repository.read("settings.properties");
+    var relativePath = file.path();
+    var revision = file.revision();
+    var unknownKey = Map.of("newKey", "value");
     assertThrows(IllegalArgumentException.class,
-        () -> repository.update(file.path(), file.revision(), Map.of("newKey", "value")));
+        () -> repository.update(relativePath, revision, unknownKey));
     var invalid = new java.util.HashMap<String, String>();
     invalid.put("flag", null);
     assertThrows(IllegalArgumentException.class,
-        () -> repository.update(file.path(), file.revision(), invalid));
+        () -> repository.update(relativePath, revision, invalid));
     assertEquals("flag=false\n", Files.readString(path));
   }
 

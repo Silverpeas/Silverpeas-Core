@@ -65,8 +65,9 @@ class CustomSettingsRepositoryTest {
   @Test
   void rejectsCharactersThatCannotBeRepresentedInXmlWithoutCreatingAFile() throws IOException {
     var target = repository.list().getFirst();
+    var changes = Map.of("key", "invalid\u0000value");
     assertThrows(IllegalArgumentException.class,
-        () -> repository.persist(target, "test.properties", Map.of("key", "invalid\u0000value")));
+        () -> repository.persist(target, "test.properties", changes));
     assertFalse(Files.exists(directory.resolve(target.name())));
   }
 
@@ -155,12 +156,13 @@ class CustomSettingsRepositoryTest {
     var absent = repository.list().getFirst();
     var path = xml("CustomerSettings.xml", "Custom", "");
     var before = Files.readString(path);
+    var changes = Map.of("flag", "true");
     assertThrows(ConcurrentModificationException.class,
-        () -> repository.persist(absent, "org/test.properties", Map.of("flag", "true")));
+        () -> repository.persist(absent, "org/test.properties", changes));
     var stale = repository.list().getFirst();
     Files.writeString(path, before.replace("Custom", "Company"));
     assertThrows(ConcurrentModificationException.class,
-        () -> repository.persist(stale, "org/test.properties", Map.of("flag", "true")));
+        () -> repository.persist(stale, "org/test.properties", changes));
     assertEquals(before.replace("Custom", "Company"), Files.readString(path));
   }
 
@@ -172,8 +174,10 @@ class CustomSettingsRepositoryTest {
           <configfile name="org/test.properties"><parameter key="flag">later</parameter></configfile>
         </fileset>
         """);
+    var earlierTarget = repository.list().getFirst();
+    var changes = Map.of("flag", "true");
     assertThrows(ConcurrentModificationException.class,
-        () -> repository.persist(repository.list().getFirst(), "org/test.properties", Map.of("flag", "true")));
+        () -> repository.persist(earlierTarget, "org/test.properties", changes));
     assertEquals(2, repository.list().size());
     var saved = repository.persist(repository.list().getLast(), "org/test.properties", Map.of("flag", "true"));
     assertEquals("Z.xml", saved.name());
@@ -182,17 +186,20 @@ class CustomSettingsRepositoryTest {
   @Test
   void rejectsInvalidPathsBuiltInTargetsAndSymbolicLinks() throws IOException {
     var target = repository.list().getFirst();
+    var changes = Map.of("x", "y");
     for (var path : java.util.List.of("../test.properties", "/tmp/test.properties", "org/../test.properties")) {
-      assertThrows(IllegalArgumentException.class, () -> repository.persist(target, path, Map.of("x", "y")));
+      assertThrows(IllegalArgumentException.class, () -> repository.persist(target, path, changes));
     }
-    assertThrows(IllegalArgumentException.class, () -> repository.persist(
-        new CustomSettingsTarget("../escape.xml", "absent", false), "test.properties", Map.of("x", "y")));
+    var outsideTarget = new CustomSettingsTarget("../escape.xml", "absent", false);
+    assertThrows(IllegalArgumentException.class,
+        () -> repository.persist(outsideTarget, "test.properties", changes));
     xml("00-SilverpeasSettings.xml", "Silverpeas", "");
-    assertThrows(IllegalArgumentException.class, () -> repository.persist(
-        new CustomSettingsTarget("00-SilverpeasSettings.xml", "absent", false), "test.properties", Map.of("x", "y")));
+    var builtInTarget = new CustomSettingsTarget("00-SilverpeasSettings.xml", "absent", false);
+    assertThrows(IllegalArgumentException.class,
+        () -> repository.persist(builtInTarget, "test.properties", changes));
     Files.createSymbolicLink(directory.resolve("CustomerSettings.xml"), directory.resolve("00-SilverpeasSettings.xml"));
     assertThrows(IllegalArgumentException.class,
-        () -> repository.persist(target, "test.properties", Map.of("x", "y")));
+        () -> repository.persist(target, "test.properties", changes));
   }
 
   @Test

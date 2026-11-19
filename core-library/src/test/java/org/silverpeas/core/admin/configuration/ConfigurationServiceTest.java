@@ -131,8 +131,9 @@ class ConfigurationServiceTest {
         new ConfigurationFile("general.properties", "old", Map.of()));
     when(repository.update("general.properties", "old", Map.of()))
         .thenThrow(new IOException("Not writable"));
+    var changes = Map.<String, String>of();
     try (var locator = mockStatic(ResourceLocator.class)) {
-      assertThrows(IOException.class, () -> service.update("general.properties", "old", Map.of()));
+      assertThrows(IOException.class, () -> service.update("general.properties", "old", changes));
       locator.verifyNoInteractions();
       verifyNoInteractions(audit);
     }
@@ -144,9 +145,10 @@ class ConfigurationServiceTest {
         new ConfigurationFile("general.properties", "old", Map.of()));
     when(repository.update("general.properties", "old", Map.of()))
         .thenThrow(new ConcurrentModificationException("Stale revision"));
+    var changes = Map.<String, String>of();
     try (var locator = mockStatic(ResourceLocator.class)) {
       assertThrows(ConcurrentModificationException.class,
-          () -> service.update("general.properties", "old", Map.of()));
+          () -> service.update("general.properties", "old", changes));
       locator.verifyNoInteractions();
     }
   }
@@ -155,8 +157,9 @@ class ConfigurationServiceTest {
   void rejectsAnAlreadyStaleSnapshotBeforeWritingOrAuditing() throws IOException {
     when(repository.read("general.properties")).thenReturn(
         new ConfigurationFile("general.properties", "newer", Map.of("flag", "false")));
+    var changes = Map.of("flag", "true");
     assertThrows(ConcurrentModificationException.class,
-        () -> service.update("general.properties", "old", Map.of("flag", "true")));
+        () -> service.update("general.properties", "old", changes));
     verify(repository, never()).update(anyString(), anyString(), anyMap());
     verifyNoInteractions(audit);
   }
@@ -201,10 +204,11 @@ class ConfigurationServiceTest {
     assertEquals(Map.of("logo", "Logo help"), visible.documentation().properties());
     assertEquals("current", visible.revision());
     assertTrue(service.search("password").isEmpty());
-    assertThrows(SecurityException.class, () -> service.update(file.path(), "current",
-        Map.of("logo", "new", "smtp.password", "changed")));
-    assertThrows(SecurityException.class, () -> service.persist(file.path(), "current",
-        java.util.Set.of("smtp.password"), null));
+    var path = file.path();
+    var changes = Map.of("logo", "new", "smtp.password", "changed");
+    var selectedKeys = java.util.Set.of("smtp.password");
+    assertThrows(SecurityException.class, () -> service.update(path, "current", changes));
+    assertThrows(SecurityException.class, () -> service.persist(path, "current", selectedKeys, null));
     verify(repository, never()).update(anyString(), anyString(), anyMap());
     verifyNoInteractions(customSettings, audit);
   }
@@ -229,10 +233,12 @@ class ConfigurationServiceTest {
   private void assertAccessDenied() {
     assertThrows(SecurityException.class, () -> service.list());
     assertThrows(SecurityException.class, () -> service.read("general.properties"));
-    assertThrows(SecurityException.class, () -> service.update("general.properties", "", Map.of()));
+    var changes = Map.<String, String>of();
+    assertThrows(SecurityException.class, () -> service.update("general.properties", "", changes));
     assertThrows(SecurityException.class, () -> service.getPersistenceTargets());
+    var selectedKeys = java.util.Set.of("flag");
     assertThrows(SecurityException.class,
-        () -> service.persist("general.properties", "", java.util.Set.of("flag"), null));
+        () -> service.persist("general.properties", "", selectedKeys, null));
   }
 
   @Test
@@ -258,8 +264,9 @@ class ConfigurationServiceTest {
         "general.properties", "current", Map.of("flag", "true")));
     when(customSettings.persist(target, "general.properties", Map.of("flag", "true")))
         .thenThrow(new IOException("Not writable"));
-    assertThrows(IOException.class, () -> service.persist("general.properties", "current",
-        java.util.Set.of("flag"), target));
+    var selectedKeys = java.util.Set.of("flag");
+    assertThrows(IOException.class,
+        () -> service.persist("general.properties", "current", selectedKeys, target));
     verifyNoInteractions(audit);
   }
 
@@ -267,12 +274,15 @@ class ConfigurationServiceTest {
   void rejectsStaleOrInvalidSelectionsBeforeWritingXml() throws IOException {
     when(repository.read("general.properties")).thenReturn(new ConfigurationFile(
         "general.properties", "current", Map.of("flag", "true")));
+    var selectedKeys = java.util.Set.of("flag");
+    var noKeys = java.util.Set.<String>of();
+    var unknownKeys = java.util.Set.of("unknown");
     assertThrows(ConcurrentModificationException.class,
-        () -> service.persist("general.properties", "stale", java.util.Set.of("flag"), null));
+        () -> service.persist("general.properties", "stale", selectedKeys, null));
     assertThrows(IllegalArgumentException.class,
-        () -> service.persist("general.properties", "current", java.util.Set.of(), null));
+        () -> service.persist("general.properties", "current", noKeys, null));
     assertThrows(IllegalArgumentException.class,
-        () -> service.persist("general.properties", "current", java.util.Set.of("unknown"), null));
+        () -> service.persist("general.properties", "current", unknownKeys, null));
     verifyNoInteractions(customSettings, audit);
   }
 }
