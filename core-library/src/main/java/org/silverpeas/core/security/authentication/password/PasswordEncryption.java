@@ -48,10 +48,10 @@ public interface PasswordEncryption {
 
   /**
    * A format message for the {@link PasswordEncryption#check(String, String)} method when the
-   * password doesn't match the digest. It serves as a template for the error message to be carried
+   * password doesn't match the digest. It contains no authentication secrets and is carried
    * by the AssertionError error.
    */
-  String BAD_PASSWORD_MESSAGE = "The password \"{0}\" doesn''t match the digest \"{1}\"";
+  String BAD_PASSWORD_MESSAGE = "The password does not match the stored digest";
 
   /**
    * Encrypts the specified password by using a random salt (or no salt for some weakness

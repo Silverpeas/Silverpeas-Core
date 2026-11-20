@@ -48,7 +48,7 @@ public class PasswordEncryptionProviderIT {
       "$6$saltstring$FwwMuPiGNXz8H78tCv7t9djhhB8drD7mo2gjpEpkQ8xnSDPZwvm05vIhse" +
           ".tgr9lOxZpxL2r/Bvl96m5sDFic.";
 
-  static final Class<?> CURRENT_ENCRYPTION = UnixSHA512Encryption.class;
+  static final Class<?> CURRENT_ENCRYPTION = Argon2idEncryption.class;
 
   @Deployment
   public static Archive<?> createTestArchive() {

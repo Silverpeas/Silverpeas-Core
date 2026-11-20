@@ -112,6 +112,9 @@ public class AuthenticationSQL extends AuthenticationProtocol {
     // Verifying if the user must change his password or if user will soon have to change his
     // password
     AuthenticationUserVerifierFactory.getUserMustChangePasswordVerifier(credential).verify();
+    // Rehash only after successful authentication, without overwriting concurrent changes.
+    migratePasswordIfNeeded(getSQLConnection(connection), login, loginIgnoreCase, password,
+        sqlPassword);
 
   }
 
@@ -151,6 +154,32 @@ public class AuthenticationSQL extends AuthenticationProtocol {
       throw new AuthenticationHostException(ex);
     }
     return sqlPasswd;
+  }
+
+  private void migratePasswordIfNeeded(Connection connection, String login,
+      boolean loginIgnoreCase, String password, String previousDigest)
+      throws AuthenticationException {
+    migratePasswordIfNeeded(connection, login, loginIgnoreCase, password, previousDigest,
+        PasswordEncryptionProvider.getDefaultPasswordEncryption());
+  }
+
+  void migratePasswordIfNeeded(Connection connection, String login,
+      boolean loginIgnoreCase, String password, String previousDigest,
+      PasswordEncryption current) throws AuthenticationException {
+    if (current.doUnderstandDigest(previousDigest)) {
+      return;
+    }
+    String query = "UPDATE " + userTableName + " SET " + passwordColumnName +
+        " = ? WHERE " + (loginIgnoreCase ? "lower(" + loginColumnName + ") = lower(?)" :
+        loginColumnName + " = ?") + " AND " + passwordColumnName + " = ?";
+    try (PreparedStatement statement = connection.prepareStatement(query)) {
+      statement.setString(1, current.encrypt(password));
+      statement.setString(2, login);
+      statement.setString(3, previousDigest);
+      statement.executeUpdate();
+    } catch (SQLException ex) {
+      throw new AuthenticationHostException(ex);
+    }
   }
 
   private void updatePassword(Connection connection, String login, final boolean loginIgnoreCase,
