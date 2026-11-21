@@ -1,0 +1,497 @@
+/*
+ * Copyright (C) 2000 - 2026 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+#configuration-console {
+  --configuration-border: #d5dce2;
+  --configuration-accent: var(--color-flashy-principale, #176d8c);
+  padding: 1.5rem;
+  color: #253541;
+}
+
+.configuration-heading h1 {
+  margin: 0 0 0.5rem;
+  font-size: 1.5rem;
+}
+
+.configuration-heading p,
+.configuration-application-note {
+  color: #586874;
+  line-height: 1.5;
+}
+
+#configuration-message {
+  display: block;
+  min-height: 1.5em;
+  color: #206341;
+  white-space: pre-wrap;
+}
+
+#configuration-message.configuration-error {
+  color: #a62828;
+}
+
+.configuration-layout {
+  display: grid;
+  grid-template-columns: minmax(200px, 28%) minmax(0, 1fr);
+  border: 1px solid var(--configuration-border);
+  border-radius: 4px;
+  background: #fff;
+}
+
+.configuration-files {
+  padding: 1rem;
+  border-right: 1px solid var(--configuration-border);
+}
+
+.configuration-files > label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+#configuration-file-filter {
+  box-sizing: border-box;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+#configuration-tree ul {
+  list-style: none;
+  margin: 0;
+  padding-left: 1rem;
+}
+
+#configuration-tree > ul {
+  padding-left: 0;
+}
+
+#configuration-tree summary {
+  padding: 0.35rem 0;
+  cursor: pointer;
+}
+
+#configuration-tree button {
+  background: transparent;
+  border: 0;
+  text-align: left;
+  overflow-wrap: anywhere;
+  width: 100%;
+  padding: 0.45rem;
+  color: inherit;
+}
+
+#configuration-tree button[aria-current="true"] {
+  background: #e6f2f7;
+  color: #155a75;
+  font-weight: bold;
+  border-radius: 3px;
+}
+
+.configuration-editor {
+  min-width: 0;
+  padding: 1rem;
+}
+
+#configuration-path {
+  overflow-wrap: anywhere;
+  font-size: 1.1rem;
+  margin: 0 0 1rem;
+}
+
+.configuration-filters,
+.configuration-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+
+#configuration-console table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#configuration-console th,
+#configuration-console td {
+  padding: 0.7rem;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--configuration-border);
+}
+
+#configuration-console thead th {
+  background: #f3f6f8;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+#configuration-properties tbody th {
+  width: 35%;
+  font-weight: normal;
+  overflow-wrap: anywhere;
+}
+
+#configuration-console input[type="search"],
+#configuration-properties textarea,
+#configuration-properties input {
+  border: 1px solid #8b9aa5;
+  border-radius: 3px;
+  padding: 0.45rem;
+  font: inherit;
+}
+
+#configuration-properties textarea,
+#configuration-properties input {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+#configuration-properties textarea {
+  resize: vertical;
+  min-height: 2.3rem;
+}
+
+#configuration-console button {
+  cursor: pointer;
+}
+
+#configuration-console button:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+#configuration-properties .configuration-modified {
+  background: #fff7df;
+}
+
+.configuration-help {
+  display: inline-block;
+  position: relative;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
+
+.configuration-help pre,
+#configuration-file-help pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font: inherit;
+  line-height: 1.5;
+}
+
+.configuration-help pre {
+  position: fixed;
+  z-index: 1000;
+  box-sizing: border-box;
+  width: min(26rem, calc(100vw - 32px));
+  max-height: 50vh;
+  overflow: auto;
+  margin: 0;
+  padding: 0.8rem;
+  color: #253541;
+  background: #f2f8fb;
+  border: 1px solid #9ebdcc;
+  border-radius: 4px;
+  box-shadow: 0 3px 12px #0002;
+}
+
+#configuration-file-help {
+  padding: 0.75rem;
+  background: #f3f6f8;
+}
+
+.configuration-value-control {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.configuration-value-control input {
+  flex: 1;
+  min-width: 0;
+}
+
+.configuration-actions {
+  border-top: 1px solid var(--configuration-border);
+  padding-top: 1rem;
+}
+
+#configuration-count {
+  margin-right: auto;
+}
+
+#configuration-conflict {
+  padding: 1rem;
+  background: #fff7df;
+  border: 1px solid #e0bb62;
+}
+
+#configuration-comparison {
+  overflow-x: auto;
+}
+
+#configuration-comparison td {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 760px) {
+  .configuration-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .configuration-files {
+    border-right: 0;
+    border-bottom: 1px solid var(--configuration-border);
+  }
+}
+
+.configuration-persistence {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--configuration-border);
+  border-radius: 4px;
+  background: #f3f6f8;
+}
+
+.configuration-persistence h3 {
+  margin-top: 0;
+}
+
+.configuration-persistence p {
+  line-height: 1.5;
+}
+
+.configuration-persistence select {
+  max-width: 100%;
+  margin: 0;
+}
+
+.configuration-persistence .configuration-error {
+  color: #a62828;
+}
+
+#configuration-properties input.configuration-persistence-check {
+  width: auto;
+  padding: 0;
+  margin: 0;
+  flex: 0 0 auto;
+}
+
+#configuration-console .configuration-command {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: 2.25em;
+  margin: 0;
+}
+
+.configuration-icon-button::before {
+  content: '';
+  display: block;
+  width: 20px;
+  height: 20px;
+  background: currentColor;
+  -webkit-mask: var(--configuration-icon) center / contain no-repeat;
+  mask: var(--configuration-icon) center / contain no-repeat;
+}
+
+#configuration-console .configuration-icon-button {
+  flex: 0 0 2.25em;
+  width: 2.25em;
+  padding: 0.4em;
+}
+
+#configuration-console .configuration-icon-button:focus-visible {
+  outline: 2px solid var(--color-flashy-principale, #176d8c);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+.configuration-icon-button[data-icon="refresh"] {
+  --configuration-icon: url('../icons/refresh.svg');
+}
+
+.configuration-command-icon {
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  margin-right: 0.4rem;
+  background: currentColor;
+  -webkit-mask: url('../icons/undo.svg') center / contain no-repeat;
+  mask: url('../icons/undo.svg') center / contain no-repeat;
+}
+
+.configuration-icon-button[data-icon="show"] {
+  --configuration-icon: url('../icons/visibility.svg');
+}
+
+.configuration-icon-button[data-icon="hide"] {
+  --configuration-icon: url('../icons/visibility-off.svg');
+}
+
+.configuration-icon-button[data-icon="help"] {
+  --configuration-icon: url('../icons/information.svg');
+}
+
+.configuration-modified-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  line-height: normal;
+}
+
+.configuration-modified-filter input[type="checkbox"] {
+  margin: 0;
+}
+
+.configuration-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.configuration-key-control,
+.configuration-persistence-target-control,
+.configuration-persistence-target-picker {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.configuration-key-control > label {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  line-height: 1.4;
+}
+
+.configuration-key-control .configuration-help {
+  display: inline-flex;
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+.configuration-persistence-target-control {
+  flex-wrap: wrap;
+}
+
+.configuration-persistence-target-control > label {
+  margin: 0;
+}
+
+.configuration-persistence-target-picker {
+  min-width: 0;
+  max-width: 100%;
+  gap: 0.25rem;
+}
+
+.configuration-persistence-target-picker select {
+  min-width: 0;
+}
+
+.configuration-selection-help {
+  color: var(--color-text-second-niveau, #626262);
+  line-height: 1.5;
+}
+
+#configuration-search {
+  padding: 1rem;
+  border: 1px solid var(--configuration-border);
+  border-radius: 4px;
+  background: #f3f6f8;
+}
+
+#configuration-search > label {
+  margin: 0;
+}
+
+#configuration-global-key {
+  flex: 1 1 16rem;
+  max-width: 30rem;
+  min-width: 0;
+}
+
+#configuration-search-results {
+  margin-bottom: 1rem;
+  border-radius: 4px;
+}
+
+#configuration-search-results ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--configuration-border);
+}
+
+#configuration-search-results li + li {
+  border-top: 1px solid var(--configuration-border);
+}
+
+#configuration-search-results a {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.8rem 1rem;
+  background: #fff;
+  color: inherit;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.configuration-result-key {
+  flex: 0 1 16rem;
+  color: #155a75;
+}
+
+.configuration-result-path {
+  flex: 1 1 24rem;
+  color: #586874;
+  font-size: 0.95em;
+}
+
+#configuration-search-results a:hover,
+#configuration-search-results a:focus-visible {
+  background: #e6f2f7;
+}
+
+#configuration-search-results a:focus-visible {
+  outline: 2px solid var(--configuration-accent);
+  outline-offset: -2px;
+}
+
+#configuration-console [hidden] {
+  display: none;
+}
