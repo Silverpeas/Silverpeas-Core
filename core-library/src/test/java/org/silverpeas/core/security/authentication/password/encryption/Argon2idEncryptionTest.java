@@ -6,27 +6,42 @@
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
 package org.silverpeas.core.security.authentication.password.encryption;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class Argon2idEncryptionTest {
+@EnableSilverTestEnv(context = JEETestContext.class)
+class Argon2idEncryptionTest {
 
   private final Argon2idEncryption encryption = new Argon2idEncryption();
 
   @Test
-  public void roundTripAndRandomSalt() {
+  void roundTripAndRandomSalt() {
     String first = encryption.encrypt("Secret15599!");
     String second = encryption.encrypt("Secret15599!");
     assertNotEquals(first, second);
@@ -37,68 +52,71 @@ public class Argon2idEncryptionTest {
   }
 
   @Test
-  public void explicitSaltProducesDeterministicDigest() {
+  void explicitSaltProducesDeterministicDigest() {
     byte[] salt = "0123456789abcdef".getBytes(java.nio.charset.StandardCharsets.UTF_8);
     String first = encryption.encrypt("Secret15599!", salt);
     assertTrue(first.startsWith("$argon2id$"));
     assertArrayEquals(salt, encryption.getSaltUsedInDigest(first));
-    assertTrue(first.equals(encryption.encrypt("Secret15599!", salt)));
+    assertEquals(first, encryption.encrypt("Secret15599!", salt));
   }
 
   @Test
-  public void invalidPasswordDoesNotLeakSecrets() {
+  void acceptsImportedHashWithEightByteSalt() {
+    String digest = "$argon2id$v=19$m=19456,t=2,p=1$MTIzNDU2Nzg$"
+        + "vUXEAWfR0du+T68wyb4pQPw7fXicOxdGJaztAnHsyQU";
+    encryption.check("Secret15599!", digest);
+  }
+
+  @Test
+  void explicitSaltMustFitStoredDigest() {
+    String digest = encryption.encrypt("Secret15599!", new byte[64]);
+    encryption.check("Secret15599!", digest);
+    assertThrows(IllegalArgumentException.class,
+        () -> encryption.encrypt("Secret15599!", new byte[65]));
+  }
+
+  @Test
+  void invalidPasswordDoesNotLeakSecrets() {
     String digest = encryption.encrypt("Secret15599!");
-    try {
-      encryption.check("Wrong15599!", digest);
-      fail("Invalid password accepted");
-    } catch (AssertionError error) {
-      assertFalse(error.getMessage().contains("Wrong15599!"));
-      assertFalse(error.getMessage().contains(digest));
-    }
+    AssertionError error = assertThrows(AssertionError.class,
+        () -> encryption.check("Wrong15599!", digest));
+    assertFalse(error.getMessage().contains("Wrong15599!"));
+    assertFalse(error.getMessage().contains(digest));
   }
 
   @Test
-  public void malformedDigestIsRejectedWithoutEchoingIt() {
+  void malformedDigestIsRejectedWithoutEchoingIt() {
     String malformed = "$argon2id$v=19$m=999999999,t=2,p=1$c2FsdA$aGFzaA";
-    try {
-      encryption.check("Secret15599!", malformed);
-      fail("Malformed digest accepted");
-    } catch (IllegalArgumentException error) {
-      assertFalse(error.getMessage().contains(malformed));
-    }
+    IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
+        () -> encryption.check("Secret15599!", malformed));
+    assertFalse(error.getMessage().contains(malformed));
   }
   @Test
-  public void digestFitsSqlDomainPasswordColumn() {
+  void digestFitsSqlDomainPasswordColumn() {
     String digest = encryption.encrypt("Secret15599!");
     assertEquals(97, digest.length());
-    assertTrue("DomainSP_User.password is VARCHAR(123)", digest.length() <= 123);
+    assertTrue(digest.length() <= 123, "DomainSP_User.password is VARCHAR(123)");
   }
 
   @Test
-  public void unicodePasswordCanBeVerified() {
+  void unicodePasswordCanBeVerified() {
     String password = "Mot de passe éà漢字🔒";
     String digest = encryption.encrypt(password);
     encryption.check(password, digest);
-    try {
-      encryption.check(password + "!", digest);
-      fail("Different Unicode password accepted");
-    } catch (AssertionError expected) {
-      assertEquals("The password does not match the stored digest", expected.getMessage());
-    }
+    AssertionError expected = assertThrows(AssertionError.class,
+        () -> encryption.check(password + "!", digest));
+    assertEquals("The password does not match the stored digest", expected.getMessage());
   }
 
   @Test
-  public void malformedOrExcessiveParametersAreRejected() {
+  void malformedOrExcessiveParametersAreRejected() {
     String valid = encryption.encrypt("Secret15599!");
     String excessiveMemory = valid.replace("m=19456", "m=999999999");
     String unsupportedVersion = valid.replace("v=19", "v=16");
     for (String malformed : new String[]{excessiveMemory, unsupportedVersion}) {
-      try {
-        encryption.check("Secret15599!", malformed);
-        fail("Malformed Argon2id digest accepted");
-      } catch (IllegalArgumentException expected) {
-        assertFalse(expected.getMessage().contains(malformed));
-      }
+      IllegalArgumentException expected = assertThrows(IllegalArgumentException.class,
+          () -> encryption.check("Secret15599!", malformed));
+      assertFalse(expected.getMessage().contains(malformed));
     }
   }
 

@@ -32,6 +32,7 @@ import org.silverpeas.core.security.authentication.password.PasswordEncryptionPr
 import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.core.security.encryption.cipher.CryptMD5;
 import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 
 import javax.naming.InitialContext;
@@ -40,6 +41,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.function.Supplier;
 
 /**
  * This class performs the authentication using an SQL table.
@@ -51,6 +53,7 @@ public class AuthenticationSQL extends AuthenticationProtocol {
   protected String loginColumnName;
   protected String passwordColumnName;
   protected String passwordAvailableColumnName;
+  private boolean rehashOnLogin;
 
   @Override
   public void loadProperties(SettingBundle settings) {
@@ -61,6 +64,7 @@ public class AuthenticationSQL extends AuthenticationProtocol {
     passwordColumnName = settings.getString(serverName + ".SQLUserPasswordColumnName");
     passwordAvailableColumnName = settings.getString(serverName
         + ".SQLUserPasswordAvailableColumnName");
+    rehashOnLogin = settings.getBoolean(serverName + ".SQLPasswordRehashOnLogin", false);
   }
 
   @SuppressWarnings("unchecked")
@@ -114,8 +118,7 @@ public class AuthenticationSQL extends AuthenticationProtocol {
     AuthenticationUserVerifierFactory.getUserMustChangePasswordVerifier(credential).verify();
     // Rehash only after successful authentication, without overwriting concurrent changes.
     migratePasswordIfNeeded(getSQLConnection(connection), login, loginIgnoreCase, password,
-        sqlPassword);
-
+        sqlPassword, PasswordEncryptionProvider::getDefaultPasswordEncryption);
   }
 
   private String getPassword(Connection connection, String login, final boolean ignoreCase)
@@ -156,29 +159,30 @@ public class AuthenticationSQL extends AuthenticationProtocol {
     return sqlPasswd;
   }
 
-  private void migratePasswordIfNeeded(Connection connection, String login,
-      boolean loginIgnoreCase, String password, String previousDigest)
-      throws AuthenticationException {
-    migratePasswordIfNeeded(connection, login, loginIgnoreCase, password, previousDigest,
-        PasswordEncryptionProvider.getDefaultPasswordEncryption());
-  }
-
   void migratePasswordIfNeeded(Connection connection, String login,
       boolean loginIgnoreCase, String password, String previousDigest,
-      PasswordEncryption current) throws AuthenticationException {
-    if (current.doUnderstandDigest(previousDigest)) {
+      Supplier<PasswordEncryption> defaultEncryption) {
+    if (!rehashOnLogin) {
       return;
     }
-    String query = "UPDATE " + userTableName + " SET " + passwordColumnName +
-        " = ? WHERE " + (loginIgnoreCase ? "lower(" + loginColumnName + ") = lower(?)" :
-        loginColumnName + " = ?") + " AND " + passwordColumnName + " = ?";
-    try (PreparedStatement statement = connection.prepareStatement(query)) {
-      statement.setString(1, current.encrypt(password));
-      statement.setString(2, login);
-      statement.setString(3, previousDigest);
-      statement.executeUpdate();
-    } catch (SQLException ex) {
-      throw new AuthenticationHostException(ex);
+    try {
+      PasswordEncryption current = defaultEncryption.get();
+      if (current.doUnderstandDigest(previousDigest)) {
+        return;
+      }
+      String digest = current.encrypt(password);
+      String query = "UPDATE " + userTableName + " SET " + passwordColumnName +
+          " = ? WHERE " + (loginIgnoreCase ? "lower(" + loginColumnName + ") = lower(?)" :
+          loginColumnName + " = ?") + " AND " + passwordColumnName + " = ?";
+      try (PreparedStatement statement = connection.prepareStatement(query)) {
+        statement.setString(1, digest);
+        statement.setString(2, login);
+        statement.setString(3, previousDigest);
+        statement.executeUpdate();
+      }
+    } catch (SQLException | RuntimeException ex) {
+      SilverLogger.getLogger(this).warn("Could not migrate SQL password hash ({0})",
+          ex.getClass().getSimpleName());
     }
   }
 
@@ -259,6 +263,9 @@ public class AuthenticationSQL extends AuthenticationProtocol {
     try {
       PasswordEncryption encryption = PasswordEncryptionProvider.getPasswordEncryption(digest);
       encryption.check(password, digest);
+    } catch (IllegalArgumentException ex) {
+      throw new AuthenticationBadCredentialException(
+          "Invalid credential for user with login: " + login);
     } catch (AssertionError error) {
       // the password doesn't match the digest. It is then possible the digest was a pure MD5 one!
       String actualDigest = CryptMD5.encrypt(password);
