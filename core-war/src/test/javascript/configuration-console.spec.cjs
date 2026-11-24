@@ -96,9 +96,6 @@ async function fixture(options = {}) {
   }}};
   let failSave = false;
   const writes = [];
-  const persisted = [];
-  let targets = options.targets || [{name : 'CustomerSettings.xml', revision : 'absent', exists : false}];
-  let persistenceConflict = false;
   page.setDefaultTimeout(4000);
   await page.addInitScript({content : ajaxHarness});
   await page.route('http://configuration.test/**', async route => {
@@ -129,19 +126,6 @@ async function fixture(options = {}) {
     if (url.pathname.endsWith('/files')) {
       return route.fulfill({json : options.paths || [file.path, 'looks/aurora/skin.properties']});
     }
-    if (url.pathname.endsWith('/persistence')) {
-      if (route.request().method() === 'POST') {
-        const body = route.request().postDataJSON();
-        persisted.push(body);
-        if (persistenceConflict) {
-          return route.fulfill({status : 409, json : {error : 'configuration.conflict'}});
-        }
-        const saved = {...body.target, revision : 'xml-saved', exists : true};
-        targets = targets.map(target => target.name === saved.name ? saved : target);
-        return route.fulfill({json : saved});
-      }
-      return route.fulfill({json : targets});
-    }
     if (url.pathname.endsWith('/file')) {
       if (route.request().method() === 'GET' && url.searchParams.get('path') === 'looks/aurora/skin.properties') {
         return route.fulfill({json : {path : 'looks/aurora/skin.properties', revision : 'skin',
@@ -171,12 +155,7 @@ async function fixture(options = {}) {
     await page.locator('[data-path="org/silverpeas/general.properties"]').click();
     await page.locator('#configuration-properties tbody tr').first().waitFor();
   }
-  return {context, page, writes, persisted,
-    conflictXml() {
-      persistenceConflict = true;
-      targets = targets.map(target => ({...target, revision : 'xml-external'}));
-    },
-    recoverXml() {persistenceConflict = false;},
+  return {context, page, writes,
     fail() {failSave = true;}, externalChange() {
     file = {...file, revision : 'external', properties : {...file.properties, enabled : 'external'}};
   }};
@@ -264,39 +243,35 @@ test('keeps edits after a failed save and guards file navigation', async () => {
 });
 
 
-test('persists only selected saved keys and automatically selects edited keys after saving', async () => {
-  const {context, page, persisted} = await fixture();
+test('saves with one action without asking for keys or XML targets', async () => {
+  const {context, page, writes} = await fixture();
   try {
-    assert.equal(await page.locator('#configuration-persist').isDisabled(), true);
-    await page.getByRole('checkbox', {name : 'Pérenniser la sélection : enabled', exact : true}).check();
+    assert.equal(await page.locator('#configuration-properties input[type="checkbox"]').count(), 0);
+    assert.equal(await page.locator('#configuration-persist, #configuration-persistence-target').count(), 0);
+    assert.match(await page.locator('.configuration-persistence-note').textContent(), /automatiquement/);
     await inputFor(page, 'enabled').fill('true');
-    assert.equal(await page.locator('#configuration-persist').isDisabled(), true);
     await page.locator('#configuration-save').click();
-    await page.waitForFunction(() => document.querySelector('#configuration-message').textContent.includes('enregistrés'));
-    assert.equal(await page.getByRole('checkbox', {name : 'Pérenniser la sélection : enabled', exact : true}).isChecked(), true);
-    await page.locator('#configuration-persist').click();
-    await page.waitForFunction(() => document.querySelector('#configuration-persistence-message').textContent.includes('CustomerSettings.xml'));
-    assert.deepEqual(persisted, [{path : 'org/silverpeas/general.properties', revision : 'initial-saved',
-      keys : ['enabled'], target : {name : 'CustomerSettings.xml', revision : 'absent', exists : false}}]);
-    assert.equal(Object.hasOwn(persisted[0], 'properties'), false);
-    assert.equal(await page.locator('#configuration-persist').isDisabled(), true);
+    await page.locator('#configuration-message').filter({hasText : labels.saved}).waitFor();
+    assert.deepEqual(writes, [{path : 'org/silverpeas/general.properties', revision : 'initial',
+      properties : {enabled : 'true'}}]);
+    assert.equal(await page.locator('#configuration-cancel').isDisabled(), true);
+    await page.locator('[data-path="looks/aurora/skin.properties"]').click();
+    await page.locator('[data-path="org/silverpeas/general.properties"]').click();
     assert.equal(await inputFor(page, 'enabled').inputValue(), 'true');
+    assert.equal(await page.locator('#configuration-cancel').isDisabled(), true);
   } finally { await context.close(); }
 });
 
-test('only shows the editor and persistence controls once a file is selected', async () => {
+test('only shows the editor once a file is selected', async () => {
   const {context, page} = await fixture({selectFile : false});
   try {
     const editor = page.locator('#configuration-editor');
-    const persist = page.locator('#configuration-persist');
     assert.equal(await editor.isVisible(), false);
-    assert.equal(await persist.isVisible(), false);
     assert.equal(await page.locator('#configuration-global-key').isVisible(), true);
     await page.locator('[data-path="org/silverpeas/general.properties"]').click();
     await editor.waitFor({state : 'visible'});
     assert.equal(await page.locator('#configuration-key-filter').isEnabled(), true);
-    assert.equal(await persist.isVisible(), true);
-    assert.equal(await persist.isDisabled(), true);
+    assert.equal(await page.locator('.configuration-persistence-note').isVisible(), true);
   } finally { await context.close(); }
 });
 
@@ -324,38 +299,11 @@ test('closes the editor on folder navigation after confirming unsaved changes', 
   } finally { await context.close(); }
 });
 
-test('refreshes the file and XML targets after a conflict while preserving selection', async () => {
-  const {context, page, persisted, conflictXml, recoverXml, externalChange} = await fixture({targets : [
-    {name : 'Company.xml', revision : 'one', exists : true},
-    {name : 'Z-Overrides.xml', revision : 'two', exists : true}
-  ]});
-  try {
-    assert.equal(await page.locator('#configuration-persistence-target').inputValue(), 'Z-Overrides.xml');
-    await page.locator('#configuration-persistence-target').selectOption('Company.xml');
-    await page.getByRole('checkbox', {name : 'Pérenniser la sélection : enabled', exact : true}).check();
-    conflictXml();
-    externalChange();
-    await page.locator('#configuration-persist').click();
-    await page.locator('#configuration-persistence-message').filter({hasText : labels.persistenceConflict}).waitFor();
-    assert.equal(await inputFor(page, 'enabled').inputValue(), 'external');
-    assert.equal(await page.locator('#configuration-persistence-target').inputValue(), 'Company.xml');
-    assert.equal(await page.getByRole('checkbox', {name : 'Pérenniser la sélection : enabled', exact : true}).isChecked(), true);
-    assert.equal(persisted.length, 1);
-    recoverXml();
-    await page.locator('#configuration-persist').click();
-    await page.waitForFunction(() => document.querySelector('#configuration-persistence-message').textContent.includes('Enregistré'));
-    assert.equal(persisted[1].target.name, 'Company.xml');
-    assert.equal(persisted[1].target.revision, 'xml-external');
-    assert.equal(persisted[1].revision, 'external');
-  } finally { await context.close(); }
-});
-
-
 test('uses Silverpeas buttons and icons with accessible names and centers the checkbox label', async () => {
   const {context, page} = await fixture();
   try {
     const primaryActions = ['configuration-search-button', 'configuration-rebase',
-      'configuration-save', 'configuration-persist'];
+      'configuration-save'];
     const commands = await page.locator('#configuration-console .configuration-command')
         .evaluateAll(buttons => buttons.map(button => ({
           id : button.id,
@@ -408,7 +356,7 @@ test('offers a single global undo action and uses scalable refresh and undo icon
   try {
     assert.equal(await page.locator('#configuration-properties thead th').count(), 2);
     assert.equal(await page.locator('#configuration-properties tbody td button:not(.configuration-reveal)').count(), 0);
-    const cancel = page.getByRole('button', {name : 'Annuler les modifications', exact : true});
+    const cancel = page.getByRole('button', {name : 'Abandonner les saisies', exact : true});
     assert.equal(await cancel.locator('.configuration-visually-hidden').count(), 0);
     assert.equal(await cancel.isDisabled(), true);
     await inputFor(page, 'enabled').fill('true');
@@ -459,33 +407,17 @@ test('shows information and refresh icons and preserves keyboard focus', async (
   } finally { await context.close(); }
 });
 
-test('explains persistence selection and aligns row controls and XML refresh vertically', async () => {
+test('aligns property names with their help icons without selection checkboxes', async () => {
   const {context, page} = await fixture();
   try {
-    assert.equal(await page.locator('#configuration-selection-help').textContent(),
-        'Cases à cocher : sélectionner les paramètres à conserver après réinstallation.');
     for (const control of await page.locator('.configuration-key-control').all()) {
-      const checkbox = control.locator('input[type="checkbox"]');
-      assert.equal(await checkbox.getAttribute('aria-describedby'), 'configuration-selection-help');
-      const box = await checkbox.boundingBox();
+      assert.equal(await control.locator('input[type="checkbox"]').count(), 0);
       const label = await control.locator('label').boundingBox();
-      assert.ok(Math.abs(box.y + box.height / 2 - label.y - label.height / 2) <= 1);
       const info = control.locator('.configuration-help button');
       if (await info.count()) {
         const icon = await info.boundingBox();
-        assert.ok(Math.abs(box.y + box.height / 2 - icon.y - icon.height / 2) <= 1);
+        assert.ok(Math.abs(label.y + label.height / 2 - icon.y - icon.height / 2) <= 1);
       }
-    }
-    for (const width of [1280, 600]) {
-      await page.setViewportSize({width, height : 900});
-      const select = await page.locator('#configuration-persistence-target').boundingBox();
-      const refresh = await page.locator('#configuration-persistence-refresh').boundingBox();
-      assert.ok(Math.abs(select.y + select.height / 2 - refresh.y - refresh.height / 2) <= 1);
-    }
-    if (process.env.CONFIGURATION_SCREENSHOT) {
-      await page.setViewportSize({width : 1280, height : 900});
-      await page.waitForLoadState('networkidle');
-      await page.screenshot({path : process.env.CONFIGURATION_SCREENSHOT, fullPage : true});
     }
   } finally { await context.close(); }
 });

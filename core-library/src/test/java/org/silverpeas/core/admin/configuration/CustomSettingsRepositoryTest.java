@@ -53,6 +53,53 @@ class CustomSettingsRepositoryTest {
   }
 
   @Test
+  void automaticSaveCreatesXmlBeforeApplyingProperties() throws Exception {
+    var target = repository.list().getFirst();
+    var expected = new ConfigurationFile("org/test.properties", "saved", Map.of("flag", "true"));
+    var saved = repository.persistAndApply(target, expected.path(), expected.properties(), () -> {
+      assertTrue(Files.readString(directory.resolve(target.name())).contains(">true</parameter>"));
+      return expected;
+    });
+    assertEquals(expected, saved.configuration());
+    assertEquals(target, saved.previous());
+    assertEquals(repository.list().getFirst(), saved.saved());
+  }
+
+  @Test
+  void failedPropertyWriteRemovesNewXml() throws IOException {
+    var target = repository.list().getFirst();
+    var values = Map.of("flag", "true");
+    assertThrows(IOException.class, () -> repository.persistAndApply(target, "test.properties", values,
+        () -> { throw new IOException("Properties not writable"); }));
+    assertFalse(Files.exists(directory.resolve(target.name())));
+  }
+
+  @Test
+  void failedPropertyWriteRestoresExistingXmlExactly() throws IOException {
+    var path = xml("Company.xml", "Custom", "<!-- Preserve original formatting -->");
+    var original = Files.readAllBytes(path);
+    var target = repository.list().getFirst();
+    var values = Map.of("flag", "true");
+    assertThrows(ConcurrentModificationException.class,
+        () -> repository.persistAndApply(target, "test.properties", values,
+            () -> { throw new ConcurrentModificationException("Properties changed externally"); }));
+    assertArrayEquals(original, Files.readAllBytes(path));
+  }
+
+  @Test
+  void rollbackDoesNotOverwriteExternalXmlEdits() throws IOException {
+    var target = repository.list().getFirst();
+    var values = Map.of("flag", "true");
+    var failure = assertThrows(IOException.class,
+        () -> repository.persistAndApply(target, "test.properties", values, () -> {
+          Files.writeString(directory.resolve(target.name()), "External edit");
+          throw new IOException("Properties not writable");
+        }));
+    assertEquals(1, failure.getSuppressed().length);
+    assertEquals("External edit", Files.readString(directory.resolve(target.name())));
+  }
+
+  @Test
   void createsMissingDirectoriesAndRetainsWhitespaceValues() throws Exception {
     Files.delete(directory);
     Files.delete(directory.getParent());

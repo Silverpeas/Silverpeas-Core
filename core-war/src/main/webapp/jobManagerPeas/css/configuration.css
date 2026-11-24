@@ -269,38 +269,6 @@
   }
 }
 
-.configuration-persistence {
-  margin-top: 1rem;
-  padding: 1rem;
-  border: 1px solid var(--configuration-border);
-  border-radius: 4px;
-  background: #f3f6f8;
-}
-
-.configuration-persistence h3 {
-  margin-top: 0;
-}
-
-.configuration-persistence p {
-  line-height: 1.5;
-}
-
-.configuration-persistence select {
-  max-width: 100%;
-  margin: 0;
-}
-
-.configuration-persistence .configuration-error {
-  color: #a62828;
-}
-
-#configuration-properties input.configuration-persistence-check {
-  width: auto;
-  padding: 0;
-  margin: 0;
-  flex: 0 0 auto;
-}
-
 #configuration-console .configuration-command {
   display: inline-flex;
   align-items: center;
@@ -380,9 +348,7 @@
   white-space: nowrap;
 }
 
-.configuration-key-control,
-.configuration-persistence-target-control,
-.configuration-persistence-target-picker {
+.configuration-key-control {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -401,25 +367,7 @@
   margin: 0;
 }
 
-.configuration-persistence-target-control {
-  flex-wrap: wrap;
-}
-
-.configuration-persistence-target-control > label {
-  margin: 0;
-}
-
-.configuration-persistence-target-picker {
-  min-width: 0;
-  max-width: 100%;
-  gap: 0.25rem;
-}
-
-.configuration-persistence-target-picker select {
-  min-width: 0;
-}
-
-.configuration-selection-help {
+.configuration-persistence-note {
   color: var(--color-text-second-niveau, #626262);
   line-height: 1.5;
 }

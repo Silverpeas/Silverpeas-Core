@@ -48,8 +48,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><fmt:message key="title"/></title>
   <view:looknfeel/>
-  <link rel="stylesheet" href="<c:url value='/jobManagerPeas/css/configuration.css?v=15585-scroll-1'/>">
-  <script src="<c:url value='/jobManagerPeas/js/configuration.js?v=15585-search-4'/>" defer></script>
+  <link rel="stylesheet" href="<c:url value='/jobManagerPeas/css/configuration.css?v=15585-auto-persistence-1'/>">
+  <script src="<c:url value='/jobManagerPeas/js/configuration.js?v=15585-auto-persistence-1'/>" defer></script>
 </head>
 <body>
 <main id="configuration-console" data-api="${configurationApi}">
@@ -84,7 +84,6 @@
           <span><fmt:message key="modifiedOnly"/></span>
         </label>
       </div>
-      <p id="configuration-selection-help" class="configuration-selection-help"><fmt:message key="selectionHelp"/></p>
       <div class="configuration-table-scroll">
         <table id="configuration-properties">
           <thead><tr>
@@ -118,25 +117,12 @@
         <button id="configuration-cancel" type="button" class="simple-button configuration-command" disabled><span class="configuration-command-icon" aria-hidden="true"></span><fmt:message key="cancel"/></button>
         <button id="configuration-save" class="sp_button configuration-command" type="button" disabled><fmt:message key="save"/></button>
       </footer>
-      <section class="configuration-persistence" aria-label="<fmt:message key='persistenceTitle'/>">
-        <h3><fmt:message key="persistenceTitle"/></h3>
-        <p><fmt:message key="persistenceExplanation"/></p>
-        <div class="configuration-persistence-target-control">
-          <label for="configuration-persistence-target"><fmt:message key="persistenceTarget"/></label>
-          <div class="configuration-persistence-target-picker">
-            <select id="configuration-persistence-target" disabled></select>
-            <button id="configuration-persistence-refresh" type="button" class="simple-button configuration-command configuration-icon-button" data-icon="refresh" title="<fmt:message key='persistenceRefresh'/>"><span class="configuration-visually-hidden"><fmt:message key="persistenceRefresh"/></span></button>
-          </div>
-        </div>
-        <p id="configuration-persistence-count" aria-live="polite"></p>
-        <button id="configuration-persist" class="sp_button configuration-command" type="button" disabled><fmt:message key="persist"/></button>
-        <p><output id="configuration-persistence-message" aria-live="polite"></output></p>
-      </section>
+      <p class="configuration-persistence-note"><fmt:message key="automaticPersistence"/></p>
       <p class="configuration-application-note"><fmt:message key="applicationNote"/></p>
     </section>
   </div>
   <div id="configuration-messages" hidden>
-    <c:forTokens var="key" items="noSearchResults,searchResults,select,loading,loadError,saveError,saved,modified,count,discard,help,reveal,hide,noFiles,noKeys,conflict,conflictExplanation,rebased,removed,absent,forbidden,invalid,notFound,persist,persistenceCount,persistenceNew,persistenceSaved,persistenceError,persistenceConflict,persistenceConflictRefreshError,persistenceLoadError,persistenceSaveFirst" delims=",">
+    <c:forTokens var="key" items="noSearchResults,searchResults,select,loading,loadError,saveError,saved,modified,count,discard,help,reveal,hide,noFiles,noKeys,conflict,conflictExplanation,rebased,removed,absent,forbidden,invalid,notFound" delims=",">
       <span data-message="${key}"><fmt:message key="${key}"/></span>
     </c:forTokens>
   </div>

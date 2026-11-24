@@ -33,8 +33,10 @@ consulter ou modifier les fichiers.
 - Les propriétés sensibles détectées automatiquement par leur nom sont exclues de la console,
   de la recherche et des opérations de modification/pérennisation côté serveur.
   Cette détection par nom n'est pas un catalogue exhaustif des secrets.
-- Annuler toutes les modifications restaure l'état ouvert, pas une valeur par
-  défaut fournie par Silverpeas. Quitter un fichier modifié demande confirmation.
+- « Abandonner les saisies » restaure les valeurs du dernier chargement/enregistrement, uniquement
+  pour les saisies non enregistrées. Ce bouton ne défait pas une sauvegarde antérieure. Après un
+  essai enregistré, rétablir les anciennes valeurs puis enregistrer à nouveau met à jour le
+  properties et sa personnalisation. Quitter un fichier modifié demande confirmation.
 - Enregistrer et appliquer transmet les seules clés modifiées avec la révision du fichier.
   Un fichier modifié entre-temps produit un conflit et conserve la saisie. La comparaison
   affiche les valeurs à l'ouverture, les valeurs courantes et les valeurs saisies. Les valeurs
@@ -51,35 +53,36 @@ textuelle des objets de configuration.
 
 ## Pérenniser les paramètres après un `clean install`
 
-L'installation peut reconstruire les properties à partir des valeurs livrées. Le bloc
-**Conserver après réinstallation** utilise le mécanisme XML natif de Silverpeas Setup :
+L'installation peut reconstruire les properties à partir des valeurs livrées.
+**Enregistrer et appliquer** conserve désormais automatiquement toutes les modifications
+effectives dans le mécanisme XML natif de Silverpeas Setup. Il n'y a plus de sélection de clés,
+de choix du XML ni de bouton de pérennisation dans la console.
 
-1. Modifier puis enregistrer les paramètres courants.
-2. Cocher les clés à conserver. Les clés modifiées sont présélectionnées après enregistrement.
-3. Choisir le XML de personnalisation puis cliquer sur **Pérenniser la sélection**.
+Le serveur découvre les XML `silverpeas-settings` de personnalisation dans
+`$SILVERPEAS_HOME/configuration/silverpeas`, quel que soit leur nom. Le préfixe réservé `00-`
+et les documents déclarés `product="Silverpeas"` restent exclus. Il utilise le dernier XML
+personnalisé dans l'ordre alphabétique d'exécution, afin que les nouvelles valeurs ne soient
+pas écrasées par une personnalisation antérieure. Sans XML personnalisé, il crée
+`CustomerSettings.xml`. Les autres XML et leurs règles restent inchangés.
 
-La console découvre les XML `silverpeas-settings` de personnalisation dans
-`$SILVERPEAS_HOME/configuration/silverpeas`, même s'ils portent un autre nom que
-`CustomerSettings.xml`. Le fichier standard `00-SilverpeasSettings.xml`, le préfixe réservé
-`00-` et les documents déclarés `product="Silverpeas"` ne sont pas proposés comme cibles.
-Si aucun XML personnalisé n'existe, elle propose la création de `CustomerSettings.xml`.
-S'il en existe plusieurs, le dernier dans l'ordre alphabétique d'exécution est présélectionné ;
-l'administrateur peut choisir une autre cible. Un XML exécuté plus tard qui redéfinit les clés
-avec d'autres valeurs empêche la pérennisation dans une cible antérieure.
+Seules les clés dont la valeur change sont fusionnées dans les `fileset` / `configfile`
+existants, ou ajoutées si nécessaire. Les autres règles, les éléments `xmlfile`, les commentaires
+XML et l'encodage déclaré sont conservés. La sérialisation peut normaliser la mise en forme.
+Les propriétés sensibles ne sont ni exportées ni modifiées.
 
-La fusion met à jour les paramètres sélectionnés dans les `fileset` / `configfile` existants,
-ou ajoute les entrées manquantes. Les racines telles que
-`${SILVERPEAS_HOME}/properties/org/silverpeas/` et leurs noms de fichiers relatifs sont reconnus.
-Les autres règles, les éléments `xmlfile`, les commentaires XML et l'encodage déclaré restent
-conservés. La mise en forme du document peut être normalisée par la sérialisation XML.
+Le XML est enregistré avant le remplacement atomique du properties. Une erreur de lecture,
+de syntaxe, de validation ou d'écriture du XML empêche l'application des valeurs courantes.
+Si le properties ne peut pas être enregistré (dont un conflit de révision), le XML est restauré
+avec ses octets d'origine, ou supprimé s'il vient d'être créé. Une modification externe intervenue
+pendant ce rétablissement n'est jamais écrasée ; l'échec de rétablissement est associé à l'erreur
+initiale. Il ne s'agit pas d'une transaction durable sur deux fichiers : un arrêt brutal du
+processus entre les écritures peut nécessiter une vérification manuelle.
+Une sauvegarde sans changement effectif ne crée ni XML ni entrée de journal.
 
-Seules les clés explicitement sélectionnées sont exportées. Les valeurs sont relues côté serveur
-dans le properties enregistré et ne proviennent pas du corps de la requête. Cette action ne change
-pas le fichier properties courant et ne lance pas une installation. Les révisions du properties
-et du XML sont contrôlées avant la fusion ; si elles ont changé, la sélection est conservée et
-il faut recharger le fichier ou actualiser la liste des XML avant de réessayer.
-Un XML mal formé, contenant une DTD, ou inaccessible n'est pas écrasé. Les liens symboliques
-et les chemins sortant des répertoires de configuration ne sont pas acceptés.
+Les révisions continuent de protéger les écritures concurrentes et les saisies sont conservées
+en cas d'erreur. Un XML mal formé, contenant une DTD, ou inaccessible n'est pas écrasé.
+Les liens symboliques et les chemins sortant des répertoires de configuration sont refusés.
+Cette opération ne lance pas une installation.
 
 La compatibilité a été vérifiée avec le véritable `XmlSettingsScript` de Silverpeas Setup :
 un XML généré a été réappliqué sur un répertoire de test dont les properties avaient été remis
@@ -97,9 +100,9 @@ relatifs au contexte web :
 |---|---|---|
 | GET | `/services/admin/configuration/files` | Chemins relatifs triés des fichiers |
 | GET | `/services/admin/configuration/file?path=...` | Révision, propriétés et documentation |
-| PUT | `/services/admin/configuration/file` | Mise à jour de clés existantes |
-| GET | `/services/admin/configuration/persistence` | XML cibles : nom, révision, existence |
-| POST | `/services/admin/configuration/persistence` | Pérennisation des clés sélectionnées |
+| PUT | `/services/admin/configuration/file` | Mise à jour et pérennisation automatique de clés existantes |
+| GET | `/services/admin/configuration/persistence` | XML cibles (compatibilité avec les anciens clients) |
+| POST | `/services/admin/configuration/persistence` | Pérennisation explicite (compatibilité avec les anciens clients) |
 
 Le corps du PUT contient `path` (chemin relatif), `revision` et `properties` (objet clé/valeur).
 Le chemin en paramètre de requête reste accepté pour les clients existants ; si les deux sont
@@ -156,7 +159,7 @@ mvn -pl core-configuration,core-war -PskipMinify \
 ```
 
 Les tests navigateur utilisent le balisage de la vraie JSP, les vrais JS/CSS, le constructeur de requêtes AJAX Silverpeas et une API isolée
-en mémoire. Ils couvrent la pérennisation XML, les aides au clavier, l'affichage texte, les filtres, la sauvegarde,
+en mémoire. Ils couvrent la sauvegarde sans sélection technique, les aides au clavier, l'affichage texte, les filtres, la sauvegarde,
 l'annulation, les conflits, les erreurs et la navigation avec une saisie non enregistrée.
 Ils nécessitent Node.js et Playwright (avec Chromium installé, ou `CHROME_PATH` pointant
 sur un exécutable local).
@@ -175,7 +178,7 @@ Chaque entrée contient un horodatage UTC, l'identifiant, le login et le domaine
 l'administrateur, l'opération, le fichier et les clés.
 Pour un XML, le chemin du fichier properties source est également enregistré.
 Pour les properties, `changes` contient pour chaque clé `key`, `before` et `after` en clair.
-Pour les XML, `values` contient les valeurs sélectionnées écrites dans le XML ; les anciennes
+Pour les XML, `values` contient les valeurs modifiées écrites dans le XML ; les anciennes
 valeurs du XML ne sont pas exposées par cette opération. Les empreintes des fichiers ne sont
 pas écrites dans le journal ; les révisions restent utilisées en interne pour détecter les
 modifications concurrentes.

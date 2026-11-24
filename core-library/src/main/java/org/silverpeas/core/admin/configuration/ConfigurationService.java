@@ -80,7 +80,7 @@ public class ConfigurationService {
   }
 
   /**
-   * Saves and invalidates cached configuration on this application node.
+   * Saves runtime configuration and installation overrides, then invalidates this node's cache.
    * @param path relative configuration file path
    * @param revision revision obtained when reading the file
    * @param changes raw values indexed by existing property keys
@@ -88,7 +88,7 @@ public class ConfigurationService {
    * @throws IOException if saving fails
    * @throws SecurityException if the requester is not a general administrator
    */
-  public ConfigurationFile update(String path, String revision, Map<String, String> changes)
+  public synchronized ConfigurationFile update(String path, String revision, Map<String, String> changes)
       throws IOException {
     checkAdministrator();
     rejectSensitiveKeys(changes.keySet());
@@ -96,11 +96,27 @@ public class ConfigurationService {
     if (!before.revision().equals(revision)) {
       throw new ConcurrentModificationException("Runtime configuration changed; reload before saving");
     }
-    var saved = repository.update(path, revision, changes);
-    audit.propertiesChanged(users.getCurrentRequester(), before, saved);
-    if (!saved.revision().equals(revision)) {
-      ResourceLocator.resetCache();
+    if (changes.entrySet().stream().anyMatch(entry -> entry.getValue() == null ||
+        !before.properties().containsKey(entry.getKey()))) {
+      throw new IllegalArgumentException("Only existing properties with non-null values can be updated");
     }
+    var updates = new TreeMap<String, String>();
+    changes.forEach((key, value) -> {
+      if (!value.equals(before.properties().get(key))) {
+        updates.put(key, value);
+      }
+    });
+    if (updates.isEmpty()) {
+      return visible(before);
+    }
+    var target = customSettings.list().getLast();
+    var persisted = customSettings.persistAndApply(target, path, updates,
+        () -> repository.update(path, revision, updates));
+    var saved = persisted.configuration();
+    ResourceLocator.resetCache();
+    audit.propertiesChanged(users.getCurrentRequester(), before, saved);
+    audit.settingsPersisted(users.getCurrentRequester(),
+        new ConfigurationFile(path, saved.revision(), updates), persisted.previous(), persisted.saved());
     return visible(saved);
   }
 

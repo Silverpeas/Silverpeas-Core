@@ -148,6 +148,58 @@ public class CustomSettingsRepository {
     return new CustomSettingsTarget(target.name(), revision(content), true);
   }
 
+  /**
+   * Writes the installation rules before applying runtime changes. If applying fails, restores the
+   * exact original XML, without overwriting a concurrent external edit.
+   */
+  synchronized PersistedConfiguration persistAndApply(CustomSettingsTarget target, String path,
+      Map<String, String> values, ConfigurationWrite write) throws IOException {
+    var file = validateTarget(target);
+    var original = target.exists() ? Files.readAllBytes(file) : null;
+    checkRevision(target, original);
+    var saved = persist(target, path, values);
+    try {
+      return new PersistedConfiguration(write.save(), target, saved);
+    } catch (IOException | RuntimeException failure) {
+      try {
+        restore(saved, original);
+      } catch (IOException | RuntimeException rollbackFailure) {
+        failure.addSuppressed(rollbackFailure);
+      }
+      throw failure;
+    }
+  }
+
+  private void restore(CustomSettingsTarget saved, byte[] original) throws IOException {
+    var file = validateTarget(saved);
+    checkRevision(saved, Files.readAllBytes(file));
+    if (original == null) {
+      Files.delete(file);
+      return;
+    }
+    var temporary = Files.createTempFile(directory, ".custom-settings-rollback-", ".tmp");
+    try {
+      var view = Files.getFileAttributeView(file, PosixFileAttributeView.class, NOFOLLOW_LINKS);
+      if (view != null) {
+        Files.setPosixFilePermissions(temporary, view.readAttributes().permissions());
+      }
+      Files.write(temporary, original);
+      checkRevision(saved, Files.readAllBytes(validateTarget(saved)));
+      Files.move(temporary, file, ATOMIC_MOVE, REPLACE_EXISTING);
+    } finally {
+      Files.deleteIfExists(temporary);
+    }
+  }
+
+  @FunctionalInterface
+  interface ConfigurationWrite {
+    ConfigurationFile save() throws IOException;
+  }
+
+  record PersistedConfiguration(ConfigurationFile configuration, CustomSettingsTarget previous,
+                                CustomSettingsTarget saved) {
+  }
+
   private void checkDirectory() {
     if (Files.isSymbolicLink(home.resolve("configuration")) || Files.isSymbolicLink(directory)) {
       throw new IllegalArgumentException("Symbolic links are not allowed in configuration paths");

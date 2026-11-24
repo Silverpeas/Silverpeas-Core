@@ -59,11 +59,17 @@ class ConfigurationServiceTest {
   private User administrator;
 
   @BeforeEach
-  void setUp() {
+  void setUp() throws IOException {
     users = UserProvider.get();
     administrator = mock(User.class);
     when(administrator.isAccessAdmin()).thenReturn(true);
     when(users.getCurrentRequester()).thenReturn(administrator);
+    var target = new CustomSettingsTarget("CustomerSettings.xml", "absent", false);
+    when(customSettings.list()).thenReturn(List.of(target));
+    when(customSettings.persistAndApply(any(), anyString(), anyMap(), any()))
+        .thenAnswer(invocation -> new CustomSettingsRepository.PersistedConfiguration(
+            invocation.getArgument(3, CustomSettingsRepository.ConfigurationWrite.class).save(),
+            invocation.getArgument(0), new CustomSettingsTarget("CustomerSettings.xml", "saved", true)));
   }
 
   @Test
@@ -128,10 +134,10 @@ class ConfigurationServiceTest {
   @Test
   void failedSaveDoesNotInvalidateTheKernelCache() throws IOException {
     when(repository.read("general.properties")).thenReturn(
-        new ConfigurationFile("general.properties", "old", Map.of()));
-    when(repository.update("general.properties", "old", Map.of()))
+        new ConfigurationFile("general.properties", "old", Map.of("flag", "false")));
+    when(repository.update("general.properties", "old", Map.of("flag", "true")))
         .thenThrow(new IOException("Not writable"));
-    var changes = Map.<String, String>of();
+    var changes = Map.of("flag", "true");
     try (var locator = mockStatic(ResourceLocator.class)) {
       assertThrows(IOException.class, () -> service.update("general.properties", "old", changes));
       locator.verifyNoInteractions();
@@ -142,10 +148,10 @@ class ConfigurationServiceTest {
   @Test
   void conflictingSaveDoesNotInvalidateTheKernelCache() throws IOException {
     when(repository.read("general.properties")).thenReturn(
-        new ConfigurationFile("general.properties", "old", Map.of()));
-    when(repository.update("general.properties", "old", Map.of()))
+        new ConfigurationFile("general.properties", "old", Map.of("flag", "false")));
+    when(repository.update("general.properties", "old", Map.of("flag", "true")))
         .thenThrow(new ConcurrentModificationException("Stale revision"));
-    var changes = Map.<String, String>of();
+    var changes = Map.of("flag", "true");
     try (var locator = mockStatic(ResourceLocator.class)) {
       assertThrows(ConcurrentModificationException.class,
           () -> service.update("general.properties", "old", changes));
@@ -228,6 +234,67 @@ class ConfigurationServiceTest {
       verify(repository).update(before.path(), "before", changes);
       locator.verify(ResourceLocator::resetCache);
     }
+  }
+
+  @Test
+  void automaticPersistenceUsesTheLastCustomXmlAndOnlyActualChanges() throws IOException {
+    var first = new CustomSettingsTarget("Company.xml", "first", true);
+    var last = new CustomSettingsTarget("Z-Overrides.xml", "last", true);
+    var before = new ConfigurationFile("general.properties", "before",
+        Map.of("flag", "false", "unchanged", "keep"));
+    var after = new ConfigurationFile(before.path(), "after",
+        Map.of("flag", "true", "unchanged", "keep"));
+    when(customSettings.list()).thenReturn(List.of(first, last));
+    when(repository.read(before.path())).thenReturn(before);
+    when(repository.update(before.path(), "before", Map.of("flag", "true"))).thenReturn(after);
+    assertEquals(after, service.update(before.path(), "before",
+        Map.of("flag", "true", "unchanged", "keep")));
+    verify(customSettings).persistAndApply(eq(last), eq(before.path()),
+        eq(Map.of("flag", "true")), any());
+    verify(audit).settingsPersisted(eq(administrator),
+        eq(new ConfigurationFile(before.path(), "after", Map.of("flag", "true"))), eq(last), any());
+  }
+
+  @Test
+  void failedAutomaticPersistenceDoesNotWritePropertiesOrAuditSuccess() throws IOException {
+    var before = new ConfigurationFile("general.properties", "before", Map.of("flag", "false"));
+    when(repository.read(before.path())).thenReturn(before);
+    doThrow(new IOException("XML not writable")).when(customSettings)
+        .persistAndApply(any(), anyString(), anyMap(), any());
+    var changes = Map.of("flag", "true");
+    try (var locator = mockStatic(ResourceLocator.class)) {
+      assertThrows(IOException.class, () -> service.update("general.properties", "before", changes));
+      locator.verifyNoInteractions();
+    }
+    verify(repository, never()).update(anyString(), anyString(), anyMap());
+    verifyNoInteractions(audit);
+  }
+
+  @Test
+  void savingAndRestoringAValueUpdatesBothRealFiles(@org.junit.jupiter.api.io.TempDir Path home)
+      throws IOException {
+    var root = Files.createDirectories(home.resolve("properties"));
+    var path = Files.writeString(root.resolve("settings.properties"), "# Keep this help\nflag=false\nother=keep\n");
+    var realProperties = new ConfigurationFileRepository(root);
+    var realSettings = new CustomSettingsRepository(root);
+    when(repository.read("settings.properties"))
+        .thenAnswer(invocation -> realProperties.read("settings.properties"));
+    when(repository.update(eq("settings.properties"), anyString(), anyMap()))
+        .thenAnswer(invocation -> realProperties.update("settings.properties", invocation.getArgument(1),
+            invocation.getArgument(2)));
+    when(customSettings.list()).thenAnswer(invocation -> realSettings.list());
+    doAnswer(invocation -> realSettings.persistAndApply(invocation.getArgument(0),
+        invocation.getArgument(1), invocation.getArgument(2), invocation.getArgument(3)))
+        .when(customSettings).persistAndApply(any(), anyString(), anyMap(), any());
+    var saved = service.update("settings.properties", realProperties.read("settings.properties").revision(),
+        Map.of("flag", "true"));
+    var xml = home.resolve("configuration/silverpeas/CustomerSettings.xml");
+    assertTrue(Files.readString(xml).contains(">true</parameter>"));
+    assertFalse(Files.readString(xml).contains("other"));
+    assertTrue(Files.readString(path).contains("flag=true"));
+    service.update("settings.properties", saved.revision(), Map.of("flag", "false"));
+    assertTrue(Files.readString(xml).contains(">false</parameter>"));
+    assertEquals("# Keep this help\nflag=false\nother=keep\n", Files.readString(path));
   }
 
   private void assertAccessDenied() {
