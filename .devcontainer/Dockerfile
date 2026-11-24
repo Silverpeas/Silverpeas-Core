@@ -25,5 +25,9 @@ RUN set -eux; \
 
 USER silveruser
 
+# Mount point of the host's .cache/silverpeas directory, created here so that its parent .cache
+# directory is owned by silveruser and not by root as it would be when created by Docker.
+RUN mkdir -p /home/silveruser/.cache/silverpeas
+
 CMD ["/bin/bash"]
 

@@ -6,6 +6,7 @@
   "containerUser": "silveruser",
   "remoteUser": "silveruser",
   "updateRemoteUserUID": true,
+  "initializeCommand": "mkdir -p \"${localEnv:HOME}/.cache/silverpeas\"",
   "workspaceMount": "source=${localWorkspaceFolder},target=/home/silveruser/${localWorkspaceFolderBasename},type=bind",
   "workspaceFolder": "/home/silveruser/${localWorkspaceFolderBasename}",
   "mounts": [
@@ -22,6 +23,11 @@
     {
       "source": "${localEnv:HOME}/.gitconfig",
       "target": "/home/silveruser/.gitconfig",
+      "type": "bind"
+    },
+    {
+      "source": "${localEnv:HOME}/.cache/silverpeas",
+      "target": "/home/silveruser/.cache/silverpeas",
       "type": "bind"
     }
   ],
