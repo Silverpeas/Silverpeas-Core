@@ -41,6 +41,17 @@ import java.util.Properties;
 public class SQLInternalDomainRepository implements SQLDomainRepository {
 
   private static final String DOMAIN_TABLE = "Domain";
+  private static final String USER_TABLE_SUFFIX = "_User";
+  private static final String GROUP_TABLE_SUFFIX = "_Group";
+  private static final String GROUP_USER_REL_TABLE_SUFFIX = "_Group_User_Rel";
+  /**
+   * The constraints on the table of the user-group relationships are suffixed with a shorter
+   * name than the one of the table: the names of the constraints mustn't exceed the 30 characters
+   * allowed by some databases like Oracle, and the domain name can be up to 9 characters long
+   * (see {@link org.silverpeas.core.admin.domain.SQLDomainService}).
+   */
+  private static final String GROUP_USER_REL_CONSTRAINT_SUFFIX = "_GroupUser";
+  private static final String PRIMARY_KEY_ON_ID = "PRIMARY KEY (id)";
   private static final String INT_NOT_NULL = "int NOT NULL";
   private static final String PROPERTY = "property_";
   private static final String PASS_PROP = "password";
@@ -60,18 +71,46 @@ public class SQLInternalDomainRepository implements SQLDomainRepository {
     }
   }
 
+  /**
+   * Adds into the specified table creation query the given constraint. The name of the
+   * constraint is made up of the specified prefix (PK, UN or FK), of the domain name and of the
+   * given suffix.
+   */
+  private static JdbcSqlQuery addConstraint(JdbcSqlQuery tableCreation, String prefix,
+      String domainName, String suffix, String definition) {
+    return tableCreation.addField("CONSTRAINT " + prefix + "_" + DOMAIN_TABLE + domainName + suffix,
+        definition);
+  }
+
   private JdbcSqlQuery generateGroupUserRelTableCreateStatement(String domainName) {
-    return JdbcSqlQuery.createTable(DOMAIN_TABLE + domainName +
-        "_Group_User_Rel").addField("groupId", INT_NOT_NULL).addField("userId", INT_NOT_NULL);
+    JdbcSqlQuery relTable =
+        JdbcSqlQuery.createTable(DOMAIN_TABLE + domainName + GROUP_USER_REL_TABLE_SUFFIX)
+            .addField("groupId", INT_NOT_NULL)
+            .addField("userId", INT_NOT_NULL);
+    addConstraint(relTable, "PK", domainName, GROUP_USER_REL_CONSTRAINT_SUFFIX,
+        "PRIMARY KEY (groupId, userId)");
+    addConstraint(relTable, "FK", domainName, GROUP_USER_REL_CONSTRAINT_SUFFIX + "_1",
+        "FOREIGN KEY (groupId) REFERENCES " + DOMAIN_TABLE + domainName + GROUP_TABLE_SUFFIX +
+            "(id)");
+    return addConstraint(relTable, "FK", domainName, GROUP_USER_REL_CONSTRAINT_SUFFIX + "_2",
+        "FOREIGN KEY (userId) REFERENCES " + DOMAIN_TABLE + domainName + USER_TABLE_SUFFIX +
+            "(id)");
   }
 
   private JdbcSqlQuery generateGroupTableCreateStatement(String domainName) {
-    return JdbcSqlQuery.createTable(DOMAIN_TABLE + domainName + "_Group")
-        .addField("id", INT_NOT_NULL)
-        .addField("superGroupId", "int NULL")
-        .addField("name", "varchar(100) NOT NULL")
-        .addField("description", "varchar(400) NULL")
-        .addField("grSpecificInfo", "varchar(50) NULL");
+    JdbcSqlQuery groupTable =
+        JdbcSqlQuery.createTable(DOMAIN_TABLE + domainName + GROUP_TABLE_SUFFIX)
+            .addField("id", INT_NOT_NULL)
+            .addField("superGroupId", "int NULL")
+            .addField("name", "varchar(100) NOT NULL")
+            .addField("description", "varchar(400) NULL")
+            .addField("grSpecificInfo", "varchar(50) NULL");
+    addConstraint(groupTable, "PK", domainName, GROUP_TABLE_SUFFIX, PRIMARY_KEY_ON_ID);
+    addConstraint(groupTable, "UN", domainName, GROUP_TABLE_SUFFIX + "_1",
+        "UNIQUE (superGroupId, name)");
+    return addConstraint(groupTable, "FK", domainName, GROUP_TABLE_SUFFIX + "_1",
+        "FOREIGN KEY (superGroupId) REFERENCES " + DOMAIN_TABLE + domainName +
+            GROUP_TABLE_SUFFIX + "(id)");
   }
 
   private JdbcSqlQuery generateUserTableCreateStatement(String domainName) throws IOException {
@@ -82,7 +121,8 @@ public class SQLInternalDomainRepository implements SQLDomainRepository {
     }
     int numberOfColumns = Integer.parseInt(props.getProperty("property.Number"));
 
-    JdbcSqlQuery userTable = JdbcSqlQuery.createTable(DOMAIN_TABLE + domainName + "_User ");
+    JdbcSqlQuery userTable =
+        JdbcSqlQuery.createTable(DOMAIN_TABLE + domainName + USER_TABLE_SUFFIX);
 
     // Common columns
     userTable.addField("id", INT_NOT_NULL)
@@ -115,7 +155,8 @@ public class SQLInternalDomainRepository implements SQLDomainRepository {
       }
     }
 
-    return userTable;
+    addConstraint(userTable, "PK", domainName, USER_TABLE_SUFFIX, PRIMARY_KEY_ON_ID);
+    return addConstraint(userTable, "UN", domainName, USER_TABLE_SUFFIX + "_1", "UNIQUE (login)");
   }
 
   @Override
@@ -123,9 +164,10 @@ public class SQLInternalDomainRepository implements SQLDomainRepository {
     String domainName = domain.getName();
     try {
       JdbcSqlQueries queries = new JdbcSqlQueries();
-      queries.add(generateUserTableDropStatement(domainName));
-      queries.add(generateGroupTableDropStatement(domainName));
+      // the tables are dropped in the reverse order of their dependencies
       queries.add(generateGroupUserRelTableDropStatement(domainName));
+      queries.add(generateGroupTableDropStatement(domainName));
+      queries.add(generateUserTableDropStatement(domainName));
       queries.execute();
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e);
@@ -133,14 +175,14 @@ public class SQLInternalDomainRepository implements SQLDomainRepository {
   }
 
   private JdbcSqlQuery generateGroupUserRelTableDropStatement(String domainName) {
-    return JdbcSqlQuery.dropTable(DOMAIN_TABLE + domainName + "_Group_User_Rel");
+    return JdbcSqlQuery.dropTable(DOMAIN_TABLE + domainName + GROUP_USER_REL_TABLE_SUFFIX);
   }
 
   private JdbcSqlQuery generateGroupTableDropStatement(String domainName) {
-    return JdbcSqlQuery.dropTable(DOMAIN_TABLE + domainName + "_Group");
+    return JdbcSqlQuery.dropTable(DOMAIN_TABLE + domainName + GROUP_TABLE_SUFFIX);
   }
 
   private JdbcSqlQuery generateUserTableDropStatement(String domainName) {
-    return JdbcSqlQuery.dropTable(DOMAIN_TABLE + domainName + "_User");
+    return JdbcSqlQuery.dropTable(DOMAIN_TABLE + domainName + USER_TABLE_SUFFIX);
   }
 }
