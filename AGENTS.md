@@ -23,7 +23,8 @@ and Silverpeas-Looks. Change them in the three repositories at once.
 - The build inherits almost everything (Java release, dependency versions, surefire/failsafe wiring,
   integration-test source dirs, profiles) from the external parent POM
   `org.silverpeas:silverpeas-project`, not from this repository. Read it (in `~/.m2`) when a build
-  behaviour is not explained by the POMs in this repository.
+  behaviour is not explained by the POMs in this repository, looking only at the relevant parts
+  (`grep` the property, plugin or profile concerned) rather than the whole file.
 - Java 21 (`maven.compiler.release` of the parent POM) and Maven 3.9.x. The platform is Jakarta EE 10
   (`jakarta.*` namespaces everywhere) deployed on WildFly.
 - Build and test in the devcontainer (`.devcontainer/`, built on the `silverpeas/silverdev:latest`
@@ -35,6 +36,9 @@ and Silverpeas-Looks. Change them in the three repositories at once.
 - Profiles and switches from the parent POM: `-DskipTests`, `-PskipMinify` (skips the JS/CSS
   minification, much faster when iterating on web assets), `-Pcoverage` (JaCoCo), `-Pdeployment`
   (attaches sources and javadoc jars), `-Plicense` (rewrites the license header of every source file).
+- The Maven output is very verbose: never read it whole. Run Maven with `-q` (or `-B` piped
+  through `tail -n 80`), and on a test failure read the report of the failing test in
+  `target/surefire-reports/` (or `target/failsafe-reports/`) rather than the build log.
 
 ### Tests come with any code change
 
@@ -130,7 +134,8 @@ Beans needing startup logic implement `org.silverpeas.core.initialization.Initia
 - The code is indented with two spaces, never with tabs, in every language (Java, JSP, JavaScript,
   CSS, XML…). A file still indented otherwise is reindented as a whole as soon as its code is
   modified, in a dedicated commit containing only the reindentation, so that the actual changes
-  aren't hidden by the reformatting in the diff.
+  aren't hidden by the reformatting in the diff. Reindent it with a tool or a script (`expand`,
+  `sed`, a formatter…), never by rewriting the file through the editor.
 
 ### Web front-end conventions
 
@@ -140,7 +145,8 @@ Beans needing startup logic implement `org.silverpeas.core.initialization.Initia
   and `<style>` blocks with a body, `style="…"` attributes and event-handler attributes
   (`onclick="…"`, `onchange="…"`, `href="javascript:…"`, …): bind the handlers from the
   JavaScript file instead. Values computed server-side are passed to the scripts through `data-*`
-  attributes or as parameters.
+  attributes or as parameters. The rule applies to the code written or modified: the inline code
+  of an existing view that isn't touched by the change stays as is.
 - In JavaScript, declare variables with `const`, or with `let` when they are reassigned. Use
   `var` only for a variable that has to be explicitly global, and then explain why in a comment.
 
@@ -158,18 +164,25 @@ Beans needing startup logic implement `org.silverpeas.core.initialization.Initia
 The code is analysed by SonarCloud in the `silverpeas` organization; the key of the project is the
 `sonar.projectKey` of the `Jenkinsfile` (written `<project>` below). The projects are public, so the
 Web API of `https://sonarcloud.io` is read without any token (add `ps=500` and `p=<page>` to page
-through the results):
+through the results). The raw JSON responses are large (more than 120 KB for the rules of a
+profile): always reduce them with `jq` to the fields given below, never read them as is.
 
 - **Before writing code**, get the rules activated in the quality profile of the language and
   follow them while coding. Java code is checked against our own profile, **Silverpeas way**:
   look up its key with `api/qualityprofiles/search?organization=silverpeas&project=<project>`,
   then list its rules with
-  `api/rules/search?organization=silverpeas&qprofile=<key>&activation=true&f=name,severity`.
+  `api/rules/search?organization=silverpeas&qprofile=<key>&activation=true&f=name,severity`,
+  reduced with `jq -r '.rules[] | "\(.key) \(.severity) \(.name)"'`. The profiles change seldom:
+  keep the list in `~/.cache/silverpeas/sonar/<language>-rules.txt` (shared by all the Silverpeas
+  repositories) and download it again only when that file is missing or older than 30 days.
 - **When modifying an existing file**, list its open issues and fix them on the way:
   `api/issues/search?organization=silverpeas&componentKeys=<project>:<path/from/repo/root>&issueStatuses=OPEN,CONFIRMED`
-  (the `files` parameter is silently ignored).
+  (the `files` parameter is silently ignored), reduced with
+  `jq -r '.issues[] | "\(.line // "-") \(.severity) \(.rule) \(.message)"'`.
 - **Once Jenkins has analysed a PR**, get the issues raised by that PR and fix them:
   `api/issues/search?organization=silverpeas&componentKeys=<project>&pullRequest=<PR number>&issueStatuses=OPEN,CONFIRMED`,
+  reduced with
+  `jq -r '.issues[] | "\(.component) \(.line // "-") \(.severity) \(.rule) \(.message)"'`,
   and check its quality gate with
   `api/qualitygates/project_status?projectKey=<project>&pullRequest=<PR number>`.
 
