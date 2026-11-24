@@ -80,16 +80,16 @@ public class Argon2idEncryption implements PasswordEncryption {
   @Override
   public void check(String password, String digest) throws AssertionError {
     ParsedDigest parsed = parse(digest);
-    byte[] computed = derive(password, parsed.salt, parsed.memory, parsed.iterations,
-        parsed.parallelism, parsed.hash.length);
-    if (!MessageDigest.isEqual(computed, parsed.hash)) {
+    byte[] computed = derive(password, parsed.salt(), parsed.memory(), parsed.iterations(),
+        parsed.parallelism(), parsed.hash().length);
+    if (!MessageDigest.isEqual(computed, parsed.hash())) {
       throw new AssertionError(BAD_PASSWORD_MESSAGE);
     }
   }
 
   @Override
   public byte[] getSaltUsedInDigest(String digest) {
-    return parse(digest).salt;
+    return parse(digest).salt();
   }
 
   @Override
@@ -140,19 +140,9 @@ public class Argon2idEncryption implements PasswordEncryption {
     }
   }
 
-  private static final class ParsedDigest {
-    private final int memory;
-    private final int iterations;
-    private final int parallelism;
-    private final byte[] salt;
-    private final byte[] hash;
-
-    private ParsedDigest(int memory, int iterations, int parallelism, byte[] salt, byte[] hash) {
-      this.memory = memory;
-      this.iterations = iterations;
-      this.parallelism = parallelism;
-      this.salt = salt;
-      this.hash = hash;
-    }
+  // This private parsing result is only read through its accessors and is never compared.
+  @SuppressWarnings("java:S6218")
+  private record ParsedDigest(int memory, int iterations, int parallelism, byte[] salt,
+                              byte[] hash) {
   }
 }
