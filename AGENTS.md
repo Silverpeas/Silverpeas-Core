@@ -178,7 +178,7 @@ through the results):
 - **Full build + unit tests:** `mvn clean install`
 - **Build a single module (with its intra-repo deps):** `mvn install -pl core-library -am`
 - **Run one unit-test class/method:** `mvn test -pl core-library -Dtest=SomeClassTest#someMethod`
-- **REST-API documentation (Miredot):** `-Prestapi` profile.
+- **REST-API documentation (Swagger):** `-Prestapi` profile.
 
 ### Integration tests
 
