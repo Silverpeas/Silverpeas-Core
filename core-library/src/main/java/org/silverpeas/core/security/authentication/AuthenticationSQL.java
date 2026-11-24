@@ -42,11 +42,17 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 
 /**
  * This class performs the authentication using an SQL table.
  */
 public class AuthenticationSQL extends AuthenticationProtocol {
+
+  private static final String SQL_IDENTIFIER = "[a-zA-Z_][a-zA-Z_\\d$]*";
+  private static final Pattern COLUMN_NAME = Pattern.compile(SQL_IDENTIFIER);
+  private static final Pattern TABLE_NAME = Pattern.compile(
+      SQL_IDENTIFIER + "(?:\\." + SQL_IDENTIFIER + "){0,2}");
 
   protected String dataSourceJndiName;
   protected String userTableName;
@@ -132,11 +138,7 @@ public class AuthenticationSQL extends AuthenticationProtocol {
       loginQuery = "SELECT " + loginColumnName + ", " + passwordColumnName + " FROM "
           + userTableName;
     }
-    if (ignoreCase) {
-      loginQuery += " WHERE lower(" + loginColumnName + ") = lower(?)";
-    } else {
-      loginQuery += " WHERE " + loginColumnName + " = ?";
-    }
+    loginQuery += " WHERE " + loginPredicate(ignoreCase);
     try (final PreparedStatement stmt = connection.prepareStatement(loginQuery)) {
       stmt.setString(1, login);
       try (final ResultSet rs = stmt.executeQuery()) {
@@ -159,6 +161,8 @@ public class AuthenticationSQL extends AuthenticationProtocol {
     return sqlPasswd;
   }
 
+  // The migration validates configured identifiers and binds every SQL value.
+  @SuppressWarnings("java:S2077")
   void migratePasswordIfNeeded(Connection connection, String login,
       boolean loginIgnoreCase, String password, String previousDigest,
       Supplier<PasswordEncryption> defaultEncryption) {
@@ -170,10 +174,16 @@ public class AuthenticationSQL extends AuthenticationProtocol {
       if (current.doUnderstandDigest(previousDigest)) {
         return;
       }
+      if (!TABLE_NAME.matcher(userTableName).matches() ||
+          !COLUMN_NAME.matcher(loginColumnName).matches() ||
+          !COLUMN_NAME.matcher(passwordColumnName).matches()) {
+        SilverLogger.getLogger(this).warn("Skipping SQL password migration for unsupported " +
+            "table or column identifiers");
+        return;
+      }
       String digest = current.encrypt(password);
       String query = "UPDATE " + userTableName + " SET " + passwordColumnName +
-          " = ? WHERE " + (loginIgnoreCase ? "lower(" + loginColumnName + ") = lower(?)" :
-          loginColumnName + " = ?") + " AND " + passwordColumnName + " = ?";
+          " = ? WHERE " + loginPredicate(loginIgnoreCase) + " AND " + passwordColumnName + " = ?";
       try (PreparedStatement statement = connection.prepareStatement(query)) {
         statement.setString(1, digest);
         statement.setString(2, login);
@@ -186,15 +196,15 @@ public class AuthenticationSQL extends AuthenticationProtocol {
     }
   }
 
+  private String loginPredicate(boolean ignoreCase) {
+    return ignoreCase ? "lower(" + loginColumnName + ") = lower(?)" : loginColumnName + " = ?";
+  }
+
   private void updatePassword(Connection connection, String login, final boolean loginIgnoreCase,
       String newPassword)
       throws AuthenticationException {
-    String updateQuery = "UPDATE " + userTableName + " SET " + passwordColumnName + " = ? WHERE ";
-    if (loginIgnoreCase) {
-      updateQuery += "lower(" + loginColumnName + ") = lower(?)";
-    } else {
-      updateQuery += loginColumnName + " = ?";
-    }
+    String updateQuery = "UPDATE " + userTableName + " SET " + passwordColumnName +
+        " = ? WHERE " + loginPredicate(loginIgnoreCase);
     try (final PreparedStatement stmt = connection.prepareStatement(updateQuery)) {
       stmt.setString(1, newPassword);
       stmt.setString(2, login);

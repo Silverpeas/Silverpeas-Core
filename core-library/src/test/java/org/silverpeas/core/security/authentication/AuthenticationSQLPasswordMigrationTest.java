@@ -135,6 +135,23 @@ class AuthenticationSQLPasswordMigrationTest {
   }
 
   @Test
+  void migrationSupportsSchemaQualifiedTable() throws SQLException {
+    authentication.userTableName = "silverpeas.DomainSP_User";
+    authentication.migratePasswordIfNeeded(connection, LOGIN, false, PASSWORD, "legacy",
+        () -> argon2id);
+    verify(connection).prepareStatement(
+        "UPDATE silverpeas.DomainSP_User SET password = ? WHERE login = ? AND password = ?");
+  }
+
+  @Test
+  void migrationSkipsUnsupportedSqlIdentifiers() {
+    authentication.userTableName = "DomainSP_User WHERE true";
+    authentication.migratePasswordIfNeeded(connection, LOGIN, false, PASSWORD, "legacy",
+        () -> argon2id);
+    verifyNoInteractions(connection);
+  }
+
+  @Test
   void writeFailureDoesNotInterruptMigrationCaller() throws SQLException {
     when(statement.executeUpdate()).thenThrow(new SQLException("Read-only connection"));
     assertDoesNotThrow(() -> authentication.migratePasswordIfNeeded(
