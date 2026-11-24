@@ -225,3 +225,25 @@ La même détection sert au masquage dans le journal.
 Cette heuristique porte sur les noms des clés : un secret placé dans une clé au nom
 anodin ne peut pas être identifié de manière fiable. Elle ne nécessite aucun fichier
 de configuration supplémentaire.
+
+### Exclure des fichiers de la console
+
+Le fichier `properties/org/silverpeas/admin/configuration/excludedFiles.properties` permet
+à l'exploitant d'exclure des fichiers entiers, en complément du filtrage automatique des clés
+sensibles. Il est lui-même toujours inaccessible depuis la console et son API.
+
+Ajouter une entrée par fichier, par exemple :
+
+```properties
+exclude.custom=customer/private.properties
+exclude.integration=org/company/integration.properties
+```
+
+Les valeurs sont des chemins exacts, relatifs au dossier `properties`, avec des `/` et en
+respectant la casse. Les jokers ne sont pas interprétés. Une valeur vide est ignorée.
+Les exclusions s'appliquent à l'arborescence, à la recherche globale, à la lecture, à la
+modification et à la pérennisation par l'API, sans redémarrage. Elles ne modifient pas le
+chargement normal des paramètres par Silverpeas. Le fichier se modifie sur le serveur ;
+pour conserver ses entrées après réinstallation, les reporter dans le XML de personnalisation.
+En son absence, seule son exclusion intrinsèque reste active. S'il est illisible ou invalide,
+l'accès aux fichiers par la console échoue au lieu d'ignorer les exclusions.

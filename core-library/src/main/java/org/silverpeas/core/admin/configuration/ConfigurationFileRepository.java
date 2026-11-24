@@ -37,7 +37,9 @@ import java.util.ConcurrentModificationException;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import static java.nio.file.LinkOption.NOFOLLOW_LINKS;
 import static java.nio.file.StandardCopyOption.ATOMIC_MOVE;
@@ -51,6 +53,9 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
  */
 @Repository
 public class ConfigurationFileRepository {
+
+  static final String EXCLUSIONS_FILE =
+      "org/silverpeas/admin/configuration/excludedFiles.properties";
 
   private final Path root;
 
@@ -68,11 +73,13 @@ public class ConfigurationFileRepository {
    * @throws IOException if the directory cannot be read
    */
   public List<String> list() throws IOException {
+    var excluded = excludedFiles();
     try (var files = Files.walk(root)) {
       return files.filter(path -> Files.isRegularFile(path, NOFOLLOW_LINKS))
           .filter(path -> path.toString().endsWith(".properties"))
           .map(root::relativize)
           .map(path -> path.toString().replace('\\', '/'))
+          .filter(path -> !EXCLUSIONS_FILE.equals(path) && !excluded.contains(path))
           .sorted().toList();
     }
   }
@@ -127,6 +134,27 @@ public class ConfigurationFileRepository {
   }
 
   private Path resolve(String relativePath) throws IOException {
+    var path = resolveFile(relativePath);
+    var canonicalPath = root.relativize(path).toString().replace('\\', '/');
+    if (EXCLUSIONS_FILE.equals(canonicalPath) || excludedFiles().contains(canonicalPath)) {
+      throw new IllegalArgumentException("Configuration file is excluded from the console");
+    }
+    return path;
+  }
+
+  private Set<String> excludedFiles() throws IOException {
+    if (Files.notExists(root.resolve(EXCLUSIONS_FILE), NOFOLLOW_LINKS)) {
+      return Set.of();
+    }
+    var document = new PropertiesDocument(Files.readAllBytes(resolveFile(EXCLUSIONS_FILE)));
+    return document.values().entrySet().stream()
+        .filter(entry -> entry.getKey().startsWith("exclude."))
+        .map(entry -> entry.getValue().strip())
+        .filter(value -> !value.isEmpty())
+        .collect(Collectors.toUnmodifiableSet());
+  }
+
+  private Path resolveFile(String relativePath) throws IOException {
     if (relativePath == null || relativePath.isBlank() || relativePath.contains("\\")) {
       throw new IllegalArgumentException("A relative properties file path is required");
     }

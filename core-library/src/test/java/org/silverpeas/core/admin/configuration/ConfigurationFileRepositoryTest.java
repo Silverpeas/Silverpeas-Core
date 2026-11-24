@@ -234,6 +234,55 @@ class ConfigurationFileRepositoryTest {
     }
   }
 
+  @Test
+  void excludedFilesCannotBeListedReadOrUpdatedAndPolicyIsAlwaysHidden() throws IOException {
+    var path = "org/private/settings.properties";
+    var original = create(path, "flag=false\n");
+    var before = repository.read(path);
+    var revision = before.revision();
+    var changes = Map.of("flag", "true");
+    create("public.properties", "flag=false\n");
+    create(ConfigurationFileRepository.EXCLUSIONS_FILE, "exclude.1=" + path + "\n");
+    assertEquals(java.util.List.of("public.properties"), repository.list());
+    assertThrows(IllegalArgumentException.class, () -> repository.read(path));
+    assertThrows(IllegalArgumentException.class,
+        () -> repository.read("org//private/settings.properties"));
+    assertThrows(IllegalArgumentException.class, () -> repository.update(path, revision, changes));
+    assertThrows(IllegalArgumentException.class,
+        () -> repository.read(ConfigurationFileRepository.EXCLUSIONS_FILE));
+    assertThrows(IllegalArgumentException.class,
+        () -> repository.update(ConfigurationFileRepository.EXCLUSIONS_FILE, "", changes));
+    assertEquals("flag=false\n", Files.readString(original));
+  }
+
+  @Test
+  void reloadsExclusionsWithoutRestartingAndMatchesExactRelativePaths() throws IOException {
+    create("private/settings.properties", "flag=false\n");
+    create("public/settings.properties", "flag=false\n");
+    var policy = create(ConfigurationFileRepository.EXCLUSIONS_FILE,
+        "# Exact relative paths\nexclude.1= private/settings.properties  \nexclude.empty=\n");
+    assertEquals(java.util.List.of("public/settings.properties"), repository.list());
+    Files.writeString(policy, "exclude.1=public/settings.properties\n");
+    assertEquals(java.util.List.of("private/settings.properties"), repository.list());
+    assertEquals("false", repository.read("private/settings.properties").properties().get("flag"));
+    assertThrows(IllegalArgumentException.class,
+        () -> repository.read("public/settings.properties"));
+    Files.delete(policy);
+    assertEquals(2, repository.list().size());
+  }
+
+  @Test
+  void refusesAnInvalidOrSymbolicExclusionPolicyInsteadOfExposingFiles() throws IOException {
+    var target = create("settings.properties", "flag=false\n");
+    var policy = create(ConfigurationFileRepository.EXCLUSIONS_FILE, "exclude.1=\\uZZZZ\n");
+    assertThrows(IllegalArgumentException.class, () -> repository.list());
+    assertThrows(IllegalArgumentException.class, () -> repository.read("settings.properties"));
+    Files.delete(policy);
+    Files.createSymbolicLink(policy, target);
+    assertThrows(IllegalArgumentException.class, () -> repository.list());
+    assertThrows(IllegalArgumentException.class, () -> repository.read("settings.properties"));
+  }
+
   private Path create(String relativePath, String content) throws IOException {
     var path = root.resolve(relativePath);
     Files.createDirectories(path.getParent());
