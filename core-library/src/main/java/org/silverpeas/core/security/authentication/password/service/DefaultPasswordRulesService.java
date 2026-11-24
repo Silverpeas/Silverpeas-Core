@@ -138,18 +138,23 @@ public class DefaultPasswordRulesService implements PasswordRulesService {
     final PasswordRule maximumRule = getRule(PasswordRuleType.MAX_LENGTH);
     final int maximum = maximumRule.isRequired() ? maximumRule.<Integer>getValue() : Integer.MAX_VALUE;
     final int preferredLength = Math.max(minimum, Math.min(16, maximum));
+    final List<SecretGenerator.CharacterGroup> groups = List.of(
+        characterGroup(PasswordRuleType.AT_LEAST_X_LOWERCASE, SecretGenerator.LOWERCASE),
+        characterGroup(PasswordRuleType.AT_LEAST_X_UPPERCASE, SecretGenerator.UPPERCASE),
+        characterGroup(PasswordRuleType.AT_LEAST_X_DIGIT, SecretGenerator.DIGITS),
+        characterGroup(PasswordRuleType.AT_LEAST_X_SPECIAL_CHAR,
+            getRule(PasswordRuleType.AT_LEAST_X_SPECIAL_CHAR).getValue()));
+    final int combinedCount = Math.min(nbMatchingCombinedRules, combinedPasswordRules.size());
     return SecretGenerator.generate(new SecretGenerator.Policy(
-        new SecretGenerator.Lengths(preferredLength, maximum), List.of(
-            characterGroup(PasswordRuleType.AT_LEAST_X_LOWERCASE, SecretGenerator.LOWERCASE),
-            characterGroup(PasswordRuleType.AT_LEAST_X_UPPERCASE, SecretGenerator.UPPERCASE),
-            characterGroup(PasswordRuleType.AT_LEAST_X_DIGIT, SecretGenerator.DIGITS),
-            characterGroup(PasswordRuleType.AT_LEAST_X_SPECIAL_CHAR,
-                getRule(PasswordRuleType.AT_LEAST_X_SPECIAL_CHAR).getValue())),
-        nbMatchingCombinedRules, this::satisfiesPolicy));
+        new SecretGenerator.Lengths(preferredLength, maximum), groups, combinedCount,
+        this::satisfiesPolicy));
   }
 
   private SecretGenerator.CharacterGroup characterGroup(PasswordRuleType type, String alphabet) {
     final PasswordRule rule = getRule(type);
+    if (!rule.isRequired() && !rule.isCombined()) {
+      return new SecretGenerator.CharacterGroup(alphabet, 0, false, false);
+    }
     final int count = rule instanceof AtLeastXSpecialCharPasswordRule special ?
         special.getMinimumOccurrences() : rule.<Integer>getValue();
     return new SecretGenerator.CharacterGroup(alphabet, count, rule.isRequired(), rule.isCombined());

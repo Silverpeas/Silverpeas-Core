@@ -73,6 +73,14 @@ class PasswordGenerationTest {
     assertEquals(40, service.generate().length());
   }
 
+  @Test
+  void generatesWithAnOversizedDisabledRuleAndCombinationThreshold() {
+    Generator service = generator("passwordGenerationLegacySettings");
+    String password = service.generate();
+    assertTrue(service.getRequiredRules().stream().allMatch(rule -> rule.check(password)));
+    assertTrue(service.getCombinedRules().stream().allMatch(rule -> rule.check(password)));
+  }
+
   private Generator generator(String fixture) {
     SettingBundle bundle = ResourceLocator.getSettingBundle("org.silverpeas.password.settings." + fixture);
     AbstractPasswordRule.settings = bundle;

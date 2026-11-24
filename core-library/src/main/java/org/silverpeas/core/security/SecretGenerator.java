@@ -37,8 +37,11 @@ import java.util.stream.Collectors;
  * Policy adapters describe constraints; all random selection and shuffling happen here.
  */
 public final class SecretGenerator {
+  /** Lowercase ASCII letters. */
   public static final String LOWERCASE = "abcdefghijklmnopqrstuvwxyz";
+  /** Uppercase ASCII letters. */
   public static final String UPPERCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  /** Decimal ASCII digits. */
   public static final String DIGITS = "0123456789";
   private static final String SHARING_SPECIAL_CHARACTERS = "!@#$%^&*()_+-=[]{}|;:'\",.<>?/\\~`";
   private static final SecureRandom RANDOM = new SecureRandom();
@@ -50,12 +53,23 @@ public final class SecretGenerator {
     // Utility class.
   }
 
-  /** Allowed length range, including both limits. */
+  /**
+   * Allowed length range, including both limits.
+   * @param minimum the minimum number of characters
+   * @param maximum the maximum number of characters
+   */
   public record Lengths(int minimum, int maximum) {
   }
 
-  /** An alphabet and its required or combined minimum number of occurrences. */
+  /**
+   * An alphabet and its required or combined minimum number of occurrences.
+   * @param alphabet the characters available in the group
+   * @param count the minimum number of characters to draw when the group is selected
+   * @param required whether the group is always selected
+   * @param combined whether the group contributes to the combined minimum
+   */
   public record CharacterGroup(String alphabet, int count, boolean required, boolean combined) {
+    /** Validates the alphabet and occurrence count. */
     public CharacterGroup {
       Objects.requireNonNull(alphabet);
       if (count < 0 || count > MAX_SECRET_LENGTH || alphabet.length() > MAX_ALPHABET_LENGTH ||
@@ -65,9 +79,16 @@ public final class SecretGenerator {
     }
   }
 
-  /** Immutable generation policy, including the application's final validator. */
+  /**
+   * Immutable generation policy, including the application's final validator.
+   * @param lengths the allowed length range
+   * @param groups the available character groups
+   * @param combinedCount the minimum number of combined groups to select
+   * @param validator the predicate that accepts a valid candidate
+   */
   public record Policy(Lengths lengths, List<CharacterGroup> groups, int combinedCount,
                        Predicate<String> validator) {
+    /** Validates the generation constraints and snapshots the character groups. */
     public Policy {
       Objects.requireNonNull(lengths);
       groups = List.copyOf(groups);
