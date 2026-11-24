@@ -345,21 +345,22 @@ public class SQLDriver extends AbstractDomainDriver {
   @Transactional(Transactional.TxType.MANDATORY)
   public void deleteGroup(String groupId) throws AdminException {
     try(Connection connection = dataSource.getConnection()) {
-      int gid;
-      List<GroupDetail> allSubGroups = new ArrayList<>();
-      allSubGroups.add(localGroupMgr.getGroup(connection, idAsInt(groupId)));
-
-      while (!allSubGroups.isEmpty()) {
-        gid = idAsInt(allSubGroups.remove(0).getSpecificId());
-        // Add sub groups
-        allSubGroups.addAll(localGroupMgr.getDirectSubGroups(connection, gid));
-        // Remove the group
-        localGroupUserRelMgr.removeAllGroupRel(connection, gid);
-        localGroupMgr.deleteGroup(connection, gid);
-      }
+      deleteGroupTree(connection, idAsInt(groupId));
     } catch (Exception e) {
       throw new AdminException(failureOnDeleting(GROUP, groupId), e);
     }
+  }
+
+  /**
+   * Deletes the specified group with all its subgroups. The subgroups are deleted before their
+   * parent as they refer it.
+   */
+  private void deleteGroupTree(Connection connection, int groupId) throws AdminException {
+    for (GroupDetail subGroup : localGroupMgr.getDirectSubGroups(connection, groupId)) {
+      deleteGroupTree(connection, idAsInt(subGroup.getSpecificId()));
+    }
+    localGroupUserRelMgr.removeAllGroupRel(connection, groupId);
+    localGroupMgr.deleteGroup(connection, groupId);
   }
 
   @Override
