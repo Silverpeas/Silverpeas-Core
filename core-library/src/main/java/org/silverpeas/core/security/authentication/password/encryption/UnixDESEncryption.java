@@ -27,8 +27,7 @@ import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.security.authentication.password.PasswordEncryption;
 
 import java.io.UnsupportedEncodingException;
-import java.text.MessageFormat;
-import java.util.Random;
+import java.security.SecureRandom;
 
 /**
  * A variation of the DES algorithm (Data Encryption Standard) as used in the Unix systems for a
@@ -335,7 +334,7 @@ public class UnixDESEncryption implements PasswordEncryption {
       0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79,
       0x7A };
 
-  private static Random random = new Random();
+  private static SecureRandom random = new SecureRandom();
 
   private static final int byteToUnsigned(byte b) {
     int value = (int) b;
@@ -637,7 +636,7 @@ public class UnixDESEncryption implements PasswordEncryption {
   public void check(String password, String digest) throws AssertionError {
     String encryptedPassword = crypt(digest, password);
     if (!encryptedPassword.equals(digest)) {
-      throw new AssertionError(MessageFormat.format(BAD_PASSWORD_MESSAGE, password, digest));
+      throw new AssertionError(BAD_PASSWORD_MESSAGE);
     }
   }
 

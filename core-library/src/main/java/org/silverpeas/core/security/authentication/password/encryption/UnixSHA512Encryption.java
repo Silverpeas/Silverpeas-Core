@@ -72,8 +72,7 @@ import org.silverpeas.core.security.authentication.password.PasswordEncryption;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.Charsets;
 
-import java.text.MessageFormat;
-import java.util.Random;
+import java.security.SecureRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -109,7 +108,7 @@ public class UnixSHA512Encryption implements PasswordEncryption {
       "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890/.";
   private static final String ENCRYPTION_METHOD_ID = "$6$";
 
-  private static final Random random = new Random();
+  private static final SecureRandom random = new SecureRandom();
 
   /**
    * Encrypts the specified password by using a random salt (or no salt for some weakness
@@ -146,7 +145,7 @@ public class UnixSHA512Encryption implements PasswordEncryption {
   public void check(final String password, final String digest) throws AssertionError {
     String encryptedPassword = encrypt(password, getSaltUsedInDigest(digest));
     if (!encryptedPassword.equals(digest)) {
-      throw new AssertionError(MessageFormat.format(BAD_PASSWORD_MESSAGE, password, digest));
+      throw new AssertionError(BAD_PASSWORD_MESSAGE);
     }
   }
 

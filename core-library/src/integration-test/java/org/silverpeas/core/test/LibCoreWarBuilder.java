@@ -75,6 +75,7 @@ public class LibCoreWarBuilder extends WarBuilder<LibCoreWarBuilder> {
   public static <T> LibCoreWarBuilder onWarForTestClass(Class<T> test) {
     var builder = new LibCoreWarBuilder(test);
     builder.addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core-api")
+        .addMavenDependencies("org.bouncycastle:bcprov-jdk18on")
         .addPackages(true, "org.silverpeas.core.util")
         .addPackages(false, "org.silverpeas.core.calendar.ical4j")
         .addPackages(false, "org.silverpeas.core.calendar.repository")
@@ -117,6 +118,7 @@ public class LibCoreWarBuilder extends WarBuilder<LibCoreWarBuilder> {
             StubbedWbeClientManager.class, DataSourceProvider.class)
         // add the required dependencies as declared in the pom.xml
         .addMavenDependencies("javax.jcr:jcr")
+        .addMavenDependencies("org.bouncycastle:bcprov-jdk18on")
         .addMavenDependencies("org.apache.jackrabbit:jackrabbit-jcr-server:jar:jakarta:2.22.2")
         .addMavenDependencies("org.apache.jackrabbit:oak-jcr")
         .addMavenDependencies("org.apache.jackrabbit:oak-segment-tar")
