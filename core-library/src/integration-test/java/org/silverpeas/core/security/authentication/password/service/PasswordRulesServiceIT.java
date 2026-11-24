@@ -30,6 +30,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.security.SecretGenerator;
 import org.silverpeas.core.security.authentication.password.constant.PasswordRuleType;
 import org.silverpeas.core.security.authentication.password.rule.AbstractPasswordRule;
 import org.silverpeas.core.security.authentication.password.rule.PasswordRule;
@@ -70,6 +71,8 @@ public class PasswordRulesServiceIT {
   @Deployment
   public static Archive<?> createTestArchive() {
     return LibCoreWarBuilder.onWarForTestClass(PasswordRulesServiceIT.class)
+        .addClasses(SecretGenerator.class, SecretGenerator.Lengths.class,
+            SecretGenerator.CharacterGroup.class, SecretGenerator.Policy.class)
         .addPackages(true, "org.silverpeas.core.security.authentication.password.constant")
         .addPackages(true, "org.silverpeas.core.security.authentication.password.service")
         .addPackages(true, "org.silverpeas.core.security.authentication.password.rule")
