@@ -107,6 +107,7 @@
     <input type="hidden" name="token2" value="${requestScope.token2}"/>
   </div>
 </form>
+<view:script src="/util/javaScript/silverpeas-secret.js"/>
 <view:loadScript src="/util/javaScript/silverpeas-password.js" jsPromiseName="loadingPromise"/>
 <script type="text/javascript">
   loadingPromise.then(function() {

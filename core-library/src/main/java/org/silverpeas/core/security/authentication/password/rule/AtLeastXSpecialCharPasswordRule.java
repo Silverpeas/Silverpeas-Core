@@ -73,6 +73,14 @@ public class AtLeastXSpecialCharPasswordRule extends AbstractPasswordRule {
     return combined;
   }
 
+  /**
+   * Gets the effective configured minimum number of special characters.
+   * @return the minimum number of occurrences.
+   */
+  public int getMinimumOccurrences() {
+    return nb;
+  }
+
   @Override
   public String getValue() {
     return value;

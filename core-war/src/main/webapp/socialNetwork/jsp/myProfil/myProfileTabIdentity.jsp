@@ -129,15 +129,15 @@
   <%if (updateIsAllowed && isPasswordChangeAllowed) {%>
     <tr id="oldPassword">
           <td class="txtlibform"><%=resource.getString("myProfile.OldPassword")%> :</td>
-          <td><input <%=fieldAttribute%> type="password" autocomplete="new-password" name="OldPassword" size="50" maxlength="32"/></td>
+          <td><input <%=fieldAttribute%> type="password" autocomplete="new-password" name="OldPassword" size="50"/></td>
       </tr>
     <tr>
           <td class="txtlibform"><%=resource.getString("myProfile.NewPassword")%> :</td>
-          <td><input <%=fieldAttribute%> type="password" autocomplete="new-password" id="newPassword" name="NewPassword" size="50" maxlength="32"/>&nbsp;(<a tabindex="-1" href="#" onclick="$('#newPassword').focus()"><%=authRs.getString("authentication.password.showRules") %></a>)</td>
+          <td><input <%=fieldAttribute%> type="password" autocomplete="new-password" id="newPassword" data-password-confirmation="newPasswordConfirmation" name="NewPassword" size="50"/>&nbsp;(<a tabindex="-1" href="#" onclick="$('#newPassword').focus()"><%=authRs.getString("authentication.password.showRules") %></a>)</td>
       </tr>
     <tr>
           <td class="txtlibform"><%=resource.getString("myProfile.NewPasswordConfirm")%> :</td>
-          <td><input <%=fieldAttribute%>  autocomplete="new-password" id="newPasswordConfirmation" name="NewPasswordConfirm" type="password" size="50" maxlength="32"/></td>
+          <td><input <%=fieldAttribute%>  autocomplete="new-password" id="newPasswordConfirmation" name="NewPasswordConfirm" type="password" size="50"/></td>
       </tr>
     <%} else { %>
       <tr>

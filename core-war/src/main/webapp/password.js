@@ -44,6 +44,7 @@ function handlePasswordForm(params) {
     async : true
   });
   let $pwdInput = $('#' + settings.passwordInputId);
+  $pwdInput.attr('data-password-confirmation', 'confirmPassword');
   $pwdInput.password();
   $('#' + settings.passwordFormId).on("submit", function() {
     let errorStack = [];
