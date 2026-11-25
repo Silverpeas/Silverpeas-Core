@@ -546,7 +546,33 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
         .registerForContentCiphering(contentIterator);
   }
 
+  /**
+   * Saves the data of the specified form, filled with the given items, for the object referred
+   * by the given context. The data are written only if they are modified.
+   * @param xmlFormName the name of the XML file describing the form.
+   * @param context the context of the form: the object, the component instance, the language and
+   * the user.
+   * @param items the items of the HTTP request carrying the data of the form.
+   * @throws SilverpeasException if the context isn't complete or if the data cannot be saved.
+   * @see #saveModifiedData(String, PagesContext, List)
+   */
   public void saveData(String xmlFormName, PagesContext context, List<FileItem> items)
+      throws SilverpeasException {
+    saveModifiedData(xmlFormName, context, items);
+  }
+
+  /**
+   * Saves the data of the specified form, filled with the given items, for the object referred
+   * by the given context, only if they are modified.
+   * @param xmlFormName the name of the XML file describing the form.
+   * @param context the context of the form: the object, the component instance, the language and
+   * the user.
+   * @param items the items of the HTTP request carrying the data of the form.
+   * @return true if the data of the form were modified and then saved, false if they weren't
+   * modified or if the form is ignored.
+   * @throws SilverpeasException if the context isn't complete or if the data cannot be saved.
+   */
+  public boolean saveModifiedData(String xmlFormName, PagesContext context, List<FileItem> items)
       throws SilverpeasException {
     if (context == null) {
       throw new SilverpeasException("Context must be defined !");
@@ -561,23 +587,28 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
     }
 
     String ignoreThisForm = FileUploadUtil.getParameter(items, "ignoreThisForm");
-    if (StringUtil.isDefined(xmlFormName) && !StringUtil.getBooleanValue(ignoreThisForm)) {
-      PublicationTemplate pub = getTemplateAndRegisterIt(xmlFormName, context);
-      try {
-        RecordSet set = pub.getRecordSet();
-        Form form = pub.getUpdateForm();
-        DataRecord data = set.getRecord(context.getObjectId());
-        if (data == null) {
-          data = set.getEmptyRecord();
-          data.setId(context.getObjectId());
-        }
-
-        // sauvegarde des données du formulaire
-        form.update(items, data, context);
-        set.save(data);
-      } catch (Exception e) {
-        throw new SilverpeasException("Unable to save data", e);
+    if (StringUtil.isNotDefined(xmlFormName) || StringUtil.getBooleanValue(ignoreThisForm)) {
+      return false;
+    }
+    PublicationTemplate pub = getTemplateAndRegisterIt(xmlFormName, context);
+    try {
+      RecordSet set = pub.getRecordSet();
+      Form form = pub.getUpdateForm();
+      DataRecord data = set.getRecord(context.getObjectId());
+      if (data == null) {
+        data = set.getEmptyRecord();
+        data.setId(context.getObjectId());
       }
+
+      Map<String, String> valuesBeforeUpdate = DataRecordValues.of(data);
+      form.update(items, data, context);
+      boolean modified = !valuesBeforeUpdate.equals(DataRecordValues.of(data));
+      if (modified) {
+        set.save(data);
+      }
+      return modified;
+    } catch (Exception e) {
+      throw new SilverpeasException("Unable to save data", e);
     }
   }
 
