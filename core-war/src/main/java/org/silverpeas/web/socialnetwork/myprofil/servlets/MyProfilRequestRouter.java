@@ -55,6 +55,7 @@ import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.web.directory.servlets.ImageProfile;
 import org.silverpeas.web.socialnetwork.myprofil.control.MyProfilSessionController;
+import org.silverpeas.web.socialnetwork.myprofil.control.ProfileUpdate;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -308,13 +309,15 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
         userLoginAnswer = currentUser.getLoginAnswer();
       }
 
-      sc.modifyUser(currentUser.getId(), WebEncodeHelper.htmlStringToJavaString(userLastName),
+      ProfileUpdate update = sc.modifyUser(currentUser.getId(),
+          WebEncodeHelper.htmlStringToJavaString(userLastName),
           WebEncodeHelper.htmlStringToJavaString(userFirstName),
           WebEncodeHelper.htmlStringToJavaString(userEmail),
           WebEncodeHelper.htmlStringToJavaString(request.getParameter("OldPassword")),
           WebEncodeHelper.htmlStringToJavaString(request.getParameter("NewPassword")),
           userLoginQuestion, userLoginAnswer, request);
-      request.setAttribute("MessageOK", sc.getString("myProfile.MessageOK"));
+      request.setAttribute(update.isDone() ? "MessageOK" : "MessageNOK",
+          sc.getString(update.getMessageKey()));
     } catch (AuthenticationBadCredentialException e) {
       request.setAttribute("MessageNOK", sc.getString("myProfile.Error_bad_credential"));
     } catch (Exception e) {

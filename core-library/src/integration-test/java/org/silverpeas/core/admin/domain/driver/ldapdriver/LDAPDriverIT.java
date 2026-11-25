@@ -43,6 +43,7 @@ import org.opends.server.tools.BackendToolUtils;
 import org.opends.server.types.*;
 import org.opends.server.util.EmbeddedUtils;
 import org.opends.server.util.StaticUtils;
+import org.silverpeas.core.admin.domain.exception.ReadOnlyDomainException;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -61,6 +62,7 @@ import java.util.Objects;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.fail;
 
 @RunWith(Arquillian.class)
 public class LDAPDriverIT {
@@ -73,6 +75,7 @@ public class LDAPDriverIT {
     return LibCoreWarBuilder.onFullWarForTestClass(LDAPDriverIT.class)
         .addMavenDependencies("com.novell.ldap:jldap")
         .addAsResource("org/silverpeas/domains/domainLDAP.properties")
+        .addAsResource("org/silverpeas/domains/domainLDAPReadOnly.properties")
         .build();
   }
 
@@ -187,6 +190,40 @@ public class LDAPDriverIT {
     assertThat(user.getValue("matricule"), is("7"));
     // checks reset is ok
     assertThat(user.getValue("homePhone"), is(emptyOrNullString()));
+  }
+
+  @Test
+  public void updateAUserFullWithoutChangesDoesNotWriteIntoTheDirectory() throws Exception {
+    LDAPDriver readOnlyDriver = new LDAPDriver();
+    readOnlyDriver.init(0, "org.silverpeas.domains.domainLDAPReadOnly", null);
+    UserFull user = readOnlyDriver.getUserFull("user.7");
+    assertThat(user.getValue("city"), is("Hattiesburg"));
+
+    // no failure as nothing is written with the access account without write rights
+    readOnlyDriver.updateUserFull(user);
+
+    user = driver.getUserFull("user.7");
+    assertThat(user.getFirstName(), is("Abahri"));
+    assertThat(user.getValue("city"), is("Hattiesburg"));
+  }
+
+  @Test
+  public void updateAUserFullWithChangesIsRefusedWithoutWriteRightsOnTheDirectory()
+      throws Exception {
+    LDAPDriver readOnlyDriver = new LDAPDriver();
+    readOnlyDriver.init(0, "org.silverpeas.domains.domainLDAPReadOnly", null);
+    UserFull user = readOnlyDriver.getUserFull("user.7");
+    user.setValue("city", "Grenoble");
+
+    try {
+      readOnlyDriver.updateUserFull(user);
+      fail("The update should be refused for lack of write rights on the directory");
+    } catch (ReadOnlyDomainException e) {
+      // the refusal is reported as such
+    }
+
+    user = driver.getUserFull("user.7");
+    assertThat(user.getValue("city"), is("Hattiesburg"));
   }
 
 

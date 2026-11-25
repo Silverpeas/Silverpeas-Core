@@ -116,8 +116,16 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
     return domainActions;
   }
 
-  public void modifyUser(String idUser, String userLastName, String userFirstName, String userEMail,
-      String oldPassword, String newPassword, String userLoginQuestion,
+  /**
+   * Modifies the profile of the specified user with the given data.
+   * @return the outcome of the update: done, or refused by the user domain whose repository is
+   * accessed in read-only.
+   * @throws AuthenticationException if the password cannot be changed.
+   * @throws AdminException if the user cannot be updated for another reason than a refusal of
+   * the user domain.
+   */
+  public ProfileUpdate modifyUser(String idUser, String userLastName, String userFirstName,
+      String userEMail, String oldPassword, String newPassword, String userLoginQuestion,
       String userLoginAnswer, HttpRequest request)
       throws AuthenticationException, AdminException {
     UserDetail user = UserDetail.getById(idUser);
@@ -163,15 +171,20 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
       }
 
       // process data from extra template
-      processDataOfExtraTemplate(request);
+      boolean extraDataSaved = processDataOfExtraTemplate(request);
 
-      adminCtrl.updateUserFull(theModifiedUser);
+      try {
+        adminCtrl.updateUserFull(theModifiedUser);
+      } catch (AdminException e) {
+        return ProfileUpdate.failedWith(e, extraDataSaved);
+      }
 
     } else {
       if (StringUtil.isDefined(newPassword)) {
         changePassword(credential, newPassword);
       }
     }
+    return ProfileUpdate.DONE;
   }
 
   private void changePassword(AuthenticationCredential credential, String newPassword)
@@ -305,17 +318,23 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
         "org.silverpeas.social.multilang.socialNetworkBundle", locale);
   }
 
-  private void processDataOfExtraTemplate(HttpRequest request) {
+  /**
+   * Saves the data of the extra form of the user domain, if any, only if they are modified.
+   * @return true if modified data of the extra form were saved, false otherwise.
+   */
+  private boolean processDataOfExtraTemplate(HttpRequest request) {
     PublicationTemplate template = getExtraTemplate();
     if (template != null) {
       try {
-        PublicationTemplateManager.getInstance()
-            .saveData(template.getFileName(), getTemplateContext(), request.getFileItems());
+        return PublicationTemplateManager.getInstance()
+            .saveModifiedData(template.getFileName(), getTemplateContext(),
+                request.getFileItems());
       } catch (Exception e) {
         SilverLogger.getLogger(this).error(e);
         MessageNotifier.addError("Les données du formulaire n'ont pas été enregistrées !");
       }
     }
+    return false;
   }
 
   private PagesContext getTemplateContext() {
