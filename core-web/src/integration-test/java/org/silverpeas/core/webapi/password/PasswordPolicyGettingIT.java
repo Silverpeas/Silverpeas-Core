@@ -57,7 +57,8 @@ public class PasswordPolicyGettingIT extends ResourceGettingTest {
         .testFocusedOn(warBuilder -> {
           warBuilder.addPackages(true, "org.silverpeas.core.webapi.password");
           warBuilder.addAsResource("org/silverpeas/password/multilang/passwordBundle.properties");
-          warBuilder.addAsResource("org/silverpeas/password/settings/password.properties");
+          warBuilder.addAsResource("org/silverpeas/password/settings/passwordPolicyIT.properties",
+              "org/silverpeas/password/settings/password.properties");
         }).build();
   }
 
