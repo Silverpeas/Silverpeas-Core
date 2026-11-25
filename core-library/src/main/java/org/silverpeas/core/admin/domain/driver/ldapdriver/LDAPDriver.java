@@ -26,8 +26,10 @@ package org.silverpeas.core.admin.domain.driver.ldapdriver;
 import com.novell.ldap.LDAPAttribute;
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPEntry;
+import com.novell.ldap.LDAPException;
 import com.novell.ldap.LDAPModification;
 import org.silverpeas.core.admin.domain.AbstractDomainDriver;
+import org.silverpeas.core.admin.domain.exception.ReadOnlyDomainException;
 import org.silverpeas.core.admin.domain.model.DomainProperty;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.GroupDetail;
@@ -230,18 +232,30 @@ public class LDAPDriver extends AbstractDomainDriver {
                 driverSettings.getUsersIdField());
       }
 
+      // only the data that differ from the ones in the directory are written: the access account
+      // to the directory can have no write rights on the data that aren't modified
+      UserFull userInDirectory =
+          unique(userTranslator.listUserFulls(ld, singleton(user.getSpecificId()), getDomainId()));
+      LDAPUserChanges changes = new LDAPUserChanges(userInDirectory, user);
+      if (changes.isEmpty()) {
+        return;
+      }
+
       String userFullDN = theEntry.getDN();
       List<LDAPModification> modifications = new ArrayList<>();
 
       // update basic information (first name, last name and email)
-      updateBasicData(user, modifications);
+      updateBasicData(user, changes, modifications);
 
       // prepare properties update
-      preparePropertiesUpdate(ld, user, modifications);
+      for (DomainProperty property : changes.getChangedProperties()) {
+        preparePropertyUpdate(ld, user, modifications, property.getName(), property);
+      }
 
       // Perform the update
-      connection
-          .modify(userFullDN, modifications.toArray(new LDAPModification[0]));
+      modify(connection, userFullDN, modifications);
+    } catch (ReadOnlyDomainException ex) {
+      throw ex;
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
       throw new AdminException("LDAP access error", ex);
@@ -257,27 +271,48 @@ public class LDAPDriver extends AbstractDomainDriver {
     }
   }
 
-  private void updateBasicData(final UserFull user, final List<LDAPModification> modifications) {
-    LDAPAttribute attribute =
-        getLDAPAttribute(driverSettings.getUsersFirstNameField(), user.getFirstName());
-    modifications.add(new LDAPModification(LDAPModification.REPLACE, attribute));
-
-    attribute = getLDAPAttribute(driverSettings.getUsersLastNameField(), user.getLastName());
-    modifications.add(new LDAPModification(LDAPModification.REPLACE, attribute));
-
-    attribute = getLDAPAttribute(driverSettings.getUsersEmailField(), user.getEmailAddress());
-    modifications.add(new LDAPModification(LDAPModification.REPLACE, attribute));
+  /**
+   * Writes the specified modifications of a user into the LDAP directory. The access account to
+   * the directory having no write rights is a usual configuration, the directory being then only
+   * the source of the users synchronized into Silverpeas; but then no user data should be
+   * updatable: the refusal of the directory is traced and reported as a misconfiguration of the
+   * domain.
+   * @throws ReadOnlyDomainException if the access account has no write rights on the directory.
+   */
+  private void modify(final LDAPConnection connection, final String userDN,
+      final List<LDAPModification> modifications) throws LDAPException, ReadOnlyDomainException {
+    try {
+      connection.modify(userDN, modifications.toArray(new LDAPModification[0]));
+    } catch (LDAPException e) {
+      if (e.getResultCode() != LDAPException.INSUFFICIENT_ACCESS_RIGHTS) {
+        throw e;
+      }
+      SilverLogger.getLogger(this)
+          .warn("The modifications of the user {0} are not written into the LDAP directory of " +
+              "the domain {1}: the access account has no write rights ({2})", userDN,
+              getDomainId(), e.getLDAPErrorMessage());
+      throw new ReadOnlyDomainException(
+          "No write rights on the LDAP directory of the domain " + getDomainId(), e);
+    }
   }
 
-  private void preparePropertiesUpdate(final String ld, final UserFull user,
-      final List<LDAPModification> modifications) throws AdminException {
-    for (String propertyName : user.getPropertiesNames()) {
-      DomainProperty property = user.getProperty(propertyName);
-      if (property != null &&
-          (property.isUpdateAllowedToAdmin() || property.isUpdateAllowedToUser())) {
-        preparePropertyUpdate(ld, user, modifications, propertyName, property);
-      }
+  private void updateBasicData(final UserFull user, final LDAPUserChanges changes,
+      final List<LDAPModification> modifications) {
+    if (changes.isFirstNameChanged()) {
+      replace(driverSettings.getUsersFirstNameField(), user.getFirstName(), modifications);
     }
+    if (changes.isLastNameChanged()) {
+      replace(driverSettings.getUsersLastNameField(), user.getLastName(), modifications);
+    }
+    if (changes.isEmailAddressChanged()) {
+      replace(driverSettings.getUsersEmailField(), user.getEmailAddress(), modifications);
+    }
+  }
+
+  private void replace(final String attributeName, final String value,
+      final List<LDAPModification> modifications) {
+    LDAPAttribute attribute = getLDAPAttribute(attributeName, value);
+    modifications.add(new LDAPModification(LDAPModification.REPLACE, attribute));
   }
 
   private void preparePropertyUpdate(final String ld, final UserFull user,
