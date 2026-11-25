@@ -15,7 +15,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Finds the latest publications in a space for the current reader, independently of any look.
@@ -53,7 +52,7 @@ public class LatestPublicationsProvider {
         .filter(id -> id.startsWith("kmelia") || id.startsWith("toolbox") ||
             id.startsWith("kmax"))
         .sorted()
-        .collect(Collectors.toList());
+        .toList();
     if (componentIds.isEmpty()) {
       return List.of();
     }
