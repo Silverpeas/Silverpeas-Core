@@ -4,7 +4,6 @@
  */
 package org.silverpeas.web.publication;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -13,10 +12,9 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -44,13 +42,25 @@ class LatestPublicationsServletTest {
   }
 
   @Test
-  void reportsFailureToSendAnUnauthorizedResponse() throws Exception {
+  void returnsInternalServerErrorWhenSendingAnErrorFails() throws Exception {
     IOException cause = new IOException("Connection closed");
     doThrow(cause).when(response).sendError(HttpServletResponse.SC_UNAUTHORIZED);
 
-    ServletException failure =
-        assertThrows(ServletException.class, () -> servlet.doGet(request, response));
+    servlet.doGet(request, response);
 
-    assertSame(cause, failure.getCause());
+    verify(response).resetBuffer();
+    verify(response).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+  }
+
+  @Test
+  void leavesACommittedResponseIntactWhenSendingAnErrorFails() throws Exception {
+    when(response.isCommitted()).thenReturn(true);
+    doThrow(new IOException("Connection closed")).when(response)
+        .sendError(HttpServletResponse.SC_UNAUTHORIZED);
+
+    servlet.doGet(request, response);
+
+    verify(response, never()).resetBuffer();
+    verify(response, never()).setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
   }
 }

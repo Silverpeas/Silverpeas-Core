@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.publication.LatestPublicationsProvider;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.io.IOException;
 
@@ -17,8 +18,7 @@ public class LatestPublicationsServlet extends HttpServlet {
   private static final String POSITIVE_INTEGER = "[1-9]\\d*";
 
   @Override
-  protected void doGet(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException {
+  protected void doGet(HttpServletRequest request, HttpServletResponse response) {
     try {
       response.setHeader("Cache-Control", "no-store");
       var session = request.getSession(false);
@@ -54,7 +54,11 @@ public class LatestPublicationsServlet extends HttpServlet {
       response.setContentType("text/html;charset=UTF-8");
       request.getRequestDispatcher("/WEB-INF/jsp/latestPublications.jsp").forward(request, response);
     } catch (IOException | ServletException e) {
-      throw new ServletException("Unable to send the latest publications response", e);
+      SilverLogger.getLogger(this).error(e);
+      if (!response.isCommitted()) {
+        response.resetBuffer();
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+      }
     }
   }
 }
