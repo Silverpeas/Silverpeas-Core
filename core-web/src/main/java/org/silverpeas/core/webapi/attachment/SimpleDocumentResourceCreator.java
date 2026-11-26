@@ -36,7 +36,6 @@ import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.importexport.versioning.DocumentVersion;
 import org.silverpeas.core.io.media.MetaData;
 import org.silverpeas.core.io.media.MetadataExtractor;
-import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.web.attachment.SimpleDocumentUploadData;
 import org.silverpeas.core.web.http.RequestFile;
@@ -48,7 +47,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.*;
 import java.net.URI;
-import java.net.URLDecoder;
 import java.util.Date;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -86,8 +84,7 @@ public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResourc
     SimpleDocumentUploadData uploadData = decode(getHttpRequest());
     try {
       // Create the attachment
-      final String normalizedFileName = StringUtil.normalize(
-          URLDecoder.decode(filename, Charsets.UTF_8));
+      final String normalizedFileName = decodeFilename(filename);
       final SimpleDocumentEntity entity = createSimpleDocument(uploadData, normalizedFileName);
 
       if (AJAX_IFRAME_TRANSPORT.equals(uploadData.getXRequestedWith())) {

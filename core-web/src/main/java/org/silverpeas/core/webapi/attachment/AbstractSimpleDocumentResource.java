@@ -29,12 +29,14 @@ import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.util.UnitUtil;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
 
 import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.io.File;
+import java.net.URLDecoder;
 import java.text.MessageFormat;
 
 public abstract class AbstractSimpleDocumentResource extends RESTWebService {
@@ -43,6 +45,17 @@ public abstract class AbstractSimpleDocumentResource extends RESTWebService {
 
   @PathParam("componentId")
   private String componentId;
+
+  /**
+   * Decodes the name of the file passed in the path of the URI of the request to create or to
+   * update a document. The name is stored as it is: it is up to the rendering to escape it.
+   *
+   * @param filename the name of the file as passed in the URI path.
+   * @return the decoded and normalized file name.
+   */
+  static String decodeFilename(final String filename) {
+    return StringUtil.normalize(URLDecoder.decode(filename, Charsets.UTF_8));
+  }
 
   @Override
   protected String getResourceBasePath() {
