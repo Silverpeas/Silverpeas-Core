@@ -24,6 +24,7 @@
 package org.silverpeas.core.contribution.content.form.displayers;
 
 import org.apache.commons.fileupload.FileItem;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
@@ -98,7 +99,7 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
   }
 
   /**
-   * Prints the javascript which will be used to control the new value given to the named field.
+   * Prints the JavaScript which will be used to control the new value given to the named field.
    * The error messages may be adapted to a local language. The FieldTemplate gives the field type
    * and constraints. The FieldTemplate gives the local label too. Never throws an Exception but
    * log a message and writes an empty string when:
@@ -150,30 +151,21 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
     try {
       String currentAttachmentId = field.getAttachmentId();
       String inputName = Util.getFieldOccurrenceName(field.getName(), field.getOccurrence());
-      String attachmentId = processUploadedFile(items, inputName, pageContext);
       Operation operation = Operation.valueOf(FileUploadUtil.getParameter(items, inputName
           + OPERATION_KEY));
-      if (!StringUtil.isDefined(attachmentId)) {
-        // Trying to verify if a link is performed instead of uploading a real file
-        String fileLinkOnApplication = FileUploadUtil.getParameter(items, inputName
-            + Field.FILE_PARAM_NAME_SUFFIX);
-        if (StringUtil.startsWith(fileLinkOnApplication, "/")) {
-          // The identifier is a link to a file of an application.
-          // The attachment identifier becomes the file link.
-          attachmentId =
-              isDeletion(operation, fileLinkOnApplication) ? null : fileLinkOnApplication;
-        }
-      }
+      String attachmentId = loadUploadedFile(items, inputName, operation, pageContext);
 
       if (!pageContext.isCreation()) {
         boolean isDeletionOfCurrent = isDeletion(operation, currentAttachmentId);
         boolean isUpdate = StringUtil.isDefined(currentAttachmentId) && StringUtil.isDefined(
             attachmentId) && !currentAttachmentId.equals(attachmentId);
         boolean isAddOrUpdate = StringUtil.isDefined(attachmentId);
-        if ((isDeletionOfCurrent || isUpdate) && !StringUtil.startsWith(currentAttachmentId, "/")) {
-          // Current attachment identifier is a real one and is not a link to a resource of an
-          // application. So, deleting the previous attachment.
-          deleteAttachment(currentAttachmentId, pageContext);
+        if (isDeletionOfCurrent || isUpdate) {
+          if (!StringUtil.startsWith(currentAttachmentId, "/")) {
+            // Current attachment identifier is a real one and is not a link to a resource of an
+            // application (like an image of a gallery). So, deleting the previous attachment.
+            deleteAttachment(currentAttachmentId, pageContext);
+          }
         } else if (!isAddOrUpdate) {
 
           // Same value
@@ -187,6 +179,22 @@ public abstract class AbstractFileFieldDisplayer extends AbstractFieldDisplayer<
       SilverLogger.getLogger(this).error(ex);
     }
     return null;
+  }
+
+  private @Nullable String loadUploadedFile(List<FileItem> items, String inputName, Operation operation, PagesContext pageContext) throws IOException {
+    String attachmentId = processUploadedFile(items, inputName, pageContext);
+    if (!StringUtil.isDefined(attachmentId)) {
+      // Trying to verify if a link is performed instead of uploading a real file
+      String fileLinkOnApplication = FileUploadUtil.getParameter(items, inputName
+          + Field.FILE_PARAM_NAME_SUFFIX);
+      if (StringUtil.startsWith(fileLinkOnApplication, "/")) {
+        // The identifier is a link to a file of an application.
+        // The attachment identifier becomes the file link.
+        attachmentId =
+            isDeletion(operation, fileLinkOnApplication) ? null : fileLinkOnApplication;
+      }
+    }
+    return attachmentId;
   }
 
   @Override
