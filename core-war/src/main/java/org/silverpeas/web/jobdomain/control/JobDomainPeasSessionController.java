@@ -194,6 +194,7 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
       final ComponentContext context, final String localizedMessagesBundleName,
       final String iconFileName, final String settingsFileName) {
     super(controller, context, localizedMessagesBundleName, iconFileName, settingsFileName);
+    adminCtrl = ServiceProvider.getService(AdminController.class);
   }
 
   public int getMinLengthLogin() {
@@ -1029,15 +1030,12 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
   }
 
   public void removeUser(String idUser) throws JobDomainPeasException {
-    int startId = Integer.parseInt(idUser);
-    for (int id = startId; id < startId + 60; id++) {
-      final String removedUserId = adminCtrl.removeUser(String.valueOf(id));
-      /*if (!isDefined(removedUserId)) {
-        throw new JobDomainPeasException(failureOnRemoving("user", idUser));
-      }
-      if (targetUserId.equals(idUser)) {
-        targetUserId = null;
-      }*/
+    final String removedUserId = adminCtrl.removeUser(idUser);
+    if (!isDefined(removedUserId)) {
+      throw new JobDomainPeasException(failureOnRemoving("user", idUser));
+    }
+    if (targetUserId.equals(idUser)) {
+      targetUserId = null;
     }
     refresh();
   }
