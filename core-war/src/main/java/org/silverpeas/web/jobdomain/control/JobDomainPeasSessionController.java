@@ -1034,7 +1034,7 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
     if (!isDefined(removedUserId)) {
       throw new JobDomainPeasException(failureOnRemoving("user", idUser));
     }
-    if (targetUserId.equals(idUser)) {
+    if (idUser.equals(targetUserId)) {
       targetUserId = null;
     }
     refresh();
