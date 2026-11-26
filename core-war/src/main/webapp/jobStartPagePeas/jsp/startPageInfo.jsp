@@ -137,6 +137,7 @@
         white-space: nowrap;
       }
     </style>
+    <view:script src="/jobStartPagePeas/jsp/javascript/clipboard.js"/>
     <script type="text/javascript">
       const currentLanguage = "${space.language}";
 
@@ -166,14 +167,6 @@
 
       function clipboardPaste() {
         showPasteOptions();
-      }
-
-      function clipboardCopy() {
-        top.IdleFrame.location.href = "copy?Type=Space&Id=${space.id}";
-      }
-
-      function clipboardCut() {
-        top.IdleFrame.location.href = "Cut?Type=Space&Id=${space.id}";
       }
 
       function recoverRights() {
@@ -254,9 +247,9 @@
         <c:if test="${JobStartPagePeasSettings.USE_COMPONENTS_COPY or objectsSelectedInClipboard}">
           <view:operationSeparator/>
           <c:if test="${JobStartPagePeasSettings.USE_COMPONENTS_COPY}">
-            <view:operation icon="${CopyIcon}" altText="${CopySpaceLabel}" action="javascript:onclick=clipboardCopy()"/>
+            <view:operation icon="${CopyIcon}" altText="${CopySpaceLabel}" action="javascript:onclick=clipboardCopy('Space', '${space.id}')"/>
             <c:if test="${maintenanceState >= maintenancePlatform}">
-              <view:operation icon="${CopyIcon}" altText="${CutSpaceLabel}" action="javascript:onclick=clipboardCut()"/>
+              <view:operation icon="${CopyIcon}" altText="${CutSpaceLabel}" action="javascript:onclick=clipboardCut('Space', '${space.id}')"/>
             </c:if>
           </c:if>
           <c:if test="${objectsSelectedInClipboard}">
