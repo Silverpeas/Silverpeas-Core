@@ -74,19 +74,14 @@ public class ImageResizingProcessor extends AbstractSilverpeasFileProcessor {
 
   private ResizingParameters computeResizingParameters(File image) {
     ResizingParameters parameters = ResizingParameters.NO_RESIZING;
-    String parent = image.getParentFile().getName();
+    final File parentDirectory = image.getParentFile();
+    final String parent = parentDirectory == null ? "" : parentDirectory.getName();
     if (parent.contains("x")) {
       String[] size = parent.split("x");
-      Integer width = null;
-      Integer height = null;
       try {
-        if (StringUtil.isDefined(size[0])) {
-          width = Integer.valueOf(size[0]);
-        }
-        if (size.length == 2) {
-          height = Integer.valueOf(size[1]);
-        }
-        final File imageSource = new File(image.getParentFile().getParent(), image.getName());
+        final Integer width = size.length > 0 ? dimension(size[0]) : null;
+        final Integer height = size.length == 2 ? dimension(size[1]) : null;
+        final File imageSource = new File(parentDirectory.getParent(), image.getName());
         if (imageSource.exists() && (width != null || height != null)) {
           final String fileName = imageSource.lastModified() + "_" + imageSource.getName();
           final File imageDestination = new File(IMAGE_CACHE_PATH + parent, fileName);
@@ -97,6 +92,22 @@ public class ImageResizingProcessor extends AbstractSilverpeasFileProcessor {
       }
     }
     return parameters;
+  }
+
+  /**
+   * Gets the dimension in pixels expressed by the specified value. A value not defined or not
+   * positive (e.g. the 0 in "800x0") means no constraint on the dimension: ImageMagick would
+   * otherwise shrink the image to one pixel.
+   * @param value the dimension as a string.
+   * @return the dimension in pixels or null if no constraint is set on it.
+   * @throws NumberFormatException if the value isn't a number.
+   */
+  private static Integer dimension(final String value) {
+    if (StringUtil.isNotDefined(value)) {
+      return null;
+    }
+    final int pixels = Integer.parseInt(value);
+    return pixels > 0 ? pixels : null;
   }
 
   private void removeResizedImagesOf(final File originaImage) {
