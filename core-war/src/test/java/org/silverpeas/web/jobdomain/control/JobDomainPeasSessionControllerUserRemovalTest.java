@@ -66,12 +66,12 @@ class JobDomainPeasSessionControllerUserRemovalTest {
       when(user.getId()).thenReturn(i.getArgument(0));
       return user;
     });
-    controller.setTargetUser(USER_ID);
   }
 
   @Test
   @DisplayName("Removing a user removes only this user")
   void removeOnlyTheGivenUser() {
+    controller.setTargetUser(USER_ID);
     when(adminController.removeUser(anyString())).thenAnswer(i -> i.getArgument(0));
 
     assertDoesNotThrow(() -> controller.removeUser(USER_ID));
@@ -83,9 +83,21 @@ class JobDomainPeasSessionControllerUserRemovalTest {
   @Test
   @DisplayName("A failure in the removal of a user is reported")
   void failureInTheUserRemovalIsReported() {
+    controller.setTargetUser(USER_ID);
     when(adminController.removeUser(anyString())).thenReturn("");
 
     assertThrows(JobDomainPeasException.class, () -> controller.removeUser(USER_ID));
+
+    verify(adminController).removeUser(USER_ID);
+    verifyNoMoreInteractions(adminController);
+  }
+
+  @Test
+  @DisplayName("A user can be removed whereas no user is targeted")
+  void removeAUserWithoutTargetedUser() {
+    when(adminController.removeUser(anyString())).thenAnswer(i -> i.getArgument(0));
+
+    assertDoesNotThrow(() -> controller.removeUser(USER_ID));
 
     verify(adminController).removeUser(USER_ID);
     verifyNoMoreInteractions(adminController);
