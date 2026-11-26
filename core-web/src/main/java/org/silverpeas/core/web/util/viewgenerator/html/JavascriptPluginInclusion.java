@@ -386,6 +386,7 @@ public class JavascriptPluginInclusion {
     includeJQuery(xhtml);
     xhtml.addElement(script(JAVASCRIPT_PATH + "/silverpeas.js"));
     xhtml.addElement(script(JAVASCRIPT_PATH + "/silverpeas-i18n.js"));
+    xhtml.addElement(script(JAVASCRIPT_PATH + "/silverpeas-latest-publications.js"));
     includeSecurityTokenizing(xhtml);
     includeA11y(xhtml, language);
     return xhtml;
