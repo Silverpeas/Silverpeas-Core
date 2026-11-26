@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.mockito.stubbing.Answer;
 import org.silverpeas.core.admin.domain.model.Domain;
+import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -72,6 +73,9 @@ class JobDomainPeasSessionControllerAccessGrantedTest {
 
   @TestManagedMock
   private Domain wrongDomain;
+
+  @TestManagedMock
+  private AdminController adminController;
 
   @TestedBean
   private JobDomainPeasSessionController4Test controller;

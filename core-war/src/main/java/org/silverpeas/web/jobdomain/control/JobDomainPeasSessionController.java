@@ -230,6 +230,7 @@ public class JobDomainPeasSessionController extends AbstractAdminComponentSessio
       final ComponentContext context, final String localizedMessagesBundleName,
       final String iconFileName, final String settingsFileName) {
     super(controller, context, localizedMessagesBundleName, iconFileName, settingsFileName);
+    adminCtrl = ServiceProvider.getService(AdminController.class);
   }
 
   public int getMinLengthLogin() {
