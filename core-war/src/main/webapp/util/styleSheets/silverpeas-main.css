@@ -828,19 +828,6 @@ Style Utilise par le ViewGenerator
   color:#000;
 }
 
-.tableArrayPane {
-  border:1px solid #CCC;
-  background-color:#FFF;
-}
-
-.tableArrayPane > tbody > tr:nth-child(n) > td{
-  background-color:#f5f5f5
-}
-
-.tableArrayPane > tbody > tr:nth-child(2n+1) > td{
-  background-color:#fff
-}
-
 .footerNav:has(.exportlinks) td{
   height: 3em;
   border-top:1px dashed #CCC;
@@ -1405,6 +1392,21 @@ Style Utilise par le ViewGenerator
 }
 
 /* Objet ArrayPane */
+
+.tableArrayPane {
+  border:1px solid #CCC;
+  background-color:#FFF;
+}
+
+.tableArrayPane > tbody > tr > td{
+  background-color:#f5f5f5;
+  vertical-align: top;
+}
+
+.tableArrayPane > tbody > tr:nth-child(2n+1) > td{
+  background-color:#fff
+}
+
 .ArrayColumn, .tableArrayPane thead {
   background-color: #d6d7d9;
   color: #000;
