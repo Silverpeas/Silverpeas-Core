@@ -120,9 +120,9 @@ if (scope == JobStartPagePeasSessionController.SCOPE_BACKOFFICE) {
 	operationPane.addOperation(resource.getIcon("JSPP.ComponentOrder"),resource.getString("JSPP.ComponentOrder"),"javascript:onClick=openPopup('PlaceComponentAfter', 750, 230)");
 	operationPane.addLine();
 	if (JobStartPagePeasSettings.useComponentsCopy) {
-		operationPane.addOperation(resource.getIcon("JSPP.CopyComponent"),resource.getString("JSPP.component.copy"),"javascript:onclick=clipboardCopy()");
+		operationPane.addOperation(resource.getIcon("JSPP.CopyComponent"),resource.getString("JSPP.component.copy"),"javascript:onclick=clipboardCopy('Component', '" + compoInst.getId() + "')");
 		if (maintenanceState >= JobStartPagePeasSessionController.MAINTENANCE_PLATFORM) {
-			operationPane.addOperation(resource.getIcon("JSPP.CopyComponent"),resource.getString("JSPP.component.cut"),"javascript:onclick=clipboardCut()");
+			operationPane.addOperation(resource.getIcon("JSPP.CopyComponent"),resource.getString("JSPP.component.cut"),"javascript:onclick=clipboardCut('Component', '" + compoInst.getId() + "')");
 		}
 		operationPane.addLine();
 	}
@@ -148,6 +148,7 @@ window.setPopup(popupMode);
 <view:includePlugin name="qtip"/>
 <view:includePlugin name="popup"/>
 <script type="text/javascript" src="javascript/component.js"></script>
+<view:script src="/jobStartPagePeas/jsp/javascript/clipboard.js"/>
 <script type="text/javascript">
 var currentLanguage = "<%=compoInst.getLanguage()%>";
 <%
@@ -193,14 +194,6 @@ function updateInstance() {
   jQuery('#ComponentNum', $form).val('<%=compoInst.getId()%>');
   jQuery('#Translation', $form).val(currentLanguage);
   $form.attr('action', 'UpdateInstance').submit();
-}
-
-function clipboardCopy() {
-    top.IdleFrame.location.href = 'copy?Object=Component&Id=<%=compoInst.getId()%>';
-}
-
-function clipboardCut() {
-    top.IdleFrame.location.href = 'Cut?Type=Component&Id=<%=compoInst.getId()%>';
 }
 </script>
 </head>

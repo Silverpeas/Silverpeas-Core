@@ -118,9 +118,9 @@
     if (JobStartPagePeasSettings.useComponentsCopy || objectsSelectedInClipboard) {
       operationPane.addLine();
       if (JobStartPagePeasSettings.useComponentsCopy) {
-        operationPane.addOperation(resource.getIcon("JSPP.CopyComponent"),resource.getString("JSPP.space.copy"),"javascript:onclick=clipboardCopy()");
+        operationPane.addOperation(resource.getIcon("JSPP.CopyComponent"),resource.getString("JSPP.space.copy"),"javascript:onclick=clipboardCopy('Space', '" + space.getId() + "')");
         if (maintenanceState >= JobStartPagePeasSessionController.MAINTENANCE_PLATFORM) {
-          operationPane.addOperation(resource.getIcon("JSPP.CopyComponent"),resource.getString("JSPP.space.cut"),"javascript:onclick=clipboardCut()");
+          operationPane.addOperation(resource.getIcon("JSPP.CopyComponent"),resource.getString("JSPP.space.cut"),"javascript:onclick=clipboardCut('Space', '" + space.getId() + "')");
         }
       }
       if (objectsSelectedInClipboard) {
@@ -160,6 +160,7 @@
       white-space: nowrap;
     }
   </style>
+  <view:script src="/jobStartPagePeas/jsp/javascript/clipboard.js"/>
   <script type="text/javascript">
     //<!--
     var currentLanguage = "<%=space.getLanguage()%>";
@@ -206,14 +207,6 @@
 
     function clipboardPaste() {
       showPasteOptions();
-    }
-
-    function clipboardCopy() {
-      top.IdleFrame.location.href = "copy?Type=Space&Id=<%=space.getId()%>";
-    }
-
-    function clipboardCut() {
-      top.IdleFrame.location.href = "Cut?Type=Space&Id=<%=space.getId()%>";
     }
 
     function recoverRights() {
