@@ -215,17 +215,18 @@ function selectUnselect() {
 <% } %>
 }
 
+function submitUserForm() {
+  $.progressMessage();
+  document.userForm.submit();
+}
+
 function saveUser() {
   if ($("#identity-template").length) {
     ifCorrectBasicFormExecute(function() {
-      ifCorrectFormExecute(function() {
-        document.userForm.submit();
-      });
+      ifCorrectFormExecute(submitUserForm);
     });
   } else {
-    ifCorrectBasicFormExecute(function() {
-      document.userForm.submit();
-    });
+    ifCorrectBasicFormExecute(submitUserForm);
   }
 }
 </script>
@@ -459,5 +460,6 @@ out.println(window.printBefore());
 <%
   out.println(window.printAfter());
 %>
+<view:progressMessage/>
 </body>
 </html>
