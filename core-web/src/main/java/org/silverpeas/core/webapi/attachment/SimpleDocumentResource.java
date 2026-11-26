@@ -24,7 +24,6 @@
 package org.silverpeas.core.webapi.attachment;
 
 import org.apache.commons.io.FileUtils;
-import org.owasp.encoder.Encode;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.ContributionOperationContextPropertyHandler;
@@ -143,7 +142,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
 
     try {
       // Update the attachment
-      String normalizedFileName = StringUtil.normalize(Encode.forHtml(filename));
+      String normalizedFileName = decodeFilename(filename);
       SimpleDocumentEntity entity = updateSimpleDocument(uploadData, normalizedFileName);
 
       if (AJAX_IFRAME_TRANSPORT.equals(uploadData.getXRequestedWith())) {
