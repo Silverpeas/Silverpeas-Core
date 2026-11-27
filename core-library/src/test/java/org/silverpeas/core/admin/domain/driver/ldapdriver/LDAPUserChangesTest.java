@@ -164,6 +164,8 @@ class LDAPUserChangesTest {
   }
 
   private static List<String> namesOf(final List<DomainProperty> properties) {
-    return properties.stream().map(DomainProperty::getName).collect(Collectors.toList());
+    return properties.stream()
+        .map(DomainProperty::getName)
+        .toList();
   }
 }
