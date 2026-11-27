@@ -5516,10 +5516,11 @@ ul.tagit li.tagit-choice a.tagit-close {
 }
 
 .ui-dialog .champ-ui-dialog .document-template-input,
-.ui-dialog .champ-ui-dialog input[type=text],
-.ui-dialog .champ-ui-dialog input[type=file],
+.ui-dialog .champ-ui-dialog input[type="text"],
+.ui-dialog .champ-ui-dialog input[type="file"],
 .ui-dialog input[type="text"] ,
 .ui-dialog input[type="file"] ,
+.ui-dialog input:not([type]) ,
 .ui-dialog  textarea,
 .ui-dialog .champ-ui-dialog textarea {
   width: calc(100% - 2em) !important;
